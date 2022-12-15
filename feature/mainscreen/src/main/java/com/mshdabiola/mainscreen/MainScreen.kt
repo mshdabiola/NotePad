@@ -40,16 +40,26 @@ import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(
+    mainViewModel: MainViewModel = hiltViewModel(),
+    navigateToEdit: (Long) -> Unit = {}
+) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
-    MainScreen(listOfNote = mainState.value.listOfNote)
+    MainScreen(
+        listOfNote = mainState.value.listOfNote,
+        navigateToEdit = navigateToEdit
+    )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(listOfNote: ImmutableList<NoteUiState>) {
+fun MainScreen(
+    listOfNote: ImmutableList<NoteUiState>,
+    navigateToEdit: (Long) -> Unit = {}
+
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -101,7 +111,7 @@ fun MainScreen(listOfNote: ImmutableList<NoteUiState>) {
                         )
                     },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { /*TODO*/ }) {
+                        FloatingActionButton(onClick = { navigateToEdit(67) }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
                     }

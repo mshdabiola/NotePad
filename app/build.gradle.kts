@@ -62,6 +62,7 @@ dependencies {
     //implementation(libs.bundles.compose.bundle)
     implementation(project(":core:designsystem"))
     implementation(project(":feature:mainscreen"))
+    implementation(project(":feature:editScreen"))
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)

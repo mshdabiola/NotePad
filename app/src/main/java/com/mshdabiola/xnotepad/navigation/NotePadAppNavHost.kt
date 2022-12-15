@@ -3,6 +3,8 @@ package com.mshdabiola.xnotepad.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.mshdabiola.editscreen.editScreen
+import com.mshdabiola.editscreen.navigateToEditScreen
 import com.mshdabiola.mainscreen.mainNavigationRoute
 import com.mshdabiola.mainscreen.mainScreen
 
@@ -13,6 +15,7 @@ fun NotePadAppNavHost(
     startDestination: String = mainNavigationRoute
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
-        mainScreen()
+        mainScreen(navigateToEditScreen = { navController.navigateToEditScreen(it) })
+        editScreen()
     }
 }
