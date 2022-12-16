@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,9 @@ import com.mshdabiola.editscreen.state.toNote
 import com.mshdabiola.editscreen.state.toNotePadUiState
 import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,26 +41,38 @@ class EditViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            snapshotFlow {
+                notePadUiState
+            }
+                .map { it.note }
+                .distinctUntilChanged { old, new -> old == new }
+                .collectLatest {
+                    Log.e("flow", "$it")
+                    insertNote(it)
+                }
+        }
+
     }
 
 
-    fun insertNote(noteUiState: NoteUiState) {
-        viewModelScope.launch {
+    private suspend fun insertNote(noteUiState: NoteUiState) {
 
-            if (noteUiState.title.isNotBlank() || noteUiState.detail.isNotBlank()) {
-                if (noteUiState.id == null) {
-                    val id = notePadRepository.insertNote(noteUiState.toNote())
-                    savedStateHandle[parameterId] = id
-                    val note = notePadUiState.note.copy(id = id)
-                    notePadUiState = notePadUiState.copy(note = note)
-                    //noteState = noteUiState.copy(id = id)
+
+        if (noteUiState.title.isNotBlank() || noteUiState.detail.isNotBlank()) {
+            if (noteUiState.id == null) {
+                val id = notePadRepository.insertNote(noteUiState.toNote())
+                savedStateHandle[parameterId] = id
+                val note = notePadUiState.note.copy(id = id)
+                notePadUiState = notePadUiState.copy(note = note)
+                //noteState = noteUiState.copy(id = id)
 
                 } else {
                     notePadRepository.insertNote(noteUiState.toNote())
 
                 }
             }
-        }
+
     }
 
     fun onTitleChange(title: String) {

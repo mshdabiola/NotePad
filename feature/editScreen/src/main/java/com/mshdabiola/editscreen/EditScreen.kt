@@ -29,7 +29,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,9 +53,6 @@ fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel()
 ) {
 
-    LaunchedEffect(key1 = editViewModel.notePadUiState, block = {
-        editViewModel.insertNote(editViewModel.notePadUiState.note)
-    })
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
@@ -77,9 +73,6 @@ fun EditScreen(
     var expand by remember {
         mutableStateOf(false)
     }
-    val subjectFocus = remember {
-        FocusRequester()
-    }
 
 
 
@@ -118,61 +111,87 @@ fun EditScreen(
             }
         )
     }) {
-        Column(
+        NoteContent(
+            Modifier.padding(it),
+            notepad, onTitleChange, onSubjectChange, onBackClick, onDeleteNote, onSave
+        )
+    }
+}
+
+@Preview
+@Composable
+fun EditScreenPreview() {
+    EditScreen(notepad = NotePad().toNotePadUiState())
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteContent(
+    modifier: Modifier = Modifier,
+    notepad: NotePadUiState,
+    onTitleChange: (String) -> Unit = {},
+    onSubjectChange: (String) -> Unit = {},
+    onBackClick: () -> Unit = {},
+    onDeleteNote: () -> Unit = {},
+    onSave: () -> Unit = {}
+) {
+
+    val subjectFocus = remember {
+        FocusRequester()
+    }
+
+    Column(
+        modifier = modifier
+
+    ) {
+
+        TextField(
+            value = notepad.note.title,
+            onValueChange = onTitleChange,
+            placeholder = { Text(text = "Title") },
+            textStyle = MaterialTheme.typography.titleMedium,
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier
+                .fillMaxWidth()
 
-                .padding(it)
-
-        ) {
-
-            TextField(
-                value = notepad.note.title,
-                onValueChange = onTitleChange,
-                placeholder = { Text(text = "Title") },
-                textStyle = MaterialTheme.typography.titleMedium,
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    containerColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = true,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-
-            )
-            TextField(
-                value = notepad.note.detail,
-                onValueChange = onSubjectChange,
-                textStyle = MaterialTheme.typography.bodySmall,
-                placeholder = { Text(text = "Subject") },
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    containerColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = true,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .focusRequester(subjectFocus)
+        )
+        TextField(
+            value = notepad.note.detail,
+            onValueChange = onSubjectChange,
+            textStyle = MaterialTheme.typography.bodySmall,
+            placeholder = { Text(text = "Subject") },
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
+            modifier = Modifier
+                .fillMaxSize()
+                .focusRequester(subjectFocus)
 
 
-            )
+        )
 
-        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreenCheck(
+fun NoteCheckContent(
     note: NoteUiState = NoteUiState(),
     onTitleChange: (String) -> Unit = {},
     onSubjectChange: (String) -> Unit = {},
@@ -180,57 +199,46 @@ fun EditScreenCheck(
     onDeleteNote: () -> Unit = {},
     onSave: () -> Unit = {}
 ) {
-    var expand by remember {
-        mutableStateOf(false)
-    }
-    val subjectFocus = remember {
-        FocusRequester()
-    }
+    Column(
+        modifier = Modifier
 
+    ) {
 
+        TextField(
+            value = note.title,
+            onValueChange = onTitleChange,
+            placeholder = { Text(text = "Title") },
+            textStyle = MaterialTheme.typography.titleMedium,
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                imeAction = ImeAction.Next
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(text = "Edit Screen") },
-            navigationIcon = {
-                IconButton(onClick = { onBackClick() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back button")
-                }
-            },
-            actions = {
-                IconButton(onClick = { onDeleteNote() }) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "delete note")
-                }
-                Box {
-                    IconButton(onClick = { expand = true }) {
+        )
 
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                    }
-                    DropdownMenu(expanded = expand, onDismissRequest = { expand = false }) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Save to file") },
-                            onClick = { onSave() },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = "save"
-                                )
-                            }
-
-                        )
-
+        LazyColumn(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            items(10) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = false, onCheckedChange = {})
+                    Text(modifier = Modifier.weight(1f), text = "Text")
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "")
                     }
                 }
             }
-        )
-    }) {
-        Column(
-            modifier = Modifier
-
-                .padding(it)
-
-        ) {
-
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
                 value = note.title,
                 onValueChange = onTitleChange,
@@ -246,64 +254,18 @@ fun EditScreenCheck(
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
+
 
             )
-
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                items(10) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = false, onCheckedChange = {})
-                        Text(modifier = Modifier.weight(1f), text = "Text")
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = "")
-                        }
-                    }
-                }
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextField(
-                    value = note.title,
-                    onValueChange = onTitleChange,
-                    placeholder = { Text(text = "Title") },
-                    textStyle = MaterialTheme.typography.titleMedium,
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-
-
-                )
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
-                }
-            }
-
-
         }
+
+
     }
 }
 
-@Preview
-@Composable
-fun EditScreenPreview() {
-    EditScreen(notepad = NotePad().toNotePadUiState())
-}
 
-@Preview
-@Composable
-fun EditScreenCheckPreview() {
-    EditScreenCheck(note = NoteUiState())
-}
 
