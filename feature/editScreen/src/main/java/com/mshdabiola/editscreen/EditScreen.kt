@@ -24,6 +24,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +44,15 @@ import com.mshdabiola.editscreen.state.NoteUiState
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel()
 ) {
-    EditScreen(note = NoteUiState())
+
+    LaunchedEffect(key1 = editViewModel.noteState, block = {
+        editViewModel.insertNote(editViewModel.noteState)
+    })
+    EditScreen(
+        note = editViewModel.noteState,
+        onTitleChange = editViewModel::onTitleChange,
+        onSubjectChange = editViewModel::onDetailChange
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

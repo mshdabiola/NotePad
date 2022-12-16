@@ -111,16 +111,16 @@ fun MainScreen(
                         )
                     },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { navigateToEdit(67) }) {
+                        FloatingActionButton(onClick = { navigateToEdit(-1) }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
                     }
                 )
             }
-        ) {
+        ) { paddingValues ->
             LazyVerticalStaggeredGrid(
                 modifier = Modifier
-                    .padding(it)
+                    .padding(paddingValues)
                     .padding(8.dp),
                 columns = StaggeredGridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -128,7 +128,7 @@ fun MainScreen(
 
             ) {
                 items(listOfNote) {
-                    NoteCard(noteUiState = it)
+                    NoteCard(noteUiState = it, onCardClick = navigateToEdit)
                 }
 
             }

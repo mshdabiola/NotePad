@@ -1,14 +1,19 @@
 package com.mshdabiola.database
 
+import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.mshdabiola.database.dao.GeneralDao
+import com.mshdabiola.database.model.NoteEntity
+import com.mshdabiola.database.model.NoteImageEntity
+import com.mshdabiola.database.model.NoteVoiceEntity
 
-//@Database(
-//    entities = [],
-//    version = 1
-//)
+@Database(
+    entities = [NoteEntity::class, NoteVoiceEntity::class, NoteImageEntity::class],
+    version = 1
+)
 abstract class NoteDatabase : RoomDatabase() {
 
-//    abstract fun getLudoDao(): LudoDao
+    abstract fun getGeneralDao(): GeneralDao
 //
 //    abstract fun getPlayerDao(): PlayerDao
 //

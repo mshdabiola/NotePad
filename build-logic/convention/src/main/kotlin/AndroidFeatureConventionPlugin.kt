@@ -22,6 +22,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.project
 
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -42,8 +43,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
             dependencies {
-
-
+                add("implementation", project(":core:model"))
+                add("implementation", project(":core:database"))
                 add("testImplementation", kotlin("test"))
                 add("androidTestImplementation", kotlin("test"))
                 add("androidTestImplementation", libs.findLibrary("androidx-compose-ui-test").get())
