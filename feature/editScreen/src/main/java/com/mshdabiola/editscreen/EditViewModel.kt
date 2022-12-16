@@ -10,7 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.editscreen.state.NoteUiState
 import com.mshdabiola.editscreen.state.toNote
-import com.mshdabiola.editscreen.state.toNoteUiState
+import com.mshdabiola.editscreen.state.toNotePadUiState
+import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,16 +24,16 @@ class EditViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
-    var noteState by mutableStateOf(NoteUiState())
+    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
 
 
     init {
         viewModelScope.launch {
             Log.e("Editviewmodel", "${editArg.id}")
-            noteState = if (editArg.id == (-1).toLong()) {
-                NoteUiState()
+            notePadUiState = if (editArg.id == (-1).toLong()) {
+                NotePad().toNotePadUiState()
             } else {
-                notePadRepository.getOneNote(editArg.id).toNoteUiState()
+                notePadRepository.getNotePad(editArg.id).toNotePadUiState()
             }
         }
 
@@ -46,7 +47,9 @@ class EditViewModel @Inject constructor(
                 if (noteUiState.id == null) {
                     val id = notePadRepository.insertNote(noteUiState.toNote())
                     savedStateHandle[parameterId] = id
-                    noteState = noteUiState.copy(id = id)
+                    val note = notePadUiState.note.copy(id = id)
+                    notePadUiState = notePadUiState.copy(note = note)
+                    //noteState = noteUiState.copy(id = id)
 
                 } else {
                     notePadRepository.insertNote(noteUiState.toNote())
@@ -57,11 +60,13 @@ class EditViewModel @Inject constructor(
     }
 
     fun onTitleChange(title: String) {
-        noteState = noteState.copy(title = title)
+        val note = notePadUiState.note.copy(title = title)
+        notePadUiState = notePadUiState.copy(note = note)
     }
 
     fun onDetailChange(detail: String) {
-        noteState = noteState.copy(detail = detail)
+        val note = notePadUiState.note.copy(detail = detail)
+        notePadUiState = notePadUiState.copy(note = note)
     }
 
 }

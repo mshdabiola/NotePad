@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NotePadEntity
@@ -44,12 +45,16 @@ interface GeneralDao {
 
     @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")
-    fun getOneNotePad(noteId: Long): Flow<NotePadEntity>
+    suspend fun getOneNotePad(noteId: Long): NotePadEntity
 
-    @Query("SELECT * FROM note_table ORDER BY id DESC")
-    fun getNote(): Flow<List<NoteEntity>>
+//    @Query("SELECT * FROM note_table ORDER BY id DESC")
+//    fun getNote(): Flow<List<NoteEntity>>
+//
+//    @Query("SELECT * FROM note_table WHERE id = :id ")
+//    suspend fun getOneNote(id: Long): NoteEntity
 
-    @Query("SELECT * FROM note_table WHERE id = :id ")
-    suspend fun getOneNote(id: Long): NoteEntity
+    @Upsert
+    suspend fun addNoteCheck(noteCheckEntity: NoteCheckEntity)
+
 
 }

@@ -12,25 +12,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.mainscreen.state.NoteUiState
+import com.mshdabiola.mainscreen.state.NotePadUiState
+import com.mshdabiola.mainscreen.state.toNotePadUiState
+import com.mshdabiola.model.NotePad
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteCard(noteUiState: NoteUiState, onCardClick: (Long) -> Unit = {}) {
+fun NoteCard(notePadUiState: NotePadUiState, onCardClick: (Long) -> Unit = {}) {
 
     OutlinedCard(
         modifier = Modifier,
-        onClick = { noteUiState.id?.let { onCardClick(it) } }) {
+        onClick = { notePadUiState.note.id?.let { onCardClick(it) } }) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                text = noteUiState.title.ifEmpty { noteUiState.detail },
+                text = notePadUiState.note.title.ifEmpty { notePadUiState.note.detail },
                 style = MaterialTheme.typography.titleMedium
             )
 
-            if (noteUiState.title.isNotEmpty()) {
-                if (noteUiState.detail.isNotEmpty()) {
+            if (notePadUiState.note.title.isNotEmpty()) {
+                if (notePadUiState.note.detail.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = noteUiState.detail, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = notePadUiState.note.detail,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -41,5 +46,5 @@ fun NoteCard(noteUiState: NoteUiState, onCardClick: (Long) -> Unit = {}) {
 @Preview
 @Composable
 fun NoteCardPreview() {
-    NoteCard(noteUiState = NoteUiState())
+    NoteCard(notePadUiState = NotePad().toNotePadUiState())
 }

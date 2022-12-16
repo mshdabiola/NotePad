@@ -34,7 +34,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.mainscreen.component.NoteCard
-import com.mshdabiola.mainscreen.state.NoteUiState
+import com.mshdabiola.mainscreen.state.NotePadUiState
+import com.mshdabiola.mainscreen.state.toNotePadUiState
+import com.mshdabiola.model.NotePad
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -47,7 +49,7 @@ fun MainScreen(
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
     MainScreen(
-        listOfNote = mainState.value.listOfNote,
+        notePads = mainState.value.notePads,
         navigateToEdit = navigateToEdit
     )
 
@@ -56,7 +58,7 @@ fun MainScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
-    listOfNote: ImmutableList<NoteUiState>,
+    notePads: ImmutableList<NotePadUiState>,
     navigateToEdit: (Long) -> Unit = {}
 
 ) {
@@ -127,8 +129,8 @@ fun MainScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
 
             ) {
-                items(listOfNote) {
-                    NoteCard(noteUiState = it, onCardClick = navigateToEdit)
+                items(notePads) {
+                    NoteCard(notePadUiState = it, onCardClick = navigateToEdit)
                 }
 
             }
@@ -140,22 +142,14 @@ fun MainScreen(
 @Composable
 fun MainScreenPreview() {
     MainScreen(
-        listOfNote =
+        notePads =
         listOf(
-            NoteUiState(),
-            NoteUiState(
-                detail = "akdlskdfjsl" +
-                        "aslsfsfjslfjskfdjkdfkjdjkfdk" +
-                        "dkdfdkdjf" +
-                        "sfksjfdj"
-            ),
-            NoteUiState(),
-            NoteUiState(),
-            NoteUiState(),
-            NoteUiState(),
-            NoteUiState(),
-
-            )
+            NotePad().toNotePadUiState(),
+            NotePad().toNotePadUiState(),
+            NotePad().toNotePadUiState(),
+            NotePad().toNotePadUiState(),
+            NotePad().toNotePadUiState()
+        )
             .toImmutableList()
     )
 }

@@ -4,5 +4,5 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 data class MainState(
-    val listOfNote: ImmutableList<NoteUiState> = emptyList<NoteUiState>().toImmutableList()
+    val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList()
 )

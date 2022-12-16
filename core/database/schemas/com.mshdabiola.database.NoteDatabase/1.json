@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0c5fd6205a1d86ddb3749b6cdc63bcb0",
+    "identityHash": "1e3409dd0e6a43e2e89e727a8499e1df",
     "entities": [
       {
         "tableName": "note_table",
@@ -123,12 +123,50 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "note_check_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `noteId` INTEGER NOT NULL, `content` TEXT NOT NULL, `isCheck` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "noteId",
+            "columnName": "noteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCheck",
+            "columnName": "isCheck",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c5fd6205a1d86ddb3749b6cdc63bcb0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e3409dd0e6a43e2e89e727a8499e1df')"
     ]
   }
 }

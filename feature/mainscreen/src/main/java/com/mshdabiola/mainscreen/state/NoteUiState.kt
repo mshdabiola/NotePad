@@ -14,3 +14,5 @@ data class NoteUiState(
 
 fun Note.toNoteUiState() = NoteUiState(id, title, detail, date, isCheck, color, isPin)
 
+fun NoteUiState.toNote() = Note(id, title, detail, date, isCheck, color, isPin)
+
