@@ -9,14 +9,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.database.repository.NotePadRepository
-import com.mshdabiola.editscreen.state.NoteUiState
-import com.mshdabiola.editscreen.state.toNote
+import com.mshdabiola.editscreen.state.NotePadUiState
+import com.mshdabiola.editscreen.state.toNoteCheckUiState
+import com.mshdabiola.editscreen.state.toNotePad
 import com.mshdabiola.editscreen.state.toNotePadUiState
+import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,7 +39,7 @@ class EditViewModel @Inject constructor(
             notePadUiState = if (editArg.id == (-1).toLong()) {
                 NotePad().toNotePadUiState()
             } else {
-                notePadRepository.getNotePad(editArg.id).toNotePadUiState()
+                notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
             }
         }
 
@@ -45,33 +47,48 @@ class EditViewModel @Inject constructor(
             snapshotFlow {
                 notePadUiState
             }
-                .map { it.note }
+
                 .distinctUntilChanged { old, new -> old == new }
                 .collectLatest {
                     Log.e("flow", "$it")
-                    insertNote(it)
+                    insertNotePad(it)
                 }
         }
 
     }
 
 
-    private suspend fun insertNote(noteUiState: NoteUiState) {
+    private suspend fun insertNotePad(notePad: NotePadUiState) {
 
 
-        if (noteUiState.title.isNotBlank() || noteUiState.detail.isNotBlank()) {
-            if (noteUiState.id == null) {
-                val id = notePadRepository.insertNote(noteUiState.toNote())
+        if (notePad.note.title.isNotBlank()
+            || notePad.note.detail.isNotBlank()
+            || notePad.checks.isNotEmpty()
+            || notePad.voices.isNotEmpty()
+            || notePad.images.isNotEmpty()
+        ) {
+            if (notePad.note.id == null) {
+                val id = notePadRepository.insertNotepad(notePad.toNotePad())
                 savedStateHandle[parameterId] = id
                 val note = notePadUiState.note.copy(id = id)
-                notePadUiState = notePadUiState.copy(note = note)
+                val notechecks = notePad.checks.toMutableList()
+                if (notechecks.isNotEmpty()) {
+
+                    notechecks[0] = notechecks[0].copy(noteId = id)
+                }
+
+                notePadUiState = notePadUiState.copy(
+                    note = note,
+                    checks = notechecks.toImmutableList()
+                )
+
                 //noteState = noteUiState.copy(id = id)
 
-                } else {
-                    notePadRepository.insertNote(noteUiState.toNote())
+            } else {
+                notePadRepository.insertNotepad(notePad.toNotePad())
 
-                }
             }
+        }
 
     }
 
@@ -85,4 +102,12 @@ class EditViewModel @Inject constructor(
         notePadUiState = notePadUiState.copy(note = note)
     }
 
+    fun addCheck() {
+        val size = notePadUiState.checks.size
+        val noteId = notePadUiState.note.id
+        val noteCheck = NoteCheck(id = size.toLong(), noteId = noteId ?: -1)
+
+        val notechecks = notePadUiState.checks.toMutableList()
+        notechecks.add(noteCheck.toNoteCheckUiState())
+    }
 }

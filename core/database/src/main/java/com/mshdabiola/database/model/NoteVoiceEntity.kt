@@ -6,7 +6,7 @@ import com.mshdabiola.model.NoteVoice
 
 @Entity("note_voice_table")
 data class NoteVoiceEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id: Long,
     val noteId: Long,
     val voiceName: String,

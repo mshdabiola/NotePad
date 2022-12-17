@@ -6,7 +6,7 @@ import com.mshdabiola.model.NoteImage
 
 @Entity(tableName = "note_image_table")
 data class NoteImageEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id: Long,
     val noteId: Long,
     val imageName: String,

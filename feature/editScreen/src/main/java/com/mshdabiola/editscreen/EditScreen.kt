@@ -1,20 +1,20 @@
 package com.mshdabiola.editscreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -42,12 +42,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
-import com.mshdabiola.editscreen.state.NoteUiState
 import com.mshdabiola.editscreen.state.toNotePadUiState
+import com.mshdabiola.model.Note
+import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel()
@@ -68,12 +72,19 @@ fun EditScreen(
     onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
     onDeleteNote: () -> Unit = {},
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
+    onCheckChange: (String, Long?) -> Unit = { _, _ -> },
+    onCheckDelete: (Long) -> Unit = {},
+    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+    addItem: () -> Unit = {}
 ) {
     var expand by remember {
         mutableStateOf(false)
     }
 
+    val subjectFocus = remember {
+        FocusRequester()
+    }
 
 
     Scaffold(topBar = {
@@ -111,136 +122,13 @@ fun EditScreen(
             }
         )
     }) {
-        NoteContent(
-            Modifier.padding(it),
-            notepad, onTitleChange, onSubjectChange, onBackClick, onDeleteNote, onSave
-        )
-    }
-}
+        Column(
+            modifier = Modifier.padding(it)
 
-@Preview
-@Composable
-fun EditScreenPreview() {
-    EditScreen(notepad = NotePad().toNotePadUiState())
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NoteContent(
-    modifier: Modifier = Modifier,
-    notepad: NotePadUiState,
-    onTitleChange: (String) -> Unit = {},
-    onSubjectChange: (String) -> Unit = {},
-    onBackClick: () -> Unit = {},
-    onDeleteNote: () -> Unit = {},
-    onSave: () -> Unit = {}
-) {
-
-    val subjectFocus = remember {
-        FocusRequester()
-    }
-
-    Column(
-        modifier = modifier
-
-    ) {
-
-        TextField(
-            value = notepad.note.title,
-            onValueChange = onTitleChange,
-            placeholder = { Text(text = "Title") },
-            textStyle = MaterialTheme.typography.titleMedium,
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                autoCorrect = true,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-
-        )
-        TextField(
-            value = notepad.note.detail,
-            onValueChange = onSubjectChange,
-            textStyle = MaterialTheme.typography.bodySmall,
-            placeholder = { Text(text = "Subject") },
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                autoCorrect = true,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
-            modifier = Modifier
-                .fillMaxSize()
-                .focusRequester(subjectFocus)
-
-
-        )
-
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NoteCheckContent(
-    note: NoteUiState = NoteUiState(),
-    onTitleChange: (String) -> Unit = {},
-    onSubjectChange: (String) -> Unit = {},
-    onBackClick: () -> Unit = {},
-    onDeleteNote: () -> Unit = {},
-    onSave: () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-
-    ) {
-
-        TextField(
-            value = note.title,
-            onValueChange = onTitleChange,
-            placeholder = { Text(text = "Title") },
-            textStyle = MaterialTheme.typography.titleMedium,
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                autoCorrect = true,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-
-        )
-
-        LazyColumn(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
         ) {
-            items(10) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = false, onCheckedChange = {})
-                    Text(modifier = Modifier.weight(1f), text = "Text")
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Default.Clear, contentDescription = "")
-                    }
-                }
-            }
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+
             TextField(
-                value = note.title,
+                value = notepad.note.title,
                 onValueChange = onTitleChange,
                 placeholder = { Text(text = "Title") },
                 textStyle = MaterialTheme.typography.titleMedium,
@@ -254,18 +142,111 @@ fun NoteCheckContent(
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier
-                    .weight(1f)
-
+                    .fillMaxWidth()
 
             )
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+            if (notepad.note.isCheck) {
+
+                Column(Modifier.weight(1f)) {
+                    notepad.checks.forEach { noteCheckUiState ->
+                        //  key(keys = arrayOf( noteCheckUiState.id)) {
+                        CheckItem(
+                            noteCheckUiState = noteCheckUiState,
+                            onCheckChange,
+                            onCheckDelete,
+                            onCheck
+                        )
+                        //  }
+                    }
+                    Row(
+                        modifier = Modifier.clickable { addItem() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
+
+                        Text(text = "Add list item")
+                    }
+                }
+            } else {
+                TextField(
+                    value = notepad.note.detail,
+                    onValueChange = onSubjectChange,
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    placeholder = { Text(text = "Subject") },
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        containerColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .focusRequester(subjectFocus)
+
+
+                )
             }
         }
-
-
     }
 }
+
+@Preview
+@Composable
+fun EditScreenPreview() {
+    EditScreen(
+        notepad = NotePad(
+            note = Note(isCheck = true),
+            checks = listOf(
+                NoteCheck(1, 2, "Food", true),
+                NoteCheck(1, 2, "Food", true),
+                NoteCheck(1, 2, "Food", false),
+                NoteCheck(1, 2, "Food", false),
+                NoteCheck(1, 2, "Food", true),
+                NoteCheck(1, 2, "Food", true),
+
+
+                )
+        ).toNotePadUiState()
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckItem(
+    noteCheckUiState: NoteCheckUiState,
+    onCheckChange: (String, Long?) -> Unit = { _, _ -> },
+    onCheckDelete: (Long) -> Unit = {},
+    onCheck: (Boolean, Long) -> Unit = { _, _ -> }
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Checkbox(checked = noteCheckUiState.isCheck,
+            onCheckedChange = { onCheck(it, noteCheckUiState.id) })
+        TextField(
+            modifier = Modifier.weight(1f),
+            value = noteCheckUiState.content,
+            onValueChange = { onCheckChange(it, noteCheckUiState.id) },
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent
+            )
+
+        )
+
+        IconButton(onClick = {
+            onCheckDelete(noteCheckUiState.id)
+        }) {
+            Icon(imageVector = Icons.Default.Clear, contentDescription = "")
+        }
+    }
+}
+
 
 
 

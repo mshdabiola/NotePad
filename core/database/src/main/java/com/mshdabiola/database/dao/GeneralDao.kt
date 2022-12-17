@@ -15,11 +15,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GeneralDao {
 
-    @Insert
-    suspend fun addVoice(noteVoiceEntity: NoteVoiceEntity)
+    @Upsert
+    suspend fun addVoice(noteVoiceEntity: List<NoteVoiceEntity>)
 
     @Insert
-    suspend fun addImage(noteImageEntity: NoteImageEntity)
+    suspend fun addImage(noteImageEntity: List<NoteImageEntity>)
+
+    @Upsert
+    suspend fun addNoteCheck(noteCheckEntity: List<NoteCheckEntity>)
+
+    @Upsert
+    suspend fun addNote(noteEntity: NoteEntity): Long
 
     @Query("DELETE FROM note_voice_table WHERE id = :id")
     suspend fun deleteVoiceOne(id: Long)
@@ -32,9 +38,6 @@ interface GeneralDao {
 
     @Query("DELETE FROM note_image_table WHERE noteId = :noteId")
     suspend fun deleteImageById(noteId: Long)
-
-    @Upsert
-    suspend fun addNote(noteEntity: NoteEntity): Long
 
     @Query("DELETE FROM note_table WHERE id = :noteId")
     suspend fun deleteNote(noteId: Long)
@@ -52,9 +55,6 @@ interface GeneralDao {
 //
 //    @Query("SELECT * FROM note_table WHERE id = :id ")
 //    suspend fun getOneNote(id: Long): NoteEntity
-
-    @Upsert
-    suspend fun addNoteCheck(noteCheckEntity: NoteCheckEntity)
 
 
 }

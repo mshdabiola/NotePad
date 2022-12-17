@@ -3,7 +3,7 @@ package com.mshdabiola.editscreen.state
 import com.mshdabiola.model.NoteCheck
 
 data class NoteCheckUiState(
-    val id: Long? = null,
+    val id: Long,
     val noteId: Long,
     val content: String,
     val isCheck: Boolean
@@ -11,3 +11,4 @@ data class NoteCheckUiState(
 
 
 fun NoteCheck.toNoteCheckUiState() = NoteCheckUiState(id, noteId, content, isCheck)
+fun NoteCheckUiState.toNoteCheck() = NoteCheck(id, noteId, content, isCheck)

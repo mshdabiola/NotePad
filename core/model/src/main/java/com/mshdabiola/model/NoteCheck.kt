@@ -1,8 +1,8 @@
 package com.mshdabiola.model
 
 data class NoteCheck(
-    val id: Long? = null,
+    val id: Long,
     val noteId: Long,
-    val content: String,
-    val isCheck: Boolean
+    val content: String = "",
+    val isCheck: Boolean = false
 )

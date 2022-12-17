@@ -18,3 +18,10 @@ fun NotePad.toNotePadUiState() = NotePadUiState(
     voices = voices.map { it.toNoteVoiceUiState() }.toImmutableList(),
     checks = checks.map { it.toNoteCheckUiState() }.toImmutableList()
 )
+
+fun NotePadUiState.toNotePad() = NotePad(
+    note = note.toNote(),
+    images = images.map { it.toNoteImage() },
+    voices = voices.map { it.toNoteVoice() },
+    checks = checks.map { it.toNoteCheck() }
+)

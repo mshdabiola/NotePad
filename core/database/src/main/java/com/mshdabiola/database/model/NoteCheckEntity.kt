@@ -6,11 +6,12 @@ import com.mshdabiola.model.NoteCheck
 
 @Entity(tableName = "note_check_table")
 data class NoteCheckEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long? = null,
+    @PrimaryKey
+    val id: Long,
     val noteId: Long,
     val content: String,
     val isCheck: Boolean
 )
 
 fun NoteCheckEntity.toNoteCheck() = NoteCheck(id, noteId, content, isCheck)
+fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id, noteId, content, isCheck)

@@ -9,3 +9,4 @@ data class NoteImageUiState(
 )
 
 fun NoteImage.toNoteImageUiState() = NoteImageUiState(id, noteId, imageName)
+fun NoteImageUiState.toNoteImage() = NoteImage(id, noteId, imageName)

@@ -9,3 +9,4 @@ data class NoteVoiceUiState(
 )
 
 fun NoteVoice.toNoteVoiceUiState() = NoteVoiceUiState(id, noteId, voiceName)
+fun NoteVoiceUiState.toNoteVoice() = NoteVoice(id, noteId, voiceName)
