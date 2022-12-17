@@ -29,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,8 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -88,6 +91,13 @@ fun EditScreen(
 
     val subjectFocus = remember {
         FocusRequester()
+    }
+
+    val checkNote by remember(notepad.checks) {
+        derivedStateOf { notepad.checks.filter { it.isCheck } }
+    }
+    val notCheckNote by remember(notepad.checks) {
+        derivedStateOf { notepad.checks.filter { !it.isCheck } }
     }
 
 
@@ -152,16 +162,34 @@ fun EditScreen(
             if (notepad.note.isCheck) {
 
                 Column(Modifier.weight(1f)) {
-                    notepad.checks.forEach { noteCheckUiState ->
-                        //  key(keys = arrayOf( noteCheckUiState.id)) {
-                        CheckItem(
-                            noteCheckUiState = noteCheckUiState,
-                            onCheckChange,
-                            onCheckDelete,
-                            onCheck
-                        )
-                        //  }
+                    if (notCheckNote.isNotEmpty()) {
+                        Text(text = "Note Check note", style = MaterialTheme.typography.titleMedium)
+                        notCheckNote.forEach { noteCheckUiState ->
+                            //  key(keys = arrayOf( noteCheckUiState.id)) {
+                            CheckItem(
+                                noteCheckUiState = noteCheckUiState,
+                                onCheckChange,
+                                onCheckDelete,
+                                onCheck
+                            )
+                            //  }
+                        }
                     }
+                    if (checkNote.isNotEmpty()) {
+                        Text(text = "Note Check note", style = MaterialTheme.typography.titleMedium)
+                        checkNote.forEach { noteCheckUiState ->
+                            //  key(keys = arrayOf( noteCheckUiState.id)) {
+                            CheckItem(
+                                noteCheckUiState = noteCheckUiState,
+                                onCheckChange,
+                                onCheckDelete,
+                                onCheck,
+                                strickText = true
+                            )
+                            //  }
+                        }
+                    }
+
                     Row(
                         modifier = Modifier.clickable { addItem() },
                         verticalAlignment = Alignment.CenterVertically
@@ -226,7 +254,8 @@ fun CheckItem(
     noteCheckUiState: NoteCheckUiState,
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
-    onCheck: (Boolean, Long) -> Unit = { _, _ -> }
+    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+    strickText: Boolean = false
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(checked = noteCheckUiState.isCheck,
@@ -239,7 +268,8 @@ fun CheckItem(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 containerColor = Color.Transparent
-            )
+            ),
+            textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default
 
         )
 
