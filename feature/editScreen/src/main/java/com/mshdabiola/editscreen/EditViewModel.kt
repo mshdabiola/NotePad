@@ -13,6 +13,7 @@ import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.toNoteCheckUiState
 import com.mshdabiola.editscreen.state.toNotePad
 import com.mshdabiola.editscreen.state.toNotePadUiState
+import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,10 +37,11 @@ class EditViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             Log.e("Editviewmodel", "${editArg.id}")
-            notePadUiState = if (editArg.id == (-1).toLong()) {
-                NotePad().toNotePadUiState()
-            } else {
-                notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
+            notePadUiState = when (editArg.id) {
+                (-1).toLong() -> NotePad().toNotePadUiState()
+                (-2).toLong() -> NotePad(note = Note(isCheck = true)).toNotePadUiState()
+                else ->
+                    notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
             }
         }
 
@@ -103,11 +105,42 @@ class EditViewModel @Inject constructor(
     }
 
     fun addCheck() {
-        val size = notePadUiState.checks.size
+        val size = (notePadUiState.checks.lastOrNull()?.id ?: -1) + 1
         val noteId = notePadUiState.note.id
         val noteCheck = NoteCheck(id = size.toLong(), noteId = noteId ?: -1)
 
-        val notechecks = notePadUiState.checks.toMutableList()
-        notechecks.add(noteCheck.toNoteCheckUiState())
+        val noteChecks = notePadUiState.checks.toMutableList()
+        noteChecks.add(noteCheck.toNoteCheckUiState())
+        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
     }
+
+    fun onCheckChange(value: String, id: Long) {
+
+
+        val noteChecks = notePadUiState.checks.toMutableList()
+        val index = noteChecks.indexOfFirst { it.id == id }
+        val noteCheck = noteChecks[index].copy(content = value)
+        noteChecks[index] = noteCheck
+        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
+    }
+
+    fun onCheck(check: Boolean, id: Long) {
+        val noteChecks = notePadUiState.checks.toMutableList()
+        val index = noteChecks.indexOfFirst { it.id == id }
+        val noteCheck = noteChecks[index].copy(isCheck = check)
+        noteChecks[index] = noteCheck
+        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
+    }
+
+    fun onCheckDelete(id: Long) {
+        val noteChecks = notePadUiState.checks.toMutableList()
+        val index = noteChecks.indexOfFirst { it.id == id }
+        noteChecks.removeAt(index)
+        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
+        viewModelScope.launch {
+            notePadRepository.deleteCheckNote(id)
+        }
+    }
+
+
 }

@@ -8,7 +8,9 @@ import com.mshdabiola.database.model.toNotePad
 import com.mshdabiola.database.model.toNoteVoiceEntity
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class NotePadRepository
@@ -21,6 +23,7 @@ class NotePadRepository
 
         val id = generalDao.addNote(notePad.note.toNoteEntity())
         if (notePad.checks.isNotEmpty()) {
+
             generalDao.addNoteCheck(notePad.checks.map { it.toNoteCheckEntity() })
         }
         if (notePad.voices.isNotEmpty()) {
@@ -31,6 +34,10 @@ class NotePadRepository
         }
 
         return id
+    }
+
+    suspend fun deleteCheckNote(id: Long) = withContext(Dispatchers.IO) {
+        generalDao.deleteCheck(id)
     }
 
 

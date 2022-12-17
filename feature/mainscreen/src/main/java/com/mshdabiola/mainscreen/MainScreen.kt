@@ -2,9 +2,7 @@ package com.mshdabiola.mainscreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -17,6 +15,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -87,30 +86,40 @@ fun MainScreen(
             bottomBar = {
                 BottomAppBar(
                     actions = {
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Icon(
-                            imageVector = ImageVector
-                                .vectorResource(id = R.drawable.outline_check_box_24),
-                            contentDescription = "note check"
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Icon(
-                            imageVector = ImageVector
-                                .vectorResource(id = R.drawable.baseline_brush_24),
-                            contentDescription = "note check"
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Icon(
-                            imageVector = ImageVector
-                                .vectorResource(id = R.drawable.outline_keyboard_voice_24),
-                            contentDescription = "note check"
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Icon(
-                            imageVector = ImageVector
-                                .vectorResource(id = R.drawable.outline_image_24),
-                            contentDescription = "note check"
-                        )
+
+                        IconButton(onClick = { navigateToEdit(-2) }) {
+                            Icon(
+                                imageVector = ImageVector
+                                    .vectorResource(id = R.drawable.outline_check_box_24),
+                                contentDescription = "note check"
+                            )
+                        }
+
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = ImageVector
+                                    .vectorResource(id = R.drawable.baseline_brush_24),
+                                contentDescription = "note check"
+                            )
+                        }
+
+
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = ImageVector
+                                    .vectorResource(id = R.drawable.outline_keyboard_voice_24),
+                                contentDescription = "note check"
+                            )
+                        }
+
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = ImageVector
+                                    .vectorResource(id = R.drawable.outline_image_24),
+                                contentDescription = "note check"
+                            )
+                        }
+
                     },
                     floatingActionButton = {
                         FloatingActionButton(onClick = { navigateToEdit(-1) }) {

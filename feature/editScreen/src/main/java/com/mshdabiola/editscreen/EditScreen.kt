@@ -60,7 +60,11 @@ fun EditScreen(
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
-        onSubjectChange = editViewModel::onDetailChange
+        onSubjectChange = editViewModel::onDetailChange,
+        addItem = editViewModel::addCheck,
+        onCheckChange = editViewModel::onCheckChange,
+        onCheck = editViewModel::onCheck,
+        onCheckDelete = editViewModel::onCheckDelete
     )
 }
 
@@ -73,7 +77,7 @@ fun EditScreen(
     onBackClick: () -> Unit = {},
     onDeleteNote: () -> Unit = {},
     onSave: () -> Unit = {},
-    onCheckChange: (String, Long?) -> Unit = { _, _ -> },
+    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {}
@@ -220,7 +224,7 @@ fun EditScreenPreview() {
 @Composable
 fun CheckItem(
     noteCheckUiState: NoteCheckUiState,
-    onCheckChange: (String, Long?) -> Unit = { _, _ -> },
+    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> }
 ) {

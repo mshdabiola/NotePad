@@ -39,6 +39,12 @@ interface GeneralDao {
     @Query("DELETE FROM note_image_table WHERE noteId = :noteId")
     suspend fun deleteImageById(noteId: Long)
 
+    @Query("DELETE FROM note_check_table WHERE noteId = :noteId")
+    suspend fun deleteCheckById(noteId: Long)
+
+    @Query("DELETE FROM note_check_table WHERE id = :id")
+    suspend fun deleteCheck(id: Long)
+
     @Query("DELETE FROM note_table WHERE id = :noteId")
     suspend fun deleteNote(noteId: Long)
 
