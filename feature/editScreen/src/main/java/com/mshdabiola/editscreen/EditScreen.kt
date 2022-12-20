@@ -1,6 +1,9 @@
 package com.mshdabiola.editscreen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +32,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -98,6 +104,9 @@ fun EditScreen(
     }
     val notCheckNote by remember(notepad.checks) {
         derivedStateOf { notepad.checks.filter { !it.isCheck } }
+    }
+    var showCheckNote by remember {
+        mutableStateOf(true)
     }
 
 
@@ -163,7 +172,7 @@ fun EditScreen(
 
                 Column(Modifier.weight(1f)) {
                     if (notCheckNote.isNotEmpty()) {
-                        Text(text = "Note Check note", style = MaterialTheme.typography.titleMedium)
+
                         notCheckNote.forEach { noteCheckUiState ->
                             //  key(keys = arrayOf( noteCheckUiState.id)) {
                             CheckItem(
@@ -175,21 +184,6 @@ fun EditScreen(
                             //  }
                         }
                     }
-                    if (checkNote.isNotEmpty()) {
-                        Text(text = "Note Check note", style = MaterialTheme.typography.titleMedium)
-                        checkNote.forEach { noteCheckUiState ->
-                            //  key(keys = arrayOf( noteCheckUiState.id)) {
-                            CheckItem(
-                                noteCheckUiState = noteCheckUiState,
-                                onCheckChange,
-                                onCheckDelete,
-                                onCheck,
-                                strickText = true
-                            )
-                            //  }
-                        }
-                    }
-
                     Row(
                         modifier = Modifier.clickable { addItem() },
                         verticalAlignment = Alignment.CenterVertically
@@ -198,6 +192,37 @@ fun EditScreen(
 
                         Text(text = "Add list item")
                     }
+
+                    if (checkNote.isNotEmpty()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { showCheckNote = !showCheckNote }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                text = "${checkNote.size} Checked Items",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        if (showCheckNote) {
+                            checkNote.forEach { noteCheckUiState ->
+                                //  key(keys = arrayOf( noteCheckUiState.id)) {
+                                CheckItem(
+                                    noteCheckUiState = noteCheckUiState,
+                                    onCheckChange,
+                                    onCheckDelete,
+                                    onCheck,
+                                    strickText = true
+                                )
+                                //  }
+                            }
+                        }
+
+                    }
+
+
                 }
             } else {
                 TextField(
@@ -257,6 +282,16 @@ fun CheckItem(
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false
 ) {
+
+    val mutableInteractionSource = remember {
+        MutableInteractionSource()
+    }
+    LaunchedEffect(key1 = Unit, block = {
+        if (noteCheckUiState.id == 1L) {
+            mutableInteractionSource.emit(FocusInteraction.Focus())
+        }
+    })
+    val focused by mutableInteractionSource.collectIsFocusedAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(checked = noteCheckUiState.isCheck,
             onCheckedChange = { onCheck(it, noteCheckUiState.id) })
@@ -269,15 +304,20 @@ fun CheckItem(
                 unfocusedIndicatorColor = Color.Transparent,
                 containerColor = Color.Transparent
             ),
-            textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default
+            textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
+            interactionSource = mutableInteractionSource,
+            trailingIcon = {
+                if (focused) {
+                    IconButton(onClick = {
+                        onCheckDelete(noteCheckUiState.id)
+                    }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "")
+                    }
+                }
+            }
 
         )
 
-        IconButton(onClick = {
-            onCheckDelete(noteCheckUiState.id)
-        }) {
-            Icon(imageVector = Icons.Default.Clear, contentDescription = "")
-        }
     }
 }
 
