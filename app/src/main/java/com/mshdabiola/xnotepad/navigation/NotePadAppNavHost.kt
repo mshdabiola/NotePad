@@ -15,7 +15,13 @@ fun NotePadAppNavHost(
     startDestination: String = mainNavigationRoute
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
-        mainScreen(navigateToEditScreen = { navController.navigateToEditScreen(it) })
+        mainScreen(navigateToEditScreen = { id, content, uri ->
+            navController.navigateToEditScreen(
+                id,
+                content,
+                uri
+            )
+        })
         editScreen()
     }
 }

@@ -1,5 +1,6 @@
 package com.mshdabiola.mainscreen
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
@@ -43,7 +44,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navigateToEdit: (Long) -> Unit = {}
+    navigateToEdit: (Long, String, Uri) -> Unit = { _, _, _ -> }
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
@@ -58,7 +59,7 @@ fun MainScreen(
 @Composable
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
-    navigateToEdit: (Long) -> Unit = {}
+    navigateToEdit: (Long, String, Uri) -> Unit = { _, _, _ -> }
 
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -87,7 +88,7 @@ fun MainScreen(
                 BottomAppBar(
                     actions = {
 
-                        IconButton(onClick = { navigateToEdit(-2) }) {
+                        IconButton(onClick = { navigateToEdit(-2, "", Uri.EMPTY) }) {
                             Icon(
                                 imageVector = ImageVector
                                     .vectorResource(id = R.drawable.outline_check_box_24),
@@ -104,7 +105,7 @@ fun MainScreen(
                         }
 
 
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { navigateToEdit(-4, "", Uri.EMPTY) }) {
                             Icon(
                                 imageVector = ImageVector
                                     .vectorResource(id = R.drawable.outline_keyboard_voice_24),
@@ -112,7 +113,7 @@ fun MainScreen(
                             )
                         }
 
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { navigateToEdit(-3, "image text", Uri.EMPTY) }) {
                             Icon(
                                 imageVector = ImageVector
                                     .vectorResource(id = R.drawable.outline_image_24),
@@ -122,7 +123,7 @@ fun MainScreen(
 
                     },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { navigateToEdit(-1) }) {
+                        FloatingActionButton(onClick = { navigateToEdit(-1, "", Uri.EMPTY) }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
                     }
@@ -138,8 +139,10 @@ fun MainScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
 
             ) {
-                items(notePads) {
-                    NoteCard(notePadUiState = it, onCardClick = navigateToEdit)
+                items(notePads) { notePadUiState ->
+                    NoteCard(
+                        notePadUiState = notePadUiState,
+                        onCardClick = { navigateToEdit(it, "", Uri.EMPTY) })
                 }
 
             }

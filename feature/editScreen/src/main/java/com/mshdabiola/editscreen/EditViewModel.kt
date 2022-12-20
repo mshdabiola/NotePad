@@ -36,10 +36,12 @@ class EditViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            Log.e("Editviewmodel", "${editArg.id}")
+            Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.uri}")
             notePadUiState = when (editArg.id) {
                 (-1).toLong() -> NotePad().toNotePadUiState()
                 (-2).toLong() -> NotePad(note = Note(isCheck = true)).toNotePadUiState()
+                (-3).toLong() -> NotePad(note = Note(detail = editArg.content)).toNotePadUiState()
+                (-4).toLong() -> NotePad().toNotePadUiState()
                 else ->
                     notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
             }
@@ -71,7 +73,7 @@ class EditViewModel @Inject constructor(
         ) {
             if (notePad.note.id == null) {
                 val id = notePadRepository.insertNotepad(notePad.toNotePad())
-                savedStateHandle[parameterId] = id
+                savedStateHandle[noteId] = id
                 val note = notePadUiState.note.copy(id = id)
                 val notechecks = notePad.checks.toMutableList()
                 if (notechecks.isNotEmpty()) {
