@@ -11,6 +11,11 @@ fun NotePadApp(
     noteAppState: NotePadAppState = rememberNotePadAppState(windowSizeClass = windowSizeClass)
 ) {
     NotePadAppTheme {
-        NotePadAppNavHost(navController = noteAppState.navHostController)
+        NotePadAppNavHost(
+            navController = noteAppState.navHostController,
+            navigateToEdit = noteAppState::navigateToEdit,
+            navigateToMain = noteAppState::navigateToMain,
+            onBack = noteAppState::onBack
+        )
     }
 }

@@ -36,7 +36,7 @@ fun NavController.navigateToEditScreen(id: Long, content: String = "", uri: Uri 
     navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$encodeString?$uriId=$encodeUri")
 }
 
-fun NavGraphBuilder.editScreen() {
+fun NavGraphBuilder.editScreen(onBack: () -> Unit) {
     composable(
         route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$uriId={$uriId}",
         arguments = listOf(
@@ -45,6 +45,6 @@ fun NavGraphBuilder.editScreen() {
             }
         )
     ) {
-        EditScreen()
+        EditScreen(onBack = onBack)
     }
 }

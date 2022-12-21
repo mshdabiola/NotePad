@@ -66,7 +66,8 @@ import com.mshdabiola.model.NotePad
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun EditScreen(
-    editViewModel: EditViewModel = hiltViewModel()
+    editViewModel: EditViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
 
     EditScreen(
@@ -76,7 +77,8 @@ fun EditScreen(
         addItem = editViewModel::addCheck,
         onCheckChange = editViewModel::onCheckChange,
         onCheck = editViewModel::onCheck,
-        onCheckDelete = editViewModel::onCheckDelete
+        onCheckDelete = editViewModel::onCheckDelete,
+        onBackClick = onBack
     )
 }
 
