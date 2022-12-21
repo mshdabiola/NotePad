@@ -49,7 +49,7 @@ interface GeneralDao {
     suspend fun deleteNote(noteId: Long)
 
     @Transaction
-    @Query("SELECT * FROM note_table")
+    @Query("SELECT * FROM note_table ORDER BY id DESC")
     fun getListOfNotePad(): Flow<List<NotePadEntity>>
 
     @Transaction
