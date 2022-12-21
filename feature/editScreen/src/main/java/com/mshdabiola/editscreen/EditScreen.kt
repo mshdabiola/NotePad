@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -170,7 +173,11 @@ fun EditScreen(
             )
             if (notepad.note.isCheck) {
 
-                Column(Modifier.weight(1f)) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
                     if (notCheckNote.isNotEmpty()) {
 
                         notCheckNote.forEach { noteCheckUiState ->
@@ -225,6 +232,7 @@ fun EditScreen(
 
                 }
             } else {
+                //Todo("fix text alignment in subject")
                 TextField(
                     value = notepad.note.detail,
                     onValueChange = onSubjectChange,
@@ -243,6 +251,7 @@ fun EditScreen(
                     keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
                     modifier = Modifier
                         .fillMaxSize()
+                        .imePadding()
                         .focusRequester(subjectFocus)
 
 
