@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "28535cea6ac85db353a0bdfe5341e1b8",
+    "identityHash": "f9583840ffc8eafe1f147f7c845cc5f3",
     "entities": [
       {
         "tableName": "note_table",
@@ -62,7 +62,7 @@
       },
       {
         "tableName": "note_voice_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `voiceName` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `voiceName` TEXT NOT NULL, PRIMARY KEY(`id`, `noteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -86,7 +86,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "id",
+            "noteId"
           ]
         },
         "indices": [],
@@ -94,7 +95,7 @@
       },
       {
         "tableName": "note_image_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `imageName` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `imageName` TEXT NOT NULL, PRIMARY KEY(`id`, `noteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -118,7 +119,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "id",
+            "noteId"
           ]
         },
         "indices": [],
@@ -126,7 +128,7 @@
       },
       {
         "tableName": "note_check_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `content` TEXT NOT NULL, `isCheck` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `content` TEXT NOT NULL, `isCheck` INTEGER NOT NULL, PRIMARY KEY(`id`, `noteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -156,7 +158,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "id",
+            "noteId"
           ]
         },
         "indices": [],
@@ -166,7 +169,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '28535cea6ac85db353a0bdfe5341e1b8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f9583840ffc8eafe1f147f7c845cc5f3')"
     ]
   }
 }

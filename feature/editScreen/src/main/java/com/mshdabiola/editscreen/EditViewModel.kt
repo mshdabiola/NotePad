@@ -15,6 +15,7 @@ import com.mshdabiola.editscreen.state.toNotePad
 import com.mshdabiola.editscreen.state.toNotePadUiState
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -40,7 +41,12 @@ class EditViewModel @Inject constructor(
             notePadUiState = when (editArg.id) {
                 (-1).toLong() -> NotePad().toNotePadUiState()
                 (-2).toLong() -> NotePad(note = Note(isCheck = true)).toNotePadUiState()
-                (-3).toLong() -> NotePad(note = Note(detail = editArg.content)).toNotePadUiState()
+                (-3).toLong() -> NotePad(
+                    note = Note(detail = editArg.content), images = listOf(
+                        NoteImage(0, -1, editArg.uri.toString())
+                    )
+                ).toNotePadUiState()
+
                 (-4).toLong() -> NotePad().toNotePadUiState()
                 else ->
                     notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
@@ -80,10 +86,16 @@ class EditViewModel @Inject constructor(
 
                     notechecks[0] = notechecks[0].copy(noteId = id)
                 }
+                val noteImages = notePad.images.toMutableList()
+                if (noteImages.isNotEmpty()) {
+
+                    noteImages[0] = noteImages[0].copy(noteId = id)
+                }
 
                 notePadUiState = notePadUiState.copy(
                     note = note,
-                    checks = notechecks.toImmutableList()
+                    checks = notechecks.toImmutableList(),
+                    images = noteImages.toImmutableList()
                 )
 
                 //noteState = noteUiState.copy(id = id)

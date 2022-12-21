@@ -1,7 +1,6 @@
 package com.mshdabiola.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -18,7 +17,7 @@ interface GeneralDao {
     @Upsert
     suspend fun addVoice(noteVoiceEntity: List<NoteVoiceEntity>)
 
-    @Insert
+    @Upsert
     suspend fun addImage(noteImageEntity: List<NoteImageEntity>)
 
     @Upsert

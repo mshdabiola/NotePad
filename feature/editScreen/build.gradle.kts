@@ -5,3 +5,6 @@ plugins {
 android {
     namespace = "com.mshdabiola.editscreen"
 }
+dependencies {
+
+}

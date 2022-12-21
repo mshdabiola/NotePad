@@ -54,6 +54,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 )
                 add("androidTestImplementation", libs.findLibrary("androidx-test-ext").get())
 
+                add("implementation", libs.findLibrary("coil.kt").get())
+                add("implementation", libs.findLibrary("coil.kt.compose").get())
 
                 add("implementation", libs.findLibrary("androidx.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())

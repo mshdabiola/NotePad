@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import coil.compose.AsyncImage
 import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.toNotePadUiState
@@ -99,6 +100,7 @@ fun EditScreen(
     var expand by remember {
         mutableStateOf(false)
     }
+
 
     val subjectFocus = remember {
         FocusRequester()
@@ -154,7 +156,11 @@ fun EditScreen(
             modifier = Modifier.padding(it)
 
         ) {
-
+            if (notepad.images.isNotEmpty()) {
+                AsyncImage(
+                    model = notepad.images[0].imageName, contentDescription = ""
+                )
+            }
             TextField(
                 value = notepad.note.title,
                 onValueChange = onTitleChange,

@@ -1,12 +1,13 @@
 package com.mshdabiola.database.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.mshdabiola.model.NoteCheck
 
-@Entity(tableName = "note_check_table")
+@Entity(
+    tableName = "note_check_table",
+    primaryKeys = ["id", "noteId"]
+)
 data class NoteCheckEntity(
-    @PrimaryKey
     val id: Long,
     val noteId: Long,
     val content: String,
