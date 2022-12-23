@@ -8,6 +8,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.toNoteCheckUiState
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val notePadRepository: NotePadRepository
+    private val notePadRepository: NotePadRepository,
+    private val contentManager: ContentManager
 
 ) : ViewModel() {
 
@@ -37,13 +39,13 @@ class EditViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.uri}")
+            Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
             notePadUiState = when (editArg.id) {
                 (-1).toLong() -> NotePad().toNotePadUiState()
                 (-2).toLong() -> NotePad(note = Note(isCheck = true)).toNotePadUiState()
                 (-3).toLong() -> NotePad(
                     note = Note(detail = editArg.content), images = listOf(
-                        NoteImage(0, -1, editArg.uri.toString())
+                        NoteImage(0, -1, contentManager.getImagePath(editArg.data))
                     )
                 ).toNotePadUiState()
 
@@ -154,6 +156,10 @@ class EditViewModel @Inject constructor(
         viewModelScope.launch {
             notePadRepository.deleteCheckNote(id)
         }
+    }
+
+    fun startRecording() {
+
     }
 
 

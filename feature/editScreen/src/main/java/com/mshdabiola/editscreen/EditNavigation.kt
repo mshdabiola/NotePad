@@ -11,15 +11,15 @@ import androidx.navigation.navArgument
 
 const val noteId = "noteId"
 const val contentId = "contentId"
-const val uriId = "uriId"
+const val dataId = "uriId"
 const val editDestinationRoute = "edit_screen_route"
 
-internal class EditArg(val id: Long, val content: String, val uri: Uri) {
+internal class EditArg(val id: Long, val content: String, val data: Long) {
     constructor(savedStateHandle: SavedStateHandle) :
             this(
                 id = checkNotNull(savedStateHandle[noteId]),
                 content = checkNotNull(savedStateHandle[contentId]),
-                uri = decode(checkNotNull(savedStateHandle[uriId]))
+                data = checkNotNull(savedStateHandle[dataId])
             )
 
     companion object {
@@ -30,17 +30,23 @@ internal class EditArg(val id: Long, val content: String, val uri: Uri) {
     }
 }
 
-fun NavController.navigateToEditScreen(id: Long, content: String = "", uri: Uri = Uri.EMPTY) {
-    val encodeUri = Uri.encode(uri.toString())
-    val encodeString = Uri.encode(content)
-    navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$encodeString?$uriId=$encodeUri")
+fun NavController.navigateToEditScreen(id: Long, content: String = "", data: Long = 0) {
+    //val encodeUri = Uri.encode(uri.toString())
+    // val encodeString = Uri.encode(content)
+    navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$content?$dataId=$data")
 }
 
 fun NavGraphBuilder.editScreen(onBack: () -> Unit) {
     composable(
-        route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$uriId={$uriId}",
+        route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$dataId={$dataId}",
         arguments = listOf(
             navArgument(noteId) {
+                type = NavType.LongType
+            },
+            navArgument(contentId) {
+                type = NavType.StringType
+            },
+            navArgument(dataId) {
                 type = NavType.LongType
             }
         )

@@ -1,6 +1,5 @@
 package com.mshdabiola.xnotepad.ui
 
-import android.net.Uri
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -20,9 +19,9 @@ data class NotePadAppState(
     fun navigateToEdit(
         id: Long,
         content: String,
-        uri: Uri
+        data: Long
     ) {
-        navHostController.navigateToEditScreen(id, content, uri)
+        navHostController.navigateToEditScreen(id, content, data)
     }
 
     fun onBack() {

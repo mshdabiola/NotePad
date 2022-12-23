@@ -2,7 +2,7 @@
 accompanist = "0.24.8-beta"
 admob = "21.3.0"
 androidDesugarJdkLibs = "1.1.5"
-androidGradlePlugin = "8.0.0-alpha09"
+androidGradlePlugin = "8.0.0-alpha10"
 androidx-compose-foundation = "1.4.0-alpha01"
 androidxActivity = "1.7.0-alpha02"
 androidxAppCompat = "1.5.1"

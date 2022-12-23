@@ -1,6 +1,5 @@
 package com.mshdabiola.xnotepad.navigation
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,7 +12,7 @@ import com.mshdabiola.mainscreen.mainScreen
 fun NotePadAppNavHost(
     navController: NavHostController,
     navigateToMain: () -> Unit,
-    navigateToEdit: (Long, String, Uri) -> Unit,
+    navigateToEdit: (Long, String, Long) -> Unit,
     onBack: () -> Unit,
     startDestination: String = mainNavigationRoute
 ) {
