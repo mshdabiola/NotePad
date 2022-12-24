@@ -1,5 +1,6 @@
 package com.mshdabiola.editscreen
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,15 +10,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
+import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.toNoteCheckUiState
+import com.mshdabiola.editscreen.state.toNoteImageUiState
 import com.mshdabiola.editscreen.state.toNotePad
 import com.mshdabiola.editscreen.state.toNotePadUiState
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -29,7 +33,8 @@ import javax.inject.Inject
 class EditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notePadRepository: NotePadRepository,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
+    private val voicePlayer: NotePlayer
 
 ) : ViewModel() {
 
@@ -49,7 +54,15 @@ class EditViewModel @Inject constructor(
                     )
                 ).toNotePadUiState()
 
-                (-4).toLong() -> NotePad().toNotePadUiState()
+                (-4).toLong() -> {
+
+                    NotePad(
+                        note = Note(detail = editArg.content), voices = listOf(
+                            NoteVoice(0, -1, contentManager.getVoicePath(editArg.data))
+                        )
+                    ).toNotePadUiState()
+                }
+
                 else ->
                     notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
             }
@@ -93,11 +106,17 @@ class EditViewModel @Inject constructor(
 
                     noteImages[0] = noteImages[0].copy(noteId = id)
                 }
+                val noteVoice = notePad.voices.toMutableList()
+                if (noteVoice.isNotEmpty()) {
+
+                    noteVoice[0] = noteVoice[0].copy(noteId = id)
+                }
 
                 notePadUiState = notePadUiState.copy(
                     note = note,
                     checks = notechecks.toImmutableList(),
-                    images = noteImages.toImmutableList()
+                    images = noteImages.toImmutableList(),
+                    voices = noteVoice.toImmutableList()
                 )
 
                 //noteState = noteUiState.copy(id = id)
@@ -158,7 +177,21 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun startRecording() {
+    fun playMusic(path: String) {
+        voicePlayer.playMusic(path)
+    }
+
+    fun saveImage(uri: Uri, id: Long) {
+        contentManager.saveImage(uri, id)
+
+        val size = (notePadUiState.images.lastOrNull()?.id ?: -1) + 1
+        val noteImage =
+            NoteImage(size, notePadUiState.note.id ?: -1, contentManager.getImagePath(id))
+        val listImage = notePadUiState.images.toMutableList()
+        listImage.add(noteImage.toNoteImageUiState())
+
+        notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
+
 
     }
 

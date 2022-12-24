@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.NoteCard
 import com.mshdabiola.mainscreen.state.NotePadUiState
@@ -91,7 +92,7 @@ fun MainScreen(
     }
 
     val context = LocalContext.current
-    val openimageLanuch = rememberLauncherForActivityResult(
+    val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             it?.let {
@@ -104,7 +105,7 @@ fun MainScreen(
 
         })
 
-    val snapPic = rememberLauncherForActivityResult(
+    val snapPictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = {
             if (it) {
@@ -113,7 +114,7 @@ fun MainScreen(
         })
 
 
-    val voiceCa = rememberLauncherForActivityResult(
+    val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             it.data?.let { intent ->
@@ -137,7 +138,7 @@ fun MainScreen(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
             onResult = {
                 if (it) {
-                    voiceCa.launch(
+                    voiceLauncher.launch(
                         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                             putExtra(
                                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -182,7 +183,7 @@ fun MainScreen(
                         IconButton(onClick = { navigateToEdit(-2, "", 0) }) {
                             Icon(
                                 imageVector = ImageVector
-                                    .vectorResource(id = R.drawable.outline_check_box_24),
+                                    .vectorResource(id = NoteIcon.Check),
                                 contentDescription = "note check"
                             )
                         }
@@ -190,7 +191,7 @@ fun MainScreen(
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
                                 imageVector = ImageVector
-                                    .vectorResource(id = R.drawable.baseline_brush_24),
+                                    .vectorResource(id = NoteIcon.Brush),
                                 contentDescription = "note check"
                             )
                         }
@@ -201,7 +202,7 @@ fun MainScreen(
                             if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
                                 PackageManager.PERMISSION_GRANTED
                             ) {
-                                voiceCa.launch(
+                                voiceLauncher.launch(
                                     Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                                         putExtra(
                                             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -224,7 +225,7 @@ fun MainScreen(
                         }) {
                             Icon(
                                 imageVector = ImageVector
-                                    .vectorResource(id = R.drawable.outline_keyboard_voice_24),
+                                    .vectorResource(id = NoteIcon.Voice),
                                 contentDescription = "note check"
                             )
                         }
@@ -234,7 +235,7 @@ fun MainScreen(
                         }) {
                             Icon(
                                 imageVector = ImageVector
-                                    .vectorResource(id = R.drawable.outline_image_24),
+                                    .vectorResource(id = NoteIcon.Image),
                                 contentDescription = "note check"
                             )
                         }
@@ -268,11 +269,11 @@ fun MainScreen(
                 show = showImageDialog,
                 onDismissRequest = { showImageDialog = false },
                 onChooseImage = {
-                    openimageLanuch.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    imageLauncher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onSnapImage = {
                     photoId = System.currentTimeMillis()
-                    snapPic.launch(photoUri(photoId))
+                    snapPictureLauncher.launch(photoUri(photoId))
                 }
             )
         }

@@ -46,6 +46,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", project(":core:model"))
                 add("implementation", project(":core:database"))
                 add("implementation", project(":core:common"))
+                add("implementation", project(":core:designsystem"))
+                add("implementation", project(":core:bottomsheet"))
                 add("testImplementation", kotlin("test"))
                 add("androidTestImplementation", kotlin("test"))
                 add("androidTestImplementation", libs.findLibrary("androidx-compose-ui-test").get())

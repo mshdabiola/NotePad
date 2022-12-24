@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.mainscreen.R
+import com.mshdabiola.designsystem.icon.NoteIcon
 
 @Composable
 fun ImageDialog(
@@ -43,7 +43,7 @@ fun ImageDialog(
                         verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector =
-                            ImageVector.vectorResource(id = R.drawable.outline_photo_camera_24),
+                            ImageVector.vectorResource(id = NoteIcon.Photo),
                             contentDescription = "take image"
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -58,7 +58,7 @@ fun ImageDialog(
                         verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector =
-                            ImageVector.vectorResource(id = R.drawable.outline_image_24),
+                            ImageVector.vectorResource(id = NoteIcon.Image),
                             contentDescription = "take phone"
                         )
                         Spacer(modifier = Modifier.width(8.dp))
