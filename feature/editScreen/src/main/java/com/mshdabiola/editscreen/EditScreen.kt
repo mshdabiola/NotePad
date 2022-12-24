@@ -1,7 +1,11 @@
 package com.mshdabiola.editscreen
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.speech.RecognizerIntent
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -68,6 +72,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -76,7 +81,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.ModalBottomSheet
 import com.mshdabiola.bottomsheet.rememberModalState
@@ -91,7 +95,6 @@ import com.mshdabiola.model.NotePad
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
@@ -108,7 +111,10 @@ fun EditScreen(
         onCheckDelete = editViewModel::onCheckDelete,
         onBackClick = onBack,
         playVoice = editViewModel::playMusic,
-        saveImage = editViewModel::saveImage
+        saveImage = editViewModel::saveImage,
+        saveVoice = editViewModel::saveVoice,
+        getPhotoUri = editViewModel::getPhotoUri,
+        savePhoto = editViewModel::savePhoto
     )
 }
 
@@ -126,8 +132,12 @@ fun EditScreen(
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
     playVoice: (String) -> Unit = {},
-    saveImage: (Uri, Long) -> Unit = { _, _ -> }
+    saveImage: (Uri, Long) -> Unit = { _, _ -> },
+    saveVoice: (Uri, Long) -> Unit = { _, _ -> },
+    getPhotoUri: () -> Uri = { Uri.EMPTY },
+    savePhoto: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var expand by remember {
         mutableStateOf(false)
     }
@@ -146,6 +156,7 @@ fun EditScreen(
     var showCheckNote by remember {
         mutableStateOf(true)
     }
+
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
@@ -158,6 +169,57 @@ fun EditScreen(
             }
 
         })
+    val snapPictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = {
+            if (it) {
+                savePhoto()
+                // navigateToEdit(-3, "image text", photoId)
+            }
+        })
+
+
+    val voiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            it.data?.let { intent ->
+                val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                val audiouri = intent.data
+
+
+                if (audiouri != null) {
+                    val time = System.currentTimeMillis()
+                    saveVoice(audiouri, time)
+
+                }
+
+
+            }
+        }
+    )
+
+    val audioPermission =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+            onResult = {
+                if (it) {
+                    voiceLauncher.launch(
+                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                            putExtra(
+                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                            )
+                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
+                            putExtra("android.speech.extra.GET_AUDIO", true)
+
+                        })
+
+
+                }
+
+            }
+        )
+
     val modalState = rememberModalState()
     val coroutineScope = rememberCoroutineScope()
     val paddingValues = Modifier.navigationBarsPadding()
@@ -360,7 +422,9 @@ fun EditScreen(
                             contentDescription = ""
                         )
                     }, label = { Text(text = "Take photo") },
-                        selected = false, onClick = { /*TODO*/ })
+                        selected = false, onClick = {
+                            snapPictureLauncher.launch(getPhotoUri())
+                        })
 
                     NavigationDrawerItem(icon = {
                         Icon(
@@ -383,14 +447,40 @@ fun EditScreen(
                             contentDescription = ""
                         )
                     }, label = { Text(text = "Drawing") },
-                        selected = false, onClick = { /*TODO*/ })
+                        selected = false,
+                        onClick = {
+
+                        })
                     NavigationDrawerItem(icon = {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
                             contentDescription = ""
                         )
                     }, label = { Text(text = "Recording") },
-                        selected = false, onClick = { /*TODO*/ })
+                        selected = false, onClick = {
+                            coroutineScope.launch { modalState.hide() }
+                            if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                                PackageManager.PERMISSION_GRANTED
+                            ) {
+                                voiceLauncher.launch(
+                                    Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                        putExtra(
+                                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                        )
+                                        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                                        putExtra(
+                                            "android.speech.extra.GET_AUDIO_FORMAT",
+                                            "audio/AMR"
+                                        )
+                                        putExtra("android.speech.extra.GET_AUDIO", true)
+
+                                    })
+
+                            } else {
+                                audioPermission.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        })
                     NavigationDrawerItem(icon = {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = NoteIcon.Check),

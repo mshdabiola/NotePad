@@ -17,6 +17,7 @@ import com.mshdabiola.editscreen.state.toNoteCheckUiState
 import com.mshdabiola.editscreen.state.toNoteImageUiState
 import com.mshdabiola.editscreen.state.toNotePad
 import com.mshdabiola.editscreen.state.toNotePadUiState
+import com.mshdabiola.editscreen.state.toNoteVoiceUiState
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
@@ -40,6 +41,8 @@ class EditViewModel @Inject constructor(
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
+
+    private var photoId: Long = 0
 
 
     init {
@@ -193,6 +196,36 @@ class EditViewModel @Inject constructor(
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
 
 
+    }
+
+    fun saveVoice(uri: Uri, id: Long) {
+        contentManager.saveVoice(uri, id)
+
+        val size = (notePadUiState.voices.lastOrNull()?.id ?: -1) + 1
+        val noteVoice =
+            NoteVoice(size, notePadUiState.note.id ?: -1, contentManager.getVoicePath(id))
+        val listVoices = notePadUiState.voices.toMutableList()
+        listVoices.add(noteVoice.toNoteVoiceUiState())
+
+        notePadUiState = notePadUiState.copy(voices = listVoices.toImmutableList())
+
+
+    }
+
+    fun savePhoto() {
+
+        val size = (notePadUiState.images.lastOrNull()?.id ?: -1) + 1
+        val noteImage =
+            NoteImage(size, notePadUiState.note.id ?: -1, contentManager.getImagePath(photoId))
+        val listImage = notePadUiState.images.toMutableList()
+        listImage.add(noteImage.toNoteImageUiState())
+
+        notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
+    }
+
+    fun getPhotoUri(): Uri {
+        photoId = System.currentTimeMillis()
+        return contentManager.pictureUri(photoId)
     }
 
 
