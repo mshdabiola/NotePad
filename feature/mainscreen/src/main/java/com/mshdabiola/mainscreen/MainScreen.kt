@@ -10,14 +10,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
@@ -25,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,11 +37,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -47,10 +55,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.NoteCard
 import com.mshdabiola.mainscreen.state.NotePadUiState
 import com.mshdabiola.mainscreen.state.toNotePadUiState
+import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -156,6 +166,13 @@ fun MainScreen(
             }
         )
 
+    val pinNotePad by remember(notePads) {
+        derivedStateOf { notePads.filter { it.note.isPin } }
+    }
+    val notPinNotePad by remember(notePads) {
+        derivedStateOf { notePads.filter { !it.note.isPin } }
+    }
+
 
     ModalNavigationDrawer(
         drawerContent = { },
@@ -166,12 +183,33 @@ fun MainScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Note Pad") },
-                    navigationIcon = {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
-                    },
-                    actions = {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp)
+                                .padding(end = 16.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topEnd = 50f,
+                                        topStart = 50f,
+                                        bottomEnd = 50f,
+                                        bottomStart = 50f
+                                    )
+                                )
+                                .background(MaterialTheme.colorScheme.secondaryContainer)
+                        ) {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                            }
+                            Text(
+                                text = "Search your note",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+
+                        }
                     },
                     scrollBehavior = scrollBehavior
                 )
@@ -249,22 +287,48 @@ fun MainScreen(
                 )
             }
         ) { paddingValues ->
-            LazyVerticalStaggeredGrid(
+
+            Column(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(8.dp),
-                columns = StaggeredGridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-
+                    .padding(8.dp)
             ) {
-                items(notePads) { notePadUiState ->
-                    NoteCard(
-                        notePadUiState = notePadUiState,
-                        onCardClick = { navigateToEdit(it, "", 0) })
-                }
+                if (pinNotePad.isNotEmpty()) {
+                    Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
+                    LazyVerticalStaggeredGrid(
 
+                        columns = StaggeredGridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+
+                    ) {
+
+                        items(pinNotePad) { notePadUiState ->
+                            NoteCard(
+                                notePadUiState = notePadUiState,
+                                onCardClick = { navigateToEdit(it, "", 0) })
+                        }
+
+                    }
+                    Text(text = "Other")
+                }
+                LazyVerticalStaggeredGrid(
+
+                    columns = StaggeredGridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+
+                ) {
+
+                    items(notPinNotePad) { notePadUiState ->
+                        NoteCard(
+                            notePadUiState = notePadUiState,
+                            onCardClick = { navigateToEdit(it, "", 0) })
+                    }
+
+                }
             }
+
             ImageDialog(
                 show = showImageDialog,
                 onDismissRequest = { showImageDialog = false },
@@ -284,15 +348,22 @@ fun MainScreen(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen(
-        notePads =
-        listOf(
-            NotePad().toNotePadUiState(),
-            NotePad().toNotePadUiState(),
-            NotePad().toNotePadUiState(),
-            NotePad().toNotePadUiState(),
-            NotePad().toNotePadUiState()
+    NotePadAppTheme {
+        MainScreen(
+            notePads =
+            listOf(
+                NotePad(
+                    note = Note(title = "hammed", detail = "adiola")
+                ).toNotePadUiState(),
+                NotePad().toNotePadUiState(),
+                NotePad().toNotePadUiState(),
+                NotePad(
+                    note = Note(title = "hammed", detail = "adiola", isPin = true)
+                ).toNotePadUiState(),
+                NotePad().toNotePadUiState()
+            )
+                .toImmutableList()
         )
-            .toImmutableList()
-    )
+    }
+
 }
