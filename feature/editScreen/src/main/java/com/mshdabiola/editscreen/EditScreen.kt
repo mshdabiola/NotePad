@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -220,8 +221,10 @@ fun EditScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .verticalScroll(state = rememberScrollState())
+                .padding(paddingValues)
+                .fillMaxHeight()
+
 
         ) {
             if (notepad.images.isNotEmpty()) {
@@ -286,20 +289,16 @@ fun EditScreen(
                 )
 
             } else {
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    if (notCheckNote.isNotEmpty()) {
 
-                        notCheckNote.forEach { noteCheckUiState ->
-                            //  key(keys = arrayOf( noteCheckUiState.id)) {
-                            NoteCheck(
-                                noteCheckUiState = noteCheckUiState,
-                                onCheckChange,
-                                onCheckDelete,
-                                onCheck
+                if (notCheckNote.isNotEmpty()) {
+
+                    notCheckNote.forEach { noteCheckUiState ->
+                        //  key(keys = arrayOf( noteCheckUiState.id)) {
+                        NoteCheck(
+                            noteCheckUiState = noteCheckUiState,
+                            onCheckChange,
+                            onCheckDelete,
+                            onCheck
                             )
                             //  }
                         }
@@ -343,7 +342,6 @@ fun EditScreen(
                     }
 
 
-                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             notepad.voices.forEach {
