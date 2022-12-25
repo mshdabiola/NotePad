@@ -282,5 +282,10 @@ class EditViewModel @Inject constructor(
 
     }
 
+    fun pinNote() {
+        notePadUiState =
+            notePadUiState.copy(note = notePadUiState.note.copy(isPin = !notePadUiState.note.isPin))
+    }
+
 
 }

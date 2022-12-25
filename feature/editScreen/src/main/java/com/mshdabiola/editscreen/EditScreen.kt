@@ -36,11 +36,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -72,6 +72,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -82,6 +83,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.ModalBottomSheet
+import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.state.NoteCheckUiState
@@ -100,6 +102,9 @@ fun EditScreen(
     onBack: () -> Unit
 ) {
 
+    val modalState = rememberModalState()
+    val noteModalState = rememberModalState()
+    val coroutineScope = rememberCoroutineScope()
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
@@ -110,16 +115,23 @@ fun EditScreen(
         onCheckDelete = editViewModel::onCheckDelete,
         onBackClick = onBack,
         playVoice = editViewModel::playMusic,
+        moreOptions = { coroutineScope.launch { modalState.show() } },
+        noteOption = { coroutineScope.launch { noteModalState.show() } },
+        unCheckAllItems = editViewModel::unCheckAllItems,
+        deleteCheckItems = editViewModel::deleteCheckedItems,
+        hideCheckBoxes = editViewModel::hideCheckBoxes,
+        pinNote = editViewModel::pinNote
+    )
+    AddBottomSheet(
+        modalState = modalState,
+        isNoteCheck = editViewModel.notePadUiState.note.isCheck,
         saveImage = editViewModel::saveImage,
         saveVoice = editViewModel::saveVoice,
         getPhotoUri = editViewModel::getPhotoUri,
         savePhoto = editViewModel::savePhoto,
-        changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        unCheckAllItems = editViewModel::unCheckAllItems,
-        deleteCheckItems = editViewModel::deleteCheckedItems,
-        hideCheckBoxes = editViewModel::hideCheckBoxes,
-
-        )
+        changeToCheckBoxes = editViewModel::changeToCheckBoxes
+    )
+    NoteOptionBottomSheet(modalState = noteModalState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,16 +148,14 @@ fun EditScreen(
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
     playVoice: (String) -> Unit = {},
-    saveImage: (Uri, Long) -> Unit = { _, _ -> },
-    saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
-    getPhotoUri: () -> Uri = { Uri.EMPTY },
-    savePhoto: () -> Unit = {},
-    changeToCheckBoxes: () -> Unit = {},
+    moreOptions: () -> Unit = {},
+    noteOption: () -> Unit = {},
     unCheckAllItems: () -> Unit = {},
     deleteCheckItems: () -> Unit = {},
-    hideCheckBoxes: () -> Unit = {}
+    hideCheckBoxes: () -> Unit = {},
+    pinNote: () -> Unit = {}
 ) {
-    val context = LocalContext.current
+
     var expand by remember {
         mutableStateOf(false)
     }
@@ -169,77 +179,10 @@ fun EditScreen(
         mutableStateOf(true)
     }
 
-    val imageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            it?.let {
-                Log.e("imageUir", "$it")
-
-                val time = System.currentTimeMillis()
-                saveImage(it, time)
-
-            }
-
-        })
-    val snapPictureLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = {
-            if (it) {
-                savePhoto()
-                // navigateToEdit(-3, "image text", photoId)
-            }
-        })
-
-
-    val voiceLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            it.data?.let { intent ->
-                val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                val audiouri = intent.data
-
-
-                if (audiouri != null) {
-                    val time = System.currentTimeMillis()
-                    saveVoice(audiouri, strArr?.joinToString() ?: "", time)
-
-                }
-
-
-            }
-        }
-    )
-
-    val audioPermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
-            onResult = {
-                if (it) {
-                    voiceLauncher.launch(
-                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                            putExtra(
-                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                            )
-                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
-                            putExtra("android.speech.extra.GET_AUDIO", true)
-
-                        })
-
-
-                }
-
-            }
-        )
-
-    val modalState = rememberModalState()
-    val coroutineScope = rememberCoroutineScope()
-    // val paddingValues = Modifier.navigationBarsPadding()
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Edit Screen") },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
@@ -250,29 +193,25 @@ fun EditScreen(
                 },
 
                 actions = {
+                    IconButton(onClick = { pinNote() }) {
+                        Icon(
+                            painter = painterResource(id = if (notepad.note.isPin) NoteIcon.PinFill else NoteIcon.Pin),
+                            contentDescription = "delete note"
+                        )
+                    }
                     IconButton(onClick = { onDeleteNote() }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "delete note")
+                        Icon(
+                            painter = painterResource(id = NoteIcon.Alarm),
+                            contentDescription = "delete note"
+                        )
                     }
-                    Box {
-                        IconButton(onClick = { expand = true }) {
-
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                        }
-                        DropdownMenu(expanded = expand, onDismissRequest = { expand = false }) {
-                            DropdownMenuItem(
-                                text = { Text(text = "Save to file") },
-                                onClick = { onSave() },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Share,
-                                        contentDescription = "save"
-                                    )
-                                }
-
-                            )
-
-                        }
+                    IconButton(onClick = { onDeleteNote() }) {
+                        Icon(
+                            painter = painterResource(id = NoteIcon.Archive),
+                            contentDescription = "delete note"
+                        )
                     }
+
                 }
             )
         },
@@ -280,9 +219,18 @@ fun EditScreen(
             BottomAppBar(
                 actions = {
                     Row(Modifier.fillMaxWidth()) {
-                        IconButton(onClick = { coroutineScope.launch { modalState.show() } }) {
+                        IconButton(onClick = { moreOptions() }) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
+                                contentDescription = ""
+                            )
+                        }
+                        Row(Modifier.weight(1f)) {
+
+                        }
+                        IconButton(onClick = { noteOption() }) {
+                            Icon(
+                                imageVector = Icons.Outlined.MoreVert,
                                 contentDescription = ""
                             )
                         }
@@ -417,47 +365,47 @@ fun EditScreen(
                             onCheckChange,
                             onCheckDelete,
                             onCheck
+                        )
+                        //  }
+                    }
+                }
+                Row(
+                    modifier = Modifier.clickable { addItem() },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
+
+                    Text(text = "Add list item")
+                }
+
+                if (checkNote.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { showCheckNote = !showCheckNote }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
+                                contentDescription = ""
+                            )
+                        }
+                        Text(
+                            text = "${checkNote.size} Checked Items",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    if (showCheckNote) {
+                        checkNote.forEach { noteCheckUiState ->
+                            //  key(keys = arrayOf( noteCheckUiState.id)) {
+                            NoteCheck(
+                                noteCheckUiState = noteCheckUiState,
+                                onCheckChange,
+                                onCheckDelete,
+                                onCheck,
+                                strickText = true
                             )
                             //  }
                         }
                     }
-                    Row(
-                        modifier = Modifier.clickable { addItem() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
-                        Text(text = "Add list item")
-                    }
-
-                    if (checkNote.isNotEmpty()) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { showCheckNote = !showCheckNote }) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
-                                    contentDescription = ""
-                                )
-                            }
-                            Text(
-                                text = "${checkNote.size} Checked Items",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                        }
-                        if (showCheckNote) {
-                            checkNote.forEach { noteCheckUiState ->
-                                //  key(keys = arrayOf( noteCheckUiState.id)) {
-                                NoteCheck(
-                                    noteCheckUiState = noteCheckUiState,
-                                    onCheckChange,
-                                    onCheckDelete,
-                                    onCheck,
-                                    strickText = true
-                                )
-                                //  }
-                            }
-                        }
-
-                    }
+                }
 
 
             }
@@ -469,93 +417,7 @@ fun EditScreen(
 
 
         }
-        ModalBottomSheet(modalState = modalState) {
-            Surface {
-                Column(modifier = Modifier.padding(bottom = 36.dp)) {
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Photo),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Take photo") },
-                        selected = false, onClick = {
-                            snapPictureLauncher.launch(getPhotoUri())
-                            coroutineScope.launch { modalState.hide() }
-                        })
 
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Image),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Add image") },
-                        selected = false, onClick = {
-                            imageLauncher.launch(
-                                PickVisualMediaRequest(
-                                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                                )
-                            )
-                            coroutineScope.launch { modalState.hide() }
-
-                        })
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Brush),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Drawing") },
-                        selected = false,
-                        onClick = {
-
-                        })
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Recording") },
-                        selected = false, onClick = {
-                            coroutineScope.launch { modalState.hide() }
-                            if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                                PackageManager.PERMISSION_GRANTED
-                            ) {
-                                voiceLauncher.launch(
-                                    Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                        putExtra(
-                                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                                        )
-                                        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                                        putExtra(
-                                            "android.speech.extra.GET_AUDIO_FORMAT",
-                                            "audio/AMR"
-                                        )
-                                        putExtra("android.speech.extra.GET_AUDIO", true)
-
-                                    })
-
-                            } else {
-                                audioPermission.launch(Manifest.permission.RECORD_AUDIO)
-                            }
-                        })
-                    if (notepad.note.isCheck.not()) {
-                        NavigationDrawerItem(icon = {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
-                                contentDescription = ""
-                            )
-                        }, label = { Text(text = "Checkboxes") },
-                            selected = false,
-                            onClick = {
-                                coroutineScope.launch { modalState.hide() }
-                                changeToCheckBoxes()
-                            })
-                    }
-
-                }
-            }
-
-        }
     }
 }
 
@@ -692,6 +554,258 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(NoteVoiceUiState(3, 4, ""))
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddBottomSheet(
+    modalState: ModalState,
+    isNoteCheck: Boolean,
+    saveImage: (Uri, Long) -> Unit = { _, _ -> },
+    saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
+    getPhotoUri: () -> Uri = { Uri.EMPTY },
+    savePhoto: () -> Unit = {},
+    changeToCheckBoxes: () -> Unit = {}
+) {
+    val imageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            it?.let {
+                Log.e("imageUir", "$it")
+
+                val time = System.currentTimeMillis()
+                saveImage(it, time)
+
+            }
+
+        })
+    val snapPictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = {
+            if (it) {
+                savePhoto()
+                // navigateToEdit(-3, "image text", photoId)
+            }
+        })
+
+
+    val voiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            it.data?.let { intent ->
+                val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                val audiouri = intent.data
+
+
+                if (audiouri != null) {
+                    val time = System.currentTimeMillis()
+                    saveVoice(audiouri, strArr?.joinToString() ?: "", time)
+
+                }
+
+
+            }
+        }
+    )
+
+    val audioPermission =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+            onResult = {
+                if (it) {
+                    voiceLauncher.launch(
+                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                            putExtra(
+                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                            )
+                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
+                            putExtra("android.speech.extra.GET_AUDIO", true)
+
+                        })
+
+
+                }
+
+            }
+        )
+
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+
+
+    ModalBottomSheet(modalState = modalState) {
+        Surface {
+            Column(modifier = Modifier.padding(bottom = 36.dp)) {
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Photo),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Take photo") },
+                    selected = false, onClick = {
+                        snapPictureLauncher.launch(getPhotoUri())
+                        coroutineScope.launch { modalState.hide() }
+                    })
+
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Image),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Add image") },
+                    selected = false, onClick = {
+                        imageLauncher.launch(
+                            PickVisualMediaRequest(
+                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                        coroutineScope.launch { modalState.hide() }
+
+                    })
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Brush),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Drawing") },
+                    selected = false,
+                    onClick = {
+
+                    })
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Recording") },
+                    selected = false, onClick = {
+                        coroutineScope.launch { modalState.hide() }
+                        if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            voiceLauncher.launch(
+                                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                    putExtra(
+                                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                    )
+                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                                    putExtra(
+                                        "android.speech.extra.GET_AUDIO_FORMAT",
+                                        "audio/AMR"
+                                    )
+                                    putExtra("android.speech.extra.GET_AUDIO", true)
+
+                                })
+
+                        } else {
+                            audioPermission.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    })
+                if (!isNoteCheck) {
+                    NavigationDrawerItem(icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
+                            contentDescription = ""
+                        )
+                    }, label = { Text(text = "Checkboxes") },
+                        selected = false,
+                        onClick = {
+                            coroutineScope.launch { modalState.hide() }
+                            changeToCheckBoxes()
+                        })
+                }
+
+            }
+        }
+
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteOptionBottomSheet(
+    modalState: ModalState,
+    onDelete: () -> Unit = {},
+    onCopy: () -> Unit = {},
+    onSendNote: () -> Unit = {},
+    onLabel: () -> Unit = {},
+    onSaveText: () -> Unit = {}
+) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalBottomSheet(modalState = modalState) {
+        Surface {
+            Column(modifier = Modifier.padding(bottom = 36.dp)) {
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Delete") },
+                    selected = false, onClick = {
+                        onDelete()
+                        coroutineScope.launch { modalState.hide() }
+                    })
+
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = NoteIcon.Copy),
+                            contentDescription = ""
+                        )
+                    },
+                    label = { Text(text = "Make a copy") },
+                    selected = false,
+                    onClick = {
+                        onCopy()
+                        coroutineScope.launch { modalState.hide() }
+
+                    })
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Send") },
+                    selected = false,
+                    onClick = {
+                        onSendNote()
+                        coroutineScope.launch { modalState.hide() }
+                    })
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Label),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Labels") },
+                    selected = false, onClick = {
+                        onLabel()
+                        coroutineScope.launch { modalState.hide() }
+
+                    })
+
+                NavigationDrawerItem(icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Save),
+                        contentDescription = ""
+                    )
+                }, label = { Text(text = "Save as txt") },
+                    selected = false, onClick = {
+                        onSaveText()
+                        coroutineScope.launch { modalState.hide() }
+
+                    })
+
+
+            }
+        }
+
+    }
 }
 
 
