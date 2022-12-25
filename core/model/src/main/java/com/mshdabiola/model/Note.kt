@@ -7,5 +7,6 @@ data class Note(
     val date: Long = 0,
     val isCheck: Boolean = false,
     val color: Int = 0,
-    val isPin: Boolean = false
+    val isPin: Boolean = false,
+    val noteType: NoteType = NoteType.NOTE
 )

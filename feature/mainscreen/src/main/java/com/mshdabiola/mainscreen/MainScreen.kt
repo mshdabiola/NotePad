@@ -41,6 +41,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,11 +61,13 @@ import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.mainscreen.component.NoteCard
 import com.mshdabiola.mainscreen.state.NotePadUiState
+import com.mshdabiola.mainscreen.state.NoteType
 import com.mshdabiola.mainscreen.state.toNotePadUiState
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -79,7 +82,9 @@ fun MainScreen(
         navigateToEdit = navigateToEdit,
         saveImage = mainViewModel::savePhoto,
         saveVoice = mainViewModel::saveVoice,
-        photoUri = mainViewModel::getPhotoUri
+        photoUri = mainViewModel::getPhotoUri,
+        currentNoteType = mainState.value.noteType,
+        onNavigationNoteType = mainViewModel::setNoteType
     )
 
 }
@@ -91,7 +96,9 @@ fun MainScreen(
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
-    photoUri: (Long) -> Uri = { Uri.EMPTY }
+    photoUri: (Long) -> Uri = { Uri.EMPTY },
+    currentNoteType: NoteType = NoteType.NOTE,
+    onNavigationNoteType: (NoteType) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -174,9 +181,20 @@ fun MainScreen(
         derivedStateOf { notePads.filter { !it.note.isPin } }
     }
 
+    val coroutineScope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
-        drawerContent = { MainNavigation() },
+        drawerContent = {
+            MainNavigation(
+                currentType = currentNoteType,
+                onNavigation = {
+
+                    onNavigationNoteType(it)
+                    coroutineScope.launch { drawerState.close() }
+                }
+
+            )
+        },
         drawerState = drawerState,
         gesturesEnabled = true
     ) {
@@ -201,7 +219,7 @@ fun MainScreen(
                                 )
                                 .background(MaterialTheme.colorScheme.secondaryContainer)
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
                                 Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
                             }
                             Text(

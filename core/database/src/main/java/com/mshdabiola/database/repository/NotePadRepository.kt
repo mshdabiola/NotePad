@@ -8,6 +8,7 @@ import com.mshdabiola.database.model.toNotePad
 import com.mshdabiola.database.model.toNoteVoiceEntity
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -45,8 +46,8 @@ class NotePadRepository
     }
 
 
-    fun getNotePads() = generalDao
-        .getListOfNotePad().map { entities -> entities.map { it.toNotePad() } }
+    fun getNotePads(noteType: NoteType) = generalDao
+        .getListOfNotePad(noteType).map { entities -> entities.map { it.toNotePad() } }
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //

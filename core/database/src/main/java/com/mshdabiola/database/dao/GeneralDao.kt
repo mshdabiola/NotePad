@@ -9,6 +9,7 @@ import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NotePadEntity
 import com.mshdabiola.database.model.NoteVoiceEntity
+import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,8 +49,8 @@ interface GeneralDao {
     suspend fun deleteNote(noteId: Long)
 
     @Transaction
-    @Query("SELECT * FROM note_table ORDER BY id DESC")
-    fun getListOfNotePad(): Flow<List<NotePadEntity>>
+    @Query("SELECT * FROM note_table WHERE noteType = :noteType ORDER BY id DESC")
+    fun getListOfNotePad(noteType: NoteType): Flow<List<NotePadEntity>>
 
     @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")

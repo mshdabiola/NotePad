@@ -7,11 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.mainscreen.state.MainState
+import com.mshdabiola.mainscreen.state.NotePadUiState
+import com.mshdabiola.mainscreen.state.NoteType
 import com.mshdabiola.mainscreen.state.toNotePadUiState
+import com.mshdabiola.mainscreen.state.toNoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,12 +36,33 @@ class MainViewModel
     init {
 
         viewModelScope.launch {
-            notepadRepository.getNotePads().map { notes ->
-                notes.map { it.toNotePadUiState() }
-            }
-                .collect {
-                    _mainState.value = mainState.value.copy(notePads = it.toImmutableList())
+            mainState.map { it.noteType }.distinctUntilChanged { old, new -> old == new }
+                .collectLatest { noteType ->
+
+                    when (noteType) {
+                        is NoteType.LABEL -> {
+                            _mainState.value =
+                                mainState.value.copy(notePads = emptyList<NotePadUiState>().toImmutableList())
+                        }
+
+                        is NoteType.REMAINDER -> {
+                            _mainState.value =
+                                mainState.value.copy(notePads = emptyList<NotePadUiState>().toImmutableList())
+                        }
+
+                        else -> {
+                            notepadRepository.getNotePads(noteType.toNoteType()).map { notes ->
+                                notes.map { it.toNotePadUiState() }
+                            }.collect {
+                                _mainState.value =
+                                    mainState.value.copy(notePads = it.toImmutableList())
+                            }
+                        }
+                    }
+
+
                 }
+
         }
     }
 
@@ -55,5 +81,10 @@ class MainViewModel
     fun getPhotoUri(id: Long): Uri {
         return contentManager.pictureUri(id)
     }
+
+    fun setNoteType(noteType: NoteType) {
+        _mainState.value = mainState.value.copy(noteType = noteType)
+    }
+
 
 }

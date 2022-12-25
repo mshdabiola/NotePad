@@ -28,10 +28,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.mainscreen.state.NoteType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainNavigation() {
+fun MainNavigation(
+
+    onNavigation: (NoteType) -> Unit = {},
+    currentType: NoteType = NoteType.NOTE
+
+) {
     Surface(modifier = Modifier.fillMaxWidth(4 / 5f)) {
 
         Column(
@@ -49,15 +55,15 @@ fun MainNavigation() {
                     Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Notes") },
-                selected = false,
-                onClick = { })
+                selected = currentType == NoteType.NOTE,
+                onClick = { onNavigation(NoteType.NOTE) })
             NavigationDrawerItem(
                 icon = {
                     Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Reminders") },
-                selected = false,
-                onClick = { })
+                selected = currentType == NoteType.REMAINDER,
+                onClick = { onNavigation(NoteType.REMAINDER) })
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -77,8 +83,8 @@ fun MainNavigation() {
                         )
                     },
                     label = { Text(text = "Labels") },
-                    selected = false,
-                    onClick = { })
+                    selected = currentType is NoteType.LABEL && currentType.index == it,
+                    onClick = { onNavigation(NoteType.LABEL(it)) })
             }
             NavigationDrawerItem(
                 icon = {
@@ -94,16 +100,16 @@ fun MainNavigation() {
                     Icon(painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Archive") },
-                selected = false,
-                onClick = { })
+                selected = currentType == NoteType.ARCHIVE,
+                onClick = { onNavigation(NoteType.ARCHIVE) })
 
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
                 label = { Text(text = "Trash") },
-                selected = false,
-                onClick = { })
+                selected = currentType == NoteType.TRASH,
+                onClick = { onNavigation(NoteType.TRASH) })
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Settings, contentDescription = "")
