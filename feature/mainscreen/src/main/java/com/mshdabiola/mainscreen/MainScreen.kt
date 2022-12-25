@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
+import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.mainscreen.component.NoteCard
 import com.mshdabiola.mainscreen.state.NotePadUiState
 import com.mshdabiola.mainscreen.state.toNotePadUiState
@@ -175,7 +176,7 @@ fun MainScreen(
 
 
     ModalNavigationDrawer(
-        drawerContent = { },
+        drawerContent = { MainNavigation() },
         drawerState = drawerState,
         gesturesEnabled = true
     ) {
