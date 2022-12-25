@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.NotePadRepository
+import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.toNoteCheckUiState
 import com.mshdabiola.editscreen.state.toNoteImageUiState
@@ -173,10 +174,10 @@ class EditViewModel @Inject constructor(
     fun onCheckDelete(id: Long) {
         val noteChecks = notePadUiState.checks.toMutableList()
         val index = noteChecks.indexOfFirst { it.id == id }
-        noteChecks.removeAt(index)
+        val noteCheck = noteChecks.removeAt(index)
         notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
         viewModelScope.launch {
-            notePadRepository.deleteCheckNote(id)
+            notePadRepository.deleteCheckNote(id, noteCheck.noteId)
         }
     }
 
@@ -198,7 +199,7 @@ class EditViewModel @Inject constructor(
 
     }
 
-    fun saveVoice(uri: Uri, id: Long) {
+    fun saveVoice(uri: Uri, content: String, id: Long) {
         contentManager.saveVoice(uri, id)
 
         val size = (notePadUiState.voices.lastOrNull()?.id ?: -1) + 1
@@ -207,7 +208,11 @@ class EditViewModel @Inject constructor(
         val listVoices = notePadUiState.voices.toMutableList()
         listVoices.add(noteVoice.toNoteVoiceUiState())
 
-        notePadUiState = notePadUiState.copy(voices = listVoices.toImmutableList())
+        val note = notePadUiState.note.copy(detail = notePadUiState.note.detail + "\n" + content)
+
+
+
+        notePadUiState = notePadUiState.copy(note = note, voices = listVoices.toImmutableList())
 
 
     }
@@ -226,6 +231,55 @@ class EditViewModel @Inject constructor(
     fun getPhotoUri(): Uri {
         photoId = System.currentTimeMillis()
         return contentManager.pictureUri(photoId)
+    }
+
+    fun changeToCheckBoxes() {
+        val newNote = notePadUiState.note.detail.split("\n")
+        val id = notePadUiState.note.id ?: -1
+        val noteChecks = newNote.mapIndexed { index, s ->
+            NoteCheck(id = index.toLong(), noteId = id, content = s).toNoteCheckUiState()
+        }
+        notePadUiState = notePadUiState.copy(
+            note = notePadUiState.note.copy(isCheck = true, detail = ""),
+            checks = noteChecks.toImmutableList()
+        )
+
+    }
+
+    fun unCheckAllItems() {
+        val noteChecks = notePadUiState.checks.map { it.copy(isCheck = false) }
+
+        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
+
+    }
+
+    fun deleteCheckedItems() {
+        val checkNote = notePadUiState.checks.filter { it.isCheck }
+        val notCheckNote = notePadUiState.checks.filter { !it.isCheck }
+
+        notePadUiState = notePadUiState.copy(checks = notCheckNote.toImmutableList())
+
+        viewModelScope.launch {
+            checkNote.forEach {
+                notePadRepository.deleteCheckNote(it.id, it.noteId)
+            }
+        }
+
+    }
+
+    fun hideCheckBoxes() {
+
+        val noteCheck = notePadUiState.checks.joinToString(separator = "\n") { it.content }
+
+        notePadUiState = notePadUiState.copy(
+            note = notePadUiState.note.copy(detail = noteCheck, isCheck = false),
+            checks = emptyList<NoteCheckUiState>().toImmutableList()
+        )
+
+        viewModelScope.launch {
+            notePadRepository.deleteNoteCheckByNoteId(notePadUiState.note.id!!)
+        }
+
     }
 
 

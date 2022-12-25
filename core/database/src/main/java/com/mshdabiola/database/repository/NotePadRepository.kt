@@ -36,8 +36,12 @@ class NotePadRepository
         return id
     }
 
-    suspend fun deleteCheckNote(id: Long) = withContext(Dispatchers.IO) {
-        generalDao.deleteCheck(id)
+    suspend fun deleteCheckNote(id: Long, noteId: Long) = withContext(Dispatchers.IO) {
+        generalDao.deleteCheck(id, noteId)
+    }
+
+    suspend fun deleteNoteCheckByNoteId(noteId: Long) = withContext(Dispatchers.IO) {
+        generalDao.deleteCheckById(noteId)
     }
 
 

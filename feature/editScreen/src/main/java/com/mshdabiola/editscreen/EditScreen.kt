@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -114,8 +113,13 @@ fun EditScreen(
         saveImage = editViewModel::saveImage,
         saveVoice = editViewModel::saveVoice,
         getPhotoUri = editViewModel::getPhotoUri,
-        savePhoto = editViewModel::savePhoto
-    )
+        savePhoto = editViewModel::savePhoto,
+        changeToCheckBoxes = editViewModel::changeToCheckBoxes,
+        unCheckAllItems = editViewModel::unCheckAllItems,
+        deleteCheckItems = editViewModel::deleteCheckedItems,
+        hideCheckBoxes = editViewModel::hideCheckBoxes,
+
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,12 +137,20 @@ fun EditScreen(
     addItem: () -> Unit = {},
     playVoice: (String) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
-    saveVoice: (Uri, Long) -> Unit = { _, _ -> },
+    saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
     getPhotoUri: () -> Uri = { Uri.EMPTY },
-    savePhoto: () -> Unit = {}
+    savePhoto: () -> Unit = {},
+    changeToCheckBoxes: () -> Unit = {},
+    unCheckAllItems: () -> Unit = {},
+    deleteCheckItems: () -> Unit = {},
+    hideCheckBoxes: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var expand by remember {
+        mutableStateOf(false)
+    }
+
+    var expandCheck by remember {
         mutableStateOf(false)
     }
 
@@ -189,7 +201,7 @@ fun EditScreen(
 
                 if (audiouri != null) {
                     val time = System.currentTimeMillis()
-                    saveVoice(audiouri, time)
+                    saveVoice(audiouri, strArr?.joinToString() ?: "", time)
 
                 }
 
@@ -222,7 +234,7 @@ fun EditScreen(
 
     val modalState = rememberModalState()
     val coroutineScope = rememberCoroutineScope()
-    val paddingValues = Modifier.navigationBarsPadding()
+    // val paddingValues = Modifier.navigationBarsPadding()
 
     Scaffold(
         topBar = {
@@ -307,24 +319,68 @@ fun EditScreen(
 
 
             }
-            TextField(
-                value = notepad.note.title,
-                onValueChange = onTitleChange,
-                placeholder = { Text(text = "Title") },
-                textStyle = MaterialTheme.typography.titleMedium,
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    containerColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    autoCorrect = true,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
 
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = notepad.note.title,
+                    onValueChange = onTitleChange,
+                    placeholder = { Text(text = "Title") },
+                    textStyle = MaterialTheme.typography.titleMedium,
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        containerColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrect = true,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+
+                )
+                if (notepad.note.isCheck) {
+                    Box {
+                        IconButton(onClick = { expandCheck = true }) {
+
+                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                        }
+                        DropdownMenu(
+                            expanded = expandCheck,
+                            onDismissRequest = { expandCheck = false }) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Hide checkboxes") },
+                                onClick = {
+                                    hideCheckBoxes()
+                                    expandCheck = false
+                                },
+                            )
+                            if (checkNote.isNotEmpty()) {
+                                DropdownMenuItem(
+                                    text = { Text(text = "UnCheck all items") },
+                                    onClick = {
+                                        unCheckAllItems()
+                                        expandCheck = false
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = "Delete checked items") },
+                                    onClick = {
+                                        deleteCheckItems()
+                                        expandCheck = false
+                                    },
+                                )
+                            }
+
+
+                        }
+                    }
+                }
+            }
+
             if (!notepad.note.isCheck) {
                 TextField(
                     value = notepad.note.detail,
@@ -424,6 +480,7 @@ fun EditScreen(
                     }, label = { Text(text = "Take photo") },
                         selected = false, onClick = {
                             snapPictureLauncher.launch(getPhotoUri())
+                            coroutineScope.launch { modalState.hide() }
                         })
 
                     NavigationDrawerItem(icon = {
@@ -481,13 +538,20 @@ fun EditScreen(
                                 audioPermission.launch(Manifest.permission.RECORD_AUDIO)
                             }
                         })
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Checkboxes") },
-                        selected = false, onClick = { /*TODO*/ })
+                    if (notepad.note.isCheck.not()) {
+                        NavigationDrawerItem(icon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
+                                contentDescription = ""
+                            )
+                        }, label = { Text(text = "Checkboxes") },
+                            selected = false,
+                            onClick = {
+                                coroutineScope.launch { modalState.hide() }
+                                changeToCheckBoxes()
+                            })
+                    }
+
                 }
             }
 
