@@ -1,6 +1,12 @@
 package com.mshdabiola.database.repository
 
-import com.mshdabiola.database.dao.GeneralDao
+import com.mshdabiola.database.dao.LabelDao
+import com.mshdabiola.database.dao.NoteCheckDao
+import com.mshdabiola.database.dao.NoteDao
+import com.mshdabiola.database.dao.NoteImageDao
+import com.mshdabiola.database.dao.NoteLabelDao
+import com.mshdabiola.database.dao.NoteVoiceDao
+import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.model.toNoteCheckEntity
 import com.mshdabiola.database.model.toNoteEntity
 import com.mshdabiola.database.model.toNoteImageEntity
@@ -16,42 +22,48 @@ import javax.inject.Inject
 
 class NotePadRepository
 @Inject constructor(
-    private val generalDao: GeneralDao
+    private val labelDao: LabelDao,
+    private val noteCheckDao: NoteCheckDao,
+    private val noteDao: NoteDao,
+    private val noteImageDao: NoteImageDao,
+    private val noteLabelDao: NoteLabelDao,
+    private val noteVoiceDao: NoteVoiceDao,
+    private val notePadDao: NotepadDao
 ) {
-    suspend fun insertNote(note: Note) = generalDao.addNote(note.toNoteEntity())
+    suspend fun insertNote(note: Note) = noteDao.addNote(note.toNoteEntity())
 
     suspend fun insertNotepad(notePad: NotePad): Long {
 
-        val id = generalDao.addNote(notePad.note.toNoteEntity())
+        val id = noteDao.addNote(notePad.note.toNoteEntity())
         if (notePad.checks.isNotEmpty()) {
 
-            generalDao.addNoteCheck(notePad.checks.map { it.toNoteCheckEntity() })
+            noteCheckDao.addNoteCheck(notePad.checks.map { it.toNoteCheckEntity() })
         }
         if (notePad.voices.isNotEmpty()) {
-            generalDao.addVoice(notePad.voices.map { it.toNoteVoiceEntity() })
+            noteVoiceDao.addVoice(notePad.voices.map { it.toNoteVoiceEntity() })
         }
         if (notePad.images.isNotEmpty()) {
-            generalDao.addImage(notePad.images.map { it.toNoteImageEntity() })
+            noteImageDao.addImage(notePad.images.map { it.toNoteImageEntity() })
         }
 
         return id
     }
 
     suspend fun deleteCheckNote(id: Long, noteId: Long) = withContext(Dispatchers.IO) {
-        generalDao.deleteCheck(id, noteId)
+        noteCheckDao.deleteCheck(id, noteId)
     }
 
     suspend fun deleteNoteCheckByNoteId(noteId: Long) = withContext(Dispatchers.IO) {
-        generalDao.deleteCheckById(noteId)
+        noteCheckDao.deleteCheckById(noteId)
     }
 
 
-    fun getNotePads(noteType: NoteType) = generalDao
+    fun getNotePads(noteType: NoteType) = notePadDao
         .getListOfNotePad(noteType).map { entities -> entities.map { it.toNotePad() } }
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
     suspend fun getOneNotePad(id: Long): NotePad {
-        return generalDao.getOneNotePad(id).toNotePad()
+        return notePadDao.getOneNotePad(id).toNotePad()
     }
 }
