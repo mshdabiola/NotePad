@@ -9,10 +9,10 @@ import com.mshdabiola.database.model.NoteEntity
 interface NoteDao {
 
     @Upsert
-    suspend fun addNote(noteEntity: NoteEntity): Long
+    suspend fun upsert(noteEntity: NoteEntity): Long
 
 
     @Query("DELETE FROM note_table WHERE id = :noteId")
-    suspend fun deleteNote(noteId: Long)
+    suspend fun delete(noteId: Long)
 
 }

@@ -10,12 +10,12 @@ interface NoteImageDao {
 
 
     @Upsert
-    suspend fun addImage(noteImageEntity: List<NoteImageEntity>)
+    suspend fun upsert(noteImageEntity: List<NoteImageEntity>)
 
 
     @Query("DELETE FROM note_image_table WHERE id = :id")
-    suspend fun deleteImageOne(id: Long)
+    suspend fun deleteById(id: Long)
 
     @Query("DELETE FROM note_image_table WHERE noteId = :noteId")
-    suspend fun deleteImageById(noteId: Long)
+    suspend fun deleteByNoteId(noteId: Long)
 }

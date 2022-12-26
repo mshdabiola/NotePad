@@ -30,31 +30,31 @@ class NotePadRepository
     private val noteVoiceDao: NoteVoiceDao,
     private val notePadDao: NotepadDao
 ) {
-    suspend fun insertNote(note: Note) = noteDao.addNote(note.toNoteEntity())
+    suspend fun insertNote(note: Note) = noteDao.upsert(note.toNoteEntity())
 
     suspend fun insertNotepad(notePad: NotePad): Long {
 
-        val id = noteDao.addNote(notePad.note.toNoteEntity())
+        val id = noteDao.upsert(notePad.note.toNoteEntity())
         if (notePad.checks.isNotEmpty()) {
 
-            noteCheckDao.addNoteCheck(notePad.checks.map { it.toNoteCheckEntity() })
+            noteCheckDao.upsert(notePad.checks.map { it.toNoteCheckEntity() })
         }
         if (notePad.voices.isNotEmpty()) {
             noteVoiceDao.addVoice(notePad.voices.map { it.toNoteVoiceEntity() })
         }
         if (notePad.images.isNotEmpty()) {
-            noteImageDao.addImage(notePad.images.map { it.toNoteImageEntity() })
+            noteImageDao.upsert(notePad.images.map { it.toNoteImageEntity() })
         }
 
         return id
     }
 
     suspend fun deleteCheckNote(id: Long, noteId: Long) = withContext(Dispatchers.IO) {
-        noteCheckDao.deleteCheck(id, noteId)
+        noteCheckDao.delete(id, noteId)
     }
 
     suspend fun deleteNoteCheckByNoteId(noteId: Long) = withContext(Dispatchers.IO) {
-        noteCheckDao.deleteCheckById(noteId)
+        noteCheckDao.deleteByNoteId(noteId)
     }
 
 

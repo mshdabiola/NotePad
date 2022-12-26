@@ -10,12 +10,12 @@ interface NoteCheckDao {
 
 
     @Upsert
-    suspend fun addNoteCheck(noteCheckEntity: List<NoteCheckEntity>)
+    suspend fun upsert(noteCheckEntity: List<NoteCheckEntity>)
 
 
     @Query("DELETE FROM note_check_table WHERE noteId = :noteId")
-    suspend fun deleteCheckById(noteId: Long)
+    suspend fun deleteByNoteId(noteId: Long)
 
     @Query("DELETE FROM note_check_table WHERE id = :id AND noteId = :noteId")
-    suspend fun deleteCheck(id: Long, noteId: Long)
+    suspend fun delete(id: Long, noteId: Long)
 }

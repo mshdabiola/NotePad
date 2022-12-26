@@ -8,4 +8,5 @@ import com.mshdabiola.database.model.NoteLabelEntity
 interface LabelDao {
     @Upsert
     fun upsert(labelEntity: NoteLabelEntity)
+
 }
