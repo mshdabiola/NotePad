@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/feature/editScreen" />
             <option value="$PROJECT_DIR$/feature/labelscreen" />
             <option value="$PROJECT_DIR$/feature/mainscreen" />
+            <option value="$PROJECT_DIR$/feature/searchscreen" />
           </set>
         </option>
       </GradleProjectSettings>
