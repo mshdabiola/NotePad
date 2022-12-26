@@ -34,9 +34,11 @@
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/editScreen" />
+            <option value="$PROJECT_DIR$/feature/helpscreeen" />
             <option value="$PROJECT_DIR$/feature/labelscreen" />
             <option value="$PROJECT_DIR$/feature/mainscreen" />
             <option value="$PROJECT_DIR$/feature/searchscreen" />
+            <option value="$PROJECT_DIR$/feature/settingscreen" />
           </set>
         </option>
       </GradleProjectSettings>
