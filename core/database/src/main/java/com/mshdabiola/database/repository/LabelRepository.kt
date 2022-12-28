@@ -5,6 +5,7 @@ import com.mshdabiola.database.model.toLabel
 import com.mshdabiola.database.model.toLabelEntity
 import com.mshdabiola.model.Label
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -18,8 +19,11 @@ class LabelRepository
     }
 
     suspend fun getOneLabelList(): List<Label> {
-        return labelDao.getAllLabels().map { it.toLabel() }
+        return labelDao.getAllLabelsOneShot().map { it.toLabel() }
     }
+
+    fun getAllLabels() =
+        labelDao.getAllLabels().map { labelEntities -> labelEntities.map { it.toLabel() } }
 
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         labelDao.delete(id)

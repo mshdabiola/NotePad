@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mshdabiola.editscreen.navigateToEditScreen
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.mainscreen.navigateToMain
+import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
 
 data class NotePadAppState(
     val windowSizeClass: WindowSizeClass,
@@ -23,6 +24,10 @@ data class NotePadAppState(
         data: Long
     ) {
         navHostController.navigateToEditScreen(id, content, data)
+    }
+
+    fun navigateToSelectLevel(ids: IntArray) {
+        navHostController.navigateToSelectLabel(ids)
     }
 
     fun navigateToLevel(editMode: Boolean) {

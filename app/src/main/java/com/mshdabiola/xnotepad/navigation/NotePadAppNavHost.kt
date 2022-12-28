@@ -7,6 +7,7 @@ import com.mshdabiola.editscreen.editScreen
 import com.mshdabiola.labelscreen.labelScreen
 import com.mshdabiola.mainscreen.mainNavigationRoute
 import com.mshdabiola.mainscreen.mainScreen
+import com.mshdabiola.selectlabelscreen.selectLabelScreen
 
 
 @Composable
@@ -16,14 +17,16 @@ fun NotePadAppNavHost(
     navigateToEdit: (Long, String, Long) -> Unit,
     navigateToLevel: (Boolean) -> Unit,
     onBack: () -> Unit,
-    startDestination: String = mainNavigationRoute
+    startDestination: String = mainNavigationRoute,
+    navigateToSelectLevel: (IntArray) -> Unit
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
         mainScreen(
             navigateToEditScreen = navigateToEdit,
             navigateToLevel
         )
-        editScreen(onBack = onBack)
+        editScreen(onBack = onBack, navigateToSelectLevel = navigateToSelectLevel)
         labelScreen(onBack = onBack)
+        selectLabelScreen(onBack)
     }
 }

@@ -18,4 +18,5 @@ interface NoteCheckDao {
 
     @Query("DELETE FROM note_check_table WHERE id = :id AND noteId = :noteId")
     suspend fun delete(id: Long, noteId: Long)
+
 }

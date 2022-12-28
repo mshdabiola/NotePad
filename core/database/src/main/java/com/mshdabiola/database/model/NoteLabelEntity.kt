@@ -5,13 +5,12 @@ import com.mshdabiola.model.NoteLabel
 
 @Entity(
     tableName = "note_label_table",
-    primaryKeys = ["id", "noteId"],
+    primaryKeys = ["noteId", "labelId"],
 )
 data class NoteLabelEntity(
-    val id: Long,
     val noteId: Long,
-    val label: String
+    val labelId: Long
 )
 
-fun NoteLabelEntity.toNoteLabel() = NoteLabel(id, noteId, label)
-fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(id, noteId, label)
+fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
+fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)

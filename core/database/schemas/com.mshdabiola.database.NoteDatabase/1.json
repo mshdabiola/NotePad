@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1090bf954c55893629c4fa4ea0cea73d",
+    "identityHash": "10fc2e478692a8c64c3a9f0811954349",
     "entities": [
       {
         "tableName": "note_table",
@@ -173,14 +173,8 @@
       },
       {
         "tableName": "note_label_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `label` TEXT NOT NULL, PRIMARY KEY(`id`, `noteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER NOT NULL, `labelId` INTEGER NOT NULL, PRIMARY KEY(`noteId`, `labelId`))",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "noteId",
             "columnName": "noteId",
@@ -188,17 +182,17 @@
             "notNull": true
           },
           {
-            "fieldPath": "label",
-            "columnName": "label",
-            "affinity": "TEXT",
+            "fieldPath": "labelId",
+            "columnName": "labelId",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id",
-            "noteId"
+            "noteId",
+            "labelId"
           ]
         },
         "indices": [],
@@ -234,7 +228,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1090bf954c55893629c4fa4ea0cea73d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '10fc2e478692a8c64c3a9f0811954349')"
     ]
   }
 }

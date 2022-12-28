@@ -19,6 +19,9 @@ interface LabelDao {
     fun getAllLabel(): Flow<LabelEntity>
 
     @Query("SELECT * FROM label_table")
-    suspend fun getAllLabels(): List<LabelEntity>
+    suspend fun getAllLabelsOneShot(): List<LabelEntity>
+
+    @Query("SELECT * FROM label_table")
+    fun getAllLabels(): Flow<List<LabelEntity>>
 
 }

@@ -99,7 +99,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigateToSelectLevel: (IntArray) -> Unit
 ) {
 
     val modalState = rememberModalState()
@@ -131,7 +132,16 @@ fun EditScreen(
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes
     )
-    NoteOptionBottomSheet(modalState = noteModalState)
+    NoteOptionBottomSheet(
+        modalState = noteModalState,
+        onLabel = {
+            navigateToSelectLevel(
+                intArrayOf(
+                    editViewModel.notePadUiState.note.id?.toInt() ?: -1
+                )
+            )
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
