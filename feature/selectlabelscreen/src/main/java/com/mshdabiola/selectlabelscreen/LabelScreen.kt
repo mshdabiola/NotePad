@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
@@ -35,7 +37,9 @@ fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel())
     LabelScreen(
         labelScreenUiState = viewModel.labelScreenUiState,
         onBack = onBack,
-        onCheckClick = viewModel::onCheckClick
+        onCheckClick = viewModel::onCheckClick,
+        onSearchText = viewModel::onSearchChange,
+        onCreateLabel = viewModel::onCreateLabel
     )
 }
 
@@ -44,7 +48,9 @@ fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel())
 fun LabelScreen(
     labelScreenUiState: LabelScreenUiState,
     onBack: () -> Unit = {},
-    onCheckClick: (Long) -> Unit = {}
+    onCheckClick: (Long) -> Unit = {},
+    onSearchText: (String) -> Unit = {},
+    onCreateLabel: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -57,15 +63,23 @@ fun LabelScreen(
                 title = {
                     NoteTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = "Enter text",
-                        onValueChange = {})
+                        value = labelScreenUiState.editText,
+                        placeholder = { Text(text = "Enter text") },
+                        onValueChange = onSearchText
+                    )
                 }
             )
         }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
+            if (labelScreenUiState.showAddLabel) {
+                TextButton(onClick = { onCreateLabel() }) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = "Create \"${labelScreenUiState.editText}\"")
+                }
+            }
             LazyColumn {
-
                 items(
                     items = labelScreenUiState.labels
                 ) {

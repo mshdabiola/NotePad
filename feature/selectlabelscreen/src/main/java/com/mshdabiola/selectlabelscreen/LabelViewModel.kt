@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
+import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -27,6 +28,7 @@ class LabelViewModel @Inject constructor(
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
 
+    var list: List<LabelUiState> = emptyList()
     private val labelsArgs = LabelsArgs(savedStateHandle)
 
     init {
@@ -35,29 +37,14 @@ class LabelViewModel @Inject constructor(
             Log.e(this@LabelViewModel::class.simpleName, labelsArgs.ids.joinToString())
         }
         viewModelScope.launch {
-
-            val labelsCount = labelsArgs.ids.map {
-                noteLabelRepository.getAll(it).first()
-            }.flatten().groupingBy { it.labelId }.eachCount()
-
-
-            var labels = labelRepository.getAllLabels().first().map {
-                val state = when (labelsCount[it.id]) {
-                    labelsArgs.ids.size -> ToggleableState.On
-                    null -> ToggleableState.Off
-                    else -> ToggleableState.Indeterminate
-                }
-                it.toLabelUiState().copy(toggleableState = state)
-            }
-
-
-
-            labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
+            updateList()
         }
+
+
     }
 
     fun onCheckClick(id: Long) {
-        var labels = labelScreenUiState.labels.toMutableList()
+        val labels = labelScreenUiState.labels.toMutableList()
         val index = labels.indexOfFirst { it.id == id }
         var label = labels[index]
 
@@ -78,6 +65,66 @@ class LabelViewModel @Inject constructor(
             viewModelScope.launch {
                 noteLabelRepository.delete(labelsArgs.ids)
             }
+        }
+    }
+
+    fun onSearchChange(text: String) {
+        if (text.isBlank()) {
+            labelScreenUiState =
+                labelScreenUiState.copy(
+                    editText = text
+                )
+            viewModelScope.launch {
+                updateList()
+            }
+
+        } else {
+            val labels = list.filter { it.label.contains(text) }
+
+            val haveSameText = list.any { it.label == text }
+            labelScreenUiState =
+                labelScreenUiState.copy(
+                    editText = text,
+                    labels = labels.toImmutableList(),
+                    showAddLabel = haveSameText.not()
+                )
+
+
+        }
+    }
+
+    suspend fun updateList() {
+
+
+        val labelsCount = labelsArgs.ids.map {
+            noteLabelRepository.getAll(it).first()
+        }.flatten().groupingBy { it.labelId }.eachCount()
+
+
+        val labels = labelRepository.getAllLabels().first().map {
+            val state = when (labelsCount[it.id]) {
+                labelsArgs.ids.size -> ToggleableState.On
+                null -> ToggleableState.Off
+                else -> ToggleableState.Indeterminate
+            }
+            it.toLabelUiState().copy(toggleableState = state)
+        }
+        list = labels
+
+        labelScreenUiState = labelScreenUiState.copy(
+            showAddLabel = false,
+            labels = labels.toImmutableList(), editText = ""
+        )
+
+    }
+
+    fun onCreateLabel() {
+        viewModelScope.launch {
+            val id = (list.lastOrNull()?.id ?: -1) + 1
+            labelRepository.upsert(listOf(Label(id, labelScreenUiState.editText)))
+            updateList()
+            onCheckClick(id)
+
         }
     }
 
