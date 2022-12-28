@@ -31,7 +31,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.mainscreen.state.LabelUiState
 import com.mshdabiola.mainscreen.state.NoteType
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +42,8 @@ fun MainNavigation(
 
     onNavigation: (NoteType) -> Unit = {},
     currentType: NoteType = NoteType.NOTE,
-    navigateToLevel: (Boolean) -> Unit = {}
+    navigateToLevel: (Boolean) -> Unit = {},
+    labels: ImmutableList<LabelUiState>
 
 ) {
     Surface(modifier = Modifier
@@ -85,7 +89,7 @@ fun MainNavigation(
 
             }
 
-            repeat(5) {
+            labels.forEach {
                 NavigationDrawerItem(
                     icon = {
                         Icon(
@@ -93,9 +97,9 @@ fun MainNavigation(
                             contentDescription = ""
                         )
                     },
-                    label = { Text(text = "Labels") },
-                    selected = currentType is NoteType.LABEL && currentType.index == it,
-                    onClick = { onNavigation(NoteType.LABEL(it)) })
+                    label = { Text(text = it.label) },
+                    selected = currentType is NoteType.LABEL && currentType.index == it.id,
+                    onClick = { onNavigation(NoteType.LABEL(it.id)) })
             }
             NavigationDrawerItem(
                 icon = {
@@ -147,7 +151,18 @@ fun MainNavigation(
 fun MainNavigationPreview() {
 
     Column(Modifier.fillMaxSize()) {
-        MainNavigation()
+        MainNavigation(
+            labels = listOf(
+                LabelUiState(id = 7955L, label = "Gillian"),
+                LabelUiState(id = 126L, label = "Laneisha"),
+                LabelUiState(id = 7955L, label = "Gillian"),
+                LabelUiState(id = 126L, label = "Laneisha"),
+                LabelUiState(id = 7955L, label = "Gillian"),
+                LabelUiState(id = 126L, label = "Laneisha"),
+                LabelUiState(id = 7955L, label = "Gillian"),
+                LabelUiState(id = 126L, label = "Laneisha"),
+            ).toImmutableList()
+        )
     }
 
 }

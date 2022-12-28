@@ -5,10 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
+import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.mainscreen.state.MainState
 import com.mshdabiola.mainscreen.state.NotePadUiState
 import com.mshdabiola.mainscreen.state.NoteType
+import com.mshdabiola.mainscreen.state.toLabelUiState
 import com.mshdabiola.mainscreen.state.toNotePadUiState
 import com.mshdabiola.mainscreen.state.toNoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +28,8 @@ class MainViewModel
 @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notepadRepository: NotePadRepository,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
+    private val labelRepository: LabelRepository
 ) : ViewModel() {
 
 
@@ -63,6 +66,16 @@ class MainViewModel
 
                 }
 
+        }
+
+        viewModelScope.launch {
+            labelRepository
+                .getAllLabels()
+                .collectLatest { labels ->
+                    _mainState.value = mainState.value.copy(
+                        labels = labels.map { it.toLabelUiState() }.toImmutableList()
+                    )
+                }
         }
     }
 

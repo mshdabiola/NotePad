@@ -60,6 +60,7 @@ import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.mainscreen.component.NoteCard
+import com.mshdabiola.mainscreen.state.LabelUiState
 import com.mshdabiola.mainscreen.state.NotePadUiState
 import com.mshdabiola.mainscreen.state.NoteType
 import com.mshdabiola.mainscreen.state.toNotePadUiState
@@ -80,6 +81,7 @@ fun MainScreen(
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
     MainScreen(
         notePads = mainState.value.notePads,
+        labels = mainState.value.labels,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
         saveImage = mainViewModel::savePhoto,
@@ -95,6 +97,7 @@ fun MainScreen(
 @Composable
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
+    labels: ImmutableList<LabelUiState>,
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
@@ -189,6 +192,7 @@ fun MainScreen(
     ModalNavigationDrawer(
         drawerContent = {
             MainNavigation(
+                labels = labels,
                 currentType = currentNoteType,
                 onNavigation = {
                     onNavigationNoteType(it)
@@ -384,7 +388,8 @@ fun MainScreenPreview() {
                 ).toNotePadUiState(),
                 NotePad().toNotePadUiState()
             )
-                .toImmutableList()
+                .toImmutableList(),
+            labels = emptyList<LabelUiState>().toImmutableList()
         )
     }
 
