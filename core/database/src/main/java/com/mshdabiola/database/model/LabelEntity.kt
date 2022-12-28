@@ -6,10 +6,10 @@ import com.mshdabiola.model.Label
 
 @Entity(tableName = "label_table")
 data class LabelEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long? = null,
+    @PrimaryKey
+    val id: Long,
     val name: String
 )
 
 fun LabelEntity.toLabel() = Label(id, name)
-fun Label.toLabelEntity() = LabelEntity(id, name)
+fun Label.toLabelEntity() = LabelEntity(id, label)

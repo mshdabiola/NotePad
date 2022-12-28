@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mshdabiola.editscreen.navigateToEditScreen
+import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.mainscreen.navigateToMain
 
 data class NotePadAppState(
@@ -22,6 +23,10 @@ data class NotePadAppState(
         data: Long
     ) {
         navHostController.navigateToEditScreen(id, content, data)
+    }
+
+    fun navigateToLevel(editMode: Boolean) {
+        navHostController.navigateToLabel(editMode)
     }
 
     fun onBack() {

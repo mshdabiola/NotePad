@@ -3,6 +3,7 @@ package com.mshdabiola.mainscreen.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,10 +38,13 @@ import com.mshdabiola.mainscreen.state.NoteType
 fun MainNavigation(
 
     onNavigation: (NoteType) -> Unit = {},
-    currentType: NoteType = NoteType.NOTE
+    currentType: NoteType = NoteType.NOTE,
+    navigateToLevel: (Boolean) -> Unit = {}
 
 ) {
-    Surface(modifier = Modifier.fillMaxWidth(4 / 5f)) {
+    Surface(modifier = Modifier
+        .fillMaxHeight()
+        .fillMaxWidth(4 / 5f)) {
 
         Column(
             modifier = Modifier
@@ -69,9 +75,14 @@ fun MainNavigation(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)) {
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(modifier = Modifier.weight(1f), text = "Labels")
-                Text(text = "Edit", color = MaterialTheme.colorScheme.primary)
+                TextButton(onClick = { navigateToLevel(false) }) {
+                    Text(text = "Edit")
+                }
+
             }
 
             repeat(5) {
@@ -92,7 +103,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = "Create new label") },
                 selected = false,
-                onClick = { })
+                onClick = { navigateToLevel(true) })
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(8.dp))
             NavigationDrawerItem(

@@ -73,13 +73,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> }
+    navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
+    navigateToLevel: (Boolean) -> Unit
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
     MainScreen(
         notePads = mainState.value.notePads,
         navigateToEdit = navigateToEdit,
+        navigateToLevel = navigateToLevel,
         saveImage = mainViewModel::savePhoto,
         saveVoice = mainViewModel::saveVoice,
         photoUri = mainViewModel::getPhotoUri,
@@ -94,6 +96,7 @@ fun MainScreen(
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
+    navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
     photoUri: (Long) -> Uri = { Uri.EMPTY },
@@ -188,10 +191,10 @@ fun MainScreen(
             MainNavigation(
                 currentType = currentNoteType,
                 onNavigation = {
-
                     onNavigationNoteType(it)
                     coroutineScope.launch { drawerState.close() }
-                }
+                },
+                navigateToLevel = navigateToLevel
 
             )
         },
