@@ -18,7 +18,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,11 +38,22 @@ class MainViewModel
 
     init {
 
-        viewModelScope.launch {
-            mainState.map { it.noteType }.distinctUntilChanged { old, new -> old == new }
-                .collectLatest { noteType ->
 
-                    when (noteType) {
+        viewModelScope.launch {
+            combine(
+                labelRepository.getAllLabels(),
+                mainState.map { it.noteType },
+                transform = { T1, T2 ->
+
+                    Pair(T1, T2)
+                })
+                .collectLatest { pair ->
+
+                    _mainState.value = mainState.value.copy(
+                        labels = pair.first.map { it.toLabelUiState() }.toImmutableList()
+                    )
+
+                    when (pair.second) {
                         is NoteType.LABEL -> {
                             _mainState.value =
                                 mainState.value.copy(notePads = emptyList<NotePadUiState>().toImmutableList())
@@ -54,28 +65,17 @@ class MainViewModel
                         }
 
                         else -> {
-                            notepadRepository.getNotePads(noteType.toNoteType()).map { notes ->
-                                notes.map { it.toNotePadUiState() }
+                            notepadRepository.getNotePads(pair.second.toNoteType()).map { notes ->
+                                notes.map { it.toNotePadUiState(pair.first) }
                             }.collect {
                                 _mainState.value =
                                     mainState.value.copy(notePads = it.toImmutableList())
                             }
                         }
                     }
-
-
                 }
 
-        }
 
-        viewModelScope.launch {
-            labelRepository
-                .getAllLabels()
-                .collectLatest { labels ->
-                    _mainState.value = mainState.value.copy(
-                        labels = labels.map { it.toLabelUiState() }.toImmutableList()
-                    )
-                }
         }
     }
 
