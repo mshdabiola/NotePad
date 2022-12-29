@@ -331,7 +331,7 @@ fun MainScreen(
 
                         items(pinNotePad) { notePadUiState ->
                             NoteCard(
-                                notePadUiState = notePadUiState,
+                                notePad = notePadUiState,
                                 onCardClick = { navigateToEdit(it, "", 0) })
                         }
 
@@ -348,7 +348,7 @@ fun MainScreen(
 
                     items(notPinNotePad) { notePadUiState ->
                         NoteCard(
-                            notePadUiState = notePadUiState,
+                            notePad = notePadUiState,
                             onCardClick = { navigateToEdit(it, "", 0) })
                     }
 
