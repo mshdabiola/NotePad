@@ -25,16 +25,26 @@ object NoteIcon {
     val ColorNotSupported = R.drawable.outline_format_color_reset_24
 
     val background = listOf(
-        NoteBg(Color.Blue, R.drawable.asset_2),
-        NoteBg(Color.Blue, R.drawable.asset_2),
-        NoteBg(Color.Blue, R.drawable.asset_3),
-        NoteBg(Color.Blue, R.drawable.asset_4),
+        NoteBg(Color(0xFFF4DADA), R.drawable.asset_2),
+        NoteBg(Color(0xFFF4DADA), R.drawable.asset_2),
+        NoteBg(Color(0xFFB80D57), R.drawable.asset_3),
+        NoteBg(Color(0xFFA3F7B7), R.drawable.asset_4),
     )
     val noteColors = listOf(
-        Color.Black,
-        Color.Red,
-        Color.Green,
-        Color.Blue,
-        Color.Magenta
+        Color(0xFFB590CA),
+        Color(0xFFA8D3DA),
+        Color(0xFFF5CAB3),
+        Color(0xFFF3ECB8),
+        Color(0xFFC2F0FC),
+        Color(0xFFFFB6B6),
+        Color(0xFFDBC890),
+        Color(0xFFEF9A9A),
+        Color(0xFFF48FB1),
+        Color(0xFFB39DDB),
+        Color(0xFF81D4FA),
+        Color(0xFFA5D6A7),
+        Color(0xFFFFF59D),
+        Color(0xFFFFCC80),
+        Color(0xFFFFAB91),
     )
 }

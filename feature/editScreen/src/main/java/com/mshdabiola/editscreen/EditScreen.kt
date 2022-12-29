@@ -68,6 +68,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -79,10 +80,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -220,10 +223,48 @@ fun EditScreen(
         mutableStateOf(true)
     }
 
+    val fg = if (notepad.note.background != -1) {
+        NoteIcon.background[notepad.note.background].fgColor
+    } else {
+        if (notepad.note.color != -1) {
+            NoteIcon.noteColors[notepad.note.color]
+        } else {
+            MaterialTheme.colorScheme.background
+        }
+    }
+    val bg = if (notepad.note.background != -1) {
+        Color.Transparent
+    } else {
+        if (notepad.note.color != -1)
+            NoteIcon.noteColors[notepad.note.color]
+        else
+            MaterialTheme.colorScheme.background
+    }
+
+    val sColor = if (notepad.note.background != -1)
+        NoteIcon.background[notepad.note.background].fgColor
+    else
+        MaterialTheme.colorScheme.secondaryContainer
+
+
+    val painter = if (notepad.note.background != -1)
+        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.note.background].bg))
+    else
+        null
+
     Scaffold(
+        containerColor = bg,
+        modifier = Modifier.drawBehind {
+            if (painter != null) {
+                with(painter) {
+                    draw(size)
+                }
+            }
+        },
         topBar = {
             TopAppBar(
                 title = { },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
@@ -258,6 +299,7 @@ fun EditScreen(
         },
         bottomBar = {
             BottomAppBar(
+                containerColor = Color.Transparent,
                 actions = {
                     Row(Modifier.fillMaxWidth()) {
                         IconButton(onClick = { moreOptions() }) {
@@ -472,7 +514,7 @@ fun EditScreen(
                     Surface(
                         modifier = Modifier.clickable { onLabel() },
                         shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        color = sColor,
                         border = BorderStroke(1.dp, Color.Gray)
                     ) {
                         Text(text = it, modifier = Modifier.padding(8.dp))
@@ -493,7 +535,7 @@ fun EditScreen(
 fun EditScreenPreview() {
     EditScreen(
         notepad = NotePadUiState(
-            note = NoteUiState(),
+            note = NoteUiState(color = 1, background = 1),
             labels = listOf("abiola", "moshood").toImmutableList()
 
         )
@@ -879,7 +921,15 @@ fun ColorAndImageBottomSheet(
     ) {
 
     val coroutineScope = rememberCoroutineScope()
-    val background = Color.Magenta
+    val background = if (currentImage != -1) {
+        NoteIcon.background[currentImage].fgColor
+    } else {
+        if (currentColor != -1) {
+            NoteIcon.noteColors[currentColor]
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    }
 
     ModalBottomSheet(modalState = modalState) {
         Surface(modifier = Modifier.fillMaxWidth(), color = background) {

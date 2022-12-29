@@ -315,11 +315,14 @@ class EditViewModel @Inject constructor(
     }
 
     fun onColorChange(index: Int) {
+        val note = notePadUiState.note.copy(color = index)
+        notePadUiState = notePadUiState.copy(note = note)
 
     }
 
     fun onImageChange(index: Int) {
-
+        val note = notePadUiState.note.copy(background = index)
+        notePadUiState = notePadUiState.copy(note = note)
     }
 
 
