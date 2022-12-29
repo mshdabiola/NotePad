@@ -14,10 +14,12 @@ data class NoteEntity(
     val date: Long,
     val isCheck: Boolean,
     val color: Int,
+    val background: Int,
     val isPin: Boolean,
     val noteType: NoteType
 )
 
-fun Note.toNoteEntity() = NoteEntity(id, title, detail, date, isCheck, color, isPin, noteType)
+fun Note.toNoteEntity() =
+    NoteEntity(id, title, detail, date, isCheck, color, background, isPin, noteType)
 
-fun NoteEntity.toNote() = Note(id, title, detail, date, isCheck, color, isPin, noteType)
+fun NoteEntity.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin, noteType)

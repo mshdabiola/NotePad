@@ -1,5 +1,6 @@
 package com.mshdabiola.designsystem.icon
 
+import androidx.compose.ui.graphics.Color
 import com.mshdabiola.designsystem.R
 
 object NoteIcon {
@@ -17,4 +18,23 @@ object NoteIcon {
     val Archive = R.drawable.outline_archive_24
     val Pin = R.drawable.outline_push_pin_24
     val PinFill = R.drawable.baseline_push_pin_24
+    val ImageNoteSupported = R.drawable.outline_image_not_supported_24
+    val Notification = R.drawable.outline_notifications_24
+    val NotificationActive = R.drawable.outline_notifications_active_24
+    val ColorLens = R.drawable.outline_color_lens_24
+    val ColorNotSupported = R.drawable.outline_format_color_reset_24
+
+    val background = listOf(
+        NoteBg(Color.Blue, R.drawable.asset_2),
+        NoteBg(Color.Blue, R.drawable.asset_2),
+        NoteBg(Color.Blue, R.drawable.asset_3),
+        NoteBg(Color.Blue, R.drawable.asset_4),
+    )
+    val noteColors = listOf(
+        Color.Black,
+        Color.Red,
+        Color.Green,
+        Color.Blue,
+        Color.Magenta
+    )
 }

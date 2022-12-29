@@ -13,11 +13,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,8 +32,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,6 +46,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Delete
@@ -69,10 +78,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -105,6 +116,7 @@ fun EditScreen(
 
     val modalState = rememberModalState()
     val noteModalState = rememberModalState()
+    val colorModalState = rememberModalState()
     val coroutineScope = rememberCoroutineScope()
     EditScreen(
         notepad = editViewModel.notePadUiState,
@@ -118,6 +130,7 @@ fun EditScreen(
         playVoice = editViewModel::playMusic,
         moreOptions = { coroutineScope.launch { modalState.show() } },
         noteOption = { coroutineScope.launch { noteModalState.show() } },
+        onColorClick = { coroutineScope.launch { colorModalState.show() } },
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
@@ -151,6 +164,13 @@ fun EditScreen(
             )
         }
     )
+    ColorAndImageBottomSheet(
+        modalState = colorModalState,
+        currentColor = editViewModel.notePadUiState.note.color,
+        currentImage = editViewModel.notePadUiState.note.background,
+        onColorClick = editViewModel::onColorChange,
+        onImageClick = editViewModel::onImageChange
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -173,7 +193,8 @@ fun EditScreen(
     deleteCheckItems: () -> Unit = {},
     hideCheckBoxes: () -> Unit = {},
     pinNote: () -> Unit = {},
-    onLabel: () -> Unit = {}
+    onLabel: () -> Unit = {},
+    onColorClick: () -> Unit = {}
 ) {
 
     var expand by remember {
@@ -242,6 +263,12 @@ fun EditScreen(
                         IconButton(onClick = { moreOptions() }) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
+                                contentDescription = ""
+                            )
+                        }
+                        IconButton(onClick = { onColorClick() }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = NoteIcon.ColorLens),
                                 contentDescription = ""
                             )
                         }
@@ -838,6 +865,177 @@ fun NoteOptionBottomSheet(
 
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColorAndImageBottomSheet(
+    modalState: ModalState,
+    currentColor: Int,
+    currentImage: Int,
+    onColorClick: (Int) -> Unit = {},
+    onImageClick: (Int) -> Unit = {},
+
+    ) {
+
+    val coroutineScope = rememberCoroutineScope()
+    val background = Color.Magenta
+
+    ModalBottomSheet(modalState = modalState) {
+        Surface(modifier = Modifier.fillMaxWidth(), color = background) {
+            Column(
+                modifier = Modifier.padding(
+                    bottom = 36.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp
+                )
+            ) {
+                Text(text = "Color")
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    item {
+                        Surface(
+                            onClick = { onColorClick(-1) },
+                            shape = CircleShape,
+                            color = Color.White,
+                            modifier = Modifier.size(40.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (-1 == currentColor) Color.Blue else Color.Gray
+                            )
+                        ) {
+                            if (-1 == currentColor) {
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "done",
+                                    tint = Color.Blue,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(id = NoteIcon.ColorNotSupported),
+                                    contentDescription = "done",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
+
+                        }
+                    }
+                    itemsIndexed(NoteIcon.noteColors) { index, color ->
+                        Surface(
+                            onClick = { onColorClick(index) },
+                            shape = CircleShape,
+                            color = color,
+                            modifier = Modifier.size(40.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (index == currentColor) Color.Blue else Color.Gray
+                            )
+                        ) {
+                            if (index == currentColor) {
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "done",
+                                    tint = Color.Blue,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
+
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Background")
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                    item {
+                        Box(Modifier.clickable { onImageClick(-1) }) {
+                            Icon(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .border(
+                                        1.dp,
+                                        if (-1 == currentImage) Color.Blue else Color.Gray,
+                                        CircleShape
+                                    )
+                                    .size(56.dp)
+                                    .padding(8.dp),
+                                painter = painterResource(id = NoteIcon.ImageNoteSupported),
+                                contentDescription = ""
+                            )
+                            if (-1 == currentImage) {
+                                Icon(
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(Color.Blue)
+                                        .size(16.dp)
+
+                                        .align(Alignment.TopEnd),
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "",
+                                    tint = Color.White
+
+                                )
+                            }
+
+                        }
+                    }
+                    itemsIndexed(NoteIcon.background) { index, noteBg ->
+
+                        Box(Modifier.clickable { onImageClick(index) }) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .border(
+                                        1.dp,
+                                        if (index == currentImage) Color.Blue else Color.Gray,
+                                        CircleShape
+                                    )
+                                    .size(56.dp),
+                                painter = painterResource(id = noteBg.bg),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop
+                            )
+                            if (index == currentImage) {
+                                Icon(
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(Color.Blue)
+                                        .size(16.dp)
+
+                                        .align(Alignment.TopEnd),
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "",
+                                    tint = Color.White
+
+                                )
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun ImageAndColorBottomSheetPreview() {
+    ColorAndImageBottomSheet(
+        modalState = rememberModalState(),
+        currentColor = -1,
+        currentImage = -1
+    )
+}
+
+
 
 
 

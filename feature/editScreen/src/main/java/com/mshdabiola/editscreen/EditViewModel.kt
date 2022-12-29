@@ -314,5 +314,13 @@ class EditViewModel @Inject constructor(
             notePadUiState.copy(note = notePadUiState.note.copy(isPin = !notePadUiState.note.isPin))
     }
 
+    fun onColorChange(index: Int) {
+
+    }
+
+    fun onImageChange(index: Int) {
+
+    }
+
 
 }
