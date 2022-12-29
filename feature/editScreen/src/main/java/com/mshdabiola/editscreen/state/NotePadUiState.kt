@@ -5,10 +5,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 data class NotePadUiState(
-    val note: NoteUiState,
-    val images: ImmutableList<NoteImageUiState>,
-    val voices: ImmutableList<NoteVoiceUiState>,
-    val checks: ImmutableList<NoteCheckUiState>
+    val note: NoteUiState = NoteUiState(),
+    val images: ImmutableList<NoteImageUiState> = emptyList<NoteImageUiState>().toImmutableList(),
+    val voices: ImmutableList<NoteVoiceUiState> = emptyList<NoteVoiceUiState>().toImmutableList(),
+    val checks: ImmutableList<NoteCheckUiState> = emptyList<NoteCheckUiState>().toImmutableList(),
+    val labels: ImmutableList<String> = emptyList<String>().toImmutableList()
 )
 
 

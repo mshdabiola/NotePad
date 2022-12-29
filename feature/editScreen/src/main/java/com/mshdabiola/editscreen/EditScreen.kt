@@ -12,6 +12,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -88,11 +90,9 @@ import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
+import com.mshdabiola.editscreen.state.NoteUiState
 import com.mshdabiola.editscreen.state.NoteVoiceUiState
-import com.mshdabiola.editscreen.state.toNotePadUiState
-import com.mshdabiola.model.Note
-import com.mshdabiola.model.NoteCheck
-import com.mshdabiola.model.NotePad
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 
@@ -121,7 +121,16 @@ fun EditScreen(
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
-        pinNote = editViewModel::pinNote
+        pinNote = editViewModel::pinNote,
+        onLabel = {
+            navigateToSelectLevel(
+                intArrayOf(
+                    editViewModel.notePadUiState.note.id?.toInt() ?: -1
+                )
+            )
+        }
+
+
     )
     AddBottomSheet(
         modalState = modalState,
@@ -163,7 +172,8 @@ fun EditScreen(
     unCheckAllItems: () -> Unit = {},
     deleteCheckItems: () -> Unit = {},
     hideCheckBoxes: () -> Unit = {},
-    pinNote: () -> Unit = {}
+    pinNote: () -> Unit = {},
+    onLabel: () -> Unit = {}
 ) {
 
     var expand by remember {
@@ -424,6 +434,25 @@ fun EditScreen(
                 NoteVoicePlayer(it, playVoice)
                 Spacer(modifier = Modifier.height(4.dp))
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                notepad.labels.forEach {
+                    Surface(
+                        modifier = Modifier.clickable { onLabel() },
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        border = BorderStroke(1.dp, Color.Gray)
+                    ) {
+                        Text(text = it, modifier = Modifier.padding(8.dp))
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+            }
 
 
         }
@@ -436,19 +465,11 @@ fun EditScreen(
 @Composable
 fun EditScreenPreview() {
     EditScreen(
-        notepad = NotePad(
-            note = Note(isCheck = true),
-            checks = listOf(
-                NoteCheck(1, 2, "Food", true),
-                NoteCheck(1, 2, "Food", true),
-                NoteCheck(1, 2, "Food", false),
-                NoteCheck(1, 2, "Food", false),
-                NoteCheck(1, 2, "Food", true),
-                NoteCheck(1, 2, "Food", true),
+        notepad = NotePadUiState(
+            note = NoteUiState(),
+            labels = listOf("abiola", "moshood").toImmutableList()
 
-
-                )
-        ).toNotePadUiState()
+        )
     )
 }
 

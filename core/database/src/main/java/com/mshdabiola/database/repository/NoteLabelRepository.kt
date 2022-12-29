@@ -18,8 +18,8 @@ class NoteLabelRepository
         noteLabelDao.upsert(labels.map { it.toNoteLabelEntity() })
     }
 
-    suspend fun delete(ids: Set<Long>) = withContext(Dispatchers.IO) {
-        noteLabelDao.delete(ids)
+    suspend fun delete(ids: Set<Long>, labelId: Long) = withContext(Dispatchers.IO) {
+        noteLabelDao.delete(ids, labelId)
     }
 
     suspend fun deleteByLabelId(id: Long) = withContext(Dispatchers.IO) {

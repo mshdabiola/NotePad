@@ -12,8 +12,8 @@ interface NoteLabelDao {
     @Upsert
     suspend fun upsert(noteLabelEntity: List<NoteLabelEntity>)
 
-    @Query("DELETE FROM note_label_table WHERE noteId = :ids")
-    suspend fun delete(ids: Set<Long>)
+    @Query("DELETE FROM note_label_table WHERE noteId = :ids AND labelId = :labelId")
+    suspend fun delete(ids: Set<Long>, labelId: Long)
 
     @Query("DELETE FROM note_label_table WHERE labelId = :id")
     suspend fun deleteByLabelId(id: Long)

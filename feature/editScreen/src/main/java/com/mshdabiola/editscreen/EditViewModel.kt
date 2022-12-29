@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.NotePlayer
+import com.mshdabiola.database.repository.LabelRepository
+import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
@@ -27,7 +29,9 @@ import com.mshdabiola.model.NoteVoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,7 +40,9 @@ class EditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notePadRepository: NotePadRepository,
     private val contentManager: ContentManager,
-    private val voicePlayer: NotePlayer
+    private val voicePlayer: NotePlayer,
+    private val noteLabelRepository: NoteLabelRepository,
+    private val labelRepository: LabelRepository
 
 ) : ViewModel() {
 
@@ -82,6 +88,27 @@ class EditViewModel @Inject constructor(
                     Log.e("flow", "$it")
                     insertNotePad(it)
                 }
+        }
+
+        viewModelScope.launch {
+
+            combine(snapshotFlow { notePadUiState }
+                .map { it.note.id }, labelRepository.getAllLabels(), transform = { id, labels ->
+                Pair(id, labels)
+            })
+                .collectLatest { pair ->
+                    pair.first?.let { ids ->
+                        noteLabelRepository.getAll(ids)
+                            .collectLatest { noteLabels ->
+                                val labelString =
+                                    noteLabels.map { noteLabel -> pair.second.single { it.id == noteLabel.labelId }.label }
+
+                                notePadUiState =
+                                    notePadUiState.copy(labels = labelString.toImmutableList())
+                            }
+                    }
+                }
+
         }
 
     }
