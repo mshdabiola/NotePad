@@ -1,27 +1,20 @@
 package com.mshdabiola.editscreen
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
-import android.net.Uri
-import android.speech.RecognizerIntent
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,12 +25,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,12 +35,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -61,7 +48,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -79,14 +65,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -98,10 +82,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.mshdabiola.bottomsheet.ModalBottomSheet
-import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.editscreen.component.AddBottomSheet
+import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
+import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
+import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.editscreen.component.NotificationDialog
 import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.NoteUiState
@@ -120,7 +107,21 @@ fun EditScreen(
     val modalState = rememberModalState()
     val noteModalState = rememberModalState()
     val colorModalState = rememberModalState()
+    val notificationModalState = rememberModalState()
     val coroutineScope = rememberCoroutineScope()
+
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+    val notificationPermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            if (it) {
+                coroutineScope.launch { notificationModalState.show() }
+            }
+        }
+    )
+    val context = LocalContext.current
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
@@ -144,6 +145,15 @@ fun EditScreen(
                     editViewModel.notePadUiState.note.id?.toInt() ?: -1
                 )
             )
+        },
+        onNotification = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
+            ) {
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                coroutineScope.launch { notificationModalState.show() }
+            }
         }
 
 
@@ -174,6 +184,18 @@ fun EditScreen(
         onColorClick = editViewModel::onColorChange,
         onImageClick = editViewModel::onImageChange
     )
+
+
+    NotificationBottomSheet(
+        modalState = notificationModalState,
+        onAlarm = editViewModel::setAlarm,
+        showDialog = { showDialog = true }
+    )
+
+    NotificationDialog(
+        showDialog,
+        onDismissRequest = { showDialog = false }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -197,7 +219,8 @@ fun EditScreen(
     hideCheckBoxes: () -> Unit = {},
     pinNote: () -> Unit = {},
     onLabel: () -> Unit = {},
-    onColorClick: () -> Unit = {}
+    onColorClick: () -> Unit = {},
+    onNotification: () -> Unit = {}
 ) {
 
     var expand by remember {
@@ -278,19 +301,19 @@ fun EditScreen(
                     IconButton(onClick = { pinNote() }) {
                         Icon(
                             painter = painterResource(id = if (notepad.note.isPin) NoteIcon.PinFill else NoteIcon.Pin),
-                            contentDescription = "delete note"
+                            contentDescription = "pin"
                         )
                     }
-                    IconButton(onClick = { onDeleteNote() }) {
+                    IconButton(onClick = { onNotification() }) {
                         Icon(
                             painter = painterResource(id = NoteIcon.Alarm),
-                            contentDescription = "delete note"
+                            contentDescription = "notification"
                         )
                     }
                     IconButton(onClick = { onDeleteNote() }) {
                         Icon(
                             painter = painterResource(id = NoteIcon.Archive),
-                            contentDescription = "delete note"
+                            contentDescription = "archive"
                         )
                     }
 
@@ -656,434 +679,9 @@ fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(NoteVoiceUiState(3, 4, ""))
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddBottomSheet(
-    modalState: ModalState,
-    isNoteCheck: Boolean,
-    saveImage: (Uri, Long) -> Unit = { _, _ -> },
-    saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
-    getPhotoUri: () -> Uri = { Uri.EMPTY },
-    savePhoto: () -> Unit = {},
-    changeToCheckBoxes: () -> Unit = {}
-) {
-    val imageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            it?.let {
-                Log.e("imageUir", "$it")
-
-                val time = System.currentTimeMillis()
-                saveImage(it, time)
-
-            }
-
-        })
-    val snapPictureLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = {
-            if (it) {
-                savePhoto()
-                // navigateToEdit(-3, "image text", photoId)
-            }
-        })
-
-
-    val voiceLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            it.data?.let { intent ->
-                val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                val audiouri = intent.data
-
-
-                if (audiouri != null) {
-                    val time = System.currentTimeMillis()
-                    saveVoice(audiouri, strArr?.joinToString() ?: "", time)
-
-                }
-
-
-            }
-        }
-    )
-
-    val audioPermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
-            onResult = {
-                if (it) {
-                    voiceLauncher.launch(
-                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                            putExtra(
-                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                            )
-                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
-                            putExtra("android.speech.extra.GET_AUDIO", true)
-
-                        })
-
-
-                }
-
-            }
-        )
-
-    val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
 
 
-    ModalBottomSheet(modalState = modalState) {
-        Surface {
-            Column(modifier = Modifier.padding(bottom = 36.dp)) {
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Photo),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Take photo") },
-                    selected = false, onClick = {
-                        snapPictureLauncher.launch(getPhotoUri())
-                        coroutineScope.launch { modalState.hide() }
-                    })
-
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Image),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Add image") },
-                    selected = false, onClick = {
-                        imageLauncher.launch(
-                            PickVisualMediaRequest(
-                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
-                        )
-                        coroutineScope.launch { modalState.hide() }
-
-                    })
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Brush),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Drawing") },
-                    selected = false,
-                    onClick = {
-
-                    })
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Recording") },
-                    selected = false, onClick = {
-                        coroutineScope.launch { modalState.hide() }
-                        if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                            PackageManager.PERMISSION_GRANTED
-                        ) {
-                            voiceLauncher.launch(
-                                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                    putExtra(
-                                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                                    )
-                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                                    putExtra(
-                                        "android.speech.extra.GET_AUDIO_FORMAT",
-                                        "audio/AMR"
-                                    )
-                                    putExtra("android.speech.extra.GET_AUDIO", true)
-
-                                })
-
-                        } else {
-                            audioPermission.launch(Manifest.permission.RECORD_AUDIO)
-                        }
-                    })
-                if (!isNoteCheck) {
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Checkboxes") },
-                        selected = false,
-                        onClick = {
-                            coroutineScope.launch { modalState.hide() }
-                            changeToCheckBoxes()
-                        })
-                }
-
-            }
-        }
-
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NoteOptionBottomSheet(
-    modalState: ModalState,
-    onDelete: () -> Unit = {},
-    onCopy: () -> Unit = {},
-    onSendNote: () -> Unit = {},
-    onLabel: () -> Unit = {},
-    onSaveText: () -> Unit = {}
-) {
-
-    val coroutineScope = rememberCoroutineScope()
-
-    ModalBottomSheet(modalState = modalState) {
-        Surface {
-            Column(modifier = Modifier.padding(bottom = 36.dp)) {
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Delete") },
-                    selected = false, onClick = {
-                        onDelete()
-                        coroutineScope.launch { modalState.hide() }
-                    })
-
-                NavigationDrawerItem(
-                    icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Copy),
-                            contentDescription = ""
-                        )
-                    },
-                    label = { Text(text = "Make a copy") },
-                    selected = false,
-                    onClick = {
-                        onCopy()
-                        coroutineScope.launch { modalState.hide() }
-
-                    })
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Send") },
-                    selected = false,
-                    onClick = {
-                        onSendNote()
-                        coroutineScope.launch { modalState.hide() }
-                    })
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Label),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Labels") },
-                    selected = false, onClick = {
-                        onLabel()
-                        coroutineScope.launch { modalState.hide() }
-
-                    })
-
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Save),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Save as txt") },
-                    selected = false, onClick = {
-                        onSaveText()
-                        coroutineScope.launch { modalState.hide() }
-
-                    })
-
-
-            }
-        }
-
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ColorAndImageBottomSheet(
-    modalState: ModalState,
-    currentColor: Int,
-    currentImage: Int,
-    onColorClick: (Int) -> Unit = {},
-    onImageClick: (Int) -> Unit = {},
-
-    ) {
-
-    val coroutineScope = rememberCoroutineScope()
-    val background = if (currentImage != -1) {
-        NoteIcon.background[currentImage].fgColor
-    } else {
-        if (currentColor != -1) {
-            NoteIcon.noteColors[currentColor]
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
-    }
-
-    ModalBottomSheet(modalState = modalState) {
-        Surface(modifier = Modifier.fillMaxWidth(), color = background) {
-            Column(
-                modifier = Modifier.padding(
-                    bottom = 36.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp
-                )
-            ) {
-                Text(text = "Color")
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
-                        Surface(
-                            onClick = { onColorClick(-1) },
-                            shape = CircleShape,
-                            color = Color.White,
-                            modifier = Modifier.size(40.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (-1 == currentColor) Color.Blue else Color.Gray
-                            )
-                        ) {
-                            if (-1 == currentColor) {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "done",
-                                    tint = Color.Blue,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            } else {
-                                Icon(
-                                    painter = painterResource(id = NoteIcon.ColorNotSupported),
-                                    contentDescription = "done",
-                                    tint = Color.Gray,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
-
-                        }
-                    }
-                    itemsIndexed(NoteIcon.noteColors) { index, color ->
-                        Surface(
-                            onClick = { onColorClick(index) },
-                            shape = CircleShape,
-                            color = color,
-                            modifier = Modifier.size(40.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (index == currentColor) Color.Blue else Color.Gray
-                            )
-                        ) {
-                            if (index == currentColor) {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "done",
-                                    tint = Color.Blue,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
-
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Background")
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                    item {
-                        Box(Modifier.clickable { onImageClick(-1) }) {
-                            Icon(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .border(
-                                        1.dp,
-                                        if (-1 == currentImage) Color.Blue else Color.Gray,
-                                        CircleShape
-                                    )
-                                    .size(56.dp)
-                                    .padding(8.dp),
-                                painter = painterResource(id = NoteIcon.ImageNoteSupported),
-                                contentDescription = ""
-                            )
-                            if (-1 == currentImage) {
-                                Icon(
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(Color.Blue)
-                                        .size(16.dp)
-
-                                        .align(Alignment.TopEnd),
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "",
-                                    tint = Color.White
-
-                                )
-                            }
-
-                        }
-                    }
-                    itemsIndexed(NoteIcon.background) { index, noteBg ->
-
-                        Box(Modifier.clickable { onImageClick(index) }) {
-                            Image(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .border(
-                                        1.dp,
-                                        if (index == currentImage) Color.Blue else Color.Gray,
-                                        CircleShape
-                                    )
-                                    .size(56.dp),
-                                painter = painterResource(id = noteBg.bg),
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop
-                            )
-                            if (index == currentImage) {
-                                Icon(
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(Color.Blue)
-                                        .size(16.dp)
-
-                                        .align(Alignment.TopEnd),
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "",
-                                    tint = Color.White
-
-                                )
-                            }
-
-                        }
-
-                    }
-                }
-
-            }
-        }
-
-    }
-}
-
-@Preview
-@Composable
-fun ImageAndColorBottomSheetPreview() {
-    ColorAndImageBottomSheet(
-        modalState = rememberModalState(),
-        currentColor = -1,
-        currentImage = -1
-    )
-}
 
 
 

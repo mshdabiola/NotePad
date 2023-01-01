@@ -23,6 +23,7 @@ object NoteIcon {
     val NotificationActive = R.drawable.outline_notifications_active_24
     val ColorLens = R.drawable.outline_color_lens_24
     val ColorNotSupported = R.drawable.outline_format_color_reset_24
+    val Time = R.drawable.baseline_access_time_24
 
     val background = listOf(
         NoteBg(Color(0xFFF4DADA), R.drawable.asset_2),

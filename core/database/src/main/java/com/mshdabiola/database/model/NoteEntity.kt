@@ -11,15 +11,41 @@ data class NoteEntity(
     val id: Long?,
     val title: String,
     val detail: String,
-    val date: Long,
+    val editDate: Long,
     val isCheck: Boolean,
     val color: Int,
     val background: Int,
     val isPin: Boolean,
+    val reminder: Long,
+    val interval: Long,
     val noteType: NoteType
 )
 
 fun Note.toNoteEntity() =
-    NoteEntity(id, title, detail, date, isCheck, color, background, isPin, noteType)
+    NoteEntity(
+        id,
+        title,
+        detail,
+        editDate,
+        isCheck,
+        color,
+        background,
+        isPin,
+        reminder,
+        interval,
+        noteType
+    )
 
-fun NoteEntity.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin, noteType)
+fun NoteEntity.toNote() = Note(
+    id,
+    title,
+    detail,
+    editDate,
+    isCheck,
+    color,
+    background,
+    isPin,
+    reminder,
+    interval,
+    noteType
+)

@@ -171,7 +171,7 @@ fun NoteCardPreview() {
                 id = null,
                 title = "Mandy",
                 detail = "Lamia ",
-                date = 314L,
+                editDate = 314L,
                 isCheck = false,
                 color = 2,
                 isPin = false,

@@ -6,3 +6,7 @@ android {
     namespace = "com.mshdabiola.editscreen"
 }
 
+dependencies {
+    implementation(libs.kotlinx.datetime)
+}
+

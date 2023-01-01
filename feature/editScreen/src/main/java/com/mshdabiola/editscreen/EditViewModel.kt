@@ -42,7 +42,8 @@ class EditViewModel @Inject constructor(
     private val contentManager: ContentManager,
     private val voicePlayer: NotePlayer,
     private val noteLabelRepository: NoteLabelRepository,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val alarmManager: AlarmManager
 
 ) : ViewModel() {
 
@@ -323,6 +324,10 @@ class EditViewModel @Inject constructor(
     fun onImageChange(index: Int) {
         val note = notePadUiState.note.copy(background = index)
         notePadUiState = notePadUiState.copy(note = note)
+    }
+
+    fun setAlarm(time: Long, interval: Long?) {
+        alarmManager.setAlarm(time, interval)
     }
 
 
