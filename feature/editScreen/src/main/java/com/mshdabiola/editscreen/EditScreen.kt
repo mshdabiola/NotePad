@@ -157,6 +157,9 @@ fun EditScreen(
             } else {
                 coroutineScope.launch { notificationModalState.show() }
             }
+        },
+        showNotificationDialog = {
+            showDialog = true
         }
 
 
@@ -227,7 +230,8 @@ fun EditScreen(
     pinNote: () -> Unit = {},
     onLabel: () -> Unit = {},
     onColorClick: () -> Unit = {},
-    onNotification: () -> Unit = {}
+    onNotification: () -> Unit = {},
+    showNotificationDialog: () -> Unit = {}
 ) {
 
     var expand by remember {
@@ -545,7 +549,7 @@ fun EditScreen(
 
                 if (notepad.note.reminder > 0) {
                     Surface(
-                        modifier = Modifier.clickable { onLabel() },
+                        modifier = Modifier.clickable { showNotificationDialog() },
                         shape = RoundedCornerShape(8.dp),
                         color = sColor,
                         border = BorderStroke(1.dp, Color.Gray)

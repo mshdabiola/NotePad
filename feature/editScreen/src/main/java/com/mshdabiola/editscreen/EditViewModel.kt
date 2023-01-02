@@ -34,13 +34,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
-import kotlin.time.DurationUnit
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
@@ -337,20 +331,7 @@ class EditViewModel @Inject constructor(
         val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1)
         notePadUiState = notePadUiState.copy(note = note)
 
-        val ti = Clock.System.now().toEpochMilliseconds()
-            .plus(DateTimeUnit.SECOND.duration.toLong(DurationUnit.MILLISECONDS))
-        Log.e(
-            "Editviewmodel", "time ${
-                Instant.fromEpochMilliseconds(time).toLocalDateTime(
-                    TimeZone.currentSystemDefault()
-                )
-            } ti ${
-                Instant.fromEpochMilliseconds(Clock.System.now().toEpochMilliseconds())
-                    .toLocalDateTime(
-                        TimeZone.currentSystemDefault()
-                    )
-            }"
-        )
+
         viewModelScope.launch {
             if (note.id == null) {
                 delay(200)
@@ -360,10 +341,10 @@ class EditViewModel @Inject constructor(
             alarmManager.setAlarm(
                 time,
                 interval,
-                requestCode = 0//notePadUiState.note.id?.toInt() ?: -1
-                ,
+                requestCode = notePadUiState.note.id?.toInt() ?: -1,
                 title = notePadUiState.note.title,
-                content = notePadUiState.note.detail
+                content = notePadUiState.note.detail,
+                noteId = notePadUiState.note.id ?: 0L
             )
         }
 
