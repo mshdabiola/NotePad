@@ -28,6 +28,7 @@ import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -327,7 +328,36 @@ class EditViewModel @Inject constructor(
     }
 
     fun setAlarm(time: Long, interval: Long?) {
-        alarmManager.setAlarm(time, interval)
+        val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1)
+        notePadUiState = notePadUiState.copy(note = note)
+
+        viewModelScope.launch {
+            if (note.id == null) {
+                delay(200)
+            }
+
+            alarmManager.setAlarm(
+                time,
+                interval,
+                requestCode = notePadUiState.note.id?.toInt() ?: -1,
+                title = notePadUiState.note.title,
+                content = notePadUiState.note.detail
+            )
+        }
+
+    }
+
+    fun deleteAlarm() {
+        val note = notePadUiState.note.copy(reminder = -1, interval = -1)
+        notePadUiState = notePadUiState.copy(note = note)
+
+        viewModelScope.launch {
+            val id = note.id
+            if (id != null) {
+                alarmManager.deleteAlarm(id.toInt())
+            }
+
+        }
     }
 
 

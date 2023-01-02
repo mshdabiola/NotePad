@@ -89,12 +89,15 @@ import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
 import com.mshdabiola.editscreen.component.NotificationDialog
+import com.mshdabiola.editscreen.component.toDateString
+import com.mshdabiola.editscreen.component.toTimeString
 import com.mshdabiola.editscreen.state.NoteCheckUiState
 import com.mshdabiola.editscreen.state.NotePadUiState
 import com.mshdabiola.editscreen.state.NoteUiState
 import com.mshdabiola.editscreen.state.NoteVoiceUiState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 
 @Composable
@@ -533,6 +536,43 @@ fun EditScreen(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
             ) {
+
+                //label
+
+                if (notepad.note.reminder > 0) {
+                    Surface(
+                        modifier = Modifier.clickable { onLabel() },
+                        shape = RoundedCornerShape(8.dp),
+                        color = sColor,
+                        border = BorderStroke(1.dp, Color.Gray)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            if (notepad.note.interval > 0) {
+                                Icon(
+                                    painter = painterResource(id = NoteIcon.Repeat),
+                                    contentDescription = ""
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                            } else {
+                                Icon(
+                                    painter = painterResource(id = NoteIcon.Alarm),
+                                    contentDescription = ""
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                            }
+                            Text(
+                                text = "${notepad.note.reminder.toDateString()} ${notepad.note.reminder.toTimeString()}",
+
+                                )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+
+
                 notepad.labels.forEach {
                     Surface(
                         modifier = Modifier.clickable { onLabel() },
@@ -558,7 +598,12 @@ fun EditScreen(
 fun EditScreenPreview() {
     EditScreen(
         notepad = NotePadUiState(
-            note = NoteUiState(color = 1, background = 1),
+            note = NoteUiState(
+                color = 1,
+                background = 1,
+                reminder = Clock.System.now().toEpochMilliseconds(),
+                interval = 1
+            ),
             labels = listOf("abiola", "moshood").toImmutableList()
 
         )

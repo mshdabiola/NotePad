@@ -13,11 +13,19 @@ class AlarmManager
 ) {
 
 
-    fun setAlarm(timeInMil: Long, interval: Long?) {
+    fun setAlarm(
+        timeInMil: Long,
+        interval: Long?,
+        requestCode: Int = 0,
+        title: String = "",
+        content: String = ""
+    ) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            intent.putExtra("title", title)
+            intent.putExtra("content", content)
+            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
         }
 
 // Set the alarm to start at 8:30 a.m.
@@ -44,6 +52,22 @@ class AlarmManager
             )
         }
 
+
+    }
+
+    fun deleteAlarm(requestCode: Int = 0) {
+        val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(
+                context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
+        alarmMgr.cancel(alarmIntent)
 
     }
 }
