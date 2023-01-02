@@ -40,13 +40,13 @@ class AlarmManager
 // setRepeating() lets you specify a precise custom interval--in this case,
 // 20 minutes.
         if (interval == null) {
-            alarmMgr.set(
+            alarmMgr.setExact(
                 /* type = */ AlarmManager.RTC_WAKEUP,
                 /* triggerAtMillis = */ timeInMil,
                 /* operation = */ alarmIntent
             )
         } else {
-            alarmMgr.setRepeating(
+            alarmMgr.setInexactRepeating(
                 /* type = */ AlarmManager.RTC_WAKEUP,
                 /* triggerAtMillis = */ timeInMil,
                 /* intervalMillis = 1000 * 60 * 20*/interval,
