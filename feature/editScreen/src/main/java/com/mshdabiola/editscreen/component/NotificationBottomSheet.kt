@@ -130,7 +130,11 @@ fun NotificationBottomSheet(
                     icon = NoteIcon.Time,
                     title = "Pick a date & time",
                     time = "",
-                    onClick = showDialog
+                    onClick = {
+
+                        showDialog()
+                        coroutineScope.launch { modalState.hide() }
+                    }
                 )
             }
         }

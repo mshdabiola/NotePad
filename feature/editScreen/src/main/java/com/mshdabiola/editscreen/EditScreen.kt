@@ -197,7 +197,11 @@ fun EditScreen(
 
     NotificationDialog(
         showDialog,
-        onDismissRequest = { showDialog = false }
+        onDismissRequest = { showDialog = false },
+        remainder = editViewModel.notePadUiState.note.reminder,
+        interval = if (editViewModel.notePadUiState.note.interval == (-1L)) null else editViewModel.notePadUiState.note.interval,
+        onSetAlarm = editViewModel::setAlarm,
+        onDeleteAlarm = editViewModel::deleteAlarm
     )
 }
 

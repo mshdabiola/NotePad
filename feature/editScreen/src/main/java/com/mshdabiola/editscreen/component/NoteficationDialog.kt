@@ -3,9 +3,14 @@ package com.mshdabiola.editscreen.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -13,6 +18,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,58 +28,91 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotificationDialog(
     showDialog: Boolean = true,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
+    remainder: Long = -1,
+    interval: Long? = null,
+    onSetAlarm: (Long, Long?) -> Unit = { _, _ -> },
+    onDeleteAlarm: () -> Unit = {}
 ) {
 
     val state = rememberPagerState(0)
     val coroutineScope = rememberCoroutineScope()
+    var dateTime by remember(remainder) {
+        val time = if (remainder > -1)
+            Instant.fromEpochMilliseconds(remainder).toLocalDateTime(TimeZone.UTC)
+        else
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+        mutableStateOf(time)
+    }
+    var inter by remember(interval) {
+        mutableStateOf(interval)
+    }
+
     AnimatedVisibility(visible = showDialog) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Edit Reminder") },
+            title = { Text(text = if (remainder > 0) "Edit Reminder" else "Add Reminder") },
             text = {
 
                 Column {
                     TabRow(selectedTabIndex = state.currentPage) {
-                        Tab(selected = state.currentPage == 0, onClick = {
+                        Tab(
+                            selected = state.currentPage == 0,
+                            onClick = {
 
-                            coroutineScope.launch {
-                                state.animateScrollToPage(0)
-                            }
-
-                        }) {
+                                coroutineScope.launch {
+                                    state.animateScrollToPage(0)
+                                }
+                            },
+                            modifier = Modifier.padding(8.dp)
+                        ) {
                             Text(text = "Time")
                         }
-                        Tab(selected = state.currentPage == 1, onClick = {
+                        Tab(
+                            selected = state.currentPage == 1, onClick = {
 
-                            coroutineScope.launch {
-                                state.animateScrollToPage(1)
-                            }
-                        }) {
+                                coroutineScope.launch {
+                                    //   state.animateScrollToPage(1)
+                                }
+                            },
+                            modifier = Modifier.padding(8.dp)
+                        ) {
                             Text(text = "Place")
                         }
                     }
                     HorizontalPager(
-                        pageCount = 2,
+                        pageCount = 1,
                         state = state
-                    ) {
+                    ) { index ->
 
-                        if (it == 0) {
-                            TimeContent()
+                        if (index == 0) {
+                            TimeContent(inter, dateTime,
+                                onDateChange = {
+                                    dateTime = it
+                                },
+                                onIntervalChange = {
+                                    inter = it
+                                }
+                            )
                         } else {
                             Column {
                                 Text(text = "Location")
@@ -87,8 +126,31 @@ fun NotificationDialog(
 
 
             },
-            confirmButton = {},
-            dismissButton = {}
+            confirmButton = {
+                Button(onClick = {
+                    onDismissRequest()
+                    onSetAlarm(dateTime.toInstant(TimeZone.UTC).toEpochMilliseconds(), inter)
+                }) {
+                    Text(text = "Save")
+                }
+            },
+            dismissButton = {
+                Row {
+                    if (remainder > 0) {
+                        TextButton(onClick = {
+                            onDismissRequest()
+                            onDeleteAlarm()
+                        }) {
+                            Text(text = "Delete")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    TextButton(onClick = { onDismissRequest() }) {
+                        Text(text = "Cancel")
+                    }
+                }
+
+            }
         )
     }
 
@@ -102,33 +164,50 @@ fun NotificationDialogPreview() {
 
 
 @Composable
-fun TimeContent() {
-    val time = LocalDateTime(LocalDate(2022, 12, 31), LocalTime(18, 43))
+fun TimeContent(
+    interval: Long? = null,
+    dateTime: LocalDateTime,
+    onDateChange: (LocalDateTime) -> Unit = {},
+    onIntervalChange: (Long?) -> Unit = {}
+) {
 
-    val instant = time.toInstant(TimeZone.UTC)
+    val instant = dateTime.toInstant(TimeZone.UTC)
 
     Column {
-        TimeDropbox(value = instant.toEpochMilliseconds())
-        DateDropbox(value = instant.toEpochMilliseconds())
-        RepeatDropbox(value = 0)
+        TimeDropbox(
+            value = instant.toEpochMilliseconds(),
+            onValueChange = {
+                onDateChange(LocalDateTime(dateTime.date, it))
+            }
+        )
+        DateDropbox(
+            value = instant.toEpochMilliseconds(),
+            onValueChange = {
+                onDateChange(LocalDateTime(it, dateTime.time))
+            }
+        )
+        RepeatDropbox(
+            value = interval,
+            onValueChange = onIntervalChange
+        )
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
+fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
 
     var expanded by remember {
         mutableStateOf(false)
     }
 
     val options = listOf(
-        Pair("Morning", LocalTime(7, 0).toMillisecondOfDay()),
-        Pair("Afternoon", LocalTime(13, 0).toMillisecondOfDay()),
-        Pair("Evening", LocalTime(19, 0).toMillisecondOfDay()),
-        Pair("Night", LocalTime(20, 0).toMillisecondOfDay()),
-        Pair("Pick time", 0)
+        Pair("Morning", LocalTime(7, 0)),
+        Pair("Afternoon", LocalTime(13, 0)),
+        Pair("Evening", LocalTime(19, 0)),
+        Pair("Night", LocalTime(20, 0)),
+        //Pair("Pick time", 0)
     )
 
     ExposedDropdownMenuBox(
@@ -157,7 +236,11 @@ fun TimeDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
                         onValueChange(pair.second)
                         expanded = false
                     },
-                    trailingIcon = { Text(text = pair.second.toLong().toTimeString()) }
+                    trailingIcon = {
+                        Text(
+                            text = pair.second.toMillisecondOfDay().toLong().toTimeString()
+                        )
+                    }
                 )
             }
         }
@@ -167,18 +250,21 @@ fun TimeDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
+fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
     var expanded by remember {
         mutableStateOf(false)
     }
-    var curr by remember {
-        mutableStateOf(0)
+
+    val date = remember(value) {
+        Clock.System.todayIn(TimeZone.UTC)
     }
-    val options = listOf(
-        Pair("Today", LocalDate(2, 4, 5).toEpochDays()),
-        Pair("Tomorrow", LocalDate(2, 4, 5).toEpochDays()),
-        Pair("Pick date", 0)
-    )
+    val options = remember {
+        listOf(
+            Pair("Today", date),
+            Pair("Tomorrow", date.plus(DateTimeUnit.DAY)),
+            //Pair("Pick date", 0)
+        )
+    }
     ExposedDropdownMenuBox(
         modifier = Modifier,
         expanded = expanded,
@@ -197,12 +283,12 @@ fun DateDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            options.forEachIndexed { index, string ->
+            options.forEach { string ->
                 DropdownMenuItem(
                     text = { Text(text = string.first) },
                     onClick = {
 
-                        onValueChange(index)
+                        onValueChange(string.second)
                         expanded = false
                     }
                 )
@@ -214,18 +300,30 @@ fun DateDropbox(value: Long, onValueChange: (Int) -> Unit = {}) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RepeatDropbox(value: Int, onValueChange: (Int) -> Unit = {}) {
+fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
     var expanded by remember {
         mutableStateOf(false)
     }
 
-    val options = listOf(
-        Pair("Daily", DateTimeUnit.HOUR.times(24).nanoseconds.times(1000)),
-        Pair("Weekly", DateTimeUnit.HOUR.times(24 * 7).nanoseconds.times(1000)),
-        Pair("Monthly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
-        Pair("Yearly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
-        Pair("Pick time", 0)
-    )
+    val options = remember {
+        listOf(
+            Pair("Does not repeat", null),
+            Pair("Daily", DateTimeUnit.HOUR.times(24).nanoseconds.times(1000)),
+            Pair("Weekly", DateTimeUnit.HOUR.times(24 * 7).nanoseconds.times(1000)),
+            Pair("Monthly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
+            Pair("Yearly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
+            // Pair("Pick time", 0)
+        )
+    }
+
+
+    val index = remember(value) {
+
+        if (value == null)
+            0
+        else
+            options.indexOfFirst { it.second == value }
+    }
 
     ExposedDropdownMenuBox(
         modifier = Modifier,
@@ -235,7 +333,7 @@ fun RepeatDropbox(value: Int, onValueChange: (Int) -> Unit = {}) {
         TextField(
             modifier = Modifier.menuAnchor(),
             readOnly = true,
-            value = options[value].first,
+            value = options[index].first,
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -245,12 +343,12 @@ fun RepeatDropbox(value: Int, onValueChange: (Int) -> Unit = {}) {
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            options.forEachIndexed { index, string ->
+            options.forEach { string ->
                 DropdownMenuItem(
                     text = { Text(text = string.first) },
                     onClick = {
 
-                        onValueChange(index)
+                        onValueChange(string.second)
                         expanded = false
                     }
                 )
@@ -263,7 +361,9 @@ fun RepeatDropbox(value: Int, onValueChange: (Int) -> Unit = {}) {
 @Preview
 @Composable
 fun TimeColumnPreview() {
-    TimeContent()
+    TimeContent(
+        dateTime = LocalDateTime(2021, 4, 5, 0, 0, 0),
+    )
 }
 
 
