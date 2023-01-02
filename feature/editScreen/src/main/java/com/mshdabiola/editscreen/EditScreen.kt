@@ -568,7 +568,11 @@ fun EditScreen(
                                 Spacer(modifier = Modifier.width(2.dp))
                             }
                             Text(
-                                text = "${notepad.note.reminder.toDateString()} ${notepad.note.reminder.toTimeString()}",
+                                text = "${notepad.note.reminder.toDateString()} ${
+                                    notepad.note.reminder.toTimeString(
+                                        true
+                                    )
+                                }",
 
                                 )
                         }

@@ -60,7 +60,8 @@ fun NotificationDialog(
     val coroutineScope = rememberCoroutineScope()
     var dateTime by remember(remainder) {
         val time = if (remainder > -1)
-            Instant.fromEpochMilliseconds(remainder).toLocalDateTime(TimeZone.UTC)
+            Instant.fromEpochMilliseconds(remainder)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
         else
             Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
@@ -129,14 +130,13 @@ fun NotificationDialog(
                                             DatePickerDialog(
                                                 context,
                                                 { _, y, m, d ->
-                                                    dateTime =
-                                                        LocalDateTime(
-                                                            LocalDate(y, m + 1, d),
-                                                            dateTime.time
-                                                        )
+                                                    dateTime = LocalDateTime(
+                                                        LocalDate(y, m + 1, d),
+                                                        dateTime.time
+                                                    )
                                                 },
                                                 dateTime.year,
-                                                dateTime.monthNumber,
+                                                dateTime.monthNumber - 1,
                                                 dateTime.dayOfMonth
 
                                             ).show()
@@ -166,7 +166,10 @@ fun NotificationDialog(
             confirmButton = {
                 Button(onClick = {
                     onDismissRequest()
-                    onSetAlarm(dateTime.toInstant(TimeZone.UTC).toEpochMilliseconds(), inter)
+                    onSetAlarm(
+                        dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                        inter
+                    )
                 }) {
                     Text(text = "Save")
                 }
@@ -407,15 +410,19 @@ fun TimeColumnPreview() {
 }
 
 
-fun Long.toTimeString(): String {
+fun Long.toTimeString(isCurr: Boolean = false): String {
     val instant =
         Instant.fromEpochMilliseconds(this)
 
-    val dateTime = instant.toLocalDateTime(TimeZone.UTC)
+    val dateTime = instant.toLocalDateTime(
+        if (isCurr) TimeZone.currentSystemDefault() else TimeZone.UTC
+    )
     val hour = dateTime.hour % 12L
     val a = if (dateTime.hour > 11) "PM" else "AM"
     return "%02d : %02d %s".format(hour, dateTime.minute, a)
 }
+
+
 
 
 fun Long.toDateString(): String {

@@ -95,9 +95,10 @@ fun NotificationBottomSheet(
                         coroutineScope.launch { modalState.hide() }
 
                         val time = if (pastToday)
-                            morningTom.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                            morningTom.toInstant(TimeZone.currentSystemDefault())
+                                .toEpochMilliseconds()
                         else
-                            evening.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                            evening.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
                         onAlarm(time, null)
                     }
@@ -110,9 +111,11 @@ fun NotificationBottomSheet(
                         coroutineScope.launch { modalState.hide() }
 
                         val time = if (pastToday)
-                            eveningTom.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                            eveningTom.toInstant(TimeZone.currentSystemDefault())
+                                .toEpochMilliseconds()
                         else
-                            morningTom.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                            morningTom.toInstant(TimeZone.currentSystemDefault())
+                                .toEpochMilliseconds()
 
                         onAlarm(time, null)
                     }
@@ -123,7 +126,10 @@ fun NotificationBottomSheet(
                     title = "$dayOfWeek morning",
                     time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
                     onClick = {
-                        onAlarm(nextWk.toInstant(TimeZone.UTC).toEpochMilliseconds(), null)
+                        onAlarm(
+                            nextWk.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                            null
+                        )
                     }
                 )
                 NotificationItem(
