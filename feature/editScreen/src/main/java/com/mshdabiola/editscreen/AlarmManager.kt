@@ -17,14 +17,16 @@ class AlarmManager
         timeInMil: Long,
         interval: Long?,
         requestCode: Int = 0,
-        title: String = "",
-        content: String = ""
+        title: String,
+        noteId: Long,
+        content: String
     ) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             intent.putExtra("title", title)
             intent.putExtra("content", content)
+            intent.putExtra("id", noteId)
             PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
         }
 

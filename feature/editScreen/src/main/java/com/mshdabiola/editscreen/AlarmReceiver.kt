@@ -18,11 +18,15 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val id = "com.mshdabiola.notepad.alarm"
+        val title = intent.getStringExtra("title")?.ifBlank { "Alarm" } ?: "Alarm"
+        val noteId = intent.getLongExtra("id", 0)
+        val content = intent.getStringExtra("content")?.ifBlank { "Alarm notification" }
+            ?: "Alarm notification"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(id, "NotePad Notification", "for alarm", notificationManager)
         }
-        sendNotification(id, "Alarm", "Alarm notification", context, notificationManager)
+        sendNotification(id, title, content, context, noteId, notificationManager)
 
     }
 
@@ -49,6 +53,7 @@ class AlarmReceiver : BroadcastReceiver() {
         title: String,
         message: String,
         context: Context,
+        notiId: Long,
         notificationManager: NotificationManager
     ) {
         val notification = NotificationCompat.Builder(context, id)
@@ -58,7 +63,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setChannelId(id)
             .build()
 
-        notificationManager.notify(101, notification)
+        notificationManager.notify(notiId.toInt(), notification)
 
     }
 }
