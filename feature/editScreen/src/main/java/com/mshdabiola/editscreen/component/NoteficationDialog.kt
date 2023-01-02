@@ -1,5 +1,7 @@
 package com.mshdabiola.editscreen.component
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -66,6 +69,7 @@ fun NotificationDialog(
     var inter by remember(interval) {
         mutableStateOf(interval)
     }
+    val context = LocalContext.current
 
     AnimatedVisibility(visible = showDialog) {
         AlertDialog(
@@ -107,7 +111,40 @@ fun NotificationDialog(
                         if (index == 0) {
                             TimeContent(inter, dateTime,
                                 onDateChange = {
-                                    dateTime = it
+                                    if (it.time == LocalTime(0, 0)) {
+                                        TimePickerDialog(
+                                            context,
+                                            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                                                dateTime = LocalDateTime(
+                                                    dateTime.date,
+                                                    LocalTime(hourOfDay, minute)
+                                                )
+                                            },
+                                            dateTime.hour,
+                                            dateTime.minute,
+                                            false
+                                        ).show()
+                                    } else
+                                        if (it.date == LocalDate(1993, 1, 1)) {
+                                            DatePickerDialog(
+                                                context,
+                                                { _, y, m, d ->
+                                                    dateTime =
+                                                        LocalDateTime(
+                                                            LocalDate(y, m + 1, d),
+                                                            dateTime.time
+                                                        )
+                                                },
+                                                dateTime.year,
+                                                dateTime.monthNumber,
+                                                dateTime.dayOfMonth
+
+                                            ).show()
+
+                                        } else {
+                                            dateTime = it
+                                        }
+
                                 },
                                 onIntervalChange = {
                                     inter = it
@@ -207,7 +244,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
         Pair("Afternoon", LocalTime(13, 0)),
         Pair("Evening", LocalTime(19, 0)),
         Pair("Night", LocalTime(20, 0)),
-        //Pair("Pick time", 0)
+        Pair("Pick time", LocalTime(0, 0))
     )
 
     ExposedDropdownMenuBox(
@@ -262,7 +299,7 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
         listOf(
             Pair("Today", date),
             Pair("Tomorrow", date.plus(DateTimeUnit.DAY)),
-            //Pair("Pick date", 0)
+            Pair("Pick date", LocalDate(1993, 1, 1))
         )
     }
     ExposedDropdownMenuBox(
@@ -312,17 +349,20 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
             Pair("Weekly", DateTimeUnit.HOUR.times(24 * 7).nanoseconds.times(1000)),
             Pair("Monthly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
             Pair("Yearly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
-            // Pair("Pick time", 0)
+            //  Pair("Pick time", 0L)
         )
     }
 
 
     val index = remember(value) {
 
-        if (value == null)
+        val i = options.indexOfFirst { it.second == value }
+        if (value == null || i == -1)
             0
-        else
-            options.indexOfFirst { it.second == value }
+        else {
+            i
+        }
+
     }
 
     ExposedDropdownMenuBox(
