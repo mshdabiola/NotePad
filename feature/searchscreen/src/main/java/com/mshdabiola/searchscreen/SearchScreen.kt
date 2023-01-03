@@ -61,6 +61,12 @@ fun SearchScreen(
     onClearSearchText: () -> Unit = {}
 
 ) {
+    val focusRequester = remember {
+        FocusRequester()
+    }
+    LaunchedEffect(key1 = Unit) {
+        focusRequester.requestFocus()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,7 +77,9 @@ fun SearchScreen(
                 },
                 title = {
                     NoteTextField(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth(),
                         value = searchUiState.search,
                         placeholder = { Text(text = "Search") },
                         onValueChange = onSearchTextChange,
