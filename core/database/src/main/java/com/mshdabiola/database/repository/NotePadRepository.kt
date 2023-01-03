@@ -61,6 +61,9 @@ class NotePadRepository
     fun getNotePads(noteType: NoteType) = notePadDao
         .getListOfNotePad(noteType).map { entities -> entities.map { it.toNotePad() } }
 
+    fun getNotePads() = notePadDao
+        .getListOfNotePad().map { entities -> entities.map { it.toNotePad() } }
+
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
     suspend fun getOneNotePad(id: Long): NotePad {

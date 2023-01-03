@@ -14,6 +14,11 @@ interface NotepadDao {
     fun getListOfNotePad(noteType: NoteType): Flow<List<NotePadEntity>>
 
     @Transaction
+    @Query("SELECT * FROM note_table ORDER BY id DESC")
+    fun getListOfNotePad(): Flow<List<NotePadEntity>>
+
+    @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")
     suspend fun getOneNotePad(noteId: Long): NotePadEntity
+
 }

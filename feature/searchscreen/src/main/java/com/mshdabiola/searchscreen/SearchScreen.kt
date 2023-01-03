@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +20,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +46,8 @@ fun SearchScreen(
         onBack = onBack,
         navigateToEdit = navigateToEdit,
         searchUiState = viewModel.searchUiState,
-        onSearchTextChange = viewModel::onSearchTextChange
+        onSearchTextChange = viewModel::onSearchTextChange,
+        onClearSearchText = viewModel::onClearSearchText
     )
 }
 
@@ -51,7 +57,8 @@ fun SearchScreen(
     searchUiState: SearchUiState,
     onBack: () -> Unit,
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
-    onSearchTextChange: (String) -> Unit = {}
+    onSearchTextChange: (String) -> Unit = {},
+    onClearSearchText: () -> Unit = {}
 
 ) {
     Scaffold(
@@ -68,7 +75,15 @@ fun SearchScreen(
                         value = searchUiState.search,
                         placeholder = { Text(text = "Search") },
                         onValueChange = onSearchTextChange,
-                        textStyle = MaterialTheme.typography.bodyLarge
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        trailingIcon = {
+                            IconButton(onClick = { onClearSearchText() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "delete"
+                                )
+                            }
+                        }
                     )
                 }
             )
