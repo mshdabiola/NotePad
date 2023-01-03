@@ -13,8 +13,9 @@ android {
 
 dependencies {
 
-    //implementation (project( ":model"))
+    implementation(project(":core:model"))
 
     testImplementation(libs.junit4)
+    implementation(libs.kotlinx.collection.immutable)
 
 }

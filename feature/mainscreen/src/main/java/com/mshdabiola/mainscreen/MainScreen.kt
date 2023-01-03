@@ -11,6 +11,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,15 +56,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.component.state.LabelUiState
+import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.designsystem.component.state.NoteType
+import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.mainscreen.component.NoteCard
-import com.mshdabiola.mainscreen.state.LabelUiState
-import com.mshdabiola.mainscreen.state.NotePadUiState
-import com.mshdabiola.mainscreen.state.NoteType
-import com.mshdabiola.mainscreen.state.toNotePadUiState
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import kotlinx.collections.immutable.ImmutableList
@@ -75,7 +76,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
-    navigateToLevel: (Boolean) -> Unit
+    navigateToLevel: (Boolean) -> Unit,
+    navigateToSearch: () -> Unit
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
@@ -84,6 +86,7 @@ fun MainScreen(
         labels = mainState.value.labels,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
+        navigateToSearch = navigateToSearch,
         saveImage = mainViewModel::savePhoto,
         saveVoice = mainViewModel::saveVoice,
         photoUri = mainViewModel::getPhotoUri,
@@ -104,7 +107,8 @@ fun MainScreen(
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
     photoUri: (Long) -> Uri = { Uri.EMPTY },
     currentNoteType: NoteType = NoteType.NOTE,
-    onNavigationNoteType: (NoteType) -> Unit = {}
+    onNavigationNoteType: (NoteType) -> Unit = {},
+    navigateToSearch: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -231,7 +235,8 @@ fun MainScreen(
                             }
                             Text(
                                 text = "Search your note",
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.clickable { navigateToSearch() }
                             )
 
 
@@ -389,7 +394,7 @@ fun MainScreenPreview() {
                 NotePad().toNotePadUiState()
             )
                 .toImmutableList(),
-            labels = emptyList<LabelUiState>().toImmutableList()
+            labels = emptyList<LabelUiState>().toImmutableList(),
         )
     }
 

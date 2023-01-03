@@ -30,9 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.state.LabelUiState
+import com.mshdabiola.designsystem.component.state.NoteType
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.mainscreen.state.LabelUiState
-import com.mshdabiola.mainscreen.state.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
