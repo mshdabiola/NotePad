@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.designsystem.component.state
 
 sealed class NoteType {
     object NOTE : NoteType()

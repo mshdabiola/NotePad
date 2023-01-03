@@ -1,5 +1,8 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.mainscreen
 
+import com.mshdabiola.designsystem.component.state.LabelUiState
+import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.designsystem.component.state.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

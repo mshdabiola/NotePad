@@ -1,4 +1,4 @@
-package com.mshdabiola.editscreen.state
+package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.NoteImage
 
@@ -9,4 +9,5 @@ data class NoteImageUiState(
 )
 
 fun NoteImage.toNoteImageUiState() = NoteImageUiState(id, noteId, imageName)
+
 fun NoteImageUiState.toNoteImage() = NoteImage(id, noteId, imageName)

@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.Note
 
@@ -18,5 +18,8 @@ data class NoteUiState(
 fun Note.toNoteUiState() =
     NoteUiState(id, title, detail, editDate, isCheck, color, background, isPin, reminder, interval)
 
+fun NoteUiState.toNote() =
+    Note(id, title, detail, editDate, isCheck, color, background, isPin, reminder, interval)
 //fun NoteUiState.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin)
+
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mshdabiola.editscreen.navigateToEditScreen
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.mainscreen.navigateToMain
+import com.mshdabiola.searchscreen.navigateToSearch
 import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
 
 data class NotePadAppState(
@@ -32,6 +33,10 @@ data class NotePadAppState(
 
     fun navigateToLevel(editMode: Boolean) {
         navHostController.navigateToLabel(editMode)
+    }
+
+    fun navigateToSearch() {
+        navHostController.navigateToSearch()
     }
 
     fun onBack() {

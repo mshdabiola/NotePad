@@ -7,12 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
-import com.mshdabiola.mainscreen.state.MainState
-import com.mshdabiola.mainscreen.state.NotePadUiState
-import com.mshdabiola.mainscreen.state.NoteType
-import com.mshdabiola.mainscreen.state.toLabelUiState
-import com.mshdabiola.mainscreen.state.toNotePadUiState
-import com.mshdabiola.mainscreen.state.toNoteType
+import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.designsystem.component.state.NoteType
+import com.mshdabiola.designsystem.component.state.toLabelUiState
+import com.mshdabiola.designsystem.component.state.toNotePadUiState
+import com.mshdabiola.designsystem.component.state.toNoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow

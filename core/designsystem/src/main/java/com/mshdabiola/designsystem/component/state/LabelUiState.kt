@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.Label
 

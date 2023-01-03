@@ -17,6 +17,7 @@ fun NotePadApp(
             navigateToLevel = noteAppState::navigateToLevel,
             navigateToSelectLevel = noteAppState::navigateToSelectLevel,
             navigateToMain = noteAppState::navigateToMain,
+            navigateToSearch = noteAppState::navigateToSearch,
             onBack = noteAppState::onBack
         )
     }

@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.component
+package com.mshdabiola.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

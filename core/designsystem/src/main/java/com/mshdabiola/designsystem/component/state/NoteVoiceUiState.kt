@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.NoteVoice
 
@@ -9,3 +9,5 @@ data class NoteVoiceUiState(
 )
 
 fun NoteVoice.toNoteVoiceUiState() = NoteVoiceUiState(id, noteId, voiceName)
+
+fun NoteVoiceUiState.toNoteVoice() = NoteVoice(id, noteId, voiceName)

@@ -1,4 +1,4 @@
-package com.mshdabiola.mainscreen.state
+package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NotePad
@@ -21,4 +21,11 @@ fun NotePad.toNotePadUiState(list: List<Label> = emptyList()) = NotePadUiState(
     checks = checks.map { it.toNoteCheckUiState() }.toImmutableList(),
     labels = labels.map { s -> list.singleOrNull { it.id == s.labelId }?.label ?: "" }
         .toImmutableList()
+)
+
+fun NotePadUiState.toNotePad() = NotePad(
+    note = note.toNote(),
+    images = images.map { it.toNoteImage() },
+    voices = voices.map { it.toNoteVoice() },
+    checks = checks.map { it.toNoteCheck() }
 )
