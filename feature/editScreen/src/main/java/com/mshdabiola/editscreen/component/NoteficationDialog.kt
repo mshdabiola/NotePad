@@ -44,6 +44,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -58,12 +59,15 @@ fun NotificationDialog(
 
     val state = rememberPagerState(0)
     val coroutineScope = rememberCoroutineScope()
+    val now = remember {
+        Clock.System.now()
+    }
     var dateTime by remember(remainder) {
         val time = if (remainder > -1)
             Instant.fromEpochMilliseconds(remainder)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
         else
-            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            now.toLocalDateTime(TimeZone.currentSystemDefault())
 
         mutableStateOf(time)
     }
@@ -165,11 +169,16 @@ fun NotificationDialog(
             },
             confirmButton = {
                 Button(onClick = {
-                    onDismissRequest()
-                    onSetAlarm(
-                        dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-                        inter
-                    )
+                    val va = dateTime.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                    if (va > now.toEpochMilliseconds()) {
+                        onDismissRequest()
+                        onSetAlarm(
+                            dateTime.toInstant(TimeZone.currentSystemDefault())
+                                .toEpochMilliseconds(),
+                            inter
+                        )
+                    }
+
                 }) {
                     Text(text = "Save")
                 }
@@ -242,13 +251,30 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
         mutableStateOf(false)
     }
 
-    val options = listOf(
-        Pair("Morning", LocalTime(7, 0)),
-        Pair("Afternoon", LocalTime(13, 0)),
-        Pair("Evening", LocalTime(19, 0)),
-        Pair("Night", LocalTime(20, 0)),
-        Pair("Pick time", LocalTime(0, 0))
-    )
+    val options =
+        remember {
+            listOf(
+                Pair("Morning", LocalTime(7, 0)),
+                Pair("Afternoon", LocalTime(13, 0)),
+                Pair("Evening", LocalTime(19, 0)),
+                Pair("Night", LocalTime(20, 0)),
+                Pair("Pick time", LocalTime(0, 0))
+            )
+        }
+    val lastIndex = remember {
+        options.lastIndex
+    }
+    val now = remember {
+        Clock.System.now()
+    }
+    val nowtime = remember {
+        now.toLocalDateTime(TimeZone.UTC).time
+    }
+    val valueTime = remember(value) {
+        Instant.fromEpochMilliseconds(value).toLocalDateTime(TimeZone.currentSystemDefault()).time
+    }
+
+
 
     ExposedDropdownMenuBox(
         modifier = Modifier,
@@ -259,6 +285,8 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
             modifier = Modifier.menuAnchor(),
             readOnly = true,
             value = value.toTimeString(),
+            supportingText = { if (now.toEpochMilliseconds() > value) Text(text = "Time as past") },
+            isError = now.toEpochMilliseconds() > value,
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -268,7 +296,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            options.forEach { pair ->
+            options.forEachIndexed { index, pair ->
                 DropdownMenuItem(
                     text = { Text(text = pair.first) },
                     onClick = {
@@ -276,10 +304,14 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
                         onValueChange(pair.second)
                         expanded = false
                     },
+                    enabled = if (index != lastIndex) pair.second > nowtime else true,
                     trailingIcon = {
-                        Text(
-                            text = pair.second.toMillisecondOfDay().toLong().toTimeString()
-                        )
+                        if (index != lastIndex) {
+                            Text(
+                                text = pair.second.toMillisecondOfDay().toLong().toTimeString()
+                            )
+                        }
+
                     }
                 )
             }
@@ -348,10 +380,19 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
     val options = remember {
         listOf(
             Pair("Does not repeat", null),
-            Pair("Daily", DateTimeUnit.HOUR.times(24).nanoseconds.times(1000)),
-            Pair("Weekly", DateTimeUnit.HOUR.times(24 * 7).nanoseconds.times(1000)),
-            Pair("Monthly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
-            Pair("Yearly", DateTimeUnit.HOUR.times(24 * 7 * 30).nanoseconds.times(1000)),
+            Pair("Daily", DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)),
+            Pair(
+                "Weekly",
+                DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
+            ),
+            Pair(
+                "Monthly",
+                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+            ),
+            Pair(
+                "Yearly",
+                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+            ),
             //  Pair("Pick time", 0L)
         )
     }
