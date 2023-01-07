@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,6 +47,7 @@ class MainViewModel
 
                     Pair(T1, T2)
                 })
+                .distinctUntilChanged { old, new -> old == new }
                 .collectLatest { pair ->
 
                     _mainState.value = mainState.value.copy(
@@ -85,6 +87,25 @@ class MainViewModel
 
 
         }
+    }
+
+    fun onSelectCard(id: Long) {
+        var listNOtePad = mainState.value.notePads.toMutableList()
+        val index = listNOtePad.indexOfFirst { it.note.id == id }
+        val notepad = listNOtePad[index]
+        val newNotepad = notepad.copy(note = notepad.note.copy(selected = !notepad.note.selected))
+
+        listNOtePad[index] = newNotepad
+
+        _mainState.value = mainState.value.copy(notePads = listNOtePad.toImmutableList())
+
+
+    }
+
+    fun clearSelected() {
+        val listNOtePad =
+            mainState.value.notePads.map { it.copy(note = it.note.copy(selected = false)) }
+        _mainState.value = mainState.value.copy(notePads = listNOtePad.toImmutableList())
     }
 
     fun savePhoto(uri: Uri, id: Long) {

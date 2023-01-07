@@ -12,7 +12,8 @@ data class NoteUiState(
     val background: Int = -1,
     val isPin: Boolean = false,
     val reminder: Long = 0,
-    val interval: Long = 0
+    val interval: Long = 0,
+    val selected: Boolean = false
 )
 
 fun Note.toNoteUiState() =

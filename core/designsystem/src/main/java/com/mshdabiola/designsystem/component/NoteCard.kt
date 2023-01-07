@@ -1,7 +1,9 @@
 package com.mshdabiola.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,9 +48,13 @@ import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NoteCard(notePad: NotePadUiState, onCardClick: (Long) -> Unit = {}) {
+fun NoteCard(
+    notePad: NotePadUiState,
+    onCardClick: (Long) -> Unit = {},
+    onLongClick: (Long) -> Unit = {}
+) {
     val unCheckNote by remember(notePad.checks) {
         derivedStateOf { notePad.checks.filter { !it.isCheck } }
     }
@@ -85,10 +91,15 @@ fun NoteCard(notePad: NotePadUiState, onCardClick: (Long) -> Unit = {}) {
     val de = LocalDensity.current
 
     OutlinedCard(
-        modifier = Modifier,
-        border = BorderStroke(1.dp, sColor),
-        colors = CardDefaults.outlinedCardColors(containerColor = bg),
-        onClick = { notePad.note.id?.let { onCardClick(it) } }
+        modifier = Modifier.combinedClickable(
+            onClick = { notePad.note.id?.let { onCardClick(it) } },
+            onLongClick = { notePad.note.id?.let { onLongClick(it) } }
+        ),
+        border = if (notePad.note.selected) BorderStroke(3.dp, Color.Blue) else BorderStroke(
+            1.dp,
+            sColor
+        ),
+        colors = CardDefaults.outlinedCardColors(containerColor = bg)
     ) {
         Box {
             if (notePad.note.background != -1) {
@@ -215,7 +226,8 @@ fun NoteCardPreview() {
                 reminder = Clock.System.now().toEpochMilliseconds(),
                 color = 2,
                 isPin = false,
-                background = 3
+                background = 3,
+                selected = true
             ),
             labels = listOf(
                 "ade",
