@@ -66,9 +66,18 @@ class MainViewModel
                         else -> {
                             notepadRepository.getNotePads(pair.second.toNoteType()).map { notes ->
                                 notes.map { it.toNotePadUiState(pair.first) }
-                            }.collect {
+                            }.collect { padUiStateList ->
+                                val list = padUiStateList.map {
+                                    val labels = it.labels
+                                        .take(3)
+                                        .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
+                                    it.copy(
+                                        images = it.images.takeLast(6).toImmutableList(),
+                                        labels = labels.toImmutableList()
+                                    )
+                                }
                                 _mainState.value =
-                                    mainState.value.copy(notePads = it.toImmutableList())
+                                    mainState.value.copy(notePads = list.toImmutableList())
                             }
                         }
                     }
