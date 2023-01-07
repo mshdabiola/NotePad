@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -40,10 +38,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +78,9 @@ fun NoteCard(notePad: NotePadUiState, onCardClick: (Long) -> Unit = {}) {
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
+    var images = remember(notePad.images) {
+        notePad.images.chunked(3).reversed()
+    }
 
     val de = LocalDensity.current
 
@@ -98,71 +102,106 @@ fun NoteCard(notePad: NotePadUiState, onCardClick: (Long) -> Unit = {}) {
                 )
             }
 
-            Column(
-                Modifier
-                    .onSizeChanged {
-                        size = it
-                    }
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = notePad.note.title.ifEmpty { notePad.note.detail },
-                    style = MaterialTheme.typography.titleMedium
-                )
-                if (!notePad.note.isCheck) {
-                    if (notePad.note.title.isNotEmpty()) {
-                        if (notePad.note.detail.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = notePad.note.detail,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 10,
-
+            Column(Modifier
+                .onSizeChanged {
+                    size = it
+                }) {
+                if (notePad.images.isNotEmpty()) {
+                    images.forEach { imageList ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                        ) {
+                            imageList.forEach {
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(100.dp),
+                                    model = it.imageName, contentDescription = "",
+                                    contentScale = ContentScale.Crop
                                 )
+                            }
                         }
                     }
-                } else {
-                    unCheckNote.take(10).forEach {
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = it.isCheck, onCheckedChange = {}, enabled = false)
-                            Text(it.content, style = MaterialTheme.typography.bodyMedium)
-
-                        }
-                    }
-                    if (unCheckNote.size > 10) {
-                        Text(text = "....")
-                    }
-                    if (numberOfChecked > 0) {
-                        Text(text = "+ $numberOfChecked checked items")
-                    }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
+                Column(
                     Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState(), enabled = false)
+                        .padding(8.dp)
                 ) {
-                    notePad.labels.forEach {
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = sColor,
-                            border = BorderStroke(1.dp, Color.Gray)
-                        ) {
-                            Text(text = it, modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = notePad.note.title.ifEmpty { notePad.note.detail },
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (!notePad.note.isCheck) {
+                        if (notePad.note.title.isNotEmpty()) {
+                            if (notePad.note.detail.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = notePad.note.detail,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 10,
+
+                                    )
+                            }
                         }
-                        Spacer(modifier = Modifier.width(4.dp))
+                    } else {
+                        unCheckNote.take(10).forEach {
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = it.isCheck,
+                                    onCheckedChange = {},
+                                    enabled = false
+                                )
+                                Text(it.content, style = MaterialTheme.typography.bodyMedium)
+
+                            }
+                        }
+                        if (unCheckNote.size > 10) {
+                            Text(text = "....")
+                        }
+                        if (numberOfChecked > 0) {
+                            Text(text = "+ $numberOfChecked checked items")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FlowLayout2(
+                        verticalSpacing = 4.dp
+                    ) {
+                        if (notePad.note.reminder > 0) {
+                            ReminderCard(
+                                remainder = notePad.note.reminder,
+                                interval = notePad.note.interval,
+                                color = sColor
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                        notePad.labels.forEach {
+                            LabelCard(name = it, color = sColor)
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                    }
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState(), enabled = false)
+                    ) {
+
                     }
                 }
             }
+
         }
 
 
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun NoteCardPreview() {
     NoteCard(
@@ -173,6 +212,7 @@ fun NoteCardPreview() {
                 detail = "Lamia ",
                 editDate = 314L,
                 isCheck = false,
+                reminder = Clock.System.now().toEpochMilliseconds(),
                 color = 2,
                 isPin = false,
                 background = 3

@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.toDateString
+import com.mshdabiola.designsystem.component.toTimeString
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -450,30 +452,3 @@ fun TimeColumnPreview() {
     )
 }
 
-
-fun Long.toTimeString(isCurr: Boolean = false): String {
-    val instant =
-        Instant.fromEpochMilliseconds(this)
-
-    val dateTime = instant.toLocalDateTime(
-        if (isCurr) TimeZone.currentSystemDefault() else TimeZone.UTC
-    )
-    val hour = dateTime.hour % 12L
-    val a = if (dateTime.hour > 11) "PM" else "AM"
-    return "%02d : %02d %s".format(hour, dateTime.minute, a)
-}
-
-
-
-
-fun Long.toDateString(): String {
-    val instant =
-        Instant.fromEpochMilliseconds(this)
-    val dateTime = instant.toLocalDateTime(TimeZone.UTC)
-
-
-
-    return "${
-        dateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }
-    } ${dateTime.dayOfMonth}, ${dateTime.year}"
-}

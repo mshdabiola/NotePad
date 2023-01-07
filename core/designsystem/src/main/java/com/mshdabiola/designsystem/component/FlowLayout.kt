@@ -67,6 +67,7 @@ fun FlowLayout2(
     modifier: Modifier = Modifier,
     rowHorizontalGravity: Alignment.Horizontal = Alignment.Start,
     childVerticalGravity: Alignment.Vertical = Alignment.Top,
+    verticalSpacing: Dp = 0.dp,
     children: @Composable () -> Unit
 ) {
     class RowInfo(val width: Int, val height: Int, val nextChildIndex: Int)
@@ -86,7 +87,13 @@ fun FlowLayout2(
             measurable.measure(childConstraints).also { placeable ->
                 val newRowWidth = rowWidth + placeable.width
                 if (newRowWidth > maxWidth) {
-                    rows.add(RowInfo(width = rowWidth, height = rowHeight, nextChildIndex = index))
+                    rows.add(
+                        RowInfo(
+                            width = rowWidth,
+                            height = rowHeight + verticalSpacing.roundToPx(),
+                            nextChildIndex = index
+                        )
+                    )
                     contentWidth = maxOf(contentWidth, rowWidth)
                     contentHeight += rowHeight
                     rowWidth = placeable.width

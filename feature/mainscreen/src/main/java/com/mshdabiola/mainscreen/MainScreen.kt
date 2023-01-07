@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.component.NoteCard
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteType
@@ -64,7 +65,6 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
-import com.mshdabiola.mainscreen.component.NoteCard
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import kotlinx.collections.immutable.ImmutableList
