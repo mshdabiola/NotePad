@@ -94,7 +94,8 @@ fun MainScreen(
         currentNoteType = mainState.value.noteType,
         onNavigationNoteType = mainViewModel::setNoteType,
         onSelectedCard = mainViewModel::onSelectCard,
-        onClearSelected = mainViewModel::clearSelected
+        onClearSelected = mainViewModel::clearSelected,
+        setAllPin = mainViewModel::setPin
     )
 
 }
@@ -113,7 +114,8 @@ fun MainScreen(
     onNavigationNoteType: (NoteType) -> Unit = {},
     navigateToSearch: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
-    onClearSelected: () -> Unit = {}
+    onClearSelected: () -> Unit = {},
+    setAllPin: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -190,16 +192,22 @@ fun MainScreen(
         )
 
     val pinNotePad by remember(notePads) {
-        derivedStateOf { notePads.filter { it.note.isPin } }
+        derivedStateOf {
+            notePads.partition { it.note.isPin }
+        }
     }
-    val notPinNotePad by remember(notePads) {
-        derivedStateOf { notePads.filter { !it.note.isPin } }
-    }
+//    val notPinNotePad by remember(notePads) {
+//        derivedStateOf { notePads.filter { !it.note.isPin } }
+//    }
 
     val coroutineScope = rememberCoroutineScope()
 
     val noOfSelected = remember(notePads) {
         notePads.count { it.note.selected }
+    }
+    val isAllPin = remember(notePads) {
+        notePads.filter { it.note.selected }
+            .all { it.note.isPin }
     }
 
     ModalNavigationDrawer(
@@ -225,7 +233,9 @@ fun MainScreen(
                 if (noOfSelected > 0) {
                     SelectTopBar(
                         selectNumber = noOfSelected,
-                        onClear = onClearSelected
+                        isAllPin = isAllPin,
+                        onClear = onClearSelected,
+                        onPin = setAllPin
                     )
                 } else {
                     TopAppBar(
@@ -346,7 +356,7 @@ fun MainScreen(
                     .padding(paddingValues)
                     .padding(8.dp)
             ) {
-                if (pinNotePad.isNotEmpty()) {
+                if (pinNotePad.first.isNotEmpty()) {
                     Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                     LazyVerticalStaggeredGrid(
 
@@ -356,7 +366,7 @@ fun MainScreen(
 
                     ) {
 
-                        items(pinNotePad) { notePadUiState ->
+                        items(pinNotePad.first) { notePadUiState ->
                             NoteCard(
                                 notePad = notePadUiState,
                                 onCardClick = {
@@ -370,7 +380,10 @@ fun MainScreen(
                         }
 
                     }
-                    Text(text = "Other")
+                    if (pinNotePad.second.isNotEmpty()) {
+                        Text(text = "Other")
+                    }
+
                 }
                 LazyVerticalStaggeredGrid(
 
@@ -380,7 +393,7 @@ fun MainScreen(
 
                 ) {
 
-                    items(notPinNotePad) { notePadUiState ->
+                    items(pinNotePad.second) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
                             onCardClick = {
@@ -441,6 +454,7 @@ fun MainScreenPreview() {
 @Composable
 fun SelectTopBar(
     selectNumber: Int = 0,
+    isAllPin: Boolean = false,
     onClear: () -> Unit = {},
     onPin: () -> Unit = {},
     onNoti: () -> Unit = {},
@@ -458,7 +472,10 @@ fun SelectTopBar(
         },
         actions = {
             IconButton(onClick = onPin) {
-                Icon(painter = painterResource(id = NoteIcon.Pin), contentDescription = "pin")
+                Icon(
+                    painter = painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                    contentDescription = "pin"
+                )
             }
             IconButton(onClick = onNoti) {
                 Icon(

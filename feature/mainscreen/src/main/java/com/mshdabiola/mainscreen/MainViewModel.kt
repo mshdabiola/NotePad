@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
+import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteType
 import com.mshdabiola.designsystem.component.state.toLabelUiState
+import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.designsystem.component.state.toNoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +31,8 @@ class MainViewModel
     private val savedStateHandle: SavedStateHandle,
     private val notepadRepository: NotePadRepository,
     private val contentManager: ContentManager,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val noteRepository: NoteRepository
 ) : ViewModel() {
 
 
@@ -126,6 +129,30 @@ class MainViewModel
 
     fun setNoteType(noteType: NoteType) {
         _mainState.value = mainState.value.copy(noteType = noteType)
+    }
+
+    fun setPin() {
+        val selectedNotepad = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad() }
+
+        clearSelected()
+
+
+        if (selectedNotepad.any { !it.note.isPin }) {
+            val pinNotepad = selectedNotepad.map { it.note.copy(isPin = true) }
+
+            viewModelScope.launch {
+                noteRepository.upsert(pinNotepad)
+            }
+        } else {
+            val unPinNote = selectedNotepad.map { it.note.copy(isPin = false) }
+
+            viewModelScope.launch {
+                noteRepository.upsert(unPinNote)
+            }
+        }
+
     }
 
 
