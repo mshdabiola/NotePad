@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
@@ -32,7 +33,8 @@ class MainViewModel
     private val notepadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val labelRepository: LabelRepository,
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository,
+    private val alarmManager: AlarmManager
 ) : ViewModel() {
 
 
@@ -153,6 +155,56 @@ class MainViewModel
             }
         }
 
+    }
+
+    fun setAlarm(time: Long, interval: Long?) {
+        val selectedNotes = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad().note }
+
+        clearSelected()
+        val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
+
+        viewModelScope.launch {
+            noteRepository.upsert(notes)
+        }
+
+        viewModelScope.launch {
+            notes.forEach {
+                alarmManager.setAlarm(
+                    time,
+                    interval,
+                    requestCode = it.id?.toInt() ?: -1,
+                    title = it.title,
+                    content = it.detail,
+                    noteId = it.id ?: 0L
+                )
+            }
+
+
+        }
+
+    }
+
+    fun deleteAlarm() {
+
+        val selectedNotes = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad().note }
+
+        clearSelected()
+        val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
+
+        viewModelScope.launch {
+            noteRepository.upsert(notes)
+        }
+
+        viewModelScope.launch {
+            notes.forEach {
+                alarmManager.deleteAlarm(it.id?.toInt() ?: 0)
+            }
+
+        }
     }
 
 

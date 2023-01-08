@@ -1,4 +1,4 @@
-package com.mshdabiola.editscreen
+package com.mshdabiola.common
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,7 +9,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.mshdabiola.designsystem.R
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -57,7 +56,7 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager: NotificationManager
     ) {
         val notification = NotificationCompat.Builder(context, id)
-            .setSmallIcon(R.drawable.outline_alarm_add_24)
+            .setSmallIcon(android.R.drawable.stat_notify_chat)
             .setContentTitle(title)
             .setContentText(message)
             .setChannelId(id)

@@ -1,24 +1,18 @@
-package com.mshdabiola.editscreen.component
+package com.mshdabiola.designsystem.component
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -26,15 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.component.toDateString
-import com.mshdabiola.designsystem.component.toTimeString
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
@@ -48,7 +38,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlin.time.DurationUnit
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotificationDialog(
     showDialog: Boolean = true,
@@ -59,8 +48,6 @@ fun NotificationDialog(
     onDeleteAlarm: () -> Unit = {}
 ) {
 
-    val state = rememberPagerState(0)
-    val coroutineScope = rememberCoroutineScope()
     val now = remember {
         Clock.System.now()
     }
@@ -84,88 +71,46 @@ fun NotificationDialog(
             title = { Text(text = if (remainder > 0) "Edit Reminder" else "Add Reminder") },
             text = {
 
-                Column {
-                    TabRow(selectedTabIndex = state.currentPage) {
-                        Tab(
-                            selected = state.currentPage == 0,
-                            onClick = {
-
-                                coroutineScope.launch {
-                                    state.animateScrollToPage(0)
-                                }
-                            },
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            Text(text = "Time")
-                        }
-                        Tab(
-                            selected = state.currentPage == 1, onClick = {
-
-                                coroutineScope.launch {
-                                    //   state.animateScrollToPage(1)
-                                }
-                            },
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            Text(text = "Place")
-                        }
-                    }
-                    HorizontalPager(
-                        pageCount = 1,
-                        state = state
-                    ) { index ->
-
-                        if (index == 0) {
-                            TimeContent(inter, dateTime,
-                                onDateChange = {
-                                    if (it.time == LocalTime(0, 0)) {
-                                        TimePickerDialog(
-                                            context,
-                                            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                                                dateTime = LocalDateTime(
-                                                    dateTime.date,
-                                                    LocalTime(hourOfDay, minute)
-                                                )
-                                            },
-                                            dateTime.hour,
-                                            dateTime.minute,
-                                            false
-                                        ).show()
-                                    } else
-                                        if (it.date == LocalDate(1993, 1, 1)) {
-                                            DatePickerDialog(
-                                                context,
-                                                { _, y, m, d ->
-                                                    dateTime = LocalDateTime(
-                                                        LocalDate(y, m + 1, d),
-                                                        dateTime.time
-                                                    )
-                                                },
-                                                dateTime.year,
-                                                dateTime.monthNumber - 1,
-                                                dateTime.dayOfMonth
-
-                                            ).show()
-
-                                        } else {
-                                            dateTime = it
-                                        }
-
+                TimeContent(inter, dateTime,
+                    onDateChange = {
+                        if (it.time == LocalTime(0, 0)) {
+                            TimePickerDialog(
+                                context,
+                                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                                    dateTime = LocalDateTime(
+                                        dateTime.date,
+                                        LocalTime(hourOfDay, minute)
+                                    )
                                 },
-                                onIntervalChange = {
-                                    inter = it
-                                }
-                            )
-                        } else {
-                            Column {
-                                Text(text = "Location")
+                                dateTime.hour,
+                                dateTime.minute,
+                                false
+                            ).show()
+                        } else
+                            if (it.date == LocalDate(1993, 1, 1)) {
+                                DatePickerDialog(
+                                    context,
+                                    { _, y, m, d ->
+                                        dateTime = LocalDateTime(
+                                            LocalDate(y, m + 1, d),
+                                            dateTime.time
+                                        )
+                                    },
+                                    dateTime.year,
+                                    dateTime.monthNumber - 1,
+                                    dateTime.dayOfMonth
+
+                                ).show()
+
+                            } else {
+                                dateTime = it
                             }
 
-                        }
-
-
+                    },
+                    onIntervalChange = {
+                        inter = it
                     }
-                }
+                )
 
 
             },

@@ -1,4 +1,4 @@
-package com.mshdabiola.editscreen
+package com.mshdabiola.common
 
 import android.app.AlarmManager
 import android.app.PendingIntent

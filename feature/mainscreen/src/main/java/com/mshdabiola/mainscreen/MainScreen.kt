@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -60,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.designsystem.component.NoteCard
+import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteType
@@ -82,6 +84,10 @@ fun MainScreen(
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
+
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
@@ -95,7 +101,26 @@ fun MainScreen(
         onNavigationNoteType = mainViewModel::setNoteType,
         onSelectedCard = mainViewModel::onSelectCard,
         onClearSelected = mainViewModel::clearSelected,
-        setAllPin = mainViewModel::setPin
+        setAllPin = mainViewModel::setPin,
+        setAllAlarm = { showDialog = true }
+    )
+
+    val note = remember(mainState.value.notePads) {
+        val noOfSelected = mainState.value.notePads.count { it.note.selected }
+        if (noOfSelected == 1) {
+            mainState.value.notePads.singleOrNull { it.note.selected }?.note
+        } else {
+            null
+        }
+    }
+
+    NotificationDialog(
+        showDialog,
+        onDismissRequest = { showDialog = false },
+        remainder = note?.reminder ?: -1,
+        interval = if (note?.interval == (-1L)) null else note?.interval,
+        onSetAlarm = mainViewModel::setAlarm,
+        onDeleteAlarm = mainViewModel::deleteAlarm
     )
 
 }
@@ -115,7 +140,8 @@ fun MainScreen(
     navigateToSearch: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
-    setAllPin: () -> Unit = {}
+    setAllPin: () -> Unit = {},
+    setAllAlarm: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -234,16 +260,19 @@ fun MainScreen(
                     SelectTopBar(
                         selectNumber = noOfSelected,
                         isAllPin = isAllPin,
+                        scrollBehavior = scrollBehavior,
                         onClear = onClearSelected,
-                        onPin = setAllPin
+                        onPin = setAllPin,
+                        onNoti = setAllAlarm
                     )
                 } else {
                     TopAppBar(
-                        modifier = Modifier.clickable { navigateToSearch() },
+                        modifier = Modifier,
                         title = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
+                                    .clickable { navigateToSearch() }
                                     .fillMaxWidth()
                                     .padding(4.dp)
                                     .padding(end = 16.dp)
@@ -455,12 +484,14 @@ fun MainScreenPreview() {
 fun SelectTopBar(
     selectNumber: Int = 0,
     isAllPin: Boolean = false,
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     onClear: () -> Unit = {},
     onPin: () -> Unit = {},
     onNoti: () -> Unit = {},
     onColor: () -> Unit = {},
-    onLabel: () -> Unit = {}
-) {
+    onLabel: () -> Unit = {},
+
+    ) {
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onClear) {
@@ -495,11 +526,13 @@ fun SelectTopBar(
             IconButton(onClick = {}) {
                 Icon(Icons.Default.MoreVert, contentDescription = "more")
             }
-        }
+        },
+        scrollBehavior = scrollBehavior
 
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun SelectTopAppBarPreview() {
