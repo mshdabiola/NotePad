@@ -13,13 +13,15 @@ fun NavController.navigateToMain() {
 fun NavGraphBuilder.mainScreen(
     navigateToEditScreen: (Long, String, Long) -> Unit,
     navigateToLevel: (Boolean) -> Unit,
-    navigateToSearch: () -> Unit
+    navigateToSearch: () -> Unit,
+    navigateToSelectLevel: (IntArray) -> Unit
 ) {
     composable(route = mainNavigationRoute) {
         MainScreen(
             navigateToEdit = navigateToEditScreen,
             navigateToLevel = navigateToLevel,
-            navigateToSearch = navigateToSearch
+            navigateToSearch = navigateToSearch,
+            navigateToSelectLevel = navigateToSelectLevel
         )
     }
 }

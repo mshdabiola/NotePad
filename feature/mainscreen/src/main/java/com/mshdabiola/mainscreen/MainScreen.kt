@@ -81,7 +81,8 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit,
-    navigateToSearch: () -> Unit
+    navigateToSearch: () -> Unit,
+    navigateToSelectLevel: (IntArray) -> Unit
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
@@ -91,6 +92,10 @@ fun MainScreen(
     }
     var showColor by remember {
         mutableStateOf(false)
+    }
+    val selectId = remember(mainState.value.notePads) {
+        mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id?.toInt() }
+            .toIntArray()
     }
     MainScreen(
         notePads = mainState.value.notePads,
@@ -107,7 +112,8 @@ fun MainScreen(
         onClearSelected = mainViewModel::clearSelected,
         setAllPin = mainViewModel::setPin,
         setAllAlarm = { showDialog = true },
-        setAllColor = { showColor = true }
+        setAllColor = { showColor = true },
+        setAllLabel = { navigateToSelectLevel(selectId) }
 
     )
 
@@ -164,7 +170,8 @@ fun MainScreen(
     onClearSelected: () -> Unit = {},
     setAllPin: () -> Unit = {},
     setAllAlarm: () -> Unit = {},
-    setAllColor: () -> Unit = {}
+    setAllColor: () -> Unit = {},
+    setAllLabel: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -287,7 +294,8 @@ fun MainScreen(
                         onClear = onClearSelected,
                         onPin = setAllPin,
                         onNoti = setAllAlarm,
-                        onColor = setAllColor
+                        onColor = setAllColor,
+                        onLabel = setAllLabel
                     )
                 } else {
                     TopAppBar(

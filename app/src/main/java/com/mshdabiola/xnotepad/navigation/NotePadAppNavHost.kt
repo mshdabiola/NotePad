@@ -26,7 +26,8 @@ fun NotePadAppNavHost(
         mainScreen(
             navigateToEditScreen = navigateToEdit,
             navigateToLevel = navigateToLevel,
-            navigateToSearch = navigateToSearch
+            navigateToSearch = navigateToSearch,
+            navigateToSelectLevel = navigateToSelectLevel
         )
         editScreen(onBack = onBack, navigateToSelectLevel = navigateToSelectLevel)
         labelScreen(onBack = onBack)

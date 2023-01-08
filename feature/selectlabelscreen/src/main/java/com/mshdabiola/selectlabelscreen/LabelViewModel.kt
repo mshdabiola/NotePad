@@ -48,7 +48,7 @@ class LabelViewModel @Inject constructor(
         val index = labels.indexOfFirst { it.id == id }
         var label = labels[index]
 
-        if (label.toggleableState == ToggleableState.Off) {
+        if (label.toggleableState == ToggleableState.Off || label.toggleableState == ToggleableState.Indeterminate) {
             label = label.copy(toggleableState = ToggleableState.On)
             labels[index] = label
             labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())

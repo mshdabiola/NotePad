@@ -12,7 +12,7 @@ interface NoteLabelDao {
     @Upsert
     suspend fun upsert(noteLabelEntity: List<NoteLabelEntity>)
 
-    @Query("DELETE FROM note_label_table WHERE noteId = :ids AND labelId = :labelId")
+    @Query("DELETE FROM note_label_table WHERE noteId IN (:ids) AND labelId = :labelId")
     suspend fun delete(ids: Set<Long>, labelId: Long)
 
     @Query("DELETE FROM note_label_table WHERE labelId = :id")
