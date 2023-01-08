@@ -144,7 +144,10 @@ fun NoteCard(
                 ) {
                     Text(
                         text = notePad.note.title.ifEmpty { notePad.note.detail },
-                        style = MaterialTheme.typography.titleMedium
+                        style = if (notePad.note.title.isNotEmpty())
+                            MaterialTheme.typography.titleMedium
+                        else MaterialTheme.typography.bodyMedium,
+                        maxLines = 10
                     )
                     if (!notePad.note.isCheck) {
                         if (notePad.note.title.isNotEmpty()) {
