@@ -11,7 +11,20 @@ data class NotePadUiState(
     val voices: ImmutableList<NoteVoiceUiState> = emptyList<NoteVoiceUiState>().toImmutableList(),
     val checks: ImmutableList<NoteCheckUiState> = emptyList<NoteCheckUiState>().toImmutableList(),
     val labels: ImmutableList<String> = emptyList<String>().toImmutableList()
-)
+) {
+    override fun toString(): String {
+        val checkString = checks.joinToString(separator = "\n") {
+            if (it.isCheck)
+                "[*] ${it.content}"
+            else
+                "[ ] ${it.content}"
+        }
+        return if (checkString.isNotBlank())
+            "${note.title} \n $checkString"
+        else
+            "${note.title} \n ${note.detail}"
+    }
+}
 
 
 fun NotePad.toNotePadUiState(list: List<Label> = emptyList()) = NotePadUiState(

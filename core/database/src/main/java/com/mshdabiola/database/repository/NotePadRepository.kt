@@ -10,6 +10,7 @@ import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.model.toNoteCheckEntity
 import com.mshdabiola.database.model.toNoteEntity
 import com.mshdabiola.database.model.toNoteImageEntity
+import com.mshdabiola.database.model.toNoteLabelEntity
 import com.mshdabiola.database.model.toNotePad
 import com.mshdabiola.database.model.toNoteVoiceEntity
 import com.mshdabiola.model.Note
@@ -44,6 +45,9 @@ class NotePadRepository
         }
         if (notePad.images.isNotEmpty()) {
             noteImageDao.upsert(notePad.images.map { it.toNoteImageEntity() })
+        }
+        if (notePad.labels.isNotEmpty()) {
+            noteLabelDao.upsert(notePad.labels.map { it.toNoteLabelEntity() })
         }
 
         return id

@@ -13,6 +13,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,6 +60,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,6 +101,17 @@ fun MainScreen(
         mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id?.toInt() }
             .toIntArray()
     }
+    val context = LocalContext.current
+    val send = {
+        val notePads = mainState.value.notePads.single { it.note.selected }
+        val intent = ShareCompat.IntentBuilder(context)
+            .setText(notePads.toString())
+            .setType("text/*")
+            .setChooserTitle("From Notepad")
+            .createChooserIntent()
+        context.startActivity(Intent(intent))
+
+    }
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
@@ -113,7 +128,14 @@ fun MainScreen(
         setAllPin = mainViewModel::setPin,
         setAllAlarm = { showDialog = true },
         setAllColor = { showColor = true },
-        setAllLabel = { navigateToSelectLevel(selectId) }
+        setAllLabel = { navigateToSelectLevel(selectId) },
+        onCopy = mainViewModel::copyNote,
+        onDelete = mainViewModel::setAllDelete,
+        onArchive = mainViewModel::setAllArchive,
+        onSend = {
+            mainViewModel.clearSelected()
+            send()
+        }
 
     )
 
@@ -171,7 +193,11 @@ fun MainScreen(
     setAllPin: () -> Unit = {},
     setAllAlarm: () -> Unit = {},
     setAllColor: () -> Unit = {},
-    setAllLabel: () -> Unit = {}
+    setAllLabel: () -> Unit = {},
+    onArchive: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onSend: () -> Unit = {},
+    onCopy: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -296,7 +322,11 @@ fun MainScreen(
                         onPin = setAllPin,
                         onNoti = setAllAlarm,
                         onColor = setAllColor,
-                        onLabel = setAllLabel
+                        onLabel = setAllLabel,
+                        onArchive = onArchive,
+                        onDelete = onDelete,
+                        onSend = onSend,
+                        onCopy = onCopy
                     )
                 } else {
                     TopAppBar(
@@ -523,8 +553,16 @@ fun SelectTopBar(
     onNoti: () -> Unit = {},
     onColor: () -> Unit = {},
     onLabel: () -> Unit = {},
+    onArchive: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onSend: () -> Unit = {},
+    onCopy: () -> Unit = {}
 
-    ) {
+) {
+
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onClear) {
@@ -556,8 +594,33 @@ fun SelectTopBar(
             IconButton(onClick = onLabel) {
                 Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "Label")
             }
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.MoreVert, contentDescription = "more")
+            Box {
+                IconButton(onClick = { showDropDown = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+
+                }
+                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
+                    DropdownMenuItem(text = { Text(text = "Archive") },
+                        onClick = {
+                            showDropDown = false
+                            onArchive()
+                        })
+                    DropdownMenuItem(text = { Text(text = "Delete") },
+                        onClick = {
+                            showDropDown = false
+                            onDelete()
+                        })
+                    if (selectNumber == 1) {
+                        DropdownMenuItem(text = { Text(text = "Make a Copy") }, onClick = {
+                            showDropDown = false
+                            onCopy()
+                        })
+                        DropdownMenuItem(text = { Text(text = "Send") }, onClick = {
+                            showDropDown = false
+                            onSend()
+                        })
+                    }
+                }
             }
         },
         scrollBehavior = scrollBehavior

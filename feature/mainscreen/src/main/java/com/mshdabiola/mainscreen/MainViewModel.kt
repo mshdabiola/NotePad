@@ -222,5 +222,59 @@ class MainViewModel
 
     }
 
+    fun setAllArchive() {
+
+        val selectedNotes = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad().note }
+
+        clearSelected()
+        val notes = selectedNotes.map { it.copy(noteType = com.mshdabiola.model.NoteType.ARCHIVE) }
+
+        viewModelScope.launch {
+            noteRepository.upsert(notes)
+        }
+
+    }
+
+    fun setAllDelete() {
+
+        val selectedNotes = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad().note }
+
+        clearSelected()
+        val notes = selectedNotes.map { it.copy(noteType = com.mshdabiola.model.NoteType.TRASH) }
+
+        viewModelScope.launch {
+            noteRepository.upsert(notes)
+        }
+
+    }
+
+    fun copyNote() {
+        viewModelScope.launch {
+            val id = mainState.value.notePads.single { it.note.selected }.note.id!!
+            val notepads = notepadRepository.getOneNotePad(id)
+
+            var copy = notepads.copy(note = notepads.note.copy(id = null))
+
+            val newId = notepadRepository.insertNotepad(copy)
+
+            copy = copy.copy(
+                note = copy.note.copy(id = newId),
+                images = copy.images.map { it.copy(noteId = newId) },
+                voices = copy.voices.map { it.copy(noteId = newId) },
+                labels = copy.labels.map { it.copy(noteId = newId) },
+                checks = copy.checks.map { it.copy(noteId = newId) }
+            )
+
+            notepadRepository.insertNotepad(copy)
+
+
+        }
+
+    }
+
 
 }
