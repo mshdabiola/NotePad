@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.component.ColorDialog
 import com.mshdabiola.designsystem.component.NoteCard
 import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.state.LabelUiState
@@ -88,6 +89,9 @@ fun MainScreen(
     var showDialog by remember {
         mutableStateOf(false)
     }
+    var showColor by remember {
+        mutableStateOf(false)
+    }
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
@@ -102,13 +106,24 @@ fun MainScreen(
         onSelectedCard = mainViewModel::onSelectCard,
         onClearSelected = mainViewModel::clearSelected,
         setAllPin = mainViewModel::setPin,
-        setAllAlarm = { showDialog = true }
+        setAllAlarm = { showDialog = true },
+        setAllColor = { showColor = true }
+
     )
 
     val note = remember(mainState.value.notePads) {
         val noOfSelected = mainState.value.notePads.count { it.note.selected }
         if (noOfSelected == 1) {
             mainState.value.notePads.singleOrNull { it.note.selected }?.note
+        } else {
+            null
+        }
+    }
+
+    val colorIndex = remember(mainState.value.notePads) {
+        val noOfSelected = mainState.value.notePads.count { it.note.selected }
+        if (noOfSelected == 1) {
+            mainState.value.notePads.singleOrNull { it.note.selected }?.note?.color
         } else {
             null
         }
@@ -121,6 +136,13 @@ fun MainScreen(
         interval = if (note?.interval == (-1L)) null else note?.interval,
         onSetAlarm = mainViewModel::setAlarm,
         onDeleteAlarm = mainViewModel::deleteAlarm
+    )
+
+    ColorDialog(
+        show = showColor,
+        onDismissRequest = { showColor = false },
+        onColorClick = mainViewModel::setAllColor,
+        currentColor = colorIndex ?: -1
     )
 
 }
@@ -141,7 +163,8 @@ fun MainScreen(
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
     setAllPin: () -> Unit = {},
-    setAllAlarm: () -> Unit = {}
+    setAllAlarm: () -> Unit = {},
+    setAllColor: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -263,7 +286,8 @@ fun MainScreen(
                         scrollBehavior = scrollBehavior,
                         onClear = onClearSelected,
                         onPin = setAllPin,
-                        onNoti = setAllAlarm
+                        onNoti = setAllAlarm,
+                        onColor = setAllColor
                     )
                 } else {
                     TopAppBar(

@@ -207,5 +207,20 @@ class MainViewModel
         }
     }
 
+    fun setAllColor(colorId: Int) {
+
+        val selectedNotes = mainState.value.notePads
+            .filter { it.note.selected }
+            .map { it.toNotePad().note }
+
+        clearSelected()
+        val notes = selectedNotes.map { it.copy(color = colorId) }
+
+        viewModelScope.launch {
+            noteRepository.upsert(notes)
+        }
+
+    }
+
 
 }
