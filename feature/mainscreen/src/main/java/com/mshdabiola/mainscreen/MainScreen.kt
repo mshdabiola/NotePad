@@ -175,6 +175,7 @@ fun MainScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var showImageDialog by remember {
         mutableStateOf(false)
     }
@@ -283,14 +284,14 @@ fun MainScreen(
         gesturesEnabled = true
     ) {
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
             topBar = {
 
                 if (noOfSelected > 0) {
                     SelectTopBar(
                         selectNumber = noOfSelected,
                         isAllPin = isAllPin,
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = pinScrollBehavior,
                         onClear = onClearSelected,
                         onPin = setAllPin,
                         onNoti = setAllAlarm,
