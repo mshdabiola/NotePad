@@ -37,7 +37,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -358,240 +357,237 @@ fun EditScreen(
                 }
             )
         },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Transparent,
-                actions = {
-                    Row(Modifier.fillMaxWidth()) {
-                        IconButton(onClick = { moreOptions() }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
-                                contentDescription = ""
-                            )
-                        }
-                        IconButton(onClick = { onColorClick() }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = NoteIcon.ColorLens),
-                                contentDescription = ""
-                            )
-                        }
-                        Row(Modifier.weight(1f)) {
 
-                        }
-                        IconButton(onClick = { noteOption() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.MoreVert,
-                                contentDescription = ""
-                            )
-                        }
-                    }
-                }
-            )
-
-
-        }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .verticalScroll(state = rememberScrollState())
+            Modifier
+
                 .padding(paddingValues)
                 .fillMaxHeight()
-
-
         ) {
-            if (notepad.images.isNotEmpty()) {
-                images.forEach { imageList ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        imageList.forEach {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(200.dp),
-                                model = it.imageName, contentDescription = "",
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-                }
-
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(state = rememberScrollState())
             ) {
-                TextField(
-                    value = notepad.note.title,
-                    onValueChange = onTitleChange,
-                    placeholder = { Text(text = "Title") },
-                    textStyle = MaterialTheme.typography.titleMedium,
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-
-                )
-                if (notepad.note.isCheck) {
-                    Box {
-                        IconButton(onClick = { expandCheck = true }) {
-
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                        }
-                        DropdownMenu(
-                            expanded = expandCheck,
-                            onDismissRequest = { expandCheck = false }) {
-                            DropdownMenuItem(
-                                text = { Text(text = "Hide checkboxes") },
-                                onClick = {
-                                    hideCheckBoxes()
-                                    expandCheck = false
-                                },
-                            )
-                            if (checkNote.isNotEmpty()) {
-                                DropdownMenuItem(
-                                    text = { Text(text = "UnCheck all items") },
-                                    onClick = {
-                                        unCheckAllItems()
-                                        expandCheck = false
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(text = "Delete checked items") },
-                                    onClick = {
-                                        deleteCheckItems()
-                                        expandCheck = false
-                                    },
+                if (notepad.images.isNotEmpty()) {
+                    images.forEach { imageList ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        ) {
+                            imageList.forEach {
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(200.dp),
+                                    model = it.imageName, contentDescription = "",
+                                    contentScale = ContentScale.Crop
                                 )
                             }
+                        }
+                    }
+
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = notepad.note.title,
+                        onValueChange = onTitleChange,
+                        placeholder = { Text(text = "Title") },
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        colors = TextFieldDefaults.textFieldColors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            containerColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            autoCorrect = true,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+
+                    )
+                    if (notepad.note.isCheck) {
+                        Box {
+                            IconButton(onClick = { expandCheck = true }) {
+
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                            }
+                            DropdownMenu(
+                                expanded = expandCheck,
+                                onDismissRequest = { expandCheck = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(text = "Hide checkboxes") },
+                                    onClick = {
+                                        hideCheckBoxes()
+                                        expandCheck = false
+                                    },
+                                )
+                                if (checkNote.isNotEmpty()) {
+                                    DropdownMenuItem(
+                                        text = { Text(text = "UnCheck all items") },
+                                        onClick = {
+                                            unCheckAllItems()
+                                            expandCheck = false
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(text = "Delete checked items") },
+                                        onClick = {
+                                            deleteCheckItems()
+                                            expandCheck = false
+                                        },
+                                    )
+                                }
 
 
+                            }
                         }
                     }
                 }
-            }
 
-            if (!notepad.note.isCheck) {
-                TextField(
-                    value = notepad.note.detail,
-                    onValueChange = onSubjectChange,
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    placeholder = { Text(text = "Subject") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
-                        keyboardType = KeyboardType.Text,
-                        // imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .imePadding()
-                        .focusRequester(subjectFocus)
+                if (!notepad.note.isCheck) {
+                    TextField(
+                        value = notepad.note.detail,
+                        onValueChange = onSubjectChange,
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        placeholder = { Text(text = "Subject") },
+                        colors = TextFieldDefaults.textFieldColors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            containerColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            autoCorrect = true,
+                            keyboardType = KeyboardType.Text,
+                            // imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .imePadding()
+                            .focusRequester(subjectFocus)
 
 
-                )
+                    )
 
-            } else {
+                } else {
 
-                if (notCheckNote.isNotEmpty()) {
+                    if (notCheckNote.isNotEmpty()) {
 
-                    notCheckNote.forEach { noteCheckUiState ->
-                        //  key(keys = arrayOf( noteCheckUiState.id)) {
-                        NoteCheck(
-                            noteCheckUiState = noteCheckUiState,
-                            onCheckChange,
-                            onCheckDelete,
-                            onCheck
-                        )
-                        //  }
-                    }
-                }
-                TextButton(onClick = addItem) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
-
-                    Text(text = "Add list item")
-                }
-
-                if (checkNote.isNotEmpty()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { showCheckNote = !showCheckNote }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
-                                contentDescription = ""
-                            )
-                        }
-                        Text(
-                            text = "${checkNote.size} Checked Items",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                    if (showCheckNote) {
-                        checkNote.forEach { noteCheckUiState ->
+                        notCheckNote.forEach { noteCheckUiState ->
                             //  key(keys = arrayOf( noteCheckUiState.id)) {
                             NoteCheck(
                                 noteCheckUiState = noteCheckUiState,
                                 onCheckChange,
                                 onCheckDelete,
-                                onCheck,
-                                strickText = true
+                                onCheck
                             )
                             //  }
                         }
                     }
+                    TextButton(onClick = addItem) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
+                        Text(text = "Add list item")
+                    }
+
+                    if (checkNote.isNotEmpty()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { showCheckNote = !showCheckNote }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                text = "${checkNote.size} Checked Items",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        if (showCheckNote) {
+                            checkNote.forEach { noteCheckUiState ->
+                                //  key(keys = arrayOf( noteCheckUiState.id)) {
+                                NoteCheck(
+                                    noteCheckUiState = noteCheckUiState,
+                                    onCheckChange,
+                                    onCheckDelete,
+                                    onCheck,
+                                    strickText = true
+                                )
+                                //  }
+                            }
+                        }
+
+                    }
+
+
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                notepad.voices.forEach {
+                    NoteVoicePlayer(it, playVoice)
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                FlowLayout2(
+                    verticalSpacing = 8.dp
+                ) {
+                    if (notepad.note.reminder > 0) {
+                        ReminderCard(
+                            remainder = notepad.note.reminder,
+                            interval = notepad.note.interval,
+                            color = sColor,
+                            style = MaterialTheme.typography.bodyLarge,
+                            onClick = showNotificationDialog
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    notepad.labels.forEach {
+                        LabelCard(
+                            name = it,
+                            color = sColor,
+                            style = MaterialTheme.typography.bodyLarge,
+                            onClick = onLabel
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                 }
 
 
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            notepad.voices.forEach {
-                NoteVoicePlayer(it, playVoice)
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-
-            FlowLayout2(
-                verticalSpacing = 8.dp
-            ) {
-                if (notepad.note.reminder > 0) {
-                    ReminderCard(
-                        remainder = notepad.note.reminder,
-                        interval = notepad.note.interval,
-                        color = sColor,
-                        style = MaterialTheme.typography.bodyLarge,
-                        onClick = showNotificationDialog
+            Row(Modifier.fillMaxWidth()) {
+                IconButton(onClick = { moreOptions() }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
+                        contentDescription = ""
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                notepad.labels.forEach {
-                    LabelCard(
-                        name = it,
-                        color = sColor,
-                        style = MaterialTheme.typography.bodyLarge,
-                        onClick = onLabel
+                IconButton(onClick = { onColorClick() }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = NoteIcon.ColorLens),
+                        contentDescription = ""
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Row(Modifier.weight(1f)) {
+
+                }
+                IconButton(onClick = { noteOption() }) {
+                    Icon(
+                        imageVector = Icons.Outlined.MoreVert,
+                        contentDescription = ""
+                    )
                 }
             }
-
-
         }
+
 
     }
 }
