@@ -5,7 +5,7 @@ sealed class NoteType {
     object TRASH : NoteType()
     object ARCHIVE : NoteType()
     object REMAINDER : NoteType()
-    data class LABEL(val index: Long) : NoteType()
+    data class LABEL(val id: Long, val name: String) : NoteType()
 }
 
 fun NoteType.toNoteType() = when (this) {

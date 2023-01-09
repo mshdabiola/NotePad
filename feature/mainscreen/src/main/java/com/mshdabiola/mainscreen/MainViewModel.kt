@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.LabelRepository
+import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.NoteType
@@ -14,6 +15,7 @@ import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.designsystem.component.state.toNoteType
+import com.mshdabiola.model.Label
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,7 @@ class MainViewModel
     private val notepadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val labelRepository: LabelRepository,
+    private val noteLabelRepository: NoteLabelRepository,
     private val noteRepository: NoteRepository,
     private val alarmManager: AlarmManager
 ) : ViewModel() {
@@ -61,7 +64,7 @@ class MainViewModel
                     when (pair.second) {
                         is NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteType.LABEL).index } }
+                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteType.LABEL).id } }
                                     .map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
@@ -298,6 +301,34 @@ class MainViewModel
             notepadRepository.insertNotepad(copy)
 
 
+        }
+
+    }
+
+    fun deleteLabel() {
+        val labelId = (mainState.value.noteType as NoteType.LABEL).id
+
+        _mainState.value = mainState.value.copy(noteType = NoteType.NOTE)
+
+        viewModelScope.launch {
+            labelRepository.delete(labelId)
+            noteLabelRepository.deleteByLabelId(labelId)
+        }
+    }
+
+    fun renameLabel(name: String) {
+        val labelId = (mainState.value.noteType as NoteType.LABEL).id
+
+
+
+        viewModelScope.launch {
+            labelRepository.upsert(listOf(Label(labelId, name)))
+        }
+    }
+
+    fun emptyTrash() {
+        viewModelScope.launch {
+            notepadRepository.deleteTrashType()
         }
 
     }

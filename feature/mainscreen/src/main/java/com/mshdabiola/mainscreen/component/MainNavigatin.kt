@@ -98,8 +98,8 @@ fun MainNavigation(
                         )
                     },
                     label = { Text(text = it.label) },
-                    selected = currentType is NoteType.LABEL && currentType.index == it.id,
-                    onClick = { onNavigation(NoteType.LABEL(it.id)) })
+                    selected = currentType is NoteType.LABEL && currentType.id == it.id,
+                    onClick = { onNavigation(NoteType.LABEL(it.id, it.label)) })
             }
             NavigationDrawerItem(
                 icon = {

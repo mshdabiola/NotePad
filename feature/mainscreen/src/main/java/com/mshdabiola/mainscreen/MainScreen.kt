@@ -104,6 +104,12 @@ fun MainScreen(
     var showColor by remember {
         mutableStateOf(false)
     }
+    var showRenameLabel by remember {
+        mutableStateOf(false)
+    }
+    var showDeleteLabel by remember {
+        mutableStateOf(false)
+    }
     val selectId = remember(mainState.value.notePads) {
         mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id?.toInt() }
             .toIntArray()
@@ -142,7 +148,10 @@ fun MainScreen(
         onSend = {
             mainViewModel.clearSelected()
             send()
-        }
+        },
+        onRenameLabel = { showRenameLabel = true },
+        onDeleteLabel = { showDeleteLabel = true },
+        onEmptyTrash = mainViewModel::emptyTrash
 
     )
 
@@ -180,6 +189,19 @@ fun MainScreen(
         currentColor = colorIndex ?: -1
     )
 
+    RenameLabelAlertDialog(
+        show = showRenameLabel,
+        label = (mainState.value.noteType as? NoteType.LABEL)?.name ?: "",
+        onDismissRequest = { showRenameLabel = false },
+        onChangeName = mainViewModel::renameLabel
+    )
+
+    DeleteLabelAlertDialog(
+        show = showDeleteLabel,
+        onDismissRequest = { showDeleteLabel = false },
+        onDelete = mainViewModel::deleteLabel
+    )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -204,7 +226,10 @@ fun MainScreen(
     onArchive: () -> Unit = {},
     onDelete: () -> Unit = {},
     onSend: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onRenameLabel: () -> Unit = {},
+    onDeleteLabel: () -> Unit = {},
+    onEmptyTrash: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -379,17 +404,20 @@ fun MainScreen(
                     when (currentNoteType) {
                         is NoteType.LABEL -> {
                             LabelTopAppBar(
-                                label = labels.single { it.id == currentNoteType.index }.label,
+                                label = labels.single { it.id == currentNoteType.id }.label,
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
+                                scrollBehavior = scrollBehavior,
+                                onDeleteLabel = onDeleteLabel,
+                                onRenameLabel = onRenameLabel
                             )
                         }
 
                         NoteType.TRASH -> {
                             TrashTopAppBar(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
+                                scrollBehavior = scrollBehavior,
+                                onEmptyTrash = onEmptyTrash
                             )
                         }
 
@@ -406,8 +434,9 @@ fun MainScreen(
                                 name = "Remainder",
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
-                            )
+                                scrollBehavior = scrollBehavior,
+
+                                )
                         }
 
                         NoteType.ARCHIVE -> {
@@ -918,7 +947,10 @@ fun RenameLabelAlertDialog(
                 TextField(value = name, onValueChange = { name = it })
             },
             confirmButton = {
-                Button(onClick = { onChangeName(name) }) {
+                Button(onClick = {
+                    onDismissRequest()
+                    onChangeName(name)
+                }) {
                     Text(text = "Rename")
                 }
             },
@@ -956,7 +988,10 @@ fun DeleteLabelAlertDialog(
                 Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
             },
             confirmButton = {
-                TextButton(onClick = onDelete) {
+                TextButton(onClick = {
+                    onDismissRequest()
+                    onDelete()
+                }) {
                     Text(text = "Delete")
                 }
             },

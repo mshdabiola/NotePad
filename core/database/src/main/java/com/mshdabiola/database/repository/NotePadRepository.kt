@@ -17,6 +17,7 @@ import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -72,6 +73,20 @@ class NotePadRepository
 //
     suspend fun getOneNotePad(id: Long): NotePad {
         return notePadDao.getOneNotePad(id).toNotePad()
+    }
+
+    suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
+        val list = getNotePads(NoteType.TRASH).first()
+
+        list.mapNotNull { it.note.id }.forEach {
+
+            noteDao.delete(it)
+            noteImageDao.deleteByNoteId(it)
+            noteLabelDao.deleteByNoteId(it)
+            noteVoiceDao.deleteVoiceById(it)
+            noteCheckDao.deleteByNoteId(it)
+
+        }
     }
 
 

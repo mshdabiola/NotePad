@@ -18,6 +18,9 @@ interface NoteLabelDao {
     @Query("DELETE FROM note_label_table WHERE labelId = :id")
     suspend fun deleteByLabelId(id: Long)
 
+    @Query("DELETE FROM note_label_table WHERE noteId = :id")
+    suspend fun deleteByNoteId(id: Long)
+
     @Query("SELECT * FROM note_label_table WHERE noteId = :id")
     fun getAll(id: Long): Flow<List<NoteLabelEntity>>
 
