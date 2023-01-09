@@ -1,5 +1,7 @@
 package com.mshdabiola.editscreen
 
+import android.annotation.SuppressLint
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -16,26 +18,23 @@ import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
+import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
+import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
-import com.mshdabiola.designsystem.component.state.toNoteVoiceUiState
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteVoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -71,23 +70,43 @@ class EditViewModel @Inject constructor(
                     ).toImmutableList()
                 )
 
-                (-3).toLong() -> NotePad(
-                    note = Note(detail = editArg.content), images = listOf(
-                        NoteImage(0, -1, contentManager.getImagePath(editArg.data))
+                (-3).toLong() ->
+                    NotePadUiState(
+                        images = listOf(
+                            NoteImageUiState(
+                                id = 0, noteId = -1,
+                                imageName = contentManager.getImagePath(editArg.data)
+                            )
+                        )
+                            .toImmutableList()
                     )
-                ).toNotePadUiState()
+
 
                 (-4).toLong() -> {
 
-                    NotePad(
-                        note = Note(detail = editArg.content), voices = listOf(
-                            NoteVoice(0, -1, contentManager.getVoicePath(editArg.data))
+                    val voicePath = contentManager.getVoicePath(editArg.data)
+                    val length = getAudioLength(voicePath)
+                    NotePadUiState(
+                        voices = listOf(
+                            NoteVoiceUiState(
+                                id = 0, noteId = -1,
+                                voiceName = voicePath,
+                                length = length,
+                                currentProgress = 0
+                            )
                         )
-                    ).toNotePadUiState()
+                            .toImmutableList()
+                    )
+
                 }
 
-                else ->
-                    notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
+                else -> {
+                    val notePad = notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
+                    val voices =
+                        notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
+                    notePad.copy(voices = voices.toImmutableList())
+                }
+
             }
         }
 
@@ -105,23 +124,15 @@ class EditViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            combine(snapshotFlow { notePadUiState }
-                .map { it.note.id }, labelRepository.getAllLabels(), transform = { id, labels ->
-                Pair(id, labels)
-            })
-                .collectLatest { pair ->
-                    pair.first?.let { ids ->
-                        noteLabelRepository.getAll(ids)
-                            .collectLatest { noteLabels ->
-                                val labelString =
-                                    noteLabels.map { noteLabel -> pair.second.single { it.id == noteLabel.labelId }.label }
-
-                                notePadUiState =
-                                    notePadUiState.copy(labels = labelString.toImmutableList())
-                            }
+            labelRepository.getAllLabels()
+                .distinctUntilChanged { old, new -> new == old }
+                .collectLatest {
+                    if (editArg.id > -1) {
+                        val newNote =
+                            notePadRepository.getOneNotePad(editArg.id).toNotePadUiState(it)
+                        notePadUiState = notePadUiState.copy(labels = newNote.labels)
                     }
                 }
-
         }
 
     }
@@ -243,10 +254,12 @@ class EditViewModel @Inject constructor(
         contentManager.saveVoice(uri, id)
 
         val size = (notePadUiState.voices.lastOrNull()?.id ?: -1) + 1
+        val voicePath = contentManager.getVoicePath(id)
+        val length = getAudioLength(voicePath)
         val noteVoice =
-            NoteVoice(size, notePadUiState.note.id ?: -1, contentManager.getVoicePath(id))
+            NoteVoiceUiState(size, notePadUiState.note.id ?: -1, voicePath, length, 0)
         val listVoices = notePadUiState.voices.toMutableList()
-        listVoices.add(noteVoice.toNoteVoiceUiState())
+        listVoices.add(noteVoice)
 
         val note = notePadUiState.note.copy(detail = notePadUiState.note.detail + "\n" + content)
 
@@ -412,6 +425,17 @@ class EditViewModel @Inject constructor(
 
         }
 
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    private fun getAudioLength(path: String): Long {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+
+        mediaMetadataRetriever.setDataSource(path)
+        val time =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        Log.e(this::class.simpleName, "$time time")
+        return time?.toLong() ?: 1L
     }
 
 }

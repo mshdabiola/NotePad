@@ -4,13 +4,9 @@ package com.mshdabiola.editscreen
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaMetadataRetriever
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -91,6 +87,7 @@ import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
+import com.mshdabiola.designsystem.component.toTime
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
@@ -689,46 +686,30 @@ fun NoteVoicePlayer(
         modifier = Modifier,
         color = MaterialTheme.colorScheme.secondaryContainer
     ) {
-        val duration by remember {
-
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            derivedStateOf {
-                mediaMetadataRetriever.setDataSource(noteVoiceUiState.voiceName)
-                val time =
-                    mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                (time?.toIntOrNull() ?: 0)
-            }
-        }
-        LaunchedEffect(key1 = duration, block = {
-            Log.e("duration", "$duration")
-        })
-        var isPlay by remember {
-            mutableStateOf(false)
-        }
-
-        val flow = remember {
-            Animatable(0f)
-        }
-        LaunchedEffect(key1 = isPlay, block = {
-            if (isPlay) {
-                flow.animateTo(1f, animationSpec = tween(duration))
-                // delay(duration)
-                isPlay = false
-            } else {
-                flow.snapTo(0f)
-            }
-        })
+//        val duration by remember {
+//
+//            val mediaMetadataRetriever = MediaMetadataRetriever()
+//            derivedStateOf {
+//                mediaMetadataRetriever.setDataSource(noteVoiceUiState.voiceName)
+//                val time =
+//                    mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                (time?.toIntOrNull() ?: 0)
+//            }
+//        }
 
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = {
                 playVoice(noteVoiceUiState.voiceName)
-                isPlay = true
+
             }) {
                 Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "play")
             }
-            LinearProgressIndicator(modifier = Modifier.weight(1f), progress = flow.value)
-            Text(text = "${duration / 60000} : ${(duration) / 1000 % 60}")
+            LinearProgressIndicator(
+                modifier = Modifier.weight(1f),
+                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length).toFloat()
+            )
+            Text(text = noteVoiceUiState.length.toTime())
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
             }
@@ -741,7 +722,7 @@ fun NoteVoicePlayer(
 @Preview()
 @Composable
 fun NoteVoicePlayerPreview() {
-    NoteVoicePlayer(NoteVoiceUiState(3, 4, ""))
+    NoteVoicePlayer(NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()))
 }
 
 

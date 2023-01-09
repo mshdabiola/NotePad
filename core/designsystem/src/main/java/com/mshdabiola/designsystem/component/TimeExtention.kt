@@ -22,6 +22,12 @@ fun Long.toTimeString(isCurr: Boolean = false): String {
     return "%02d : %02d %s".format(hour, dateTime.minute, a)
 }
 
+fun Long.toTime(): String {
+    val hour = this / 60000
+    val minute = this / 1000 % 60
+    return "%02d : %02d".format(hour, minute)
+}
+
 
 fun Long.toDateString(): String {
     val instant =
