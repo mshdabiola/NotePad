@@ -10,7 +10,7 @@ import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
-import com.mshdabiola.designsystem.component.state.NoteType
+import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
@@ -62,9 +62,9 @@ class MainViewModel
                     )
 
                     when (pair.second) {
-                        is NoteType.LABEL -> {
+                        is NoteTypeUi.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteType.LABEL).id } }
+                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteTypeUi.LABEL).id } }
                                     .map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
@@ -81,7 +81,7 @@ class MainViewModel
                             }
                         }
 
-                        is NoteType.REMAINDER -> {
+                        is NoteTypeUi.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
@@ -158,7 +158,7 @@ class MainViewModel
         return contentManager.pictureUri(id)
     }
 
-    fun setNoteType(noteType: NoteType) {
+    fun setNoteType(noteType: NoteTypeUi) {
         _mainState.value = mainState.value.copy(noteType = noteType)
     }
 
@@ -306,9 +306,9 @@ class MainViewModel
     }
 
     fun deleteLabel() {
-        val labelId = (mainState.value.noteType as NoteType.LABEL).id
+        val labelId = (mainState.value.noteType as NoteTypeUi.LABEL).id
 
-        _mainState.value = mainState.value.copy(noteType = NoteType.NOTE)
+        _mainState.value = mainState.value.copy(noteType = NoteTypeUi.NOTE)
 
         viewModelScope.launch {
             labelRepository.delete(labelId)
@@ -317,7 +317,7 @@ class MainViewModel
     }
 
     fun renameLabel(name: String) {
-        val labelId = (mainState.value.noteType as NoteType.LABEL).id
+        val labelId = (mainState.value.noteType as NoteTypeUi.LABEL).id
 
 
 

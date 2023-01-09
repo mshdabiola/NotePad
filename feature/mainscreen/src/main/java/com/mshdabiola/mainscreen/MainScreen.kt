@@ -76,7 +76,7 @@ import com.mshdabiola.designsystem.component.NoteCard
 import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteType
+import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
@@ -191,7 +191,7 @@ fun MainScreen(
 
     RenameLabelAlertDialog(
         show = showRenameLabel,
-        label = (mainState.value.noteType as? NoteType.LABEL)?.name ?: "",
+        label = (mainState.value.noteType as? NoteTypeUi.LABEL)?.name ?: "",
         onDismissRequest = { showRenameLabel = false },
         onChangeName = mainViewModel::renameLabel
     )
@@ -214,8 +214,8 @@ fun MainScreen(
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
     photoUri: (Long) -> Uri = { Uri.EMPTY },
-    currentNoteType: NoteType = NoteType.NOTE,
-    onNavigationNoteType: (NoteType) -> Unit = {},
+    currentNoteType: NoteTypeUi = NoteTypeUi.NOTE,
+    onNavigationNoteType: (NoteTypeUi) -> Unit = {},
     navigateToSearch: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
@@ -402,7 +402,7 @@ fun MainScreen(
 //                        )
 //                    )
                     when (currentNoteType) {
-                        is NoteType.LABEL -> {
+                        is NoteTypeUi.LABEL -> {
                             LabelTopAppBar(
                                 label = labels.single { it.id == currentNoteType.id }.label,
                                 onSearch = navigateToSearch,
@@ -413,7 +413,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteType.TRASH -> {
+                        NoteTypeUi.TRASH -> {
                             TrashTopAppBar(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
@@ -421,7 +421,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteType.NOTE -> {
+                        NoteTypeUi.NOTE -> {
                             MainTopAppBar(
                                 navigateToSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
@@ -429,7 +429,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteType.REMAINDER -> {
+                        NoteTypeUi.REMAINDER -> {
                             ArchiveTopAppBar(
                                 name = "Remainder",
                                 onSearch = navigateToSearch,
@@ -439,7 +439,7 @@ fun MainScreen(
                                 )
                         }
 
-                        NoteType.ARCHIVE -> {
+                        NoteTypeUi.ARCHIVE -> {
                             ArchiveTopAppBar(
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },

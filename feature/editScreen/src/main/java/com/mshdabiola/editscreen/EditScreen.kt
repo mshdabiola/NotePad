@@ -86,6 +86,7 @@ import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toDateString
@@ -160,7 +161,8 @@ fun EditScreen(
         },
         showNotificationDialog = {
             showDialog = true
-        }
+        },
+        onArchive = editViewModel::onArchive
 
 
     )
@@ -231,7 +233,8 @@ fun EditScreen(
     onLabel: () -> Unit = {},
     onColorClick: () -> Unit = {},
     onNotification: () -> Unit = {},
-    showNotificationDialog: () -> Unit = {}
+    showNotificationDialog: () -> Unit = {},
+    onArchive: () -> Unit = {}
 ) {
 
     var expand by remember {
@@ -321,9 +324,9 @@ fun EditScreen(
                             contentDescription = "notification"
                         )
                     }
-                    IconButton(onClick = { onDeleteNote() }) {
+                    IconButton(onClick = { onArchive() }) {
                         Icon(
-                            painter = painterResource(id = NoteIcon.Archive),
+                            painter = painterResource(id = if (notepad.note.noteType == NoteTypeUi.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive),
                             contentDescription = "archive"
                         )
                     }

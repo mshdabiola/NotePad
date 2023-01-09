@@ -16,6 +16,7 @@ object NoteIcon {
     val Save = R.drawable.outline_save_24
     val Alarm = R.drawable.outline_alarm_add_24
     val Archive = R.drawable.outline_archive_24
+    val Unarchive = R.drawable.outline_unarchive_24
     val Pin = R.drawable.outline_push_pin_24
     val PinFill = R.drawable.baseline_push_pin_24
     val ImageNoteSupported = R.drawable.outline_image_not_supported_24

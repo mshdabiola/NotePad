@@ -17,6 +17,7 @@ import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -361,6 +362,16 @@ class EditViewModel @Inject constructor(
                 alarmManager.deleteAlarm(id.toInt())
             }
 
+        }
+    }
+
+    fun onArchive() {
+        if (notePadUiState.note.noteType == NoteTypeUi.ARCHIVE) {
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi.NOTE)
+            notePadUiState = notePadUiState.copy(note = note)
+        } else {
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi.ARCHIVE)
+            notePadUiState = notePadUiState.copy(note = note)
         }
     }
 
