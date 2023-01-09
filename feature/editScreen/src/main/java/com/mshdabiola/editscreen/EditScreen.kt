@@ -1,5 +1,6 @@
 package com.mshdabiola.editscreen
 
+//import androidx.compose.foundation.layout.padding
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,7 +11,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -51,6 +51,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -515,10 +516,7 @@ fun EditScreen(
                         //  }
                     }
                 }
-                Row(
-                    modifier = Modifier.clickable { addItem() },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                TextButton(onClick = addItem) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
                     Text(text = "Add list item")
@@ -631,11 +629,25 @@ fun NoteCheck(
         }
     })
     val focused by mutableInteractionSource.collectIsFocusedAsState()
+    val focusRequester = remember {
+        FocusRequester()
+    }
+
+    LaunchedEffect(key1 = noteCheckUiState, block = {
+        if (noteCheckUiState.focus) {
+            focusRequester.requestFocus()
+        } else {
+            focusRequester.freeFocus()
+        }
+    })
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(checked = noteCheckUiState.isCheck,
             onCheckedChange = { onCheck(it, noteCheckUiState.id) })
         TextField(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .weight(1f),
             value = noteCheckUiState.content,
             onValueChange = { onCheckChange(it, noteCheckUiState.id) },
             colors = TextFieldDefaults.textFieldColors(
@@ -667,7 +679,7 @@ fun NoteVoicePlayer(
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier,
         color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         val duration by remember {

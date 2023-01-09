@@ -177,10 +177,10 @@ class EditViewModel @Inject constructor(
     fun addCheck() {
         val size = (notePadUiState.checks.lastOrNull()?.id ?: -1) + 1
         val noteId = notePadUiState.note.id
-        val noteCheck = NoteCheck(id = size.toLong(), noteId = noteId ?: -1)
+        val noteCheck = NoteCheckUiState(id = size, noteId = noteId ?: -1, focus = true)
 
-        val noteChecks = notePadUiState.checks.toMutableList()
-        noteChecks.add(noteCheck.toNoteCheckUiState())
+        val noteChecks = notePadUiState.checks.map { it.copy(focus = false) }.toMutableList()
+        noteChecks.add(noteCheck)
         notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
     }
 
