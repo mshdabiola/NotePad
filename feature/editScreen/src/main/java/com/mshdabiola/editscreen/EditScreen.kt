@@ -11,7 +11,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -72,6 +70,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -310,6 +309,10 @@ fun EditScreen(
     else
         null
 
+    var images = remember(notepad.images) {
+        notepad.images.chunked(3).reversed()
+    }
+
     Scaffold(
         containerColor = bg,
         modifier = Modifier.drawBehind {
@@ -397,21 +400,23 @@ fun EditScreen(
 
         ) {
             if (notepad.images.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .height(200.dp)
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    notepad.images.forEach {
-                        AsyncImage(
-                            modifier = Modifier
-                                .height(200.dp)
-                                .aspectRatio(1f),
-                            model = it.imageName, contentDescription = ""
-                        )
+                images.forEach { imageList ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    ) {
+                        imageList.forEach {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(200.dp),
+                                model = it.imageName, contentDescription = "",
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
-
 
             }
 
