@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.FocusInteraction
@@ -85,19 +84,20 @@ import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.rememberModalState
+import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.designsystem.component.NotificationDialog
+import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
-import com.mshdabiola.designsystem.component.toDateString
-import com.mshdabiola.designsystem.component.toTimeString
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -561,63 +561,29 @@ fun EditScreen(
                 Spacer(modifier = Modifier.height(4.dp))
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
+
+
+            FlowLayout2(
+                verticalSpacing = 8.dp
             ) {
-
-                //label
-
                 if (notepad.note.reminder > 0) {
-                    Surface(
-                        modifier = Modifier.clickable { showNotificationDialog() },
-                        shape = RoundedCornerShape(8.dp),
+                    ReminderCard(
+                        remainder = notepad.note.reminder,
+                        interval = notepad.note.interval,
                         color = sColor,
-                        border = BorderStroke(1.dp, Color.Gray)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            if (notepad.note.interval > 0) {
-                                Icon(
-                                    painter = painterResource(id = NoteIcon.Repeat),
-                                    contentDescription = ""
-                                )
-                                Spacer(modifier = Modifier.width(2.dp))
-                            } else {
-                                Icon(
-                                    painter = painterResource(id = NoteIcon.Alarm),
-                                    contentDescription = ""
-                                )
-                                Spacer(modifier = Modifier.width(2.dp))
-                            }
-                            Text(
-                                text = "${notepad.note.reminder.toDateString()} ${
-                                    notepad.note.reminder.toTimeString(
-                                        true
-                                    )
-                                }",
-
-                                )
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(4.dp))
+                        style = MaterialTheme.typography.bodyLarge,
+                        onClick = showNotificationDialog
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
-
-
                 notepad.labels.forEach {
-                    Surface(
-                        modifier = Modifier.clickable { onLabel() },
-                        shape = RoundedCornerShape(8.dp),
+                    LabelCard(
+                        name = it,
                         color = sColor,
-                        border = BorderStroke(1.dp, Color.Gray)
-                    ) {
-                        Text(text = it, modifier = Modifier.padding(8.dp))
-                    }
-                    Spacer(modifier = Modifier.width(4.dp))
+                        style = MaterialTheme.typography.bodyLarge,
+                        onClick = onLabel
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
             }
 

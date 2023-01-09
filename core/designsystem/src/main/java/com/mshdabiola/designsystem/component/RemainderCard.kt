@@ -30,10 +30,11 @@ fun ReminderCard(
     remainder: Long,
     interval: Long,
     color: Color,
-    onClick: () -> Unit = {}
+    style: TextStyle = MaterialTheme.typography.bodySmall,
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
-        modifier = Modifier.clickable { onClick() },
+        modifier = Modifier.clickable(enabled = onClick != null) { onClick?.invoke() },
         shape = RoundedCornerShape(8.dp),
         color = color,
         border = BorderStroke(1.dp, Color.Gray)
@@ -63,7 +64,7 @@ fun ReminderCard(
                         true
                     )
                 }",
-                style = MaterialTheme.typography.bodySmall
+                style = style
 
             )
         }
@@ -82,10 +83,10 @@ fun LabelCard(
     name: String,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
-        modifier = Modifier.clickable { onClick() },
+        modifier = Modifier.clickable(enabled = onClick != null, onClick = { onClick?.invoke() }),
         shape = RoundedCornerShape(8.dp),
         color = color,
         border = BorderStroke(1.dp, Color.Gray)
