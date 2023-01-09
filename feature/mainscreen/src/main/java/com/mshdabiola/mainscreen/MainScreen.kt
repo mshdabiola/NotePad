@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -363,7 +364,11 @@ fun MainScreen(
 
                             }
                         },
-                        scrollBehavior = scrollBehavior
+                        scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                            scrolledContainerColor = Color.Transparent
+                        )
                     )
                 }
 
@@ -448,9 +453,9 @@ fun MainScreen(
                     .padding(paddingValues)
                     .padding(8.dp)
             ) {
-                if (pinNotePad.first.isNotEmpty()) {
-                    Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
-                    LazyVerticalStaggeredGrid(
+
+
+                LazyVerticalStaggeredGrid(
 
                         columns = StaggeredGridCells.Fixed(2),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -458,33 +463,33 @@ fun MainScreen(
 
                     ) {
 
-                        items(pinNotePad.first) { notePadUiState ->
-                            NoteCard(
-                                notePad = notePadUiState,
-                                onCardClick = {
-                                    if (noOfSelected > 0)
-                                        onSelectedCard(it)
-                                    else
-                                        navigateToEdit(it, "", 0)
-                                },
-                                onLongClick = onSelectedCard
-                            )
+
+                    if (pinNotePad.first.isNotEmpty()) {
+                        item {
+                            Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                         }
-
+                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
                     }
-                    if (pinNotePad.second.isNotEmpty()) {
-                        Text(text = "Other")
+                    items(pinNotePad.first) { notePadUiState ->
+                        NoteCard(
+                            notePad = notePadUiState,
+                            onCardClick = {
+                                if (noOfSelected > 0)
+                                    onSelectedCard(it)
+                                else
+                                    navigateToEdit(it, "", 0)
+                            },
+                            onLongClick = onSelectedCard
+                        )
                     }
 
-                }
-                LazyVerticalStaggeredGrid(
 
-                    columns = StaggeredGridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-
-                ) {
-
+                    if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
+                        item {
+                            Text(modifier = Modifier.fillMaxWidth(), text = "Other")
+                        }
+                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
+                    }
                     items(pinNotePad.second) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
@@ -498,7 +503,8 @@ fun MainScreen(
                         )
                     }
 
-                }
+                    }
+
             }
 
             ImageDialog(
