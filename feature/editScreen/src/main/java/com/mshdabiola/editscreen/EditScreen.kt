@@ -312,6 +312,12 @@ fun EditScreen(
         notepad.images.chunked(3).reversed()
     }
 
+    LaunchedEffect(key1 = notepad, block = {
+        if (notepad.note.focus) {
+            subjectFocus.requestFocus()
+        }
+    })
+
     Scaffold(
         containerColor = bg,
         modifier = Modifier.drawBehind {

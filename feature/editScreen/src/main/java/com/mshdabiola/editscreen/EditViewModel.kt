@@ -18,6 +18,7 @@ import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -60,8 +61,16 @@ class EditViewModel @Inject constructor(
         viewModelScope.launch {
             Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
             notePadUiState = when (editArg.id) {
-                (-1).toLong() -> NotePad().toNotePadUiState()
-                (-2).toLong() -> NotePad(note = Note(isCheck = true)).toNotePadUiState()
+                (-1).toLong() -> NotePadUiState(note = NoteUiState(focus = true))
+                (-2).toLong() -> NotePadUiState(
+                    note = NoteUiState(isCheck = true), checks = listOf(
+                        NoteCheckUiState(
+                            id = 0,
+                            noteId = -1, focus = true
+                        )
+                    ).toImmutableList()
+                )
+
                 (-3).toLong() -> NotePad(
                     note = Note(detail = editArg.content), images = listOf(
                         NoteImage(0, -1, contentManager.getImagePath(editArg.data))
