@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +28,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +43,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -330,46 +336,88 @@ fun MainScreen(
                         onCopy = onCopy
                     )
                 } else {
-                    TopAppBar(
-                        modifier = Modifier,
-                        title = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .clickable { navigateToSearch() }
-                                    .fillMaxWidth()
-                                    .padding(4.dp)
-                                    .padding(end = 16.dp)
-                                    .clip(
-                                        RoundedCornerShape(
-                                            topEnd = 50f,
-                                            topStart = 50f,
-                                            bottomEnd = 50f,
-                                            bottomStart = 50f
-                                        )
-                                    )
-                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                            ) {
-                                IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = "menu"
-                                    )
-                                }
-                                Text(
-                                    text = "Search your note",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+//                    TopAppBar(
+//                        modifier = Modifier,
+//                        title = {
+//                            Row(
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                modifier = Modifier
+//                                    .clickable { navigateToSearch() }
+//                                    .fillMaxWidth()
+//                                    .padding(4.dp)
+//                                    .padding(end = 16.dp)
+//                                    .clip(
+//                                        RoundedCornerShape(
+//                                            topEnd = 50f,
+//                                            topStart = 50f,
+//                                            bottomEnd = 50f,
+//                                            bottomStart = 50f
+//                                        )
+//                                    )
+//                                    .background(MaterialTheme.colorScheme.secondaryContainer)
+//                            ) {
+//                                IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+//                                    Icon(
+//                                        imageVector = Icons.Default.Menu,
+//                                        contentDescription = "menu"
+//                                    )
+//                                }
+//                                Text(
+//                                    text = "Search your note",
+//                                    style = MaterialTheme.typography.titleMedium
+//                                )
+//
+//
+//                            }
+//                        },
+//                        scrollBehavior = scrollBehavior,
+//                        colors = TopAppBarDefaults.topAppBarColors(
+//                            containerColor = Color.Transparent,
+//                            scrolledContainerColor = Color.Transparent
+//                        )
+//                    )
+                    when (currentNoteType) {
+                        is NoteType.LABEL -> {
+                            LabelTopAppBar(
+                                label = labels.single { it.id == currentNoteType.index }.label,
+                                onSearch = navigateToSearch,
+                                onNavigate = { coroutineScope.launch { drawerState.open() } },
+                                scrollBehavior = scrollBehavior
+                            )
+                        }
 
+                        NoteType.TRASH -> {
+                            TrashTopAppBar(
+                                onNavigate = { coroutineScope.launch { drawerState.open() } },
+                                scrollBehavior = scrollBehavior
+                            )
+                        }
 
-                            }
-                        },
-                        scrollBehavior = scrollBehavior,
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = Color.Transparent
-                        )
-                    )
+                        NoteType.NOTE -> {
+                            MainTopAppBar(
+                                navigateToSearch = navigateToSearch,
+                                onNavigate = { coroutineScope.launch { drawerState.open() } },
+                                scrollBehavior = scrollBehavior
+                            )
+                        }
+
+                        NoteType.REMAINDER -> {
+                            ArchiveTopAppBar(
+                                name = "Remainder",
+                                onSearch = navigateToSearch,
+                                onNavigate = { coroutineScope.launch { drawerState.open() } },
+                                scrollBehavior = scrollBehavior
+                            )
+                        }
+
+                        NoteType.ARCHIVE -> {
+                            ArchiveTopAppBar(
+                                onSearch = navigateToSearch,
+                                onNavigate = { coroutineScope.launch { drawerState.open() } },
+                                scrollBehavior = scrollBehavior
+                            )
+                        }
+                    }
                 }
 
 
@@ -457,11 +505,11 @@ fun MainScreen(
 
                 LazyVerticalStaggeredGrid(
 
-                        columns = StaggeredGridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    columns = StaggeredGridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                    ) {
+                ) {
 
 
                     if (pinNotePad.first.isNotEmpty()) {
@@ -503,7 +551,7 @@ fun MainScreen(
                         )
                     }
 
-                    }
+                }
 
             }
 
@@ -639,4 +687,292 @@ fun SelectTopBar(
 @Composable
 fun SelectTopAppBarPreview() {
     SelectTopBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabelTopAppBar(
+    label: String = "label",
+    onNavigate: () -> Unit = {},
+    onSearch: () -> Unit = {},
+    onRenameLabel: () -> Unit = {},
+    onDeleteLabel: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+) {
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
+
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onNavigate) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+            }
+        },
+        title = { Text(text = label) },
+        actions = {
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "search"
+                )
+            }
+
+            Box {
+                IconButton(onClick = { showDropDown = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+
+                }
+                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
+                    DropdownMenuItem(
+                        text = { Text(text = "Rename Label") },
+                        onClick = {
+                            showDropDown = false
+                            onRenameLabel()
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete Label") },
+                        onClick = {
+                            showDropDown = false
+                            onDeleteLabel()
+                        })
+                }
+
+            }
+        },
+        scrollBehavior = scrollBehavior
+
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun LabelTopAppBarPreview() {
+    LabelTopAppBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ArchiveTopAppBar(
+    name: String = "Archive",
+    onNavigate: () -> Unit = {},
+    onSearch: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+) {
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
+
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onNavigate) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+            }
+        },
+        title = { Text(text = name) },
+        actions = {
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "search"
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
+
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun ArchiveTopAppBarPreview() {
+    ArchiveTopAppBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrashTopAppBar(
+    onNavigate: () -> Unit = {},
+    onEmptyTrash: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+) {
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
+
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onNavigate) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+            }
+        },
+        title = { Text(text = "Trash") },
+        actions = {
+
+            Box {
+                IconButton(onClick = { showDropDown = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+
+                }
+                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
+                    DropdownMenuItem(text = { Text(text = "Empty Trash") },
+                        onClick = {
+                            showDropDown = false
+                            onEmptyTrash()
+                        })
+
+                }
+
+            }
+        },
+        scrollBehavior = scrollBehavior
+
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun TrashTopAppBarPreview() {
+    TrashTopAppBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainTopAppBar(
+    navigateToSearch: () -> Unit = {},
+    onNavigate: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+) {
+    TopAppBar(
+        modifier = Modifier,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable { navigateToSearch() }
+                    .fillMaxWidth()
+                    .padding(4.dp)
+                    .padding(end = 16.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topEnd = 50f,
+                            topStart = 50f,
+                            bottomEnd = 50f,
+                            bottomStart = 50f
+                        )
+                    )
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                IconButton(onClick = onNavigate) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "menu"
+                    )
+                }
+                Text(
+                    text = "Search your note",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun MainTopAppBarPreview() {
+    MainTopAppBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RenameLabelAlertDialog(
+    show: Boolean = false,
+    label: String = "Label",
+    onDismissRequest: () -> Unit = {},
+    onChangeName: (String) -> Unit = {}
+) {
+    var name by remember(label) {
+        mutableStateOf(label)
+    }
+
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = "Rename Label") },
+            text = {
+                TextField(value = name, onValueChange = { name = it })
+            },
+            confirmButton = {
+                Button(onClick = { onChangeName(name) }) {
+                    Text(text = "Rename")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismissRequest() }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
+
+    }
+
+}
+
+@Preview
+@Composable
+fun RenameLabelPreview() {
+    RenameLabelAlertDialog(show = true)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteLabelAlertDialog(
+    show: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    onDelete: () -> Unit = {}
+) {
+
+
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = "Rename Label") },
+            text = {
+                Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
+            },
+            confirmButton = {
+                TextButton(onClick = onDelete) {
+                    Text(text = "Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismissRequest() }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
+
+    }
+
+}
+
+@Preview
+@Composable
+fun DeleteLabelPreview() {
+    DeleteLabelAlertDialog(show = true)
 }
