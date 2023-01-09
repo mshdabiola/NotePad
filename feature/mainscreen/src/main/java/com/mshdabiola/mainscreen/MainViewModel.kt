@@ -9,7 +9,6 @@ import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
-import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteType
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -61,13 +60,40 @@ class MainViewModel
 
                     when (pair.second) {
                         is NoteType.LABEL -> {
-                            _mainState.value =
-                                mainState.value.copy(notePads = emptyList<NotePadUiState>().toImmutableList())
+                            notepadRepository.getNotePads().map { notes ->
+                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteType.LABEL).index } }
+                                    .map { it.toNotePadUiState(pair.first) }
+                            }.collect { padUiStateList ->
+                                val list = padUiStateList.map {
+                                    val labels = it.labels
+                                        .take(3)
+                                        .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
+                                    it.copy(
+                                        images = it.images.takeLast(6).toImmutableList(),
+                                        labels = labels.toImmutableList()
+                                    )
+                                }
+                                _mainState.value =
+                                    mainState.value.copy(notePads = list.toImmutableList())
+                            }
                         }
 
                         is NoteType.REMAINDER -> {
-                            _mainState.value =
-                                mainState.value.copy(notePads = emptyList<NotePadUiState>().toImmutableList())
+                            notepadRepository.getNotePads().map { notes ->
+                                notes.map { it.toNotePadUiState(pair.first) }
+                            }.collect { padUiStateList ->
+                                val list = padUiStateList.filter { it.note.reminder > 0 }.map {
+                                    val labels = it.labels
+                                        .take(3)
+                                        .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
+                                    it.copy(
+                                        images = it.images.takeLast(6).toImmutableList(),
+                                        labels = labels.toImmutableList()
+                                    )
+                                }
+                                _mainState.value =
+                                    mainState.value.copy(notePads = list.toImmutableList())
+                            }
                         }
 
                         else -> {
