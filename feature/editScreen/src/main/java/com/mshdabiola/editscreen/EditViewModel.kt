@@ -375,5 +375,34 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    fun onDelete() {
+
+        val note = notePadUiState.note.copy(noteType = NoteTypeUi.TRASH)
+        notePadUiState = notePadUiState.copy(note = note)
+    }
+
+    fun copyNote() {
+        viewModelScope.launch {
+
+            val notepads = notePadUiState.toNotePad()
+
+            var copy = notepads.copy(note = notepads.note.copy(id = null))
+
+            val newId = notePadRepository.insertNotepad(copy)
+
+            copy = copy.copy(
+                note = copy.note.copy(id = newId),
+                images = copy.images.map { it.copy(noteId = newId) },
+                voices = copy.voices.map { it.copy(noteId = newId) },
+                labels = copy.labels.map { it.copy(noteId = newId) },
+                checks = copy.checks.map { it.copy(noteId = newId) }
+            )
+
+            notePadRepository.insertNotepad(copy)
+
+
+        }
+
+    }
 
 }

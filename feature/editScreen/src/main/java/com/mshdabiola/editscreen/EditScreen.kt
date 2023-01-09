@@ -1,6 +1,7 @@
 package com.mshdabiola.editscreen
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.os.Build
@@ -80,6 +81,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.rememberModalState
@@ -168,6 +170,8 @@ fun EditScreen(
     )
     AddBottomSheet(
         modalState = modalState,
+        currentColor = editViewModel.notePadUiState.note.color,
+        currentImage = editViewModel.notePadUiState.note.background,
         isNoteCheck = editViewModel.notePadUiState.note.isCheck,
         saveImage = editViewModel::saveImage,
         saveVoice = editViewModel::saveVoice,
@@ -175,15 +179,31 @@ fun EditScreen(
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes
     )
+
+    val send = {
+        val notePads = editViewModel.notePadUiState
+        val intent = ShareCompat.IntentBuilder(context)
+            .setText(notePads.toString())
+            .setType("text/*")
+            .setChooserTitle("From Notepad")
+            .createChooserIntent()
+        context.startActivity(Intent(intent))
+
+    }
     NoteOptionBottomSheet(
         modalState = noteModalState,
+        currentColor = editViewModel.notePadUiState.note.color,
+        currentImage = editViewModel.notePadUiState.note.background,
         onLabel = {
             navigateToSelectLevel(
                 intArrayOf(
                     editViewModel.notePadUiState.note.id?.toInt() ?: -1
                 )
             )
-        }
+        },
+        onDelete = editViewModel::onDelete,
+        onCopy = editViewModel::copyNote,
+        onSendNote = send
     )
     ColorAndImageBottomSheet(
         modalState = colorModalState,

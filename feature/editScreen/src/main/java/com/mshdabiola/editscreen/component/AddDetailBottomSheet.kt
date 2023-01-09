@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +35,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddBottomSheet(
     modalState: ModalState,
+    currentColor: Int,
+    currentImage: Int,
     isNoteCheck: Boolean,
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
@@ -40,6 +44,17 @@ fun AddBottomSheet(
     savePhoto: () -> Unit = {},
     changeToCheckBoxes: () -> Unit = {}
 ) {
+
+    val background = if (currentImage != -1) {
+        NoteIcon.background[currentImage].fgColor
+    } else {
+        if (currentColor != -1) {
+            NoteIcon.noteColors[currentColor]
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    }
+
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
@@ -109,8 +124,11 @@ fun AddBottomSheet(
 
 
     ModalBottomSheet(modalState = modalState) {
-        Surface {
+        Surface(
+            color = background
+        ) {
             Column(modifier = Modifier.padding(bottom = 36.dp)) {
+
                 NavigationDrawerItem(icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = NoteIcon.Photo),
@@ -120,7 +138,9 @@ fun AddBottomSheet(
                     selected = false, onClick = {
                         snapPictureLauncher.launch(getPhotoUri())
                         coroutineScope.launch { modalState.hide() }
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
 
                 NavigationDrawerItem(icon = {
                     Icon(
@@ -136,7 +156,9 @@ fun AddBottomSheet(
                         )
                         coroutineScope.launch { modalState.hide() }
 
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
                 NavigationDrawerItem(icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = NoteIcon.Brush),
@@ -146,7 +168,10 @@ fun AddBottomSheet(
                     selected = false,
                     onClick = {
 
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+
+                )
                 NavigationDrawerItem(icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
@@ -176,7 +201,9 @@ fun AddBottomSheet(
                         } else {
                             audioPermission.launch(Manifest.permission.RECORD_AUDIO)
                         }
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
                 if (!isNoteCheck) {
                     NavigationDrawerItem(icon = {
                         Icon(
@@ -188,7 +215,9 @@ fun AddBottomSheet(
                         onClick = {
                             coroutineScope.launch { modalState.hide() }
                             changeToCheckBoxes()
-                        })
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    )
                 }
 
             }

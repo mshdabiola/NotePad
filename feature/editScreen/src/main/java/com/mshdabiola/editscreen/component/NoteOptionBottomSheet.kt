@@ -7,7 +7,9 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,17 +28,29 @@ import kotlinx.coroutines.launch
 @Composable
 fun NoteOptionBottomSheet(
     modalState: ModalState,
+    currentColor: Int,
+    currentImage: Int,
     onDelete: () -> Unit = {},
     onCopy: () -> Unit = {},
     onSendNote: () -> Unit = {},
     onLabel: () -> Unit = {},
-    onSaveText: () -> Unit = {}
 ) {
 
     val coroutineScope = rememberCoroutineScope()
+    val background = if (currentImage != -1) {
+        NoteIcon.background[currentImage].fgColor
+    } else {
+        if (currentColor != -1) {
+            NoteIcon.noteColors[currentColor]
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    }
 
     ModalBottomSheet(modalState = modalState) {
-        Surface {
+        Surface(
+            color = background
+        ) {
             Column(modifier = Modifier.padding(bottom = 36.dp)) {
                 NavigationDrawerItem(icon = {
                     Icon(
@@ -47,7 +61,9 @@ fun NoteOptionBottomSheet(
                     selected = false, onClick = {
                         onDelete()
                         coroutineScope.launch { modalState.hide() }
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
 
                 NavigationDrawerItem(
                     icon = {
@@ -62,7 +78,9 @@ fun NoteOptionBottomSheet(
                         onCopy()
                         coroutineScope.launch { modalState.hide() }
 
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
                 NavigationDrawerItem(icon = {
                     Icon(
                         imageVector = Icons.Outlined.Share,
@@ -73,7 +91,9 @@ fun NoteOptionBottomSheet(
                     onClick = {
                         onSendNote()
                         coroutineScope.launch { modalState.hide() }
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
                 NavigationDrawerItem(icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = NoteIcon.Label),
@@ -84,19 +104,21 @@ fun NoteOptionBottomSheet(
                         onLabel()
                         coroutineScope.launch { modalState.hide() }
 
-                    })
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                )
 
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Save),
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Save as txt") },
-                    selected = false, onClick = {
-                        onSaveText()
-                        coroutineScope.launch { modalState.hide() }
-
-                    })
+//                NavigationDrawerItem(icon = {
+//                    Icon(
+//                        imageVector = ImageVector.vectorResource(id = NoteIcon.Save),
+//                        contentDescription = ""
+//                    )
+//                }, label = { Text(text = "Save as txt") },
+//                    selected = false, onClick = {
+//                        onSaveText()
+//                        coroutineScope.launch { modalState.hide() }
+//
+//                    })
 
 
             }
