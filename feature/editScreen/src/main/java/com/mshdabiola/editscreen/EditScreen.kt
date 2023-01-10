@@ -7,6 +7,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -19,8 +22,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,6 +63,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -288,6 +294,7 @@ fun EditScreen(
         else
             MaterialTheme.colorScheme.background
     }
+    val color = NoteIcon.noteColors.getOrNull(notepad.note.color) ?: Color.Transparent
 
     val sColor = if (notepad.note.background != -1)
         NoteIcon.background[notepad.note.background].fgColor
@@ -566,6 +573,17 @@ fun EditScreen(
                             onClick = onLabel
                         )
                         Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    if (notepad.note.background > -1) {
+                        Box(modifier = Modifier
+                            .clickable { onColorClick() }
+                            .clip(CircleShape)
+                            .background(color)
+                            .border(1.dp, Color.Gray, CircleShape)
+                            .size(30.dp)
+
+                        )
+
                     }
                 }
 
