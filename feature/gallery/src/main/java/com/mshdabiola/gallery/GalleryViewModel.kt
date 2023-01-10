@@ -43,4 +43,10 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
+    fun deleteImage(id: Long) {
+        viewModelScope.launch {
+            noteImageRepository.delete(id)
+        }
+    }
+
 }
