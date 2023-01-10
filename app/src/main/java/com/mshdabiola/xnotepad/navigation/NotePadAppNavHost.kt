@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.mshdabiola.editscreen.editScreen
+import com.mshdabiola.gallery.galleryScreen
+import com.mshdabiola.gallery.navigateToGallery
 import com.mshdabiola.labelscreen.labelScreen
 import com.mshdabiola.mainscreen.mainNavigationRoute
 import com.mshdabiola.mainscreen.mainScreen
@@ -29,9 +31,13 @@ fun NotePadAppNavHost(
             navigateToSearch = navigateToSearch,
             navigateToSelectLevel = navigateToSelectLevel
         )
-        editScreen(onBack = onBack, navigateToSelectLevel = navigateToSelectLevel)
+        editScreen(onBack = onBack,
+            navigateToSelectLevel = navigateToSelectLevel,
+            navigateToGallery = { id, index -> navController.navigateToGallery(id, index) }
+        )
         labelScreen(onBack = onBack)
         selectLabelScreen(onBack)
         searchScreen(onBack, navigateToEdit)
+        galleryScreen(onBack = onBack)
     }
 }

@@ -108,7 +108,8 @@ import kotlinx.datetime.Clock
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    navigateToSelectLevel: (IntArray) -> Unit
+    navigateToSelectLevel: (IntArray) -> Unit,
+    navigateToGallery: (Long, Long) -> Unit
 ) {
 
     val modalState = rememberModalState()
@@ -167,7 +168,8 @@ fun EditScreen(
             showDialog = true
         },
         onArchive = editViewModel::onArchive,
-        deleteVoiceNote = editViewModel::deleteVoiceNote
+        deleteVoiceNote = editViewModel::deleteVoiceNote,
+        navigateToGallery = navigateToGallery
 
 
     )
@@ -260,7 +262,8 @@ fun EditScreen(
     onNotification: () -> Unit = {},
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
-    deleteVoiceNote: (Int) -> Unit = {}
+    deleteVoiceNote: (Int) -> Unit = {},
+    navigateToGallery: (Long, Long) -> Unit = { i, j -> }
 ) {
 
     var expand by remember {
@@ -385,6 +388,7 @@ fun EditScreen(
                             imageList.forEach {
                                 AsyncImage(
                                     modifier = Modifier
+                                        .clickable { navigateToGallery(notepad.note.id!!, it.id) }
                                         .weight(1f)
                                         .height(200.dp),
                                     model = it.imageName, contentDescription = "",
@@ -632,8 +636,9 @@ fun EditScreenPreview() {
             ),
             labels = listOf("abiola", "moshood").toImmutableList()
 
+        ),
+
         )
-    )
 }
 
 
