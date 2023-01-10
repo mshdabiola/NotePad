@@ -83,7 +83,7 @@ class NotePadRepository
             noteDao.delete(it)
             noteImageDao.deleteByNoteId(it)
             noteLabelDao.deleteByNoteId(it)
-            noteVoiceDao.deleteVoiceById(it)
+            noteVoiceDao.deleteVoiceByNoteId(it)
             noteCheckDao.deleteByNoteId(it)
 
         }

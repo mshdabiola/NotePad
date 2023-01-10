@@ -18,6 +18,7 @@ import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
+import com.mshdabiola.database.repository.NoteVoiceRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
@@ -48,7 +49,8 @@ class EditViewModel @Inject constructor(
     private val voicePlayer: NotePlayer,
     private val noteLabelRepository: NoteLabelRepository,
     private val labelRepository: LabelRepository,
-    private val alarmManager: AlarmManager
+    private val alarmManager: AlarmManager,
+    private val noteVoiceRepository: NoteVoiceRepository
 
 ) : ViewModel() {
 
@@ -474,6 +476,16 @@ class EditViewModel @Inject constructor(
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         // Log.e(this::class.simpleName, "$time time")
         return time?.toLong() ?: 1L
+    }
+
+    fun deleteVoiceNote(index: Int) {
+        viewModelScope.launch {
+            val voices = notePadUiState.voices.toMutableList()
+            val voice = voices.removeAt(index)
+            notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
+
+            noteVoiceRepository.delete(voice.id)
+        }
     }
 
 }

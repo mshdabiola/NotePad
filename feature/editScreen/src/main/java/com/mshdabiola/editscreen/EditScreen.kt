@@ -160,7 +160,8 @@ fun EditScreen(
         showNotificationDialog = {
             showDialog = true
         },
-        onArchive = editViewModel::onArchive
+        onArchive = editViewModel::onArchive,
+        deleteVoiceNote = editViewModel::deleteVoiceNote
 
 
     )
@@ -226,6 +227,7 @@ fun EditScreen(
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
@@ -251,7 +253,8 @@ fun EditScreen(
     onColorClick: () -> Unit = {},
     onNotification: () -> Unit = {},
     showNotificationDialog: () -> Unit = {},
-    onArchive: () -> Unit = {}
+    onArchive: () -> Unit = {},
+    deleteVoiceNote: (Int) -> Unit = {}
 ) {
 
     var expand by remember {
@@ -277,15 +280,6 @@ fun EditScreen(
         mutableStateOf(true)
     }
 
-    val fg = if (notepad.note.background != -1) {
-        NoteIcon.background[notepad.note.background].fgColor
-    } else {
-        if (notepad.note.color != -1) {
-            NoteIcon.noteColors[notepad.note.color]
-        } else {
-            MaterialTheme.colorScheme.background
-        }
-    }
     val bg = if (notepad.note.background != -1) {
         Color.Transparent
     } else {
@@ -414,6 +408,7 @@ fun EditScreen(
                             imeAction = ImeAction.Next
                         ),
                         modifier = Modifier
+                            .padding(0.dp)
                             .weight(1f)
 
                     )
@@ -534,18 +529,23 @@ fun EditScreen(
 
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                notepad.voices.forEachIndexed { index, noteVoiceUiState ->
-                    NoteVoicePlayer(
-                        noteVoiceUiState,
-                        playVoice = { playVoice(index) },
-                        pauseVoice = pauseVoice
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                Column(Modifier.padding(horizontal = 16.dp)) {
+                    notepad.voices.forEachIndexed { index, noteVoiceUiState ->
+                        NoteVoicePlayer(
+                            noteVoiceUiState,
+                            playVoice = { playVoice(index) },
+                            pauseVoice = pauseVoice,
+                            delete = { deleteVoiceNote(index) },
+                            color = sColor
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
 
                 FlowLayout2(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     verticalSpacing = 8.dp
                 ) {
                     if (notepad.note.reminder > 0) {
@@ -685,23 +685,15 @@ fun NoteCheck(
 fun NoteVoicePlayer(
     noteVoiceUiState: NoteVoiceUiState,
     playVoice: () -> Unit = {},
-    pauseVoice: () -> Unit = {}
+    pauseVoice: () -> Unit = {},
+    delete: () -> Unit = {},
+    color: Color = Color.Red
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier,
-        color = MaterialTheme.colorScheme.secondaryContainer
+        color = color
     ) {
-//        val duration by remember {
-//
-//            val mediaMetadataRetriever = MediaMetadataRetriever()
-//            derivedStateOf {
-//                mediaMetadataRetriever.setDataSource(noteVoiceUiState.voiceName)
-//                val time =
-//                    mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                (time?.toIntOrNull() ?: 0)
-//            }
-//        }
 
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -722,7 +714,7 @@ fun NoteVoicePlayer(
                 progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length)
             )
             Text(text = noteVoiceUiState.length.toTime())
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { delete() }) {
                 Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
             }
         }
