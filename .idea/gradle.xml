@@ -33,6 +33,7 @@
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/drawing" />
             <option value="$PROJECT_DIR$/feature/editScreen" />
             <option value="$PROJECT_DIR$/feature/gallery" />
             <option value="$PROJECT_DIR$/feature/helpscreeen" />

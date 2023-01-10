@@ -58,6 +58,10 @@ internal fun Project.configureAndroidCompose(
 
             add("debugImplementation", libs.findLibrary("androidx-compose-ui-testManifest").get())
             add("debugImplementation", libs.findLibrary("androidx-compose-ui-tooling").get())
+            add(
+                "debugImplementation",
+                libs.findLibrary("androidx-compose-material-iconsExtended").get()
+            )
         }
     }
 }
