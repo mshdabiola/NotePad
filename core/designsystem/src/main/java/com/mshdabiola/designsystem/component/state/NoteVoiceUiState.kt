@@ -7,7 +7,8 @@ data class NoteVoiceUiState(
     val noteId: Long,
     val voiceName: String,
     val length: Long = 1,
-    val currentProgress: Long = 0
+    val currentProgress: Float = 0f,
+    val isPlaying: Boolean = false
 )
 
 fun NoteVoice.toNoteVoiceUiState() = NoteVoiceUiState(id, noteId, voiceName)

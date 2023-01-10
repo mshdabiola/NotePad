@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Checkbox
@@ -134,6 +133,7 @@ fun EditScreen(
         onCheckDelete = editViewModel::onCheckDelete,
         onBackClick = onBack,
         playVoice = editViewModel::playMusic,
+        pauseVoice = editViewModel::pause,
         moreOptions = { coroutineScope.launch { modalState.show() } },
         noteOption = { coroutineScope.launch { noteModalState.show() } },
         onColorClick = { coroutineScope.launch { colorModalState.show() } },
@@ -239,7 +239,8 @@ fun EditScreen(
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
-    playVoice: (String) -> Unit = {},
+    playVoice: (Int) -> Unit = {},
+    pauseVoice: () -> Unit = {},
     moreOptions: () -> Unit = {},
     noteOption: () -> Unit = {},
     unCheckAllItems: () -> Unit = {},
@@ -361,7 +362,7 @@ fun EditScreen(
             )
         },
 
-    ) { paddingValues ->
+        ) { paddingValues ->
         Column(
             Modifier
 
@@ -533,8 +534,12 @@ fun EditScreen(
 
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                notepad.voices.forEach {
-                    NoteVoicePlayer(it, playVoice)
+                notepad.voices.forEachIndexed { index, noteVoiceUiState ->
+                    NoteVoicePlayer(
+                        noteVoiceUiState,
+                        playVoice = { playVoice(index) },
+                        pauseVoice = pauseVoice
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -679,7 +684,8 @@ fun NoteCheck(
 @Composable
 fun NoteVoicePlayer(
     noteVoiceUiState: NoteVoiceUiState,
-    playVoice: (String) -> Unit = {}
+    playVoice: () -> Unit = {},
+    pauseVoice: () -> Unit = {}
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -699,15 +705,21 @@ fun NoteVoicePlayer(
 
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = {
-                playVoice(noteVoiceUiState.voiceName)
+            Box {
+                if (noteVoiceUiState.isPlaying) {
+                    IconButton(onClick = pauseVoice) {
+                        Icon(painterResource(id = NoteIcon.Pause), contentDescription = "pause")
+                    }
+                } else {
+                    IconButton(onClick = playVoice) {
+                        Icon(painterResource(id = NoteIcon.Play), contentDescription = "play")
+                    }
+                }
 
-            }) {
-                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "play")
             }
             LinearProgressIndicator(
                 modifier = Modifier.weight(1f),
-                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length).toFloat()
+                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length)
             )
             Text(text = noteVoiceUiState.length.toTime())
             IconButton(onClick = { /*TODO*/ }) {

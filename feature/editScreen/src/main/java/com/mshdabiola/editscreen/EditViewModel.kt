@@ -1,5 +1,6 @@
 package com.mshdabiola.editscreen
 
+//import android.util.Log
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -32,6 +33,7 @@ import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -58,7 +60,7 @@ class EditViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
+            //   Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
             notePadUiState = when (editArg.id) {
                 (-1).toLong() -> NotePadUiState(note = NoteUiState(focus = true))
                 (-2).toLong() -> NotePadUiState(
@@ -92,7 +94,7 @@ class EditViewModel @Inject constructor(
                                 id = 0, noteId = -1,
                                 voiceName = voicePath,
                                 length = length,
-                                currentProgress = 0
+                                currentProgress = 0f
                             )
                         )
                             .toImmutableList()
@@ -117,7 +119,7 @@ class EditViewModel @Inject constructor(
 
                 .distinctUntilChanged { old, new -> old == new }
                 .collectLatest {
-                    Log.e("flow", "$it")
+                    //   Log.e("flow", "$it")
                     insertNotePad(it)
                 }
         }
@@ -232,8 +234,44 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun playMusic(path: String) {
-        voicePlayer.playMusic(path)
+    private var playJob: Job? = null
+    private var currentIndex = -1
+    fun playMusic(index: Int) {
+        playJob?.cancel()
+        val voiceUiState = notePadUiState.voices[index]
+        var voices = notePadUiState.voices.toMutableList()
+
+        if (currentIndex != index) {
+            voices = voices.map { it.copy(currentProgress = 0f, isPlaying = false) }.toMutableList()
+            notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
+        }
+        currentIndex = index
+        playJob = viewModelScope.launch {
+
+            voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
+                .collect {
+                    Log.e("flow", "time is $it")
+
+                    voices[index] =
+                        voiceUiState.copy(currentProgress = it.toFloat(), isPlaying = true)
+                    Log.e("flow", "time is ${it}")
+                    notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
+                }
+            voices[index] = voiceUiState.copy(currentProgress = 0f, isPlaying = false)
+            notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
+
+
+        }
+    }
+
+    fun pause() {
+        //prevIndex=currentIndex
+        val voiceUiState = notePadUiState.voices[currentIndex]
+        val voices = notePadUiState.voices.toMutableList()
+        voices[currentIndex] = voiceUiState.copy(isPlaying = false)
+        notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
+        playJob?.cancel()
+        voicePlayer.pause()
     }
 
     fun saveImage(uri: Uri, id: Long) {
@@ -257,7 +295,7 @@ class EditViewModel @Inject constructor(
         val voicePath = contentManager.getVoicePath(id)
         val length = getAudioLength(voicePath)
         val noteVoice =
-            NoteVoiceUiState(size, notePadUiState.note.id ?: -1, voicePath, length, 0)
+            NoteVoiceUiState(size, notePadUiState.note.id ?: -1, voicePath, length, 0f)
         val listVoices = notePadUiState.voices.toMutableList()
         listVoices.add(noteVoice)
 
@@ -434,7 +472,7 @@ class EditViewModel @Inject constructor(
         mediaMetadataRetriever.setDataSource(path)
         val time =
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        Log.e(this::class.simpleName, "$time time")
+        // Log.e(this::class.simpleName, "$time time")
         return time?.toLong() ?: 1L
     }
 
