@@ -50,7 +50,8 @@ class EditViewModel @Inject constructor(
     private val noteLabelRepository: NoteLabelRepository,
     private val labelRepository: LabelRepository,
     private val alarmManager: AlarmManager,
-    private val noteVoiceRepository: NoteVoiceRepository
+    private val noteVoiceRepository: NoteVoiceRepository,
+    private val imageToText: ImageToText
 
 ) : ViewModel() {
 
@@ -108,7 +109,12 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
+                    val data = editArg.content
+                    if (data == "extract") {
+                        onImage(editArg.data.toInt())
+                    }
                     notePad.copy(voices = voices.toImmutableList())
+
                 }
 
             }
@@ -486,6 +492,17 @@ class EditViewModel @Inject constructor(
 
             noteVoiceRepository.delete(voice.id)
         }
+    }
+
+    fun onImage(index: Int) {
+        viewModelScope.launch {
+            delay(1000)
+            val image = notePadUiState.images[index]
+            val text = imageToText.toText(image.imageName)
+            val note = notePadUiState.note
+            notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
+        }
+
     }
 
 }

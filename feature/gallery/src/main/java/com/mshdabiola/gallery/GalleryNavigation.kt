@@ -11,7 +11,10 @@ const val galleryRoute = "gallery_route"
 const val noteIdStr = "noteId"
 const val currentId = "currentImageIndex"
 
-fun NavGraphBuilder.galleryScreen(onBack: () -> Unit) {
+fun NavGraphBuilder.galleryScreen(
+    onBack: () -> Unit,
+    navigateToEditScreen: (Long, String, Long) -> Unit
+) {
     composable(
         route = "$galleryRoute?$noteIdStr={$noteIdStr}?$currentId={$currentId}",
         arguments = listOf(
@@ -23,7 +26,10 @@ fun NavGraphBuilder.galleryScreen(onBack: () -> Unit) {
             }
         )
     ) {
-        GalleryScreen(onBack = onBack)
+        GalleryScreen(
+            onBack = onBack,
+            navigateToEditScreen = navigateToEditScreen
+        )
     }
 }
 

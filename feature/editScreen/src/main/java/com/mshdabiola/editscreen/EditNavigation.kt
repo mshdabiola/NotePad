@@ -36,6 +36,14 @@ fun NavController.navigateToEditScreen(id: Long, content: String = "", data: Lon
     navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$content?$dataId=$data")
 }
 
+fun NavController.navigateToEditScreenWIthPop(id: Long, content: String = "", data: Long = 0) {
+    //val encodeUri = Uri.encode(uri.toString())
+    // val encodeString = Uri.encode(content)
+    navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$content?$dataId=$data") {
+        this.popUpTo("main_route")
+    }
+}
+
 fun NavGraphBuilder.editScreen(
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,

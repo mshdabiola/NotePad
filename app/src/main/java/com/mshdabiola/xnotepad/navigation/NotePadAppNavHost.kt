@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.mshdabiola.editscreen.editScreen
+import com.mshdabiola.editscreen.navigateToEditScreenWIthPop
 import com.mshdabiola.gallery.galleryScreen
 import com.mshdabiola.gallery.navigateToGallery
 import com.mshdabiola.labelscreen.labelScreen
@@ -38,6 +39,12 @@ fun NotePadAppNavHost(
         labelScreen(onBack = onBack)
         selectLabelScreen(onBack)
         searchScreen(onBack, navigateToEdit)
-        galleryScreen(onBack = onBack)
+        galleryScreen(onBack = onBack) { l, s, l2 ->
+            navController.navigateToEditScreenWIthPop(
+                l,
+                s,
+                l2
+            )
+        }
     }
 }

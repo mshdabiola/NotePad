@@ -44,12 +44,20 @@ import java.io.File
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun GalleryScreen(viewModel: GalleryViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
+fun GalleryScreen(
+    viewModel: GalleryViewModel = hiltViewModel(),
+    onBack: () -> Unit = {},
+    navigateToEditScreen: (Long, String, Long) -> Unit
+) {
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
     GalleryScreen(
         galleryUiState = galleryUiState.value,
         onBack = onBack,
-        onDelete = viewModel::deleteImage
+        onDelete = viewModel::deleteImage,
+        onToText = {
+            val id = galleryUiState.value.images[0].noteId
+            navigateToEditScreen(id, "extract", it.toLong())
+        }
     )
 }
 
@@ -58,7 +66,8 @@ fun GalleryScreen(viewModel: GalleryViewModel = hiltViewModel(), onBack: () -> U
 fun GalleryScreen(
     galleryUiState: GalleryUiState,
     onBack: () -> Unit = {},
-    onDelete: (Long) -> Unit = {}
+    onDelete: (Long) -> Unit = {},
+    onToText: (Int) -> Unit = {}
 ) {
 
     val pagerState = rememberPagerState()
@@ -108,7 +117,7 @@ fun GalleryScreen(
             GalleryTopAppBar(
                 onBack = onBack,
                 onDelete = delete,
-                onGrabText = {},
+                onGrabText = { onToText(pagerState.currentPage) },
                 name = "${pagerState.currentPage + 1} of ${galleryUiState.images.size}",
                 onSend = onSend,
                 onCopy = onCopy
@@ -134,7 +143,7 @@ fun GalleryScreen(
 @Preview
 @Composable
 fun GalleryScreenPreview() {
-    GalleryScreen()
+    GalleryScreen(galleryUiState = GalleryUiState(), onDelete = {})
 
 }
 
