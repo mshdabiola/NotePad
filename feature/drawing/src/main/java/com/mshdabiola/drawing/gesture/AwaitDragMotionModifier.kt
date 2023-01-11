@@ -10,6 +10,8 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
     onTouchEvent: (MotionEvent, PointerInputChange) -> Unit
@@ -45,12 +47,18 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
     }
 }
 
-fun Modifier.dragMotionEvent(onTouchEvent: (MotionEvent, PointerInputChange) -> Unit) = this.then(
+fun Modifier.dragMotionEvent(
+    onTouchEvent: (MotionEvent, PointerInputChange) -> Unit,
+    coroutineScope: CoroutineScope
+) = this.then(
     Modifier.pointerInput(Unit) {
         awaitEachGesture {
-            awaitPointerEventScope {
-                awaitDragMotionEvent(onTouchEvent)
+            coroutineScope.launch {
+                awaitPointerEventScope {
+                    awaitDragMotionEvent(onTouchEvent)
+                }
             }
+
         }
     }
 )
@@ -92,16 +100,43 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
     }
 }
 
+
 fun Modifier.dragMotionEvent(
     onDragStart: (PointerInputChange) -> Unit = {},
     onDrag: (PointerInputChange) -> Unit = {},
     onDragEnd: (PointerInputChange) -> Unit = {}
 ) = this.then(
-    Modifier.pointerInput(Unit) {
-        awaitEachGesture {
-            awaitPointerEventScope {
-                awaitDragMotionEvent(onDragStart, onDrag, onDragEnd)
+    Modifier
+
+        .pointerInput(Unit) {
+
+
+            awaitEachGesture {
+
+
+                awaitDragMotionEvent { motionEvent, pointerInputChange ->
+                    when (motionEvent) {
+                        MotionEvent.Down -> {
+                            onDragStart(pointerInputChange)
+                        }
+
+                        MotionEvent.Move -> {
+                            onDrag(pointerInputChange)
+                        }
+
+                        MotionEvent.Up -> {
+                            onDragEnd(pointerInputChange)
+                        }
+
+                        else -> {}
+                    }
+                }
+                //coroutineScope.launch {
+//                awaitPointerEventScope {
+//                    awaitDragMotionEvent(onDragStart, onDrag, onDragEnd)
+//                }
+                //}
+
             }
         }
-    }
 )

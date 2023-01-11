@@ -47,7 +47,8 @@ fun NavController.navigateToEditScreenWIthPop(id: Long, content: String = "", da
 fun NavGraphBuilder.editScreen(
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
-    navigateToGallery: (Long, Long) -> Unit
+    navigateToGallery: (Long, Long) -> Unit,
+    navigateToDrawing: (Long) -> Unit
 ) {
     composable(
         route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$dataId={$dataId}",
@@ -66,7 +67,8 @@ fun NavGraphBuilder.editScreen(
         EditScreen(
             onBack = onBack,
             navigateToSelectLevel = navigateToSelectLevel,
-            navigateToGallery = navigateToGallery
+            navigateToGallery = navigateToGallery,
+            navigateToDrawing = navigateToDrawing
         )
     }
 }

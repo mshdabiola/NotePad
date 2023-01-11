@@ -3,6 +3,8 @@ package com.mshdabiola.xnotepad.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.mshdabiola.drawing.drawingScreen
+import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.editscreen.editScreen
 import com.mshdabiola.editscreen.navigateToEditScreenWIthPop
 import com.mshdabiola.gallery.galleryScreen
@@ -34,7 +36,8 @@ fun NotePadAppNavHost(
         )
         editScreen(onBack = onBack,
             navigateToSelectLevel = navigateToSelectLevel,
-            navigateToGallery = { id, index -> navController.navigateToGallery(id, index) }
+            navigateToGallery = { id, index -> navController.navigateToGallery(id, index) },
+            navigateToDrawing = { id -> navController.navigateToDrawing(id) }
         )
         labelScreen(onBack = onBack)
         selectLabelScreen(onBack)
@@ -46,5 +49,6 @@ fun NotePadAppNavHost(
                 l2
             )
         }
+        drawingScreen(onBack)
     }
 }

@@ -42,7 +42,8 @@ fun AddBottomSheet(
     saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
     getPhotoUri: () -> Uri = { Uri.EMPTY },
     savePhoto: () -> Unit = {},
-    changeToCheckBoxes: () -> Unit = {}
+    changeToCheckBoxes: () -> Unit = {},
+    onDrawing: () -> Unit = {}
 ) {
 
     val background = if (currentImage != -1) {
@@ -167,7 +168,7 @@ fun AddBottomSheet(
                 }, label = { Text(text = "Drawing") },
                     selected = false,
                     onClick = {
-
+                        onDrawing()
                     },
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
 

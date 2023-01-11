@@ -65,6 +65,7 @@ fun DrawingPropertiesMenu(
 
     Row(
         modifier = modifier
+            .navigationBarsPadding()
 //            .background(getRandomColor())
         ,
         verticalAlignment = Alignment.CenterVertically,

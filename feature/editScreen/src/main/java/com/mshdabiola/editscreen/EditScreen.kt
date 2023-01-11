@@ -109,7 +109,8 @@ fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
-    navigateToGallery: (Long, Long) -> Unit
+    navigateToGallery: (Long, Long) -> Unit,
+    navigateToDrawing: (Long) -> Unit
 ) {
 
     val modalState = rememberModalState()
@@ -182,7 +183,8 @@ fun EditScreen(
         saveVoice = editViewModel::saveVoice,
         getPhotoUri = editViewModel::getPhotoUri,
         savePhoto = editViewModel::savePhoto,
-        changeToCheckBoxes = editViewModel::changeToCheckBoxes
+        changeToCheckBoxes = editViewModel::changeToCheckBoxes,
+        onDrawing = { navigateToDrawing(7) }
     )
 
     val send = {

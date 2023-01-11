@@ -67,6 +67,7 @@ dependencies {
     implementation(project(":feature:selectlabelscreen"))
     implementation(project(":feature:searchscreen"))
     implementation(project(":feature:gallery"))
+    implementation(project(":feature:drawing"))
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)
