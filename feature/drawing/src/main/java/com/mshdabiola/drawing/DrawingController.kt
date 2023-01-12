@@ -7,6 +7,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -15,6 +16,8 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import kotlinx.collections.immutable.toImmutableList
+import java.util.Stack
 
 @SuppressLint("MutableCollectionMutableState")
 class DrawingController {
@@ -28,8 +31,10 @@ class DrawingController {
     var color = 0
     var isEraseMode = false
 
-    private val drawingPaths by mutableStateOf(ArrayList<PathData>())
-    private val redoPaths by mutableStateOf(ArrayList<PathData>())
+    var listOfPathData by mutableStateOf(ListOfPathData())
+    //val drawingPaths = listOfPathData
+
+    private val redoPaths = Stack<PathData>()
     private val _canUndo = mutableStateOf(false)
     val canUndo: State<Boolean> = _canUndo
 
@@ -43,12 +48,14 @@ class DrawingController {
 
     fun setPathData(x: Float, y: Float, mode: MODE) {
         Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.${mode}),")
-        if (mode == MODE.UP) {
-
-            val last = drawingPaths.last()
-            drawingPaths.add(last.copy().copy(mode = mode))
+        listOfPathData = if (mode == MODE.UP) {
+            val paths = listOfPathData.paths.toMutableList()
+            val last = paths.last()
+            paths.add(last.copy().copy(mode = mode))
+            listOfPathData.copy(paths = paths.toImmutableList())
         } else {
-            drawingPaths.add(
+            val paths = listOfPathData.paths.toMutableList()
+            paths.add(
                 PathData(
                     x = x,
                     y = y,
@@ -60,7 +67,14 @@ class DrawingController {
                     isErase = isEraseMode
                 )
             )
+            listOfPathData.copy(paths = paths.toImmutableList())
         }
+    }
+
+    fun setPathData(pathDatas: List<PathData>) {
+        val paths = listOfPathData.paths.toMutableList()
+        paths.addAll(pathDatas)
+        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
     }
 
     fun clearRedoPath() {
@@ -69,21 +83,36 @@ class DrawingController {
 
     fun undo() {
         if (canUndo.value) {
-            redoPaths.add(drawingPaths.removeLast())
+            val paths = listOfPathData.paths.toMutableList()
+            redoPaths.push(paths.removeLast())
+            listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+            setDoUnDo()
         }
+    }
+
+    private fun setDoUnDo() {
+        _canRedo.value = listOfPathData.paths.isNotEmpty()
+        _canRedo.value = redoPaths.isNotEmpty()
     }
 
     fun redo() {
         if (canRedo.value) {
-            drawingPaths.add(redoPaths.removeLast())
+            val paths = listOfPathData.paths.toMutableList()
+            paths.add(redoPaths.pop())
+            listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+            setDoUnDo()
+            // listOfPathData.value.add(redoPaths.removeLast())
         }
     }
 
     fun toggleEraseMode() = run { isEraseMode = !isEraseMode }
 
     fun clearPath() {
-        drawingPaths.clear()
+        val paths = listOfPathData.paths.toMutableList()
+        paths.clear()
         redoPaths.clear()
+        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+        setDoUnDo()
     }
 
     fun getBitMap(): ImageBitmap {

@@ -14,8 +14,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -27,9 +27,8 @@ fun DrawingScreen(
     onBack: () -> Unit
 ) {
     DrawingScreen(
-        onBack = onBack,
-        paths = viewModel.drawingUiState.paths,
-        onpathChange = viewModel::onPointChange
+        onBackk = onBack,
+        paths = viewModel.drawingUiState.paths
     )
 
 }
@@ -37,17 +36,21 @@ fun DrawingScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingScreen(
-    onBack: () -> Unit = {},
-    paths: ImmutableList<PathData>,
-    onpathChange: (Offset, MODE) -> Unit = { _, _ -> }
+    onBackk: () -> Unit = {},
+    paths: ImmutableList<PathData>
 ) {
+    val controller = rememberDrawingController()
+
+    LaunchedEffect(key1 = paths, block = {
+        controller.setPathData(paths)
+    })
 
     Scaffold(
 
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBackk) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back"
@@ -62,13 +65,11 @@ fun DrawingScreen(
             )
         }
     ) { paddingValues: PaddingValues ->
-        val controller = rememberDrawingController()
+
         Column(Modifier.padding(paddingValues)) {
             Board(
                 modifier = Modifier.fillMaxSize(),
-                paths = paths,
-                drawingController = controller,
-                onPointChange = onpathChange
+                drawingController = controller
             )
         }
     }

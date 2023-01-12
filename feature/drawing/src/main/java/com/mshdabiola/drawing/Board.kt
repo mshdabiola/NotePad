@@ -1,7 +1,6 @@
 package com.mshdabiola.drawing
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,29 +13,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.drawing.gesture.dragMotionEvent
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun Board(
     modifier: Modifier = Modifier,
-    paths: ImmutableList<PathData>,
-    drawingController: DrawingController = rememberDrawingController(),
-    onPointChange: (Offset, MODE) -> Unit = { _, _ -> }
+    drawingController: DrawingController = rememberDrawingController()
 ) {
 
     var cPath by remember {
         mutableStateOf(Path())
     }
 
-    val listOfPath = ArrayList<Pair<Path, PathData>>()
 
-    val p = remember(paths) {
+    val onPointChange = { offset: Offset, mode: MODE ->
+        drawingController.setPathData(offset.x, offset.y, mode)
+    }
+
+
+    val p = remember(drawingController.listOfPathData) {
         var prevOff = Offset.Zero
-        paths.mapNotNull {
+        drawingController.listOfPathData.paths.mapNotNull {
             when (it.mode) {
                 MODE.DOWN -> {
                     cPath.moveTo(it.x, it.y)
@@ -85,7 +85,7 @@ fun Board(
                     cap = drawingController.lineCaps[it.second.lineCap],
                     join = drawingController.lineJoins[it.second.lineJoin]
                 ),
-                blendMode = BlendMode.Clear
+                blendMode = if (it.second.isErase) BlendMode.Clear else DrawScope.DefaultBlendMode
             )
         }
     }
@@ -98,6 +98,8 @@ fun Board(
 @Preview(showBackground = true)
 @Composable
 fun CanvasPreview() {
+    val controller = rememberDrawingController()
+
 
     val ondata = listOf(
         PathData(x = 135.81137f, 654.2855f, mode = MODE.DOWN),
@@ -197,25 +199,12 @@ fun CanvasPreview() {
         PathData(x = 320.55478f, 1051.2081f, mode = MODE.UP)
     )
 
+    controller.setPathData(ondata)
+    controller.color = 1
+
     Column {
-        val list by remember {
-            mutableStateOf(ArrayList<PathData>())
-
-        }
-
         Board(
-            modifier = Modifier.fillMaxSize(),
-            paths = list.toImmutableList(),
-            onPointChange = { offset, mode ->
-                Log.e("canvas ", "PathData(x = ${offset.x}f, ${offset.y}f,mode=MODE.${mode}),")
-                if (mode == MODE.UP) {
-                    val last = list.last()
-                    list.add(last.copy().copy(mode = mode))
-                } else {
-                    list.add(PathData(x = offset.x, y = offset.y, mode = mode))
-                }
-            }
-
+            modifier = Modifier.fillMaxSize()
         )
     }
 
