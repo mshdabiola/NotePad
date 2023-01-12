@@ -1,6 +1,7 @@
 package com.mshdabiola.common
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.FileProvider
@@ -66,6 +67,14 @@ class ContentManager
         if (!file.exists()) {
             file.mkdir()
         }
+    }
+
+    fun saveBitmap(path: String, bitmap: Bitmap) {
+
+        File(path).outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        }
+
     }
 
 

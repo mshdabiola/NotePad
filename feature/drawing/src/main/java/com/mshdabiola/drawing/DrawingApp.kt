@@ -1,5 +1,6 @@
 package com.mshdabiola.drawing
 
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
@@ -36,7 +37,10 @@ import com.mshdabiola.drawing.model.PathProperties
 import com.mshdabiola.drawing.ui.menu.DrawingPropertiesMenu
 
 @Composable
-fun DrawingApp(paddingValues: PaddingValues) {
+fun DrawingApp(
+    paddingValues: PaddingValues,
+    saveBitmap: (Bitmap) -> Unit = {}
+) {
 
     val context = LocalContext.current
 
@@ -197,6 +201,8 @@ fun DrawingApp(paddingValues: PaddingValues) {
                     currentPosition = Offset.Unspecified
                     previousPosition = currentPosition
                     motionEvent = MotionEvent.Idle
+
+
                 }
 
                 else -> Unit
@@ -332,6 +338,7 @@ fun DrawingApp(paddingValues: PaddingValues) {
             }
         )
     }
+
 }
 
 
