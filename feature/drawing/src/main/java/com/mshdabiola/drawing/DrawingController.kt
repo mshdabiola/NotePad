@@ -76,8 +76,8 @@ class DrawingController {
             if (mode == MODE.MOVE) {
                 val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
                 val paths = listOfPathData.paths.toMutableList()
-                val path = paths.singleOrNull { rect.contains(it.x, it.y) }
-                path?.let { p ->
+                val path = paths.filter { rect.contains(it.x, it.y) }.distinctBy { it.id }
+                path.forEach { p ->
                     paths.removeIf { it.id == p.id }
                 }
                 listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())

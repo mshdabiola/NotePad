@@ -36,32 +36,37 @@ fun Board(
 
     val p = remember(drawingController.listOfPathData) {
         var prevOff = Offset.Zero
-        drawingController.listOfPathData.paths.mapNotNull {
-            when (it.mode) {
-                MODE.DOWN -> {
-                    cPath.moveTo(it.x, it.y)
-                    prevOff = it.getOffset()
-                    null
-                }
+        drawingController
+            .listOfPathData
+            .paths
+            .groupBy { it.id }
+            .map { it.value }
+            .map { it ->
+                val yPath = Path()
+                it.forEach {
+                    when (it.mode) {
+                        MODE.DOWN -> {
+                            yPath.moveTo(it.x, it.y)
+                            prevOff = it.getOffset()
+                        }
 
-                MODE.MOVE -> {
-                    cPath.quadraticBezierTo(
-                        prevOff.x, prevOff.y,
-                        (prevOff.x + it.x) / 2,
-                        (prevOff.y + it.y) / 2
-                    )
-                    prevOff = it.getOffset()
-                    null
-                }
+                        MODE.MOVE -> {
+                            yPath.quadraticBezierTo(
+                                prevOff.x, prevOff.y,
+                                (prevOff.x + it.x) / 2,
+                                (prevOff.y + it.y) / 2
+                            )
+                            prevOff = it.getOffset()
+                        }
 
-                MODE.UP -> {
-                    cPath.lineTo(it.x, it.y)
-                    val pair = Pair(cPath, it)
-                    cPath = Path()
-                    pair
+                        MODE.UP -> {
+                            yPath.lineTo(it.x, it.y)
+                        }
+                    }
                 }
+                Pair(yPath,it.first())
+
             }
-        }
     }
 
 
