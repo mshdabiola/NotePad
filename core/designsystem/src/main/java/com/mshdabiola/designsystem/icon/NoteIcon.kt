@@ -28,7 +28,7 @@ object NoteIcon {
     val Repeat = R.drawable.baseline_repeat_24
     val Play = R.drawable.outline_play_circle_outline_24
     val Pause = R.drawable.baseline_pause_circle_outline_24
-    val Erase = R.drawable.baseline_pause_circle_outline_24
+    val Erase = R.drawable.ic_eraser_black_24dp
 
     val background = listOf(
         NoteBg(Color(0xFFF4DADA), R.drawable.asset_2),

@@ -1,7 +1,7 @@
 package com.mshdabiola.drawing
 
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,10 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 
 @Composable
@@ -37,7 +40,7 @@ fun DrawingScreen(
 @Composable
 fun DrawingScreen(
     onBackk: () -> Unit = {},
-    paths: ImmutableList<PathData>
+    paths: ImmutableList<PathData> = emptyList<PathData>().toImmutableList()
 ) {
     val controller = rememberDrawingController()
 
@@ -65,12 +68,14 @@ fun DrawingScreen(
             )
         }
     ) { paddingValues: PaddingValues ->
-
-        Column(Modifier.padding(paddingValues)) {
+        Box(Modifier.padding(paddingValues)) {
             Board(
                 modifier = Modifier.fillMaxSize(),
                 drawingController = controller
             )
+            DrawingBar(modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 8.dp))
         }
     }
 
@@ -79,6 +84,6 @@ fun DrawingScreen(
 @Preview
 @Composable
 fun DrawingScreenPreview() {
-    // DrawingScreen()
+    DrawingScreen()
 
 }
