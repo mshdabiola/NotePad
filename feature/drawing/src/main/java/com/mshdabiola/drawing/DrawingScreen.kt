@@ -73,9 +73,12 @@ fun DrawingScreen(
                 modifier = Modifier.fillMaxSize(),
                 drawingController = controller
             )
-            DrawingBar(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 8.dp))
+            DrawingBar(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 8.dp),
+                controller = controller
+            )
         }
     }
 

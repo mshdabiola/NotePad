@@ -48,7 +48,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DrawingBar(modifier: Modifier = Modifier) {
+fun DrawingBar(
+    modifier: Modifier = Modifier,
+    controller: DrawingController = rememberDrawingController()
+
+) {
     val pagerState = rememberPagerState(initialPage = 1)
     var isUp by remember {
         mutableStateOf(true)
@@ -156,7 +160,10 @@ fun DrawingBar(modifier: Modifier = Modifier) {
             }
             Tab(
                 selected = pagerState.currentPage == 1,
-                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(1) } }) {
+                onClick = {
+                    controller.toggleEraseMode()
+                    coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                }) {
                 Icon(painter = painterResource(id = NoteIcon.Erase), contentDescription = "edit")
             }
             Tab(

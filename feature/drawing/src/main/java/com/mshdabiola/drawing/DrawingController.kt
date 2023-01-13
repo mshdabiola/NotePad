@@ -1,6 +1,7 @@
 package com.mshdabiola.drawing
 
 import android.annotation.SuppressLint
+import android.graphics.RectF
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import kotlinx.collections.immutable.toImmutableList
 import java.util.Stack
+import kotlin.math.roundToInt
 
 @SuppressLint("MutableCollectionMutableState")
 class DrawingController {
@@ -30,6 +32,7 @@ class DrawingController {
     var lineJoin = 0
     var color = 0
     var isEraseMode = false
+    var id = 0
 
     var listOfPathData by mutableStateOf(ListOfPathData())
     //val drawingPaths = listOfPathData
@@ -46,28 +49,51 @@ class DrawingController {
     fun getCap(index: Int) = lineCaps[index]
     fun getLineJoin(index: Int) = lineJoins[index]
 
+    var xx = 0f
+    var yy = 0f
     fun setPathData(x: Float, y: Float, mode: MODE) {
         Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.${mode}),")
-        listOfPathData = if (mode == MODE.UP) {
-            val paths = listOfPathData.paths.toMutableList()
-            val last = paths.last()
-            paths.add(last.copy().copy(mode = mode))
-            listOfPathData.copy(paths = paths.toImmutableList())
+        if (isEraseMode) {
+            if (mode == MODE.DOWN) {
+                xx = x
+                yy = y
+            }
+            if (mode == MODE.MOVE) {
+                val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
+                val paths = listOfPathData.paths.toMutableList()
+                val path = paths.singleOrNull { rect.contains(it.x, it.y) }
+                path?.let { p ->
+                    paths.removeIf { it.id == p.id }
+                }
+                listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+            }
+
+
         } else {
-            val paths = listOfPathData.paths.toMutableList()
-            paths.add(
-                PathData(
-                    x = x,
-                    y = y,
-                    mode = mode,
-                    color = color,
-                    lineWidth = lineWidth,
-                    lineCap = lineCap,
-                    lineJoin = lineJoin,
-                    isErase = isEraseMode
+            listOfPathData = if (mode == MODE.UP) {
+                val paths = listOfPathData.paths.toMutableList()
+                val last = paths.last()
+                paths.add(last.copy().copy(mode = mode))
+                id++
+                listOfPathData.copy(paths = paths.toImmutableList())
+
+            } else {
+                val paths = listOfPathData.paths.toMutableList()
+                paths.add(
+                    PathData(
+                        x = x,
+                        y = y.roundToInt().toFloat(),
+                        mode = mode,
+                        color = color,
+                        lineWidth = lineWidth,
+                        lineCap = lineCap,
+                        lineJoin = lineJoin,
+                        isErase = isEraseMode,
+                        id = id
+                    )
                 )
-            )
-            listOfPathData.copy(paths = paths.toImmutableList())
+                listOfPathData.copy(paths = paths.toImmutableList())
+            }
         }
     }
 
@@ -105,7 +131,12 @@ class DrawingController {
         }
     }
 
-    fun toggleEraseMode() = run { isEraseMode = !isEraseMode }
+    fun toggleEraseMode() = run {
+
+        isEraseMode = !isEraseMode
+
+
+    }
 
     fun clearPath() {
         val paths = listOfPathData.paths.toMutableList()

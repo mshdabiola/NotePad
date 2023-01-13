@@ -10,7 +10,8 @@ data class PathData(
     val lineCap: Int = 0,
     val lineJoin: Int = 0,
     val isErase: Boolean = false,
-    val mode: MODE = MODE.MOVE
+    val mode: MODE = MODE.MOVE,
+    val id: Int = 0
 ) {
     fun getOffset() = Offset(x, y)
 }
