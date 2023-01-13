@@ -3,6 +3,7 @@ package com.mshdabiola.drawing
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,10 +54,16 @@ fun DrawingBar(
     controller: DrawingController = rememberDrawingController()
 
 ) {
-    val pagerState = rememberPagerState(initialPage = 1)
+    val pagerState = rememberPagerState(initialPage = 2)
     var isUp by remember {
         mutableStateOf(true)
     }
+
+    var currentColor by remember {
+        mutableStateOf(controller.color)
+    }
+    val density = LocalDensity.current
+
     val coroutineScope = rememberCoroutineScope()
     Column(modifier) {
 
@@ -91,19 +98,30 @@ fun DrawingBar(
 
                     2 -> {
                         Column {
-                            FlowLayout2(verticalSpacing = 8.dp) {
-                                NoteIcon.noteColors.forEach {
+                            FlowLayout2(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.CenterHorizontally),
+
+
+                                verticalSpacing = 8.dp
+                            ) {
+                                controller.colors.forEachIndexed { index, color ->
                                     Box(
                                         modifier = Modifier
+                                            .clickable {
+                                                controller.color = index
+                                                currentColor = index
+                                            }
                                             .clip(CircleShape)
-                                            .background(it)
-                                            .size(16.dp)
+                                            .background(color)
+                                            .size(if (index == currentColor) 40.dp else 32.dp)
 
                                     )
                                     Spacer(modifier = Modifier.width(16.dp))
                                 }
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(40.dp))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -114,8 +132,15 @@ fun DrawingBar(
                                 repeat(10) {
                                     Box(
                                         modifier = Modifier
+                                            .clickable {
+                                                controller.lineWidth = with(density) {
+                                                    ((it * 4).dp)
+                                                        .roundToPx()
+                                                        .toFloat()
+                                                }
+                                            }
                                             .clip(CircleShape)
-                                            .background(Color.Red)
+                                            .background(controller.getColor(currentColor))
                                             .size((it * 4).dp)
 
                                     )
@@ -188,7 +213,7 @@ fun DrawingBar(
 
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DrawingBarPreview() {
     DrawingBar()
