@@ -3,6 +3,7 @@ package com.mshdabiola.drawing
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +20,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brush
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.TabUnselected
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -39,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,114 +51,16 @@ fun DrawingBar(
     controller: DrawingController = rememberDrawingController()
 
 ) {
-    val pagerState = rememberPagerState(initialPage = 2)
+    val pagerState = rememberPagerState(initialPage = 0)
     var isUp by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
-    var currentColor by remember {
-        mutableStateOf(controller.color)
-    }
-    val density = LocalDensity.current
+
 
     val coroutineScope = rememberCoroutineScope()
     Column(modifier) {
 
-        IconButton(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = { isUp = !isUp }) {
-            Icon(
-                imageVector = if (!isUp) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = ""
-            )
-        }
-        HorizontalPager(
-            pageCount = 5,
-            state = pagerState,
-            modifier = Modifier.animateContentSize()
-        ) { index ->
-            if (isUp) {
-                when (index) {
-                    0 -> {
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "Select none")
-                        }
-
-
-                    }
-
-                    1 -> {
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "Clear canvas")
-                        }
-                    }
-
-                    2 -> {
-                        Column {
-                            FlowLayout2(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.CenterHorizontally),
-
-
-                                verticalSpacing = 8.dp
-                            ) {
-                                controller.colors.forEachIndexed { index, color ->
-                                    Box(
-                                        modifier = Modifier
-                                            .clickable {
-                                                controller.color = index
-                                                currentColor = index
-                                            }
-                                            .clip(CircleShape)
-                                            .background(color)
-                                            .size(if (index == currentColor) 40.dp else 32.dp)
-
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                }
-                            }
-                            Spacer(modifier = Modifier.width(40.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically
-
-                            ) {
-                                repeat(10) {
-                                    Box(
-                                        modifier = Modifier
-                                            .clickable {
-                                                controller.lineWidth = with(density) {
-                                                    ((it * 4).dp)
-                                                        .roundToPx()
-                                                        .toFloat()
-                                                }
-                                            }
-                                            .clip(CircleShape)
-                                            .background(controller.getColor(currentColor))
-                                            .size((it * 4).dp)
-
-                                    )
-
-                                }
-                            }
-
-                        }
-                    }
-
-                    3 -> {
-                        Text(text = "mark")
-                    }
-
-                    else -> {
-                        Text(text = "Light")
-                    }
-                }
-            }
-
-        }
         TabRow(
             selectedTabIndex = pagerState.currentPage,
             indicator = {
@@ -174,43 +73,260 @@ fun DrawingBar(
                 )
             }
         ) {
+//            Tab(
+//                selected = pagerState.currentPage == 0,
+//                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } }) {
+//                Icon(
+//                    modifier = Modifier.padding(8.dp),
+//                    imageVector = Icons.Default.TabUnselected,
+//                    contentDescription = "edit"
+//                )
+//            }
             Tab(
                 selected = pagerState.currentPage == 0,
-                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } }) {
+                unselectedContentColor = Color.Gray,
+                onClick = {
+                    controller.draw_mode = DRAW_MODE.ERASE
+                    isUp = if (pagerState.currentPage == 0) {
+                        !isUp
+                    } else {
+                        true
+                    }
+
+                    coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                }) {
                 Icon(
-                    modifier = Modifier.padding(8.dp),
-                    imageVector = Icons.Default.TabUnselected,
-                    contentDescription = "edit"
+                    modifier = Modifier.padding(4.dp),
+                    painter = painterResource(id = NoteIcon.Erase),
+                    contentDescription = "erase"
                 )
             }
             Tab(
                 selected = pagerState.currentPage == 1,
+                unselectedContentColor = Color.Gray,
                 onClick = {
-                    controller.toggleEraseMode()
+                    controller.draw_mode = DRAW_MODE.PEN
+                    controller.colorAlpha = 1f
+                    controller.lineCap = 0
+                    isUp = if (pagerState.currentPage == 1) {
+                        !isUp
+                    } else {
+                        true
+                    }
                     coroutineScope.launch { pagerState.animateScrollToPage(1) }
                 }) {
-                Icon(painter = painterResource(id = NoteIcon.Erase), contentDescription = "edit")
-            }
-            Tab(
-                selected = pagerState.currentPage == 2,
-                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(2) } }) {
-                Icon(imageVector = Icons.Default.Brush, contentDescription = "edit")
+                Icon(
+                    modifier = Modifier.padding(4.dp),
+                    imageVector = Icons.Default.Brush, contentDescription = "pen"
+                )
             }
 
             Tab(
-                selected = pagerState.currentPage == 3,
-                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(3) } }) {
-                Icon(imageVector = Icons.Default.Brush, contentDescription = "edit")
+                selected = pagerState.currentPage == 2,
+                unselectedContentColor = Color.Gray,
+                onClick = {
+                    controller.draw_mode = DRAW_MODE.MARKER
+                    controller.colorAlpha = 1f
+                    controller.lineCap = 0
+                    isUp = if (pagerState.currentPage == 2) {
+                        !isUp
+                    } else {
+                        true
+                    }
+                    coroutineScope.launch { pagerState.animateScrollToPage(2) }
+                }) {
+                Icon(
+                    modifier = Modifier.padding(4.dp),
+                    imageVector = Icons.Default.Brush, contentDescription = "marker"
+                )
             }
             Tab(
-                selected = pagerState.currentPage == 4,
-                onClick = { coroutineScope.launch { pagerState.animateScrollToPage(4) } }) {
-                Icon(imageVector = Icons.Default.Brush, contentDescription = "edit")
+                selected = pagerState.currentPage == 3,
+                unselectedContentColor = Color.Gray,
+                onClick = {
+                    controller.draw_mode = DRAW_MODE.CRAYON
+                    controller.colorAlpha = 0.5f
+                    controller.lineCap = 1
+                    isUp = if (pagerState.currentPage == 3) {
+                        !isUp
+                    } else {
+                        true
+                    }
+                    coroutineScope.launch { pagerState.animateScrollToPage(3) }
+                }) {
+                Icon(
+                    modifier = Modifier.padding(4.dp),
+                    imageVector = Icons.Default.Brush,
+                    contentDescription = "crayon",
+
+
+                    )
             }
+        }
+//        IconButton(
+//            modifier = Modifier.align(Alignment.CenterHorizontally),
+//            onClick = { isUp = !isUp }) {
+//            Icon(
+//                imageVector = if (!isUp) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+//                contentDescription = ""
+//            )
+//        }
+        HorizontalPager(
+            pageCount = 4,
+            state = pagerState,
+            modifier = Modifier.animateContentSize()
+        ) { index ->
+            if (isUp) {
+                when (index) {
+//                    0 -> {
+//                        TextButton(onClick = { /*TODO*/ }) {
+//                            Text(text = "Select none")
+//                        }
+//
+//
+//                    }
+
+                    0 -> {
+                        TextButton(onClick = { /*TODO*/ }) {
+                            Text(text = "Clear canvas")
+                        }
+                    }
+
+                    1 -> {
+                        ColorAndWidth(
+                            colors = controller.colors,
+                            colorIndex = controller.color,
+                            currentWidth = (controller.lineWidth / 4) - 1,
+                            onColorClick = {
+                                controller.color = it
+                            },
+                            onlineClick = {
+                                controller.lineWidth = (it + 1) * 4
+                            }
+                        )
+                    }
+
+                    2 -> {
+                        ColorAndWidth(
+                            colors = controller.colors,
+                            colorIndex = controller.color,
+                            currentWidth = (controller.lineWidth / 8) - 1,
+                            onColorClick = {
+                                controller.color = it
+                            },
+                            onlineClick = {
+                                controller.lineWidth = (it + 1) * 8
+                            }
+                        )
+                    }
+
+                    else -> {
+                        ColorAndWidth(
+                            colors = controller.colors,
+                            colorIndex = controller.color,
+                            currentWidth = (controller.lineWidth / 8) - 1,
+                            onColorClick = {
+                                controller.color = it
+                            },
+                            onlineClick = {
+                                controller.lineWidth = (it + 1) * 8
+                            }
+                        )
+                    }
+                }
+            }
+
         }
     }
 
 
+}
+
+@Composable
+fun ColorAndWidth(
+    colors: Array<Color>,
+    colorIndex: Int,
+    currentWidth: Int,
+    onColorClick: (Int) -> Unit = {},
+    onlineClick: (Int) -> Unit = {}
+) {
+
+    var currentColor by remember {
+        mutableStateOf(colorIndex)
+    }
+
+    var widthIndex by remember {
+        mutableStateOf(0)
+    }
+
+    Column {
+        FlowLayout2(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+
+
+            verticalSpacing = 8.dp
+        ) {
+            colors.forEachIndexed { index, color ->
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            currentColor = index
+                            onColorClick(index)
+                        }
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(if (index == currentColor) 34.dp else 30.dp)
+
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+        }
+        Spacer(modifier = Modifier.width(40.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+
+        ) {
+            repeat(10) {
+                Box(
+                    modifier = Modifier
+                        .clickable {
+
+                            widthIndex = it
+                            onlineClick(it)
+                        }
+                        .clip(CircleShape)
+
+                        .border(
+                            1.dp,
+                            if (it == widthIndex) Color.Gray else Color.Transparent,
+                            CircleShape
+                        )
+                        .size(30.dp)
+
+
+                ) {
+                    Box(
+                        modifier =
+                        Modifier
+                            .clip(CircleShape)
+                            .background(colors[currentColor])
+                            .align(Alignment.Center)
+                            .padding(2.dp)
+                            .size(((it + 1) * 2).dp)
+
+                    )
+
+                }
+
+            }
+        }
+
+    }
 }
 
 @Preview(showBackground = true)

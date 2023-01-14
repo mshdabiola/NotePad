@@ -5,17 +5,14 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.mshdabiola.drawing.gesture.dragMotionEvent
 
 @Composable
@@ -24,9 +21,7 @@ fun Board(
     drawingController: DrawingController = rememberDrawingController()
 ) {
 
-    var cPath by remember {
-        mutableStateOf(Path())
-    }
+
 
 
     val onPointChange = { offset: Offset, mode: MODE ->
@@ -83,14 +78,14 @@ fun Board(
         //  drawPath(cPath,Color.Black)
         p.forEach {
             drawPath(
-                color = drawingController.colors[it.second.color],
+                color = drawingController.colors[it.second.color].copy(alpha = it.second.colorAlpha),
                 path = it.first,
                 style = Stroke(
-                    width = it.second.lineWidth,
+                    width = (it.second.lineWidth.dp).roundToPx().toFloat(),
                     cap = drawingController.lineCaps[it.second.lineCap],
                     join = drawingController.lineJoins[it.second.lineJoin]
                 ),
-                blendMode = if (it.second.isErase) BlendMode.Clear else DrawScope.DefaultBlendMode
+                blendMode = DrawScope.DefaultBlendMode
             )
         }
 
