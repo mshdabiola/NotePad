@@ -19,11 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 
 
 @Composable
@@ -32,8 +33,7 @@ fun DrawingScreen(
     onBack: () -> Unit
 ) {
     DrawingScreen(
-        onBackk = onBack,
-        paths = viewModel.drawingUiState.paths
+        onBackk = onBack
     )
 
 }
@@ -42,7 +42,7 @@ fun DrawingScreen(
 @Composable
 fun DrawingScreen(
     onBackk: () -> Unit = {},
-    paths: ImmutableList<PathData> = emptyList<PathData>().toImmutableList()
+    paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap()
 ) {
     val controller = rememberDrawingController()
 

@@ -18,6 +18,10 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableMap
 import kotlin.math.roundToInt
 
@@ -49,6 +53,9 @@ class DrawingController {
     var draw_mode = DRAW_MODE.PEN
     var id = 0
     var colorAlpha = 1f
+    lateinit var density: Density
+    var width = 0.dp
+    var heigth = 0.dp
 
 
     var listOfPathData by mutableStateOf(ListOfPathData())
@@ -134,10 +141,10 @@ class DrawingController {
         setDoUnDo()
     }
 
-    fun setPathData(pathDatas: List<PathData>) {
-//        val paths = listOfPathData.paths.toMutableList()
-//        paths.addAll(pathDatas)
-//        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+    fun setPathData(pathDatas: Map<PathData, List<Offset>>) {
+        val paths = listOfPathData.paths2.toMutableMap()
+        paths.putAll(pathDatas)
+        listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
     }
 
     fun clearRedoPath() {
@@ -179,6 +186,32 @@ class DrawingController {
 //
 //    }
 
+    fun getPathAndData(): List<Pair<Path, PathData>> {
+        var prevOff = Offset.Zero
+
+        val p = listOfPathData
+            .paths2
+            .map {
+                val yPath = Path()
+                it.value.forEachIndexed { index, offset ->
+                    prevOff = if (index == 0) {
+                        yPath.moveTo(offset.x, offset.y)
+                        offset
+                    } else {
+                        yPath.quadraticBezierTo(
+                            prevOff.x, prevOff.y,
+                            (prevOff.x + offset.x) / 2,
+                            (prevOff.y + offset.y) / 2
+                        )
+                        offset
+                    }
+
+                }
+                Pair(yPath, it.key)
+            }
+        return p
+    }
+
     fun clearPath() {
         val paths = listOfPathData.paths2.toMutableMap()
         paths.clear()
@@ -188,9 +221,24 @@ class DrawingController {
     }
 
     fun getBitMap(): ImageBitmap {
-        val bitmap = ImageBitmap(100, 100, ImageBitmapConfig.Argb8888)
+        val h = with(density) { heigth.roundToPx() }
+        val w = with(density) { width.roundToPx() }
+        val bitmap = ImageBitmap(w, h, ImageBitmapConfig.Argb8888)
         val canvas = Canvas(bitmap)
+
         canvas.drawPath(Path(), Paint())
+        getPathAndData().forEach {
+            val paint = Paint()
+            paint.color = colors[it.second.color]
+            paint.alpha = it.second.colorAlpha
+            paint.strokeWidth = with(density) {
+                (it.second.lineWidth.dp).roundToPx().toFloat()
+            }//(it.second.lineWidth.dp).roundToPx().toFloat()
+            paint.strokeCap = lineCaps[it.second.lineCap]
+            paint.strokeJoin = lineJoins[it.second.lineJoin]
+            canvas.drawPath(it.first, paint)
+
+        }
 
         return bitmap
     }
@@ -199,8 +247,14 @@ class DrawingController {
 
 @Composable
 fun rememberDrawingController(): DrawingController {
+    var density = LocalDensity.current
+    val configuration = LocalConfiguration.current
     return remember {
-        DrawingController()
+        DrawingController().apply {
+            this.density = density
+            width = configuration.screenHeightDp.dp
+            heigth = configuration.screenHeightDp.dp
+        }
     }
 }
 
