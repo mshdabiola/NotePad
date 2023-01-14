@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -17,8 +18,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
-import kotlinx.collections.immutable.toImmutableList
-import java.util.Stack
+import kotlinx.collections.immutable.toImmutableMap
 import kotlin.math.roundToInt
 
 @SuppressLint("MutableCollectionMutableState")
@@ -53,7 +53,7 @@ class DrawingController {
     var listOfPathData by mutableStateOf(ListOfPathData())
     //val drawingPaths = listOfPathData
 
-    private val redoPaths = Stack<PathData>()
+    private val redoPaths = HashMap<PathData, List<Offset>>()
     private val _canUndo = mutableStateOf(false)
     val canUndo: State<Boolean> = _canUndo
 
@@ -67,6 +67,7 @@ class DrawingController {
 
     var xx = 0f
     var yy = 0f
+    var pathData = PathData()
     fun setPathData(x: Float, y: Float, mode: MODE) {
         Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.${mode}),")
 
@@ -78,27 +79,21 @@ class DrawingController {
                 }
                 if (mode == MODE.MOVE) {
                     val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
-                    val paths = listOfPathData.paths.toMutableList()
-                    val path = paths.filter { rect.contains(it.x, it.y) }.distinctBy { it.id }
+                    val paths = listOfPathData.paths2.toMutableMap()
+                    val path =
+                        paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
                     path.forEach { p ->
-                        paths.removeIf { it.id == p.id }
+                        paths.remove(p.key)
+                        redoPaths[p.key] = p.value
                     }
-                    listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+                    listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
                 }
             }
 
             else -> {
-                listOfPathData = if (mode == MODE.UP) {
-                    val paths = listOfPathData.paths.toMutableList()
-                    val last = paths.last()
-                    paths.add(last.copy().copy(mode = mode))
-                    id++
-                    listOfPathData.copy(paths = paths.toImmutableList())
-
-                } else {
-                    val paths = listOfPathData.paths.toMutableList()
-                    paths.add(
-                        PathData(
+                when (mode) {
+                    MODE.DOWN -> {
+                        pathData = PathData(
                             x = x,
                             y = y.roundToInt().toFloat(),
                             mode = mode,
@@ -109,17 +104,38 @@ class DrawingController {
                             colorAlpha = colorAlpha,
                             id = id
                         )
-                    )
-                    listOfPathData.copy(paths = paths.toImmutableList())
+                        val paths2 = listOfPathData.paths2.toMutableMap()
+                        val list = emptyList<Offset>().toMutableList()
+
+                        list.add(Offset(x, y))
+                        paths2[pathData] = list
+                        listOfPathData = listOfPathData.copy(paths2 = paths2.toImmutableMap())
+
+                    }
+
+                    MODE.MOVE -> {
+                        val paths2 = listOfPathData.paths2.toMutableMap()
+                        val list = paths2[pathData]!!.toMutableList()
+
+                        list.add(Offset(x, y))
+                        paths2[pathData] = list
+                        listOfPathData = listOfPathData.copy(paths2 = paths2.toImmutableMap())
+                    }
+
+                    MODE.UP -> {
+
+                    }
                 }
+
+
             }
         }
     }
 
     fun setPathData(pathDatas: List<PathData>) {
-        val paths = listOfPathData.paths.toMutableList()
-        paths.addAll(pathDatas)
-        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+//        val paths = listOfPathData.paths.toMutableList()
+//        paths.addAll(pathDatas)
+//        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
     }
 
     fun clearRedoPath() {
@@ -128,23 +144,27 @@ class DrawingController {
 
     fun undo() {
         if (canUndo.value) {
-            val paths = listOfPathData.paths.toMutableList()
-            redoPaths.push(paths.removeLast())
-            listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+            val paths = listOfPathData.paths2.toMutableMap()
+            val lastKey = paths.keys.last()
+            redoPaths[lastKey] = paths.remove(lastKey)!!
+            listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
             setDoUnDo()
         }
     }
 
     private fun setDoUnDo() {
-        _canRedo.value = listOfPathData.paths.isNotEmpty()
+        _canRedo.value = listOfPathData.paths2.isNotEmpty()
         _canRedo.value = redoPaths.isNotEmpty()
     }
 
     fun redo() {
         if (canRedo.value) {
-            val paths = listOfPathData.paths.toMutableList()
-            paths.add(redoPaths.pop())
-            listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+
+            val paths = listOfPathData.paths2.toMutableMap()
+            val lastKey = redoPaths.keys.last()
+            paths[lastKey] = redoPaths.remove(lastKey)!!
+            listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+
             setDoUnDo()
             // listOfPathData.value.add(redoPaths.removeLast())
         }
@@ -158,10 +178,10 @@ class DrawingController {
     }
 
     fun clearPath() {
-        val paths = listOfPathData.paths.toMutableList()
+        val paths = listOfPathData.paths2.toMutableMap()
         paths.clear()
         redoPaths.clear()
-        listOfPathData = listOfPathData.copy(paths = paths.toImmutableList())
+        listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
         setDoUnDo()
     }
 

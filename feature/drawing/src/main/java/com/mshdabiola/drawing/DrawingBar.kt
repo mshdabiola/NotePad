@@ -96,7 +96,7 @@ fun DrawingBar(
                     isUp = if (pagerState.currentPage == 0) {
                         !isUp
                     } else {
-                        true
+                        false
                     }
 
                     coroutineScope.launch { pagerState.animateScrollToPage(0) }

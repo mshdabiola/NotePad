@@ -22,45 +22,33 @@ fun Board(
 ) {
 
 
-
-
     val onPointChange = { offset: Offset, mode: MODE ->
         drawingController.setPathData(offset.x, offset.y, mode)
     }
 
 
-    val p = remember(drawingController.listOfPathData) {
+    val p2 = remember(drawingController.listOfPathData) {
         var prevOff = Offset.Zero
         drawingController
             .listOfPathData
-            .paths
-            .groupBy { it.id }
-            .map { it.value }
-            .map { it ->
+            .paths2
+            .map {
                 val yPath = Path()
-                it.forEach {
-                    when (it.mode) {
-                        MODE.DOWN -> {
-                            yPath.moveTo(it.x, it.y)
-                            prevOff = it.getOffset()
-                        }
-
-                        MODE.MOVE -> {
-                            yPath.quadraticBezierTo(
-                                prevOff.x, prevOff.y,
-                                (prevOff.x + it.x) / 2,
-                                (prevOff.y + it.y) / 2
-                            )
-                            prevOff = it.getOffset()
-                        }
-
-                        MODE.UP -> {
-                            yPath.lineTo(it.x, it.y)
-                        }
+                it.value.forEachIndexed { index, offset ->
+                    prevOff = if (index == 0) {
+                        yPath.moveTo(offset.x, offset.y)
+                        offset
+                    } else {
+                        yPath.quadraticBezierTo(
+                            prevOff.x, prevOff.y,
+                            (prevOff.x + offset.x) / 2,
+                            (prevOff.y + offset.y) / 2
+                        )
+                        offset
                     }
-                }
-                Pair(yPath,it.first())
 
+                }
+                Pair(yPath, it.key)
             }
     }
 
@@ -76,7 +64,7 @@ fun Board(
 
 
         //  drawPath(cPath,Color.Black)
-        p.forEach {
+        p2.forEach {
             drawPath(
                 color = drawingController.colors[it.second.color].copy(alpha = it.second.colorAlpha),
                 path = it.first,
