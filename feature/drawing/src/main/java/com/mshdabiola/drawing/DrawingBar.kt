@@ -193,7 +193,7 @@ fun DrawingBar(
 //
 
                     0 -> {
-                        TextButton(onClick = { /*TODO*/ }) {
+                        TextButton(onClick = { controller.clearPath() }) {
                             Text(text = "Clear canvas")
                         }
                     }

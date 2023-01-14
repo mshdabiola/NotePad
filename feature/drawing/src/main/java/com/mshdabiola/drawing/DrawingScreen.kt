@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Redo
+import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,7 +66,18 @@ fun DrawingScreen(
                     Text("Drawing")
                 },
 
-                actions = {}
+                actions = {
+                    IconButton(
+                        enabled = controller.canUndo.value,
+                        onClick = { controller.undo() }) {
+                        Icon(imageVector = Icons.Default.Undo, contentDescription = "redo")
+                    }
+                    IconButton(
+                        enabled = controller.canRedo.value,
+                        onClick = { controller.redo() }) {
+                        Icon(imageVector = Icons.Default.Redo, contentDescription = "redo")
+                    }
+                }
             )
         }
     ) { paddingValues: PaddingValues ->

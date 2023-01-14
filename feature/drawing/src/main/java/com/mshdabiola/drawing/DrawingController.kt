@@ -50,6 +50,7 @@ class DrawingController {
     var id = 0
     var colorAlpha = 1f
 
+
     var listOfPathData by mutableStateOf(ListOfPathData())
     //val drawingPaths = listOfPathData
 
@@ -130,6 +131,7 @@ class DrawingController {
 
             }
         }
+        setDoUnDo()
     }
 
     fun setPathData(pathDatas: List<PathData>) {
@@ -153,7 +155,7 @@ class DrawingController {
     }
 
     private fun setDoUnDo() {
-        _canRedo.value = listOfPathData.paths2.isNotEmpty()
+        _canUndo.value = listOfPathData.paths2.isNotEmpty()
         _canRedo.value = redoPaths.isNotEmpty()
     }
 
@@ -170,12 +172,12 @@ class DrawingController {
         }
     }
 
-    fun toggleEraseMode() = run {
-
-        // isEraseMode = !isEraseMode
-
-
-    }
+//    fun toggleEraseMode() = run {
+//
+//        // isEraseMode = !isEraseMode
+//
+//
+//    }
 
     fun clearPath() {
         val paths = listOfPathData.paths2.toMutableMap()
