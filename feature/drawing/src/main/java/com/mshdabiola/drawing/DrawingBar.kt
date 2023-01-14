@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -53,7 +54,7 @@ fun DrawingBar(
     var isUp by remember {
         mutableStateOf(false)
     }
-    var penColor by remember(controller.color) {
+    var penColor by remember {
         mutableStateOf(controller.color)
     }
     var markColor by remember {
@@ -64,13 +65,13 @@ fun DrawingBar(
     }
 
     var penWidth by remember {
-        mutableStateOf(controller.lineWidth)
+        mutableStateOf((controller.lineWidth / 4) - 1)
     }
     var markWidth by remember {
-        mutableStateOf(8)
+        mutableStateOf(4)
     }
     var crayonWidth by remember {
-        mutableStateOf(8)
+        mutableStateOf(4)
     }
 
     LaunchedEffect(key1 = controller.listOfPathData, block = {
@@ -114,7 +115,7 @@ fun DrawingBar(
                     controller.draw_mode = DRAW_MODE.PEN
                     controller.colorAlpha = 1f
                     controller.lineCap = 0
-                    controller.lineWidth = penWidth
+                    controller.lineWidth = (penWidth + 1) * 4
                     controller.color = penColor
                     isUp = if (pagerState.currentPage == 1) {
                         !isUp
@@ -136,7 +137,7 @@ fun DrawingBar(
                     controller.draw_mode = DRAW_MODE.MARKER
                     controller.colorAlpha = 1f
                     controller.lineCap = 0
-                    controller.lineWidth = markWidth
+                    controller.lineWidth = (markWidth + 1) * 8
                     controller.color = markColor
                     isUp = if (pagerState.currentPage == 2) {
                         !isUp
@@ -157,7 +158,7 @@ fun DrawingBar(
                     controller.draw_mode = DRAW_MODE.CRAYON
                     controller.colorAlpha = 0.5f
                     controller.lineCap = 1
-                    controller.lineWidth = crayonWidth
+                    controller.lineWidth = (crayonWidth + 1) * 8
                     controller.color = crayonColor
                     isUp = if (pagerState.currentPage == 3) {
                         !isUp
@@ -183,71 +184,73 @@ fun DrawingBar(
 //                contentDescription = ""
 //            )
 //        }
-        HorizontalPager(
-            pageCount = 4,
-            state = pagerState,
-            modifier = Modifier.animateContentSize()
-        ) { index ->
-            if (isUp) {
-                when (index) {
+        Surface {
+            HorizontalPager(
+                pageCount = 4,
+                state = pagerState,
+                modifier = Modifier.animateContentSize()
+            ) { index ->
+                if (isUp) {
+                    when (index) {
 //
 
-                    0 -> {
-                        TextButton(onClick = { controller.clearPath() }) {
-                            Text(text = "Clear canvas")
+                        0 -> {
+                            TextButton(onClick = { controller.clearPath() }) {
+                                Text(text = "Clear canvas")
+                            }
+                        }
+
+                        1 -> {
+                            ColorAndWidth(
+                                colors = controller.colors,
+                                currentColor = penColor,
+                                currentWidth = penWidth,
+                                onColorClick = {
+                                    penColor = it
+                                    controller.color = it
+                                },
+                                onlineClick = {
+                                    penWidth = it
+                                    controller.lineWidth = (it + 1) * 4
+                                }
+                            )
+                        }
+
+                        2 -> {
+                            ColorAndWidth(
+                                colors = controller.colors,
+                                currentColor = markColor,
+                                currentWidth = markWidth,
+                                onColorClick = {
+                                    markColor = it
+                                    controller.color = it
+                                },
+                                onlineClick = {
+                                    markWidth = it
+                                    controller.lineWidth = (it + 1) * 8
+                                }
+                            )
+                        }
+
+                        else -> {
+                            ColorAndWidth(
+                                colors = controller.colors,
+                                currentColor = crayonColor,
+                                currentWidth = crayonWidth,
+                                onColorClick = {
+                                    crayonColor = it
+                                    controller.color = it
+                                },
+                                onlineClick = {
+                                    crayonWidth = it
+                                    controller.lineWidth = (it + 1) * 8
+                                }
+                            )
                         }
                     }
-
-                    1 -> {
-                        ColorAndWidth(
-                            colors = controller.colors,
-                            currentColor = penColor,
-                            currentWidth = penWidth,
-                            onColorClick = {
-                                penColor = it
-                                controller.color = it
-                            },
-                            onlineClick = {
-                                penWidth = it
-                                controller.lineWidth = (it + 1) * 4
-                            }
-                        )
-                    }
-
-                    2 -> {
-                        ColorAndWidth(
-                            colors = controller.colors,
-                            currentColor = markColor,
-                            currentWidth = markWidth,
-                            onColorClick = {
-                                markColor = it
-                                controller.color = it
-                            },
-                            onlineClick = {
-                                markWidth = it
-                                controller.lineWidth = (it + 1) * 8
-                            }
-                        )
-                    }
-
-                    else -> {
-                        ColorAndWidth(
-                            colors = controller.colors,
-                            currentColor = crayonColor,
-                            currentWidth = crayonWidth,
-                            onColorClick = {
-                                crayonColor = it
-                                controller.color = it
-                            },
-                            onlineClick = {
-                                crayonWidth = it
-                                controller.lineWidth = (it + 1) * 8
-                            }
-                        )
-                    }
                 }
-            }
 
+            }
         }
     }
 
@@ -319,7 +322,7 @@ fun ColorAndWidth(
                         modifier =
                         Modifier
                             .clip(CircleShape)
-                            .background(colors[currentColor])
+                            .background(Color.Black)
                             .align(Alignment.Center)
                             .padding(2.dp)
                             .size(((it + 1) * 2).dp)
