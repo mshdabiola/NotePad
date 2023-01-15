@@ -9,5 +9,6 @@ import kotlinx.collections.immutable.toImmutableList
 data class MainState(
     val noteType: NoteTypeUi = NoteTypeUi.NOTE,
     val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
-    val labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList()
+    val labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList(),
+    val message: ImmutableList<String> = emptyList<String>().toImmutableList()
 )

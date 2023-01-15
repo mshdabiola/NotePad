@@ -7,6 +7,7 @@ import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
+import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.toNoteCheckEntity
 import com.mshdabiola.database.model.toNoteEntity
 import com.mshdabiola.database.model.toNoteImageEntity
@@ -30,7 +31,8 @@ class NotePadRepository
     private val noteImageDao: NoteImageDao,
     private val noteLabelDao: NoteLabelDao,
     private val noteVoiceDao: NoteVoiceDao,
-    private val notePadDao: NotepadDao
+    private val notePadDao: NotepadDao,
+    private val pathDao: PathDao
 ) {
     suspend fun insertNote(note: Note) = noteDao.upsert(note.toNoteEntity())
 
@@ -78,15 +80,38 @@ class NotePadRepository
     suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
         val list = getNotePads(NoteType.TRASH).first()
 
-        list.mapNotNull { it.note.id }.forEach {
+        delete(list)
+    }
 
-            noteDao.delete(it)
-            noteImageDao.deleteByNoteId(it)
-            noteLabelDao.deleteByNoteId(it)
-            noteVoiceDao.deleteVoiceByNoteId(it)
-            noteCheckDao.deleteByNoteId(it)
+    suspend fun deleteNotePad(notePads: List<NotePad>) = withContext(Dispatchers.IO) {
+
+
+        delete(notePads)
+    }
+
+    private suspend fun delete(notePads: List<NotePad>) {
+        notePads.forEach {
+
+            val id = it.note.id!!
+            noteDao.delete(id)
+            if (it.images.isNotEmpty())
+                noteImageDao.deleteByNoteId(id)
+            if (it.labels.isNotEmpty())
+                noteLabelDao.deleteByNoteId(id)
+            if (it.voices.isNotEmpty())
+                noteVoiceDao.deleteVoiceByNoteId(id)
+            if (it.checks.isNotEmpty())
+                noteCheckDao.deleteByNoteId(id)
 
         }
+
+        notePads
+            .filter { it.images.any { it.isDrawing } }
+            .map { it.images.filter { it.isDrawing } }
+            .flatten()
+            .forEach {
+                pathDao.delete(it.id)
+            }
     }
 
 

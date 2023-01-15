@@ -24,6 +24,18 @@ data class NotePadUiState(
         else
             "${note.title} \n ${note.detail}"
     }
+
+    fun isEmpty(): Boolean {
+        return when {
+            note.title.isNotBlank() -> false
+            note.detail.isNotBlank() -> false
+            images.isNotEmpty() -> false
+            voices.isNotEmpty() -> false
+            checks.all { it.content.isNotBlank() } && checks.isNotEmpty() -> false
+            labels.isNotEmpty() -> false
+            else -> true
+        }
+    }
 }
 
 
@@ -35,6 +47,7 @@ fun NotePad.toNotePadUiState(list: List<Label> = emptyList()) = NotePadUiState(
     labels = labels.map { s -> list.singleOrNull { it.id == s.labelId }?.label ?: "" }
         .toImmutableList()
 )
+
 
 fun NotePadUiState.toNotePad() = NotePad(
     note = note.toNote(),

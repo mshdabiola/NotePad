@@ -100,7 +100,6 @@ import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -135,8 +134,7 @@ fun EditScreen(
 
     LaunchedEffect(key1 = editViewModel.navigateToDrawing, block = {
         if (editViewModel.navigateToDrawing) {
-            delay(500)
-            navigateToDrawing(editViewModel.notePadUiState.note.id!!, null)
+            navigateToDrawing(editViewModel.notePadUiState.note.id, null)
             editViewModel.navigateToDrawing = false
         }
     })
@@ -162,7 +160,7 @@ fun EditScreen(
         onLabel = {
             navigateToSelectLevel(
                 intArrayOf(
-                    editViewModel.notePadUiState.note.id?.toInt() ?: -1
+                    editViewModel.notePadUiState.note.id.toInt()
                 )
             )
         },
@@ -195,7 +193,7 @@ fun EditScreen(
         getPhotoUri = editViewModel::getPhotoUri,
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id!!, null) }
+        onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) }
     )
 
     val send = {
@@ -215,7 +213,7 @@ fun EditScreen(
         onLabel = {
             navigateToSelectLevel(
                 intArrayOf(
-                    editViewModel.notePadUiState.note.id?.toInt() ?: -1
+                    editViewModel.notePadUiState.note.id.toInt()
                 )
             )
         },
@@ -404,9 +402,9 @@ fun EditScreen(
                                     modifier = Modifier
                                         .clickable {
                                             if (it.isDrawing) {
-                                                navigateToDrawing(notepad.note.id!!, it.id)
+                                                navigateToDrawing(notepad.note.id, it.id)
                                             } else {
-                                                navigateToGallery(notepad.note.id!!, it.id)
+                                                navigateToGallery(notepad.note.id, it.id)
                                             }
 
                                         }

@@ -18,6 +18,8 @@ import com.mshdabiola.designsystem.component.state.toNoteType
 import com.mshdabiola.model.Label
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -112,6 +114,7 @@ class MainViewModel
                                         labels = labels.toImmutableList()
                                     )
                                 }
+                                    .filter { !it.isEmpty() }
                                 _mainState.value =
                                     mainState.value.copy(notePads = list.toImmutableList())
                             }
@@ -121,10 +124,29 @@ class MainViewModel
 
 
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            notepadRepository.getNotePads()
+                .distinctUntilChanged { old, new -> old == new }
+                .collectLatest { notePads ->
+                    val emptyList = notePads.filter { it.toNotePadUiState().isEmpty() }
+
+                    if (emptyList.isNotEmpty()) {
+
+                        //Todo("fix show 2ice bug")
+                        notepadRepository.deleteNotePad(emptyList)
+                        delay(5000)
+                        addMessage("Remove empty note ${emptyList.size}")
+
+
+                    }
+
+                }
+        }
     }
 
     fun onSelectCard(id: Long) {
-        var listNOtePad = mainState.value.notePads.toMutableList()
+        val listNOtePad = mainState.value.notePads.toMutableList()
         val index = listNOtePad.indexOfFirst { it.note.id == id }
         val notepad = listNOtePad[index]
         val newNotepad = notepad.copy(note = notepad.note.copy(selected = !notepad.note.selected))
@@ -283,7 +305,7 @@ class MainViewModel
 
     fun copyNote() {
         viewModelScope.launch {
-            val id = mainState.value.notePads.single { it.note.selected }.note.id!!
+            val id = mainState.value.notePads.single { it.note.selected }.note.id
             val notepads = notepadRepository.getOneNotePad(id)
 
             var copy = notepads.copy(note = notepads.note.copy(id = null))
@@ -331,6 +353,20 @@ class MainViewModel
             notepadRepository.deleteTrashType()
         }
 
+    }
+
+    private fun addMessage(msg: String) {
+        val msgs = mainState.value.message.toMutableList()
+
+        msgs.add(msg)
+        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
+    }
+
+    fun onMessageDeliver() {
+        val msgs = mainState.value.message.toMutableList()
+
+        msgs.removeFirst()
+        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
     }
 
 

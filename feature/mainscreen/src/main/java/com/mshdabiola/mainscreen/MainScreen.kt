@@ -42,6 +42,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -50,6 +54,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -111,7 +116,7 @@ fun MainScreen(
         mutableStateOf(false)
     }
     val selectId = remember(mainState.value.notePads) {
-        mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id?.toInt() }
+        mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id.toInt() }
             .toIntArray()
     }
     val context = LocalContext.current
@@ -128,6 +133,7 @@ fun MainScreen(
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
+        messages = mainState.value.message,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
         navigateToSearch = navigateToSearch,
@@ -151,7 +157,8 @@ fun MainScreen(
         },
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
-        onEmptyTrash = mainViewModel::emptyTrash
+        onEmptyTrash = mainViewModel::emptyTrash,
+        onMessageDelive = mainViewModel::onMessageDeliver
 
     )
 
@@ -209,6 +216,7 @@ fun MainScreen(
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
     labels: ImmutableList<LabelUiState>,
+    messages: ImmutableList<String> = emptyList<String>().toImmutableList(),
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
@@ -229,7 +237,8 @@ fun MainScreen(
     onCopy: () -> Unit = {},
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
-    onEmptyTrash: () -> Unit = {}
+    onEmptyTrash: () -> Unit = {},
+    onMessageDelive: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -324,6 +333,27 @@ fun MainScreen(
         notePads.filter { it.note.selected }
             .all { it.note.isPin }
     }
+    val snackHostState = remember {
+        SnackbarHostState()
+    }
+    LaunchedEffect(key1 = messages, block = {
+        if (messages.isNotEmpty()) {
+            when (snackHostState.showSnackbar(
+                message = messages.first(), withDismissAction = true,
+                duration = SnackbarDuration.Short
+            )) {
+                SnackbarResult.ActionPerformed -> {
+                    Log.e("on Snacker", "click")
+                }
+
+                SnackbarResult.Dismissed -> {
+                    onMessageDelive()
+                }
+            }
+        }
+
+
+    })
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -412,6 +442,7 @@ fun MainScreen(
 
 
             },
+            snackbarHost = { SnackbarHost(hostState = snackHostState) },
             bottomBar = {
                 BottomAppBar(
                     actions = {
