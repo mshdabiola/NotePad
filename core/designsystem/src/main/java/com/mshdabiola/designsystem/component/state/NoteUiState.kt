@@ -3,7 +3,7 @@ package com.mshdabiola.designsystem.component.state
 import com.mshdabiola.model.Note
 
 data class NoteUiState(
-    val id: Long? = null,
+    val id: Long = -1,
     val title: String = "",
     val detail: String = "",
     val editDate: Long = 0,
@@ -20,7 +20,7 @@ data class NoteUiState(
 
 fun Note.toNoteUiState() =
     NoteUiState(
-        id,
+        id ?: -1,
         title,
         detail,
         editDate,

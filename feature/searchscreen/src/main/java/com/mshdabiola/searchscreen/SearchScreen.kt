@@ -169,7 +169,7 @@ fun SearchScreenPreview() {
                 notes = listOf(
                     NotePadUiState(
                         note = NoteUiState(
-                            id = null,
+                            id = 1,
                             title = "Ashwin",
                             detail = "Kaya",
                             editDate = 6901L,
@@ -179,7 +179,7 @@ fun SearchScreenPreview() {
                     ),
                     NotePadUiState(
                         note = NoteUiState(
-                            id = null,
+                            id = 2,
                             title = "Ashwin",
                             detail = "Kaya",
                             editDate = 6901L,

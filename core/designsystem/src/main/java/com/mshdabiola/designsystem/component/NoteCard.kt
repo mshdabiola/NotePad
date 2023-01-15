@@ -90,8 +90,8 @@ fun NoteCard(
 
     OutlinedCard(
         modifier = Modifier.combinedClickable(
-            onClick = { notePad.note.id?.let { onCardClick(it) } },
-            onLongClick = { notePad.note.id?.let { onLongClick(it) } }
+            onClick = { notePad.note.id.let { onCardClick(it) } },
+            onLongClick = { notePad.note.id.let { onLongClick(it) } }
         ),
         border = if (notePad.note.selected) BorderStroke(3.dp, Color.Blue) else BorderStroke(
             1.dp,
@@ -213,7 +213,7 @@ fun NoteCardPreview() {
     NoteCard(
         notePad = NotePadUiState(
             note = NoteUiState(
-                id = null,
+                id = 1,
                 title = "Mandy",
                 detail = "Lamia ",
                 editDate = 314L,
