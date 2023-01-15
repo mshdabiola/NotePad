@@ -57,6 +57,7 @@ class EditViewModel @Inject constructor(
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
+    var navigateToDrawing by mutableStateOf(false)
 
     private var photoId: Long = 0
 
@@ -104,6 +105,11 @@ class EditViewModel @Inject constructor(
                             .toImmutableList()
                     )
 
+                }
+
+                (-5).toLong() -> {
+                    navigateToDrawing = true
+                    NotePadUiState(note = NoteUiState(detail = "image"))
                 }
 
                 else -> {

@@ -361,46 +361,7 @@ fun MainScreen(
                         onCopy = onCopy
                     )
                 } else {
-//                    TopAppBar(
-//                        modifier = Modifier,
-//                        title = {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                modifier = Modifier
-//                                    .clickable { navigateToSearch() }
-//                                    .fillMaxWidth()
-//                                    .padding(4.dp)
-//                                    .padding(end = 16.dp)
-//                                    .clip(
-//                                        RoundedCornerShape(
-//                                            topEnd = 50f,
-//                                            topStart = 50f,
-//                                            bottomEnd = 50f,
-//                                            bottomStart = 50f
-//                                        )
-//                                    )
-//                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-//                            ) {
-//                                IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-//                                    Icon(
-//                                        imageVector = Icons.Default.Menu,
-//                                        contentDescription = "menu"
-//                                    )
-//                                }
-//                                Text(
-//                                    text = "Search your note",
-//                                    style = MaterialTheme.typography.titleMedium
-//                                )
 //
-//
-//                            }
-//                        },
-//                        scrollBehavior = scrollBehavior,
-//                        colors = TopAppBarDefaults.topAppBarColors(
-//                            containerColor = Color.Transparent,
-//                            scrolledContainerColor = Color.Transparent
-//                        )
-//                    )
                     when (currentNoteType) {
                         is NoteTypeUi.LABEL -> {
                             LabelTopAppBar(
@@ -463,11 +424,13 @@ fun MainScreen(
                             )
                         }
 
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            navigateToEdit(-5, "", 0)
+                        }) {
                             Icon(
                                 imageVector = ImageVector
                                     .vectorResource(id = NoteIcon.Brush),
-                                contentDescription = "note check"
+                                contentDescription = "note drawing"
                             )
                         }
 

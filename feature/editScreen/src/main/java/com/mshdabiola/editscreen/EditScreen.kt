@@ -100,6 +100,7 @@ import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -131,6 +132,15 @@ fun EditScreen(
         }
     )
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = editViewModel.navigateToDrawing, block = {
+        if (editViewModel.navigateToDrawing) {
+            delay(500)
+            navigateToDrawing(editViewModel.notePadUiState.note.id!!, null)
+            editViewModel.navigateToDrawing = false
+        }
+    })
+
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
