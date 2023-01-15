@@ -110,7 +110,7 @@ fun EditScreen(
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
     navigateToGallery: (Long, Long) -> Unit,
-    navigateToDrawing: (Long) -> Unit
+    navigateToDrawing: (Long, Long?) -> Unit
 ) {
 
     val modalState = rememberModalState()
@@ -184,7 +184,7 @@ fun EditScreen(
         getPhotoUri = editViewModel::getPhotoUri,
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = { navigateToDrawing(7) }
+        onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id!!, null) }
     )
 
     val send = {

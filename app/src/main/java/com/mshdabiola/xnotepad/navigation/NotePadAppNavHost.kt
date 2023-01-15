@@ -37,7 +37,7 @@ fun NotePadAppNavHost(
         editScreen(onBack = onBack,
             navigateToSelectLevel = navigateToSelectLevel,
             navigateToGallery = { id, index -> navController.navigateToGallery(id, index) },
-            navigateToDrawing = { id -> navController.navigateToDrawing(id) }
+            navigateToDrawing = { id, image -> navController.navigateToDrawing(id, image) }
         )
         labelScreen(onBack = onBack)
         selectLabelScreen(onBack)

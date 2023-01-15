@@ -1,8 +1,10 @@
 package com.mshdabiola.drawing
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import androidx.compose.ui.geometry.Offset
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 
 data class DrawingUiState(
-    val paths: ImmutableList<PathData> = emptyList<PathData>().toImmutableList()
+    val paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap(),
+    val filePath: String = ""
 )

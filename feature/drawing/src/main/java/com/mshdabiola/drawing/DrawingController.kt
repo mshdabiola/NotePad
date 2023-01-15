@@ -1,6 +1,7 @@
 package com.mshdabiola.drawing
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.graphics.RectF
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -10,14 +11,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -220,15 +225,21 @@ class DrawingController {
         setDoUnDo()
     }
 
-    fun getBitMap(): ImageBitmap {
+    fun getBitMap(): Bitmap {
         val h = with(density) { heigth.roundToPx() }
         val w = with(density) { width.roundToPx() }
-        val bitmap = ImageBitmap(w, h, ImageBitmapConfig.Argb8888)
-        val canvas = Canvas(bitmap)
+        val bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val bitmap =
+            ImageBitmap(width.value.toInt(), heigth.value.toInt(), ImageBitmapConfig.Argb8888)
+        val canvas = Canvas(bitmap2.asImageBitmap())
 
-        canvas.drawPath(Path(), Paint())
+
+        val paint = Paint()
+        canvas.drawRect(
+            Rect(0f, 0f, w.toFloat(), h.toFloat()),
+            paint.apply { this.color = Color.White })
         getPathAndData().forEach {
-            val paint = Paint()
+
             paint.color = colors[it.second.color]
             paint.alpha = it.second.colorAlpha
             paint.strokeWidth = with(density) {
@@ -236,24 +247,28 @@ class DrawingController {
             }//(it.second.lineWidth.dp).roundToPx().toFloat()
             paint.strokeCap = lineCaps[it.second.lineCap]
             paint.strokeJoin = lineJoins[it.second.lineJoin]
+            paint.blendMode = DrawScope.DefaultBlendMode
+            paint.style = PaintingStyle.Stroke
+
             canvas.drawPath(it.first, paint)
 
         }
 
-        return bitmap
+        return bitmap2
     }
 
 }
 
 @Composable
 fun rememberDrawingController(): DrawingController {
-    var density = LocalDensity.current
+    val density = LocalDensity.current
     val configuration = LocalConfiguration.current
+    Log.e("width heig", "h ${configuration.screenHeightDp} w ${configuration.screenWidthDp}")
     return remember {
         DrawingController().apply {
             this.density = density
-            width = configuration.screenHeightDp.dp
-            heigth = configuration.screenHeightDp.dp
+            width = configuration.screenWidthDp.dp
+            heigth = configuration.screenHeightDp.dp - 50.dp
         }
     }
 }

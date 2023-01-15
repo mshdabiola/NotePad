@@ -9,12 +9,19 @@ import androidx.navigation.navArgument
 
 const val drawingRoute = "drawing_route"
 const val noteIdArg = "note_id_arg"
+const val imageIdArg = "image_id_arg"
 
-fun NavGraphBuilder.drawingScreen(onBack: () -> Unit) {
+fun NavGraphBuilder.drawingScreen(
+    onBack: () -> Unit
+
+) {
     composable(
-        route = "$drawingRoute?$noteIdArg={$noteIdArg}",
+        route = "$drawingRoute?$noteIdArg={$noteIdArg}?$imageIdArg={$imageIdArg}",
         arguments = listOf(
             navArgument(noteIdArg) {
+                type = NavType.LongType
+            },
+            navArgument(imageIdArg) {
                 type = NavType.LongType
             }
         )
@@ -25,6 +32,7 @@ fun NavGraphBuilder.drawingScreen(onBack: () -> Unit) {
     }
 }
 
-fun NavController.navigateToDrawing(noteId: Long) {
-    navigate(route = "$drawingRoute?$noteIdArg=$noteId")
+fun NavController.navigateToDrawing(noteId: Long, imageId: Long?) {
+    val id = imageId ?: System.currentTimeMillis()
+    navigate(route = "$drawingRoute?$noteIdArg=$noteId?$imageIdArg=$id")
 }

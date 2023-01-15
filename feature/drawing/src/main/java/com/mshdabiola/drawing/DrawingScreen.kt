@@ -1,6 +1,7 @@
 package com.mshdabiola.drawing
 
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +34,8 @@ fun DrawingScreen(
     onBack: () -> Unit
 ) {
     DrawingScreen(
-        onBackk = onBack
+        onBackk = onBack,
+        saveImage = viewModel::saveImage
     )
 
 }
@@ -42,12 +44,17 @@ fun DrawingScreen(
 @Composable
 fun DrawingScreen(
     onBackk: () -> Unit = {},
-    paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap()
+    paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap(),
+    saveImage: (Bitmap) -> Unit = {}
 ) {
     val controller = rememberDrawingController()
 
     LaunchedEffect(key1 = paths, block = {
         controller.setPathData(paths)
+    })
+
+    LaunchedEffect(key1 = controller.listOfPathData, block = {
+        saveImage(controller.getBitMap())
     })
 
     Scaffold(

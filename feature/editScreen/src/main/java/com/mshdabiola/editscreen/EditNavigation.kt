@@ -48,7 +48,7 @@ fun NavGraphBuilder.editScreen(
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
     navigateToGallery: (Long, Long) -> Unit,
-    navigateToDrawing: (Long) -> Unit
+    navigateToDrawing: (Long, Long?) -> Unit
 ) {
     composable(
         route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$dataId={$dataId}",

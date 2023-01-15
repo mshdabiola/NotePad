@@ -168,6 +168,7 @@ fun AddBottomSheet(
                 }, label = { Text(text = "Drawing") },
                     selected = false,
                     onClick = {
+                        coroutineScope.launch { modalState.hide() }
                         onDrawing()
                     },
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
