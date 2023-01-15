@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableMap
-import kotlin.math.roundToInt
 
 @SuppressLint("MutableCollectionMutableState")
 class DrawingController {
@@ -52,6 +51,7 @@ class DrawingController {
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 
     var lineWidth = 8
+    private var currentWith = lineWidth
     var lineCap = 0
     var lineJoin = 0
     var color = 1
@@ -107,16 +107,14 @@ class DrawingController {
                 when (mode) {
                     MODE.DOWN -> {
                         pathData = PathData(
-                            x = x,
-                            y = y.roundToInt().toFloat(),
-                            mode = mode,
+                            id = id,
                             color = color,
                             lineWidth = lineWidth,
                             lineCap = lineCap,
                             lineJoin = lineJoin,
                             colorAlpha = colorAlpha,
-                            id = id
                         )
+                        id++
                         val paths2 = listOfPathData.paths2.toMutableMap()
                         val list = emptyList<Offset>().toMutableList()
 
