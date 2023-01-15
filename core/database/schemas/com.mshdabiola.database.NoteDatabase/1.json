@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6bde817618651479a3a012ec7f248197",
+    "identityHash": "62b7a9922ffcf60fd9f3d8d1683c3ff4",
     "entities": [
       {
         "tableName": "note_table",
@@ -119,7 +119,7 @@
       },
       {
         "tableName": "note_image_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `imageName` TEXT NOT NULL, PRIMARY KEY(`id`, `noteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `noteId` INTEGER NOT NULL, `imageName` TEXT NOT NULL, `isDrawing` INTEGER NOT NULL, PRIMARY KEY(`id`, `noteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -137,6 +137,12 @@
             "fieldPath": "imageName",
             "columnName": "imageName",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDrawing",
+            "columnName": "isDrawing",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -241,12 +247,75 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "path_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`imageId` INTEGER NOT NULL, `pathId` INTEGER NOT NULL, `color` INTEGER NOT NULL, `width` INTEGER NOT NULL, `join` INTEGER NOT NULL, `alpha` REAL NOT NULL, `cap` INTEGER NOT NULL, `paths` TEXT NOT NULL, PRIMARY KEY(`imageId`, `pathId`))",
+        "fields": [
+          {
+            "fieldPath": "imageId",
+            "columnName": "imageId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pathId",
+            "columnName": "pathId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "join",
+            "columnName": "join",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alpha",
+            "columnName": "alpha",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cap",
+            "columnName": "cap",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paths",
+            "columnName": "paths",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "imageId",
+            "pathId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6bde817618651479a3a012ec7f248197')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '62b7a9922ffcf60fd9f3d8d1683c3ff4')"
     ]
   }
 }

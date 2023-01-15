@@ -33,6 +33,6 @@ fun NavGraphBuilder.drawingScreen(
 }
 
 fun NavController.navigateToDrawing(noteId: Long, imageId: Long?) {
-    val id = imageId ?: System.currentTimeMillis()
+    val id = imageId ?: -1
     navigate(route = "$drawingRoute?$noteIdArg=$noteId?$imageIdArg=$id")
 }

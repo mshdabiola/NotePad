@@ -170,7 +170,8 @@ fun EditScreen(
         },
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
-        navigateToGallery = navigateToGallery
+        navigateToGallery = navigateToGallery,
+        navigateToDrawing = navigateToDrawing
 
 
     )
@@ -265,7 +266,8 @@ fun EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long, Long) -> Unit = { i, j -> }
+    navigateToGallery: (Long, Long) -> Unit = { i, j -> },
+    navigateToDrawing: (Long, Long) -> Unit = { i, j -> },
 ) {
 
     var expand by remember {
@@ -390,7 +392,14 @@ fun EditScreen(
                             imageList.forEach {
                                 AsyncImage(
                                     modifier = Modifier
-                                        .clickable { navigateToGallery(notepad.note.id!!, it.id) }
+                                        .clickable {
+                                            if (it.isDrawing) {
+                                                navigateToDrawing(notepad.note.id!!, it.id)
+                                            } else {
+                                                navigateToGallery(notepad.note.id!!, it.id)
+                                            }
+
+                                        }
                                         .weight(1f)
                                         .height(200.dp),
                                     model = it.imageName, contentDescription = "",

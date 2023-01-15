@@ -80,7 +80,8 @@ class EditViewModel @Inject constructor(
                         images = listOf(
                             NoteImageUiState(
                                 id = 0, noteId = -1,
-                                imageName = contentManager.getImagePath(editArg.data)
+                                imageName = contentManager.getImagePath(editArg.data),
+                                isDrawing = false
                             )
                         )
                             .toImmutableList()
@@ -287,7 +288,7 @@ class EditViewModel @Inject constructor(
 
         val size = (notePadUiState.images.lastOrNull()?.id ?: -1) + 1
         val noteImage =
-            NoteImage(size, notePadUiState.note.id ?: -1, contentManager.getImagePath(id))
+            NoteImage(size, notePadUiState.note.id ?: -1, contentManager.getImagePath(id), false)
         val listImage = notePadUiState.images.toMutableList()
         listImage.add(noteImage.toNoteImageUiState())
 
@@ -320,7 +321,12 @@ class EditViewModel @Inject constructor(
 
         val size = (notePadUiState.images.lastOrNull()?.id ?: -1) + 1
         val noteImage =
-            NoteImage(size, notePadUiState.note.id ?: -1, contentManager.getImagePath(photoId))
+            NoteImage(
+                size,
+                notePadUiState.note.id ?: -1,
+                contentManager.getImagePath(photoId),
+                false
+            )
         val listImage = notePadUiState.images.toMutableList()
         listImage.add(noteImage.toNoteImageUiState())
 

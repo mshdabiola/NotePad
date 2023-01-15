@@ -11,7 +11,8 @@ data class NoteImageEntity(
     val id: Long,
     val noteId: Long,
     val imageName: String,
+    val isDrawing: Boolean
 )
 
-fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, imageName)
-fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, imageName)
+fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, imageName, isDrawing)
+fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, imageName, isDrawing)

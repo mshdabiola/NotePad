@@ -147,6 +147,7 @@ class DrawingController {
     fun setPathData(pathDatas: Map<PathData, List<Offset>>) {
         val paths = listOfPathData.paths2.toMutableMap()
         paths.putAll(pathDatas)
+        id = pathDatas.size
         listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
     }
 

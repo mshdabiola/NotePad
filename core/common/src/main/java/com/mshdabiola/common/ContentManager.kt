@@ -70,7 +70,7 @@ class ContentManager
     }
 
     fun saveBitmap(path: String, bitmap: Bitmap) {
-
+        createImageDir()
         File(path).outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }

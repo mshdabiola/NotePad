@@ -9,6 +9,8 @@ import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
+import com.mshdabiola.database.dao.PathDao
+import com.mshdabiola.database.model.DrawPathEntity
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteEntity
@@ -23,7 +25,8 @@ import com.mshdabiola.database.model.NoteVoiceEntity
         NoteImageEntity::class,
         NoteCheckEntity::class,
         NoteLabelEntity::class,
-        LabelEntity::class
+        LabelEntity::class,
+        DrawPathEntity::class
     ],
     version = 1
 )
@@ -42,4 +45,6 @@ abstract class NoteDatabase : RoomDatabase() {
     abstract fun getNoteVoiceDao(): NoteVoiceDao
 
     abstract fun getNotePadDao(): NotepadDao
+
+    abstract fun getPath(): PathDao
 }

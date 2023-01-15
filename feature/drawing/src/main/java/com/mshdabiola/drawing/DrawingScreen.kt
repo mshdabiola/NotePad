@@ -52,6 +52,7 @@ fun DrawingScreen(
     DrawingScreen(
         onBackk = onBack,
         filePath = viewModel.drawingUiState.filePath,
+        paths = viewModel.drawingUiState.paths,
         saveImage = viewModel::saveImage,
         onDeleteImage = {
             viewModel.deleteImage()
@@ -67,7 +68,7 @@ fun DrawingScreen(
     onBackk: () -> Unit = {},
     paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>()
         .toImmutableMap(),
-    saveImage: (Bitmap) -> Unit = {},
+    saveImage: (Bitmap, Map<PathData, List<Offset>>) -> Unit = { _, _ -> },
     filePath: String = "",
     onDeleteImage: () -> Unit = {}
 ) {
@@ -106,7 +107,7 @@ fun DrawingScreen(
 
     LaunchedEffect(key1 = controller.listOfPathData, block = {
         withContext(Dispatchers.IO) {
-            saveImage(controller.getBitMap())
+            saveImage(controller.getBitMap(), controller.listOfPathData.paths2)
         }
 
     })
