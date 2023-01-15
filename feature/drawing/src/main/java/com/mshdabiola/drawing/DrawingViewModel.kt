@@ -11,7 +11,9 @@ import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.NoteImageRepository
 import com.mshdabiola.model.NoteImage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,6 +51,14 @@ class DrawingViewModel @Inject constructor(
 
             contentManager.saveBitmap(path, bitmap)
         }
+    }
+
+    fun deleteImage() {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteImageRepository.delete(imageID)
+            File(contentManager.getImagePath(imageID)).delete()
+        }
+
     }
 
 
