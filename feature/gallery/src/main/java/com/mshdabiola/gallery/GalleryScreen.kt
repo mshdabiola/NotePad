@@ -35,14 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import java.io.File
 
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),

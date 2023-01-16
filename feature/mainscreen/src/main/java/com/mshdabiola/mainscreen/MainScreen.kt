@@ -74,7 +74,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.designsystem.component.ColorDialog
 import com.mshdabiola.designsystem.component.NoteCard
@@ -91,7 +90,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
@@ -102,6 +100,7 @@ fun MainScreen(
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
+
 
     var showDialog by remember {
         mutableStateOf(false)
