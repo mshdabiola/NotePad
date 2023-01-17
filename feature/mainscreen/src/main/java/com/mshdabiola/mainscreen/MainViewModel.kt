@@ -1,6 +1,7 @@
 package com.mshdabiola.mainscreen
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,14 +20,13 @@ import com.mshdabiola.model.Label
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -126,25 +126,7 @@ class MainViewModel
 
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            notepadRepository.getNotePads()
-                .distinctUntilChanged { old, new -> old == new }
-                .onEach { delay(1000) }
-                .collectLatest { notePads ->
-                    val emptyList = notePads.filter { it.toNotePadUiState().isEmpty() }
 
-                    if (emptyList.isNotEmpty()) {
-
-
-                        notepadRepository.deleteNotePad(emptyList)
-
-                        addMessage("Remove empty note")
-
-
-                    }
-
-                }
-        }
     }
 
     fun onSelectCard(id: Long) {
@@ -371,5 +353,25 @@ class MainViewModel
         _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
     }
 
+    fun deleteEmptyNote() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val emptyList = notepadRepository
+                .getNotePads()
+                .first()
+                .map { it.toNotePadUiState() }
+                .filter { it.isEmpty() }
 
+
+            if (emptyList.isNotEmpty()) {
+
+                Log.e("empty list ", emptyList.joinToString())
+
+                notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
+
+                addMessage("Remove empty note")
+
+
+            }
+        }
+    }
 }

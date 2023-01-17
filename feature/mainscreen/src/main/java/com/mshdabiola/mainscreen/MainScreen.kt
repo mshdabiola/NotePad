@@ -101,6 +101,10 @@ fun MainScreen(
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(key1 = Unit, block = {
+        mainViewModel.deleteEmptyNote()
+    })
+
 
     var showDialog by remember {
         mutableStateOf(false)
@@ -115,7 +119,7 @@ fun MainScreen(
         mutableStateOf(false)
     }
     val selectId = remember(mainState.value.notePads) {
-        mainState.value.notePads.filter { it.note.selected }.mapNotNull { it.note.id.toInt() }
+        mainState.value.notePads.filter { it.note.selected }.map { it.note.id.toInt() }
             .toIntArray()
     }
     val context = LocalContext.current

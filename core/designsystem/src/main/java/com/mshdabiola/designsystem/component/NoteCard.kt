@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,13 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -46,7 +44,10 @@ import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 fun NoteCard(
     notePad: NotePadUiState,
@@ -74,15 +75,10 @@ fun NoteCard(
         MaterialTheme.colorScheme.secondaryContainer
 
 
-    val painter = if (notePad.note.background != -1)
-        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notePad.note.background].bg))
-    else
-        null
-
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    var images = remember(notePad.images) {
+    val images = remember(notePad.images) {
         notePad.images.chunked(3).reversed()
     }
 
@@ -136,68 +132,75 @@ fun NoteCard(
 
                 }
 
-                Column(
-                    Modifier
-                        .padding(8.dp)
-                ) {
-                    Text(
-                        text = notePad.note.title.ifEmpty { notePad.note.detail },
-                        style = if (notePad.note.title.isNotEmpty())
-                            MaterialTheme.typography.titleMedium
-                        else MaterialTheme.typography.bodyMedium,
-                        maxLines = 10
-                    )
-                    if (!notePad.note.isCheck) {
-                        if (notePad.note.title.isNotEmpty()) {
-                            if (notePad.note.detail.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = notePad.note.detail,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 10,
-
-                                    )
-                            }
-                        }
-                    } else {
-                        unCheckNote.take(10).forEach {
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = it.isCheck,
-                                    onCheckedChange = {},
-                                    enabled = false
-                                )
-                                Text(it.content, style = MaterialTheme.typography.bodyMedium)
-
-                            }
-                        }
-                        if (unCheckNote.size > 10) {
-                            Text(text = "....")
-                        }
-                        if (numberOfChecked > 0) {
-                            Text(text = "+ $numberOfChecked checked items")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FlowLayout2(
-                        verticalSpacing = 4.dp
+                if (!notePad.isImageOnly()) {
+                    Column(
+                        Modifier
+                            .padding(8.dp)
                     ) {
-                        if (notePad.note.reminder > 0) {
-                            ReminderCard(
-                                remainder = notePad.note.reminder,
-                                interval = notePad.note.interval,
-                                color = sColor
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                        }
-                        notePad.labels.forEach {
-                            LabelCard(name = it, color = sColor)
-                            Spacer(modifier = Modifier.width(4.dp))
-                        }
-                    }
+                        Text(
+                            text = notePad.note.title.ifEmpty { notePad.note.detail },
+                            style = if (notePad.note.title.isNotEmpty())
+                                MaterialTheme.typography.titleMedium
+                            else MaterialTheme.typography.bodyMedium,
+                            maxLines = 10
+                        )
+                        if (!notePad.note.isCheck) {
+                            if (notePad.note.title.isNotEmpty()) {
+                                if (notePad.note.detail.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = notePad.note.detail,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 10,
 
+                                        )
+                                }
+                            }
+                        } else {
+                            unCheckNote.take(10).forEach {
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(
+                                        checked = it.isCheck,
+                                        onCheckedChange = {},
+                                        enabled = false
+                                    )
+                                    Text(
+                                        it.content,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1
+                                    )
+
+                                }
+                            }
+                            if (unCheckNote.size > 10) {
+                                Text(text = "....")
+                            }
+                            if (numberOfChecked > 0) {
+                                Text(text = "+ $numberOfChecked checked items")
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+
+                        FlowLayout2(
+                            verticalSpacing = 4.dp
+                        ) {
+                            if (notePad.note.reminder > 0) {
+                                ReminderCard(
+                                    remainder = notePad.note.reminder,
+                                    interval = notePad.note.interval,
+                                    color = sColor
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+                            notePad.labels.forEach {
+                                LabelCard(name = it, color = sColor)
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+                        }
+
+                    }
                 }
             }
 

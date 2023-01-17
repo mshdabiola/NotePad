@@ -26,16 +26,27 @@ data class NotePadUiState(
     }
 
     fun isEmpty(): Boolean {
-        return when {
-            note.title.isNotBlank() -> false
-            note.detail.isNotBlank() -> false
-            images.isNotEmpty() -> false
-            voices.isNotEmpty() -> false
-            checks.all { it.content.isNotBlank() } && checks.isNotEmpty() -> false
-            labels.isNotEmpty() -> false
-            else -> true
-        }
+        val titleIsBlank = note.title.isBlank()
+        val detailIsBlank = note.detail.isBlank()
+        val emptyImage = images.isEmpty()
+        val voiceEmpty = voices.isEmpty()
+        val checksBlank = checks.all { it.content.isBlank() }
+        val checkIsEmpty = checks.isEmpty()
+        val labelsIsEmpty = labels.isEmpty()
+        return titleIsBlank && detailIsBlank && emptyImage && voiceEmpty && checkIsEmpty && checksBlank && labelsIsEmpty
     }
+
+    fun isImageOnly(): Boolean {
+        val titleIsBlank = note.title.isBlank()
+        val detailIsBlank = note.detail.isBlank()
+        val emptyImage = images.isEmpty()
+        val voiceEmpty = voices.isEmpty()
+        val checksBlank = checks.all { it.content.isBlank() }
+        val checkIsEmpty = checks.isEmpty()
+        val labelsIsEmpty = labels.isEmpty()
+        return titleIsBlank && detailIsBlank && !emptyImage && voiceEmpty && checkIsEmpty && checksBlank && labelsIsEmpty
+    }
+
 }
 
 
