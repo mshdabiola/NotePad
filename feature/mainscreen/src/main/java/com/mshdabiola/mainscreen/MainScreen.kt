@@ -88,6 +88,7 @@ import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,6 +103,7 @@ fun MainScreen(
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit, block = {
+        delay(2000)
         mainViewModel.deleteEmptyNote()
     })
 
