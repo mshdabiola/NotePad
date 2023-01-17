@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -180,6 +179,15 @@ fun DrawingScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            DrawingBar(
+                modifier = Modifier
+//                    .navigationBarsPadding()
+//                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 8.dp),
+                controller = controller
+            )
         }
     ) { paddingValues: PaddingValues ->
         Box(Modifier.padding(paddingValues)) {
@@ -187,12 +195,12 @@ fun DrawingScreen(
                 modifier = Modifier.fillMaxSize(),
                 drawingController = controller
             )
-            DrawingBar(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp),
-                controller = controller
-            )
+//            DrawingBar(
+//                modifier = Modifier
+//                    .align(Alignment.BottomCenter)
+//                    .padding(horizontal = 8.dp),
+//                controller = controller
+//            )
         }
     }
 

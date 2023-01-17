@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -81,126 +82,127 @@ fun DrawingBar(
 
     val pagerState = rememberPagerState(initialPage = 1)
     val coroutineScope = rememberCoroutineScope()
-    Column(modifier) {
+    Surface(modifier) {
+        Column {
 
-        TabRow(
-            selectedTabIndex = pagerState.currentPage
-        ) {
+            TabRow(
+                selectedTabIndex = pagerState.currentPage
+            ) {
 
-            Tab(
-                selected = pagerState.currentPage == 0,
-                onClick = {
-                    controller.draw_mode = DRAW_MODE.ERASE
-                    isUp = if (pagerState.currentPage == 0) {
-                        !isUp
-                    } else {
-                        false
+                Tab(
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        controller.draw_mode = DRAW_MODE.ERASE
+                        isUp = if (pagerState.currentPage == 0) {
+                            !isUp
+                        } else {
+                            false
+                        }
+
+                        coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                    }) {
+                    Box(Modifier.padding(4.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.eraser),
+                            contentDescription = "eraser",
+                            tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.eraser_tiny),
+                            contentDescription = "pen",
+                            tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    }
+                }
+                Tab(
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        controller.draw_mode = DRAW_MODE.PEN
+                        controller.colorAlpha = 1f
+                        controller.lineCap = 0
+                        controller.lineWidth = (penWidth + 1) * 4
+                        controller.color = penColor
+                        isUp = if (pagerState.currentPage == 1) {
+                            !isUp
+                        } else {
+                            true
+                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                    }) {
+                    Box(Modifier.padding(4.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.pen),
+                            contentDescription = "pen",
+                            tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.pen_cap),
+                            contentDescription = "pen",
+                            tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray
+                        )
                     }
 
-                    coroutineScope.launch { pagerState.animateScrollToPage(0) }
-                }) {
-                Box(Modifier.padding(4.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.eraser),
-                        contentDescription = "eraser",
-                        tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.eraser_tiny),
-                        contentDescription = "pen",
-                        tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray
-                    )
-                }
-            }
-            Tab(
-                selected = pagerState.currentPage == 1,
-                onClick = {
-                    controller.draw_mode = DRAW_MODE.PEN
-                    controller.colorAlpha = 1f
-                    controller.lineCap = 0
-                    controller.lineWidth = (penWidth + 1) * 4
-                    controller.color = penColor
-                    isUp = if (pagerState.currentPage == 1) {
-                        !isUp
-                    } else {
-                        true
-                    }
-                    coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                }) {
-                Box(Modifier.padding(4.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.pen),
-                        contentDescription = "pen",
-                        tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.pen_cap),
-                        contentDescription = "pen",
-                        tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray
-                    )
                 }
 
-            }
-
-            Tab(
-                selected = pagerState.currentPage == 2,
-                unselectedContentColor = Color.Gray,
-                onClick = {
-                    controller.draw_mode = DRAW_MODE.MARKER
-                    controller.colorAlpha = 1f
-                    controller.lineCap = 0
-                    controller.lineWidth = (markWidth + 1) * 8
-                    controller.color = markColor
-                    isUp = if (pagerState.currentPage == 2) {
-                        !isUp
-                    } else {
-                        true
+                Tab(
+                    selected = pagerState.currentPage == 2,
+                    unselectedContentColor = Color.Gray,
+                    onClick = {
+                        controller.draw_mode = DRAW_MODE.MARKER
+                        controller.colorAlpha = 1f
+                        controller.lineCap = 0
+                        controller.lineWidth = (markWidth + 1) * 8
+                        controller.color = markColor
+                        isUp = if (pagerState.currentPage == 2) {
+                            !isUp
+                        } else {
+                            true
+                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(2) }
+                    }) {
+                    Box(Modifier.padding(4.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.markerr),
+                            contentDescription = "marker",
+                            tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.marker_cap),
+                            contentDescription = "marker",
+                            tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray
+                        )
                     }
-                    coroutineScope.launch { pagerState.animateScrollToPage(2) }
-                }) {
-                Box(Modifier.padding(4.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.markerr),
-                        contentDescription = "marker",
-                        tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.marker_cap),
-                        contentDescription = "marker",
-                        tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray
-                    )
+                }
+                Tab(
+                    selected = pagerState.currentPage == 3,
+                    unselectedContentColor = Color.Gray,
+                    onClick = {
+                        controller.draw_mode = DRAW_MODE.CRAYON
+                        controller.colorAlpha = 0.5f
+                        controller.lineCap = 1
+                        controller.lineWidth = (crayonWidth + 1) * 8
+                        controller.color = crayonColor
+                        isUp = if (pagerState.currentPage == 3) {
+                            !isUp
+                        } else {
+                            true
+                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(3) }
+                    }) {
+                    Box(Modifier.padding(4.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.crayon),
+                            contentDescription = "crayon",
+                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.crayon_cap),
+                            contentDescription = "crayon",
+                            tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray
+                        )
+                    }
                 }
             }
-            Tab(
-                selected = pagerState.currentPage == 3,
-                unselectedContentColor = Color.Gray,
-                onClick = {
-                    controller.draw_mode = DRAW_MODE.CRAYON
-                    controller.colorAlpha = 0.5f
-                    controller.lineCap = 1
-                    controller.lineWidth = (crayonWidth + 1) * 8
-                    controller.color = crayonColor
-                    isUp = if (pagerState.currentPage == 3) {
-                        !isUp
-                    } else {
-                        true
-                    }
-                    coroutineScope.launch { pagerState.animateScrollToPage(3) }
-                }) {
-                Box(Modifier.padding(4.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.crayon),
-                        contentDescription = "crayon",
-                        tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.crayon_cap),
-                        contentDescription = "crayon",
-                        tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray
-                    )
-                }
-            }
-        }
 //        IconButton(
 //            modifier = Modifier.align(Alignment.CenterHorizontally),
 //            onClick = { isUp = !isUp }) {
@@ -209,11 +211,13 @@ fun DrawingBar(
 //                contentDescription = ""
 //            )
 //        }
-        Surface {
+
             HorizontalPager(
                 pageCount = 4,
                 state = pagerState,
-                modifier = Modifier.animateContentSize()
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .animateContentSize()
             ) { index ->
                 if (isUp) {
                     when (index) {
@@ -297,8 +301,6 @@ fun ColorAndWidth(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-
-
             verticalSpacing = 8.dp
         ) {
             colors.forEachIndexed { index, color ->
@@ -316,10 +318,12 @@ fun ColorAndWidth(
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
-        Spacer(modifier = Modifier.width(40.dp))
+
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
 
