@@ -1,8 +1,9 @@
 package com.mshdabiola.labelscreen
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -78,16 +79,19 @@ fun LabelScreen(
     ) { paddingValues ->
 
 
-        Column(Modifier.padding(paddingValues)) {
-            EditLabelTextField(
-                value = labelScreenUiState.editText,
-                isEditMode = labelScreenUiState.isEditMode,
-                errorOccur = labelScreenUiState.errorOccur,
-                onValueChange = onAddLabelChange,
-                onAddLabelDone = onAddLabelDone,
-                onAddDelete = onAddDelete
-            )
-            labelScreenUiState.labels.forEach {
+        LazyColumn(Modifier.padding(paddingValues)) {
+            item {
+                EditLabelTextField(
+                    value = labelScreenUiState.editText,
+                    isEditMode = labelScreenUiState.isEditMode,
+                    errorOccur = labelScreenUiState.errorOccur,
+                    onValueChange = onAddLabelChange,
+                    onAddLabelDone = onAddLabelDone,
+                    onAddDelete = onAddDelete
+                )
+            }
+
+            items(labelScreenUiState.labels, key = { it.id }) {
                 LabelTextField(it, onLabelChange, onDelete)
             }
 
