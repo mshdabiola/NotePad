@@ -18,6 +18,7 @@ import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -73,8 +74,8 @@ class NotePadRepository
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
-    suspend fun getOneNotePad(id: Long): NotePad {
-        return notePadDao.getOneNotePad(id).toNotePad()
+    suspend fun getOneNotePad(id: Long): Flow<NotePad> {
+        return notePadDao.getOneNotePad(id).map { it.toNotePad() }
     }
 
     suspend fun deleteTrashType() = withContext(Dispatchers.IO) {

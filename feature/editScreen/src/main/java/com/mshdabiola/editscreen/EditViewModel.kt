@@ -37,6 +37,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -118,7 +120,11 @@ class EditViewModel @Inject constructor(
                 }
 
                 else -> {
-                    val notePad = notePadRepository.getOneNotePad(editArg.id).toNotePadUiState()
+                    val labels = labelRepository.getAllLabels().first()
+                    val notePad = notePadRepository
+                        .getOneNotePad(editArg.id)
+                        .first()
+                        .toNotePadUiState(labels)
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
@@ -130,6 +136,22 @@ class EditViewModel @Inject constructor(
                 }
 
             }
+
+            notePadRepository.getOneNotePad(notePadUiState.note.id)
+                .map { it.images to it.labels }
+                .distinctUntilChanged()
+                .collectLatest { pair ->
+                    val labels = labelRepository.getAllLabels().first()
+                    val strLabel = pair.second.map { s ->
+                        labels.singleOrNull { it.id == s.labelId }?.label ?: ""
+                    }
+                    val image = pair.first.map { it.toNoteImageUiState() }
+
+                    notePadUiState = notePadUiState.copy(
+                        labels = strLabel.toImmutableList(),
+                        images = image.toImmutableList()
+                    )
+                }
         }
 
         viewModelScope.launch {
@@ -144,18 +166,7 @@ class EditViewModel @Inject constructor(
                 }
         }
 
-        viewModelScope.launch {
 
-            labelRepository.getAllLabels()
-                .distinctUntilChanged { old, new -> new == old }
-                .collectLatest {
-                    if (editArg.id > -1) {
-                        val newNote =
-                            notePadRepository.getOneNotePad(editArg.id).toNotePadUiState(it)
-                        notePadUiState = notePadUiState.copy(labels = newNote.labels)
-                    }
-                }
-        }
 
     }
 

@@ -288,9 +288,9 @@ class MainViewModel
     }
 
     fun copyNote() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val id = mainState.value.notePads.single { it.note.selected }.note.id
-            val notepads = notepadRepository.getOneNotePad(id)
+            val notepads = notepadRepository.getOneNotePad(id).first()
 
             var copy = notepads.copy(note = notepads.note.copy(id = null))
 

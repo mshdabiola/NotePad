@@ -19,7 +19,7 @@ interface NotepadDao {
 
     @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")
-    suspend fun getOneNotePad(noteId: Long): NotePadEntity
+    fun getOneNotePad(noteId: Long): Flow<NotePadEntity>
 
 
 }
