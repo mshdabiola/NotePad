@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,9 +47,11 @@ fun MainNavigation(
     labels: ImmutableList<LabelUiState>
 
 ) {
-    Surface(modifier = Modifier
-        .fillMaxHeight()
-        .fillMaxWidth(4 / 5f)) {
+    Surface(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(300.dp)
+    ) {
 
         Column(
             modifier = Modifier
@@ -74,7 +77,9 @@ fun MainNavigation(
                 label = { Text(text = "Reminders") },
                 selected = currentType == NoteTypeUi.REMAINDER,
                 onClick = { onNavigation(NoteTypeUi.REMAINDER) })
-            Divider(modifier = Modifier.fillMaxWidth())
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 Modifier
@@ -108,8 +113,10 @@ fun MainNavigation(
                 label = { Text(text = "Create new label") },
                 selected = false,
                 onClick = { navigateToLevel(true) })
-            Divider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(8.dp))
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp))
+
             NavigationDrawerItem(
                 icon = {
                     Icon(painterResource(id = NoteIcon.Archive), contentDescription = "")
