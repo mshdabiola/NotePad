@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -131,7 +132,13 @@ fun GalleryScreen(
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 val image = galleryUiState.images[it]
                 /// currIndex=it
-                AsyncImage(model = image.imageName, contentDescription = "")
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = image.imageName,
+                    contentDescription = "",
+                    alignment = Alignment.Center
+
+                )
 
             }
         }

@@ -79,7 +79,7 @@ fun NoteCard(
         mutableStateOf(IntSize.Zero)
     }
     val images = remember(notePad.images) {
-        notePad.images.chunked(3).reversed()
+        notePad.images.reversed().chunked(3)
     }
 
     val de = LocalDensity.current

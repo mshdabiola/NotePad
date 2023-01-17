@@ -29,12 +29,13 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             noteImageRepository.getImageByNoteId(id)
                 .collectLatest { noteImages ->
-                    val index = noteImages.indexOfFirst { it.id == currentIndex }
+                    val reverseImages = noteImages.reversed()
+                    val index = reverseImages.indexOfFirst { it.id == currentIndex }
                     _galleryUiState.value = galleryUiState
                         .value
                         .copy(
                             images =
-                            noteImages.map {
+                            reverseImages.map {
                                 it.toNoteImageUiState()
                             }.toImmutableList(),
                             currentIndex = index

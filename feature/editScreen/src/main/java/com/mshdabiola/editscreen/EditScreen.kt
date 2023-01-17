@@ -325,8 +325,8 @@ fun EditScreen(
     else
         null
 
-    var images = remember(notepad.images) {
-        notepad.images.chunked(3).reversed()
+    val images = remember(notepad.images) {
+        notepad.images.reversed().chunked(3)
     }
 
     LaunchedEffect(key1 = notepad, block = {
