@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -128,15 +129,16 @@ class MainViewModel
         viewModelScope.launch(Dispatchers.IO) {
             notepadRepository.getNotePads()
                 .distinctUntilChanged { old, new -> old == new }
+                .onEach { delay(1000) }
                 .collectLatest { notePads ->
                     val emptyList = notePads.filter { it.toNotePadUiState().isEmpty() }
 
                     if (emptyList.isNotEmpty()) {
 
-                        //Todo("fix show 2ice bug")
+
                         notepadRepository.deleteNotePad(emptyList)
-                        delay(5000)
-                        addMessage("Remove empty note ${emptyList.size}")
+
+                        addMessage("Remove empty note")
 
 
                     }
