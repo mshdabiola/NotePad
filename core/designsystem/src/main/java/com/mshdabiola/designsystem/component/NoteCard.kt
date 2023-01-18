@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -37,17 +38,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
+import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalLayoutApi::class
-)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteCard(
     notePad: NotePadUiState,
@@ -59,6 +60,9 @@ fun NoteCard(
     }
     val numberOfChecked by remember(key1 = notePad.checks) {
         derivedStateOf { notePad.checks.count { it.isCheck } }
+    }
+    val haveVoice by remember(notePad.voices) {
+        derivedStateOf { notePad.voices.isNotEmpty() }
     }
     val bg = if (notePad.note.background != -1) {
         Color.Transparent
@@ -160,11 +164,12 @@ fun NoteCard(
                             unCheckNote.take(10).forEach {
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Checkbox(
-                                        checked = it.isCheck,
-                                        onCheckedChange = {},
-                                        enabled = false
+                                    Icon(
+                                        modifier = Modifier.size(16.dp),
+                                        imageVector = Icons.Default.CheckBoxOutlineBlank,
+                                        contentDescription = ""
                                     )
+                                    Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         it.content,
                                         style = MaterialTheme.typography.bodyMedium,
@@ -186,6 +191,13 @@ fun NoteCard(
                         FlowLayout2(
                             verticalSpacing = 4.dp
                         ) {
+                            if (haveVoice) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayCircle,
+                                    contentDescription = "play"
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
                             if (notePad.note.reminder > 0) {
                                 ReminderCard(
                                     remainder = notePad.note.reminder,
@@ -217,10 +229,10 @@ fun NoteCardPreview() {
         notePad = NotePadUiState(
             note = NoteUiState(
                 id = 1,
-                title = "Mandy",
-                detail = "Lamia ",
+                title = "Mandy abiola",
+                detail = "Lamia moshood",
                 editDate = 314L,
-                isCheck = false,
+                isCheck = true,
                 reminder = Clock.System.now().toEpochMilliseconds(),
                 color = 2,
                 isPin = false,
@@ -234,6 +246,33 @@ fun NoteCardPreview() {
                 "kdlskdflsjfslf",
                 "klslssljsl",
                 "alskfk"
+            ).toImmutableList(),
+            checks = listOf(
+                NoteCheckUiState(
+                    id = 2418L,
+                    noteId = 6429L,
+                    content = "Maegan",
+                    isCheck = false,
+                    focus = false
+                ),
+                NoteCheckUiState(
+                    id = 2418L,
+                    noteId = 6429L,
+                    content = "Book",
+                    isCheck = false,
+                    focus = false
+                )
+            ).toImmutableList(),
+            voices = listOf(
+                NoteVoiceUiState(
+                    id = 500L,
+                    noteId = 8001L,
+                    voiceName = "Danniel",
+                    length = 1940L,
+                    currentProgress = .179f,
+                    isPlaying = false
+
+                )
             ).toImmutableList()
         )
     )
