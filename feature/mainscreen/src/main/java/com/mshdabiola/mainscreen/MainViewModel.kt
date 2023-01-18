@@ -12,6 +12,7 @@ import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
@@ -340,17 +341,17 @@ class MainViewModel
     }
 
     private fun addMessage(msg: String) {
-        val msgs = mainState.value.message.toMutableList()
+        val msgs = mainState.value.messages.toMutableList()
 
-        msgs.add(msg)
-        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
+        msgs.add(Notify(message = msg, callback = ::onMessageDeliver))
+        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
     }
 
-    fun onMessageDeliver() {
-        val msgs = mainState.value.message.toMutableList()
+    private fun onMessageDeliver() {
+        val msgs = mainState.value.messages.toMutableList()
 
         msgs.removeFirst()
-        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
+        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
     }
 
     fun deleteEmptyNote() {

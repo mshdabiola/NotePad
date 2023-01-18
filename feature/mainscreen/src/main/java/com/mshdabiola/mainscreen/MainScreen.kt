@@ -82,6 +82,7 @@ import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
@@ -138,7 +139,7 @@ fun MainScreen(
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
-        messages = mainState.value.message,
+        messages = mainState.value.messages,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
         navigateToSearch = navigateToSearch,
@@ -163,8 +164,8 @@ fun MainScreen(
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
-        onMessageDelive = mainViewModel::onMessageDeliver
-
+//        onMessageDelive = mainViewModel::onMessageDeliver
+//
     )
 
     val note = remember(mainState.value.notePads) {
@@ -221,7 +222,7 @@ fun MainScreen(
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
     labels: ImmutableList<LabelUiState>,
-    messages: ImmutableList<String> = emptyList<String>().toImmutableList(),
+    messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
@@ -343,16 +344,18 @@ fun MainScreen(
     }
     LaunchedEffect(key1 = messages, block = {
         if (messages.isNotEmpty()) {
+            val first = messages.first()
             when (snackHostState.showSnackbar(
-                message = messages.first(), withDismissAction = true,
-                duration = SnackbarDuration.Short
+                message = first.message, withDismissAction = first.withDismissAction,
+                actionLabel = first.label,
+                duration = if (first.isShort) SnackbarDuration.Short else SnackbarDuration.Long
             )) {
                 SnackbarResult.ActionPerformed -> {
                     Log.e("on Snacker", "click")
                 }
 
                 SnackbarResult.Dismissed -> {
-                    onMessageDelive()
+                    first.callback()
                 }
             }
         }
