@@ -9,10 +9,10 @@ plugins {
 }
 
 android {
-    namespace = "com.mshdabiola.xnotepad"
+    namespace = "com.mshdabiola.playnotepad"
 
     defaultConfig {
-        applicationId = "com.mshdabiola.xnotepad"
+        applicationId = "com.mshdabiola.playnotepad"
     }
 
     buildTypes {

@@ -1,4 +1,4 @@
-package com.mshdabiola.xnotepad.ui
+package com.mshdabiola.playnotepad.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable

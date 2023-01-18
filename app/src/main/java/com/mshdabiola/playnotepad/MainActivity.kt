@@ -1,4 +1,4 @@
-package com.mshdabiola.xnotepad
+package com.mshdabiola.playnotepad
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,7 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
-import com.mshdabiola.xnotepad.ui.NotePadApp
+import com.mshdabiola.playnotepad.ui.NotePadApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

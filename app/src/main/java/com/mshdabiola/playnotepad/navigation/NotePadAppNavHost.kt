@@ -1,4 +1,4 @@
-package com.mshdabiola.xnotepad.navigation
+package com.mshdabiola.playnotepad.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

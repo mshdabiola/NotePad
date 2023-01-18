@@ -1,9 +1,9 @@
-package com.mshdabiola.xnotepad.ui
+package com.mshdabiola.playnotepad.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
-import com.mshdabiola.xnotepad.navigation.NotePadAppNavHost
+import com.mshdabiola.playnotepad.navigation.NotePadAppNavHost
 
 @Composable
 fun NotePadApp(

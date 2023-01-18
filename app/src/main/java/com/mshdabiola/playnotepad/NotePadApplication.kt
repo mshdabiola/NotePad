@@ -1,4 +1,4 @@
-package com.mshdabiola.xnotepad
+package com.mshdabiola.playnotepad
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
