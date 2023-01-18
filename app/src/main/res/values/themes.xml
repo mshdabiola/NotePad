@@ -39,6 +39,7 @@
 
     <style name="Theme.App.Splash" parent="NightAdjusted.Theme.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/primary</item>
         <item name="postSplashScreenTheme">@style/Theme.App</item>
     </style>
 
