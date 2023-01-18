@@ -2,7 +2,6 @@ package com.mshdabiola.benchmark
 
 // import androidx.benchmark.macro.ExperimentalBaselineProfilesApi
 import androidx.benchmark.macro.junit4.BaselineProfileRule
-import androidx.test.uiautomator.UiSelector
 import org.junit.Rule
 import org.junit.Test
 
@@ -14,11 +13,11 @@ class BaselineGenerator {
 
     @Test
     fun startUp() = baselineProfileRule.collectBaselineProfile(
-        packageName = "com.mshdabiola.xnotepad"
+        packageName = "com.mshdabiola.playnotepad"
     ) {
-//        pressHome()
-//        startActivityAndWait()
-//
+        pressHome()
+        startActivityAndWait()
+
 //        device.waitForIdle()
 //        device.findObject(UiSelector().descriptionContains("play")).click()
 //
@@ -45,10 +44,10 @@ class BaselineGenerator {
 //        device.findObject(UiSelector().descriptionContains("close")).click()
 //        device.waitForIdle()
 //        device.findObject(UiSelector().descriptionContains("close")).click()
-        // while(!device.hasObject(By.text("6"))){
+//         while(!device.hasObject(By.text("6"))){
 //            device.findObject(UiSelector().descriptionContains("dice")).click()
 //            device.waitForIdle()
-        // }
+//         }
 //        device.findObject(UiSelector().text("6")).click()
     }
 }
