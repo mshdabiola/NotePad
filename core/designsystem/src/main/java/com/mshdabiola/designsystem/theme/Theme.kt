@@ -1,12 +1,14 @@
 package com.mshdabiola.designsystem.theme
 
 import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColors = lightColorScheme(
@@ -93,3 +95,41 @@ fun NotePadAppTheme(
         content = content
     )
 }
+
+
+private val DarkColorPalette = darkColorScheme(
+    background = Color.Black,
+    primary = streamAccent,
+    inversePrimary = streamAccent,
+    secondary = streamAccent,
+    onPrimary = Color.White,
+    onSecondary = Color.White
+)
+
+private val LightColorPalette = lightColorScheme(
+    background = Color.White,
+    surface = Color.White,
+    primary = streamAccent,
+    inversePrimary = streamAccent,
+    secondary = streamAccent,
+    onPrimary = Color.Black,
+    onSecondary = Color.Black
+)
+
+@Composable
+fun SketchbookDemoTheme(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colors = if (isDarkTheme) {
+        DarkColorPalette
+    } else {
+        LightColorPalette
+    }
+
+    MaterialTheme(
+        colorScheme = colors,
+        content = content
+    )
+}
+

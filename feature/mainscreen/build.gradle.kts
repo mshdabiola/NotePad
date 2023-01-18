@@ -5,3 +5,4 @@ plugins {
 android {
     namespace = "com.mshdabiola.mainscreen"
 }
+

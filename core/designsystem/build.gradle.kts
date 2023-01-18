@@ -13,8 +13,11 @@ android {
 
 dependencies {
 
-    //implementation (project( ":model"))
+    implementation(project(":core:model"))
 
     testImplementation(libs.junit4)
+    implementation(libs.kotlinx.collection.immutable)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.coil.kt.compose)
 
 }

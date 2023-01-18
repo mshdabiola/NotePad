@@ -1,0 +1,161 @@
+package com.mshdabiola.selectlabelscreen
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TriStateCheckbox
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.designsystem.icon.NoteIcon
+import kotlinx.collections.immutable.toImmutableList
+
+
+@Composable
+fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel()) {
+    LabelScreen(
+        labelScreenUiState = viewModel.labelScreenUiState,
+        onBack = onBack,
+        onCheckClick = viewModel::onCheckClick,
+        onSearchText = viewModel::onSearchChange,
+        onCreateLabel = viewModel::onCreateLabel
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabelScreen(
+    labelScreenUiState: LabelScreenUiState,
+    onBack: () -> Unit = {},
+    onCheckClick: (Long) -> Unit = {},
+    onSearchText: (String) -> Unit = {},
+    onCreateLabel: () -> Unit = {}
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                },
+                title = {
+                    NoteTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = labelScreenUiState.editText,
+                        placeholder = { Text(text = "Enter text") },
+                        onValueChange = onSearchText
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(Modifier.padding(paddingValues)) {
+            if (labelScreenUiState.showAddLabel) {
+                TextButton(onClick = { onCreateLabel() }) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = "Create \"${labelScreenUiState.editText}\"")
+                }
+            }
+            LazyColumn {
+                items(
+                    items = labelScreenUiState.labels
+                ) {
+                    LabelText(
+                        labelUiState = it,
+                        onCheckClick = onCheckClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LabelText(
+    labelUiState: LabelUiState,
+    onCheckClick: (Long) -> Unit = {}
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "")
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(modifier = Modifier.weight(1f), text = labelUiState.label)
+        TriStateCheckbox(
+            state = labelUiState.toggleableState,
+            onClick = { onCheckClick(labelUiState.id) })
+    }
+
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteTextPreview() {
+    LabelText(
+        labelUiState = LabelUiState(
+            id = 8382L,
+            label = "Derron",
+            toggleableState = ToggleableState.Off
+        )
+    )
+
+}
+
+@Preview
+@Composable
+fun LabelScreenPreview() {
+    LabelScreen(
+        labelScreenUiState = LabelScreenUiState(
+            labels = listOf(
+
+                LabelUiState(
+                    id = 8382L,
+                    label = "Derron",
+                    toggleableState = ToggleableState.Off
+                ),
+                LabelUiState(
+                    id = 8983L,
+                    label = "Nakeshia",
+                    toggleableState = ToggleableState.Indeterminate
+                ),
+                LabelUiState(
+                    id = 8983L,
+                    label = "Nakeshia",
+                    toggleableState = ToggleableState.Indeterminate
+                ),
+                LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On)
+
+            ).toImmutableList()
+        )
+    )
+
+}
