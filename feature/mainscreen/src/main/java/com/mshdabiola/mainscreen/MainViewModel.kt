@@ -375,4 +375,10 @@ class MainViewModel
             }
         }
     }
+
+    fun onToggleGrid() {
+        val grid = mainState.value.isGrid
+
+        _mainState.value = mainState.value.copy(isGrid = !grid)
+    }
 }

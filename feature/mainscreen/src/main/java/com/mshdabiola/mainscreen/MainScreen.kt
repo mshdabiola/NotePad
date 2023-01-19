@@ -26,9 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -71,6 +73,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
@@ -142,6 +145,7 @@ fun MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
         messages = mainState.value.messages,
+        isGrid = mainState.value.isGrid,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
         navigateToSearch = navigateToSearch,
@@ -166,6 +170,7 @@ fun MainScreen(
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
+        onToggleGrid = mainViewModel::onToggleGrid
 //        onMessageDelive = mainViewModel::onMessageDeliver
 //
     )
@@ -225,6 +230,7 @@ fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
     labels: ImmutableList<LabelUiState>,
     messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
+    isGrid: Boolean = true,
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
@@ -246,7 +252,7 @@ fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    onMessageDelive: () -> Unit = {}
+    onToggleGrid: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -427,7 +433,9 @@ fun MainScreen(
                             MainTopAppBar(
                                 navigateToSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
+                                scrollBehavior = scrollBehavior,
+                                isGrid = isGrid,
+                                onToggleGrid = onToggleGrid
                             )
                         }
 
@@ -541,9 +549,10 @@ fun MainScreen(
             ) {
 
 
+
                 LazyVerticalStaggeredGrid(
 
-                    columns = StaggeredGridCells.Fixed(2),
+                    columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
 
@@ -883,9 +892,11 @@ fun TrashTopAppBarPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
+    isGrid: Boolean = false,
     navigateToSearch: () -> Unit = {},
     onNavigate: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    onToggleGrid: () -> Unit = {}
 ) {
     TopAppBar(
         modifier = Modifier,
@@ -914,9 +925,18 @@ fun MainTopAppBar(
                     )
                 }
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = "Search your note",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
                 )
+                IconButton(onClick = { onToggleGrid() }) {
+                    if (isGrid)
+                        Icon(imageVector = Icons.Filled.GridView, contentDescription = "grid")
+                    else
+                        Icon(imageVector = Icons.Outlined.ViewAgenda, contentDescription = "column")
+
+                }
 
 
             }

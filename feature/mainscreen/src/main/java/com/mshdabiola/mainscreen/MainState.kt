@@ -11,5 +11,6 @@ data class MainState(
     val noteType: NoteTypeUi = NoteTypeUi(),
     val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
     val labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList(),
-    val messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList()
+    val messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
+    val isGrid: Boolean = true
 )
