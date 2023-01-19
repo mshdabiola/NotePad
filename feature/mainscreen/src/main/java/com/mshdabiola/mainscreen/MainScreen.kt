@@ -931,7 +931,7 @@ fun MainTopAppBar(
                     textAlign = TextAlign.Center
                 )
                 IconButton(onClick = { onToggleGrid() }) {
-                    if (isGrid)
+                    if (!isGrid)
                         Icon(imageVector = Icons.Filled.GridView, contentDescription = "grid")
                     else
                         Icon(imageVector = Icons.Outlined.ViewAgenda, contentDescription = "column")
