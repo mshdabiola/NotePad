@@ -37,6 +37,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -87,6 +88,7 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
+import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -204,7 +206,7 @@ fun MainScreen(
 
     RenameLabelAlertDialog(
         show = showRenameLabel,
-        label = (mainState.value.noteType as? NoteTypeUi.LABEL)?.name ?: "",
+        label = (mainState.value.noteType.type).name,
         onDismissRequest = { showRenameLabel = false },
         onChangeName = mainViewModel::renameLabel
     )
@@ -228,7 +230,7 @@ fun MainScreen(
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
     photoUri: (Long) -> Uri = { Uri.EMPTY },
-    currentNoteType: NoteTypeUi = NoteTypeUi.NOTE,
+    currentNoteType: NoteTypeUi = NoteTypeUi(),
     onNavigationNoteType: (NoteTypeUi) -> Unit = {},
     navigateToSearch: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
@@ -401,8 +403,8 @@ fun MainScreen(
                     )
                 } else {
 //
-                    when (currentNoteType) {
-                        is NoteTypeUi.LABEL -> {
+                    when (currentNoteType.type) {
+                        NoteType.LABEL -> {
                             LabelTopAppBar(
                                 label = labels.single { it.id == currentNoteType.id }.label,
                                 onSearch = navigateToSearch,
@@ -413,7 +415,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteTypeUi.TRASH -> {
+                        NoteType.TRASH -> {
                             TrashTopAppBar(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
@@ -421,7 +423,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteTypeUi.NOTE -> {
+                        NoteType.NOTE -> {
                             MainTopAppBar(
                                 navigateToSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
@@ -429,7 +431,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteTypeUi.REMAINDER -> {
+                        NoteType.REMAINDER -> {
                             ArchiveTopAppBar(
                                 name = "Remainder",
                                 onSearch = navigateToSearch,
@@ -439,7 +441,7 @@ fun MainScreen(
                                 )
                         }
 
-                        NoteTypeUi.ARCHIVE -> {
+                        NoteType.ARCHIVE -> {
                             ArchiveTopAppBar(
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
@@ -520,7 +522,11 @@ fun MainScreen(
 
                     },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { navigateToEdit(-1, "", 0) }) {
+                        FloatingActionButton(
+                            onClick = { navigateToEdit(-1, "", 0) },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            elevation = FloatingActionButtonDefaults.elevation()
+                        ) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
                     }

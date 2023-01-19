@@ -92,7 +92,6 @@ import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toTime
@@ -101,6 +100,7 @@ import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -372,7 +372,7 @@ fun EditScreen(
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
-                            painter = painterResource(id = if (notepad.note.noteType == NoteTypeUi.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive),
+                            painter = painterResource(id = if (notepad.note.noteType.type == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive),
                             contentDescription = "archive"
                         )
                     }

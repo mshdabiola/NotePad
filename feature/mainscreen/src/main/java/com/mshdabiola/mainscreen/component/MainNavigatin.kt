@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -42,7 +43,7 @@ import kotlinx.collections.immutable.toImmutableList
 fun MainNavigation(
 
     onNavigation: (NoteTypeUi) -> Unit = {},
-    currentType: NoteTypeUi = NoteTypeUi.NOTE,
+    currentType: NoteTypeUi = NoteTypeUi(),
     navigateToLevel: (Boolean) -> Unit = {},
     labels: ImmutableList<LabelUiState>
 
@@ -68,15 +69,15 @@ fun MainNavigation(
                     Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Notes") },
-                selected = currentType == NoteTypeUi.NOTE,
-                onClick = { onNavigation(NoteTypeUi.NOTE) })
+                selected = currentType.type == NoteType.NOTE,
+                onClick = { onNavigation(NoteTypeUi()) })
             NavigationDrawerItem(
                 icon = {
                     Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Reminders") },
-                selected = currentType == NoteTypeUi.REMAINDER,
-                onClick = { onNavigation(NoteTypeUi.REMAINDER) })
+                selected = currentType.type == NoteType.REMAINDER,
+                onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) })
             Divider(modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp))
@@ -103,8 +104,8 @@ fun MainNavigation(
                         )
                     },
                     label = { Text(text = it.label) },
-                    selected = currentType is NoteTypeUi.LABEL && currentType.id == it.id,
-                    onClick = { onNavigation(NoteTypeUi.LABEL(it.id, it.label)) })
+                    selected = currentType.type == NoteType.LABEL && currentType.id == it.id,
+                    onClick = { onNavigation(NoteTypeUi(NoteType.LABEL, it.id)) })
             }
             NavigationDrawerItem(
                 icon = {
@@ -122,16 +123,16 @@ fun MainNavigation(
                     Icon(painterResource(id = NoteIcon.Archive), contentDescription = "")
                 },
                 label = { Text(text = "Archive") },
-                selected = currentType == NoteTypeUi.ARCHIVE,
-                onClick = { onNavigation(NoteTypeUi.ARCHIVE) })
+                selected = currentType.type == NoteType.ARCHIVE,
+                onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) })
 
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
                 label = { Text(text = "Trash") },
-                selected = currentType == NoteTypeUi.TRASH,
-                onClick = { onNavigation(NoteTypeUi.TRASH) })
+                selected = currentType.type == NoteType.TRASH,
+                onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) })
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Settings, contentDescription = "")

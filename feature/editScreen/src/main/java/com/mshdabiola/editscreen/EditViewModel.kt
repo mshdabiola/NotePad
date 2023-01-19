@@ -31,6 +31,7 @@ import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
@@ -425,18 +426,18 @@ class EditViewModel @Inject constructor(
     }
 
     fun onArchive() {
-        notePadUiState = if (notePadUiState.note.noteType == NoteTypeUi.ARCHIVE) {
-            val note = notePadUiState.note.copy(noteType = NoteTypeUi.NOTE)
+        notePadUiState = if (notePadUiState.note.noteType.type == NoteType.ARCHIVE) {
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi())
             notePadUiState.copy(note = note)
         } else {
-            val note = notePadUiState.note.copy(noteType = NoteTypeUi.ARCHIVE)
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.ARCHIVE))
             notePadUiState.copy(note = note)
         }
     }
 
     fun onDelete() {
 
-        val note = notePadUiState.note.copy(noteType = NoteTypeUi.TRASH)
+        val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.TRASH))
         notePadUiState = notePadUiState.copy(note = note)
     }
 
