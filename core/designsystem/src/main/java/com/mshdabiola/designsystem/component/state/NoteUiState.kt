@@ -1,12 +1,13 @@
 package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.Note
+import kotlinx.datetime.Clock
 
 data class NoteUiState(
     val id: Long = -1,
     val title: String = "",
     val detail: String = "",
-    val editDate: Long = 0,
+    val editDate: Long = Clock.System.now().toEpochMilliseconds(),
     val isCheck: Boolean = false,
     val color: Int = -1,
     val background: Int = -1,

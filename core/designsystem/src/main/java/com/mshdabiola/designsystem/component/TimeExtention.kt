@@ -50,3 +50,38 @@ fun Long.toDateString(): String {
 
     return datestring
 }
+
+fun Long.toTimeAndDate(): String {
+    val instant =
+        Instant.fromEpochMilliseconds(this)
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+
+    val dateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+
+
+
+    return when {
+        today == dateTime.date -> {
+            val hour = dateTime.hour % 12L
+            val a = if (dateTime.hour > 11) "PM" else "AM"
+            "%02d : %02d %s".format(hour, dateTime.minute, a)
+        }
+
+        today.minus(dateTime.date).years > 0 -> {
+            "${
+                dateTime.month.name.substring(0..2).lowercase().replaceFirstChar { it.uppercase() }
+            } ${dateTime.dayOfMonth} ${dateTime.year}"
+        }
+
+        else -> {
+
+            "${
+                dateTime.month.name.substring(0..2).lowercase().replaceFirstChar { it.uppercase() }
+            } ${dateTime.dayOfMonth}"
+        }
+    }
+
+
+}

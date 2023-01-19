@@ -95,6 +95,7 @@ import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toTime
+import com.mshdabiola.designsystem.component.toTimeAndDate
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
@@ -105,6 +106,10 @@ import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlin.time.ExperimentalTime
 
 
 @Composable
@@ -280,6 +285,7 @@ fun EditScreen(
     navigateToGallery: (Long, Long) -> Unit = { i, j -> },
     navigateToDrawing: (Long, Long) -> Unit = { i, j -> },
 ) {
+
 
     var expand by remember {
         mutableStateOf(false)
@@ -619,7 +625,7 @@ fun EditScreen(
 
             }
 
-            Row(Modifier.fillMaxWidth()) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { moreOptions() }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
@@ -632,8 +638,13 @@ fun EditScreen(
                         contentDescription = ""
                     )
                 }
-                Row(Modifier.weight(1f)) {
-
+                Row(
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 32.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Edited ${notepad.note.editDate.toTimeAndDate()}")
                 }
                 IconButton(onClick = { noteOption() }) {
                     Icon(
@@ -649,6 +660,7 @@ fun EditScreen(
 }
 
 
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 fun EditScreenPreview() {
@@ -657,7 +669,15 @@ fun EditScreenPreview() {
             note = NoteUiState(
                 color = 1,
                 background = 1,
-                reminder = Clock.System.now().toEpochMilliseconds(),
+                editDate = LocalDateTime(
+                    2022,
+                    1,
+                    3,
+                    4,
+                    6,
+                    5,
+                    4
+                ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
                 interval = 1,
                 isCheck = true
             ),
