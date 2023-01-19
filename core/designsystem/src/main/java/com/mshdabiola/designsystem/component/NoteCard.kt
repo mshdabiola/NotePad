@@ -139,6 +139,7 @@ fun NoteCard(
                 if (!notePad.isImageOnly()) {
                     Column(
                         Modifier
+                            .fillMaxWidth()
                             .padding(8.dp)
                     ) {
                         Text(
