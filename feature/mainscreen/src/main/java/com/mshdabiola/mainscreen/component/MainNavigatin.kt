@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,7 +53,8 @@ fun MainNavigation(
     onNavigation: (NoteTypeUi) -> Unit = {},
     currentType: NoteTypeUi = NoteTypeUi(),
     navigateToLevel: (Boolean) -> Unit = {},
-    labels: ImmutableList<LabelUiState>
+    labels: ImmutableList<LabelUiState>,
+    navigateToAbout: () -> Unit = {}
 
 ) {
     Surface(
@@ -164,20 +164,22 @@ fun MainNavigation(
                 label = { Text(text = "Trash") },
                 selected = currentType.type == NoteType.TRASH,
                 onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) })
-            NavigationDrawerItem(
-                icon = {
-                    Icon(Icons.Outlined.Settings, contentDescription = "")
-                },
-                label = { Text(text = "Setting") },
-                selected = false,
-                onClick = { })
+//            NavigationDrawerItem(
+//                icon = {
+//                    Icon(Icons.Outlined.Settings, contentDescription = "")
+//                },
+//                label = { Text(text = "Setting") },
+//                selected = false,
+//                onClick = { })
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Info, contentDescription = "")
                 },
-                label = { Text(text = "Help & feedback") },
+                label = { Text(text = "About") },
                 selected = false,
-                onClick = { })
+                onClick = {
+                    navigateToAbout()
+                })
 
 
         }
@@ -195,12 +197,12 @@ fun MainNavigationPreview() {
                 LabelUiState(id = 7955L, label = "Gillian"),
                 LabelUiState(id = 126L, label = "Laneisha"),
                 LabelUiState(id = 7955L, label = "Gillian"),
-                LabelUiState(id = 126L, label = "Laneisha"),
-                LabelUiState(id = 7955L, label = "Gillian"),
-                LabelUiState(id = 126L, label = "Laneisha"),
-                LabelUiState(id = 7955L, label = "Gillian"),
-                LabelUiState(id = 126L, label = "Laneisha"),
-            ).toImmutableList()
+//                LabelUiState(id = 126L, label = "Laneisha"),
+//                LabelUiState(id = 7955L, label = "Gillian"),
+//                LabelUiState(id = 126L, label = "Laneisha"),
+//                LabelUiState(id = 7955L, label = "Gillian"),
+//                LabelUiState(id = 126L, label = "Laneisha"),
+            ).toImmutableList(),
         )
     }
 

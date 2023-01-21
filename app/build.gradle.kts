@@ -68,6 +68,7 @@ dependencies {
     implementation(project(":feature:searchscreen"))
     implementation(project(":feature:gallery"))
     implementation(project(":feature:drawing"))
+    implementation(project(":feature:about"))
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)

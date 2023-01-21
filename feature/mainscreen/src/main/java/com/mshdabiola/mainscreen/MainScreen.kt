@@ -108,7 +108,8 @@ fun MainScreen(
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit,
     navigateToSearch: () -> Unit,
-    navigateToSelectLevel: (IntArray) -> Unit
+    navigateToSelectLevel: (IntArray) -> Unit,
+    navigateToAbout: () -> Unit
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
@@ -175,7 +176,8 @@ fun MainScreen(
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
-        onToggleGrid = mainViewModel::onToggleGrid
+        onToggleGrid = mainViewModel::onToggleGrid,
+        navigateToAbout = navigateToAbout
 //        onMessageDelive = mainViewModel::onMessageDeliver
 //
     )
@@ -257,7 +259,8 @@ fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    onToggleGrid: () -> Unit = {}
+    onToggleGrid: () -> Unit = {},
+    navigateToAbout: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -386,7 +389,14 @@ fun MainScreen(
                     onNavigationNoteType(it)
                     coroutineScope.launch { drawerState.close() }
                 },
-                navigateToLevel = navigateToLevel
+                navigateToLevel = {
+                    navigateToLevel(it)
+                    coroutineScope.launch { drawerState.close() }
+                },
+                navigateToAbout = {
+                    navigateToAbout()
+                    coroutineScope.launch { drawerState.close() }
+                }
 
             )
         },
@@ -636,7 +646,7 @@ fun MainScreenPreview() {
 
             )
                 .toImmutableList(),
-            labels = emptyList<LabelUiState>().toImmutableList(),
+            labels = emptyList<LabelUiState>().toImmutableList()
         )
     }
 

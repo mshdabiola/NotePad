@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.mshdabiola.about"
 }
+dependencies {
+    implementation(libs.kotlinx.datetime)
+   
+}
