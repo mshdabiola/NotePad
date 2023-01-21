@@ -83,6 +83,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -366,7 +367,7 @@ fun EditScreen(
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back button"
+                            contentDescription = "back"
                         )
                     }
                 },
@@ -404,7 +405,8 @@ fun EditScreen(
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .testTag("edit:lazy"),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 if (notepad.images.isNotEmpty()) {
@@ -429,7 +431,7 @@ fun EditScreen(
                                             }
                                             .weight(1f)
                                             .height(200.dp),
-                                        model = it.imageName, contentDescription = "",
+                                        model = it.imageName, contentDescription = "note image",
                                         contentScale = ContentScale.Crop
                                     )
                                 }
@@ -460,6 +462,7 @@ fun EditScreen(
                             modifier = Modifier
                                 .padding(0.dp)
                                 .weight(1f)
+                                .testTag("title")
 
                         )
                         if (notepad.note.isCheck) {
@@ -528,6 +531,7 @@ fun EditScreen(
                                 .fillMaxWidth()
                                 .imePadding()
                                 .focusRequester(subjectFocus)
+                                .testTag("detail")
 
 
                         )
@@ -634,16 +638,20 @@ fun EditScreen(
             }
 
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { moreOptions() }) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:more"),
+                    onClick = { moreOptions() }) {
                     Icon(
                         imageVector = Icons.Outlined.AddBox,
-                        contentDescription = ""
+                        contentDescription = "more note"
                     )
                 }
-                IconButton(onClick = { onColorClick() }) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:color"),
+                    onClick = { onColorClick() }) {
                     Icon(
                         imageVector = Icons.Outlined.ColorLens,
-                        contentDescription = ""
+                        contentDescription = "color and background"
                     )
                 }
                 Row(
@@ -654,10 +662,12 @@ fun EditScreen(
                 ) {
                     Text(text = "Edited ${notepad.note.editDate.toTimeAndDate()}")
                 }
-                IconButton(onClick = { noteOption() }) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:option"),
+                    onClick = { noteOption() }) {
                     Icon(
                         imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = ""
+                        contentDescription = "note options"
                     )
                 }
             }

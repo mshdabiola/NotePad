@@ -1,6 +1,10 @@
 package com.mshdabiola.playnotepad.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.mshdabiola.about.aboutScreen
@@ -18,6 +22,7 @@ import com.mshdabiola.searchscreen.searchScreen
 import com.mshdabiola.selectlabelscreen.selectLabelScreen
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NotePadAppNavHost(
     navController: NavHostController,
@@ -29,7 +34,10 @@ fun NotePadAppNavHost(
     startDestination: String = mainNavigationRoute,
     navigateToSelectLevel: (IntArray) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        modifier = Modifier.semantics { testTagsAsResourceId = true },
+        navController = navController, startDestination = startDestination
+    ) {
         mainScreen(
             navigateToEditScreen = navigateToEdit,
             navigateToLevel = navigateToLevel,

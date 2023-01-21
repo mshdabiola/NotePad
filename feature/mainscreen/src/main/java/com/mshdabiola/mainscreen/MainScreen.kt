@@ -79,6 +79,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -481,34 +482,40 @@ fun MainScreen(
                 BottomAppBar(
                     actions = {
 
-                        IconButton(onClick = { navigateToEdit(-2, "", 0) }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:check"),
+                            onClick = { navigateToEdit(-2, "", 0) }) {
                             Icon(
                                 imageVector = Icons.Outlined.CheckBox,
-                                contentDescription = "note check"
+                                contentDescription = "add note check"
                             )
                         }
 
-                        IconButton(onClick = {
-                            navigateToEdit(-5, "", 0)
-                        }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:draw"),
+                            onClick = {
+                                navigateToEdit(-5, "", 0)
+                            }) {
                             Icon(
                                 imageVector = Icons.Outlined.Brush,
-                                contentDescription = "note drawing"
+                                contentDescription = "add note drawing"
                             )
                         }
 
 
-                        IconButton(onClick = {
-                            //navigateToEdit(-4, "", Uri.EMPTY)
-                            if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                                PackageManager.PERMISSION_GRANTED
-                            ) {
-                                voiceLauncher.launch(
-                                    Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                        putExtra(
-                                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                                        )
+                        IconButton(
+                            modifier = Modifier.testTag("main:voice"),
+                            onClick = {
+                                //navigateToEdit(-4, "", Uri.EMPTY)
+                                if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                                    PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    voiceLauncher.launch(
+                                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                            putExtra(
+                                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                            )
                                         putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
                                         putExtra(
                                             "android.speech.extra.GET_AUDIO_FORMAT",
@@ -520,28 +527,31 @@ fun MainScreen(
 
                             } else {
                                 audioPermission.launch(Manifest.permission.RECORD_AUDIO)
-                            }
+                                }
 
 
-                        }) {
+                            }) {
                             Icon(
                                 imageVector = Icons.Outlined.KeyboardVoice,
-                                contentDescription = "note check"
+                                contentDescription = "add note voice"
                             )
                         }
 
-                        IconButton(onClick = {//
-                            showImageDialog = true
-                        }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:image"),
+                            onClick = {//
+                                showImageDialog = true
+                            }) {
                             Icon(
                                 imageVector = Icons.Outlined.Image,
-                                contentDescription = "note check"
+                                contentDescription = "add note image"
                             )
                         }
 
                     },
                     floatingActionButton = {
                         FloatingActionButton(
+                            modifier = Modifier.testTag("main:float"),
                             onClick = { navigateToEdit(-1, "", 0) },
                             containerColor = MaterialTheme.colorScheme.primary,
                             elevation = FloatingActionButtonDefaults.elevation()
@@ -562,7 +572,7 @@ fun MainScreen(
 
 
                 LazyVerticalStaggeredGrid(
-
+                    modifier = Modifier.testTag("main:lazy"),
                     columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -676,36 +686,50 @@ fun SelectTopBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onClear) {
-                Icon(imageVector = Icons.Default.Clear, contentDescription = "clear")
+                Icon(imageVector = Icons.Default.Clear, contentDescription = "clear note")
             }
         },
         title = {
             Text(text = "$selectNumber")
         },
         actions = {
-            IconButton(onClick = onPin) {
+            IconButton(
+                modifier = Modifier.testTag("main:pin"),
+                onClick = onPin
+            ) {
                 Icon(
                     imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin,//painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
-                    contentDescription = "pin"
+                    contentDescription = "pin note"
                 )
             }
-            IconButton(onClick = onNoti) {
+            IconButton(
+                modifier = Modifier.testTag("main:notification"),
+                onClick = onNoti
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
                     contentDescription = "notification"
                 )
             }
-            IconButton(onClick = onColor) {
+            IconButton(
+                modifier = Modifier.testTag("main:color"),
+                onClick = onColor
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.ColorLens,
                     contentDescription = "color"
                 )
             }
-            IconButton(onClick = onLabel) {
+            IconButton(
+                modifier = Modifier.testTag("main:label"),
+                onClick = onLabel
+            ) {
                 Icon(imageVector = Icons.Outlined.Label, contentDescription = "Label")
             }
             Box {
-                IconButton(onClick = { showDropDown = true }) {
+                IconButton(
+                    modifier = Modifier.testTag("main:more"),
+                    onClick = { showDropDown = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
 
                 }
@@ -715,7 +739,8 @@ fun SelectTopBar(
                             showDropDown = false
                             onArchive()
                         })
-                    DropdownMenuItem(text = { Text(text = "Delete") },
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete") },
                         onClick = {
                             showDropDown = false
                             onDelete()
