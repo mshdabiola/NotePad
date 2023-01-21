@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,11 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
@@ -46,14 +47,14 @@ fun ReminderCard(
             if (interval > 0) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    painter = painterResource(id = NoteIcon.Repeat),
+                    imageVector = Icons.Default.Repeat,
                     contentDescription = ""
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             } else {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    painter = painterResource(id = NoteIcon.Alarm),
+                    imageVector = Icons.Outlined.Alarm,
                     contentDescription = ""
                 )
                 Spacer(modifier = Modifier.width(2.dp))

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.FormatColorReset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
@@ -71,7 +71,7 @@ fun ColorDialog(
                                 )
                             } else {
                                 Icon(
-                                    painter = painterResource(id = NoteIcon.ColorNotSupported),
+                                    imageVector = Icons.Outlined.FormatColorReset,
                                     contentDescription = "done",
                                     tint = Color.Gray,
                                     modifier = Modifier.padding(4.dp)

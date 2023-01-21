@@ -29,7 +29,16 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.ColorLens
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
@@ -68,11 +77,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,7 +93,6 @@ import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.Notify
-import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
@@ -468,8 +473,7 @@ fun MainScreen(
 
                         IconButton(onClick = { navigateToEdit(-2, "", 0) }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Check),
+                                imageVector = Icons.Outlined.CheckBox,
                                 contentDescription = "note check"
                             )
                         }
@@ -478,8 +482,7 @@ fun MainScreen(
                             navigateToEdit(-5, "", 0)
                         }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Brush),
+                                imageVector = Icons.Outlined.Brush,
                                 contentDescription = "note drawing"
                             )
                         }
@@ -512,8 +515,7 @@ fun MainScreen(
 
                         }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Voice),
+                                imageVector = Icons.Outlined.KeyboardVoice,
                                 contentDescription = "note check"
                             )
                         }
@@ -522,8 +524,7 @@ fun MainScreen(
                             showImageDialog = true
                         }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Image),
+                                imageVector = Icons.Outlined.Image,
                                 contentDescription = "note check"
                             )
                         }
@@ -676,24 +677,24 @@ fun SelectTopBar(
         actions = {
             IconButton(onClick = onPin) {
                 Icon(
-                    painter = painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                    imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin,//painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
                     contentDescription = "pin"
                 )
             }
             IconButton(onClick = onNoti) {
                 Icon(
-                    painter = painterResource(id = NoteIcon.Notification),
+                    imageVector = Icons.Outlined.Notifications,
                     contentDescription = "notification"
                 )
             }
             IconButton(onClick = onColor) {
                 Icon(
-                    painter = painterResource(id = NoteIcon.ColorLens),
+                    imageVector = Icons.Outlined.ColorLens,
                     contentDescription = "color"
                 )
             }
             IconButton(onClick = onLabel) {
-                Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "Label")
+                Icon(imageVector = Icons.Outlined.Label, contentDescription = "Label")
             }
             Box {
                 IconButton(onClick = { showDropDown = true }) {
@@ -808,9 +809,9 @@ fun ArchiveTopAppBar(
     onSearch: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 ) {
-    var showDropDown by remember {
-        mutableStateOf(false)
-    }
+//    var showDropDown by remember {
+//        mutableStateOf(false)
+//    }
 
     TopAppBar(
         navigationIcon = {

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,13 +31,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
-import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -192,7 +191,7 @@ fun LabelTextField(
                 }
             } else {
 
-                Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "add")
+                Icon(imageVector = Icons.Outlined.Label, contentDescription = "add")
 
             }
 

@@ -14,8 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.Lightbulb
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,12 +32,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -66,14 +68,15 @@ fun MainNavigation(
             Spacer(modifier = Modifier.height(16.dp))
             NavigationDrawerItem(
                 icon = {
-                    Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
+                    Icon(imageVector = Icons.Outlined.Lightbulb, contentDescription = "note")
                 },
                 label = { Text(text = "Notes") },
                 selected = currentType.type == NoteType.NOTE,
                 onClick = { onNavigation(NoteTypeUi()) })
             NavigationDrawerItem(
                 icon = {
-                    Icon(painter = painterResource(id = NoteIcon.Archive), contentDescription = "")
+
+                    Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
                 label = { Text(text = "Reminders") },
                 selected = currentType.type == NoteType.REMAINDER,
@@ -99,7 +102,7 @@ fun MainNavigation(
                 NavigationDrawerItem(
                     icon = {
                         Icon(
-                            painter = painterResource(id = NoteIcon.Label),
+                            imageVector = Icons.Outlined.Label,
                             contentDescription = ""
                         )
                     },
@@ -120,7 +123,7 @@ fun MainNavigation(
 
             NavigationDrawerItem(
                 icon = {
-                    Icon(painterResource(id = NoteIcon.Archive), contentDescription = "")
+                    Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
                 label = { Text(text = "Archive") },
                 selected = currentType.type == NoteType.ARCHIVE,

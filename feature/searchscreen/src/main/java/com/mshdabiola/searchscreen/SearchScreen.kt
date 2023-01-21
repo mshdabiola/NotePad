@@ -21,6 +21,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardVoice
+import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,8 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,7 +57,6 @@ import com.mshdabiola.designsystem.component.NoteCard
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -204,17 +211,17 @@ fun EmptySearchScreen(
 
     val labelPair = remember(labels) {
 
-        labels.map { Pair(it, NoteIcon.Label) }
+        labels.map { Pair(it, Icons.Outlined.Label) }
 
     }
     LabelBox(
         title = "Types",
         labelIcon = listOf(
-            Pair("Reminders", NoteIcon.Notification),
-            Pair("Lists", NoteIcon.Check),
-            Pair("Images", NoteIcon.Image),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Drawings", NoteIcon.Brush),
+            Pair("Reminders", Icons.Outlined.Notifications),
+            Pair("Lists", Icons.Outlined.CheckBox),
+            Pair("Images", Icons.Outlined.Image),
+            Pair("Voice", Icons.Outlined.KeyboardVoice),
+            Pair("Drawings", Icons.Outlined.Brush),
 
             ),
         onItemClick = onItemTypeClick
@@ -241,7 +248,7 @@ fun EmptyScreenPreview() {
 @Composable
 fun LabelBox(
     title: String = "Label",
-    labelIcon: List<Pair<String, Int>> = emptyList(),
+    labelIcon: List<Pair<String, ImageVector>> = emptyList(),
     onItemClick: (Int) -> Unit = {}
 ) {
     val configuration = LocalConfiguration.current
@@ -305,13 +312,13 @@ fun LabelBox(
 fun LabelBoxPreview() {
     LabelBox(
         labelIcon = listOf(
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
-            Pair("Voice", NoteIcon.Voice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
+            Pair("Voice", Icons.Default.KeyboardVoice),
 
             )
     )
@@ -320,7 +327,7 @@ fun LabelBoxPreview() {
 @Composable
 fun SearchLabel(
     modifier: Modifier = Modifier,
-    iconId: Int = NoteIcon.Label,
+    iconId: ImageVector = Icons.Default.Label,
     name: String = "Label"
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -333,7 +340,7 @@ fun SearchLabel(
         ) {
 
             Icon(
-                painter = painterResource(id = iconId),
+                imageVector = iconId,
                 contentDescription = "label icon",
                 modifier = Modifier.padding(16.dp)
             )

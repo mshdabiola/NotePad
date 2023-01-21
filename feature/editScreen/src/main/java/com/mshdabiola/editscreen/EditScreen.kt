@@ -37,8 +37,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.AddBox
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.NotificationAdd
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -74,7 +83,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -366,19 +374,19 @@ fun EditScreen(
                 actions = {
                     IconButton(onClick = { pinNote() }) {
                         Icon(
-                            painter = painterResource(id = if (notepad.note.isPin) NoteIcon.PinFill else NoteIcon.Pin),
+                            imageVector = if (notepad.note.isPin) Icons.Default.PushPin else Icons.Outlined.PushPin,
                             contentDescription = "pin"
                         )
                     }
                     IconButton(onClick = { onNotification() }) {
                         Icon(
-                            painter = painterResource(id = NoteIcon.Alarm),
+                            imageVector = Icons.Outlined.NotificationAdd,
                             contentDescription = "notification"
                         )
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
-                            painter = painterResource(id = if (notepad.note.noteType.type == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive),
+                            imageVector = if (notepad.note.noteType.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
                             contentDescription = "archive"
                         )
                     }
@@ -628,13 +636,13 @@ fun EditScreen(
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { moreOptions() }) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
+                        imageVector = Icons.Outlined.AddBox,
                         contentDescription = ""
                     )
                 }
                 IconButton(onClick = { onColorClick() }) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.ColorLens),
+                        imageVector = Icons.Outlined.ColorLens,
                         contentDescription = ""
                     )
                 }
@@ -801,11 +809,11 @@ fun NoteVoicePlayer(
             Box {
                 if (noteVoiceUiState.isPlaying) {
                     IconButton(onClick = pauseVoice) {
-                        Icon(painterResource(id = NoteIcon.Pause), contentDescription = "pause")
+                        Icon(imageVector = Icons.Outlined.PauseCircle, contentDescription = "pause")
                     }
                 } else {
                     IconButton(onClick = playVoice) {
-                        Icon(painterResource(id = NoteIcon.Play), contentDescription = "play")
+                        Icon(imageVector = Icons.Outlined.PlayCircle, contentDescription = "play")
                     }
                 }
 

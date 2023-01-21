@@ -3,7 +3,9 @@ package com.mshdabiola.editscreen.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,8 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.bottomsheet.ModalBottomSheet
 import com.mshdabiola.bottomsheet.ModalState
@@ -68,7 +68,7 @@ fun NoteOptionBottomSheet(
                 NavigationDrawerItem(
                     icon = {
                         Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Copy),
+                            imageVector = Icons.Outlined.ContentCopy,
                             contentDescription = ""
                         )
                     },
@@ -96,7 +96,7 @@ fun NoteOptionBottomSheet(
                 )
                 NavigationDrawerItem(icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Label),
+                        imageVector = Icons.Outlined.Label,
                         contentDescription = ""
                     )
                 }, label = { Text(text = "Labels") },
