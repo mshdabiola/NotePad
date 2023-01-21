@@ -18,7 +18,6 @@ import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Label
-import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
@@ -32,15 +31,23 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.common.R
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
 fun MainNavigation(
 
@@ -59,16 +66,37 @@ fun MainNavigation(
         Column(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
-                .padding(start = 8.dp)
+                .padding(horizontal = 8.dp)
                 .safeDrawingPadding()
         )
         {
 
-            Text(text = "Note Pad", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Play NotePad",
+                style = MaterialTheme.typography.headlineSmall
+                    .copy(
+                        brush = Brush.horizontalGradient(
+                            0.2f to MaterialTheme.colorScheme.primary,
+                            1f to MaterialTheme.colorScheme.secondary
+                        ),
+                        shadow = Shadow(
+                            color = Color.LightGray,
+                            offset = Offset(4f, 2f),
+                            blurRadius = 1f
+                        )
+                    )
+
+            )
+            Spacer(
+                modifier = Modifier.height(16.dp)
+
+            )
             NavigationDrawerItem(
                 icon = {
-                    Icon(imageVector = Icons.Outlined.Lightbulb, contentDescription = "note")
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.app_icon),
+                        contentDescription = "note"
+                    )
                 },
                 label = { Text(text = "Notes") },
                 selected = currentType.type == NoteType.NOTE,

@@ -564,7 +564,6 @@ fun MainScreen(
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                         }
-                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
                     }
                     items(pinNotePad.first) { notePadUiState ->
                         NoteCard(
@@ -584,7 +583,6 @@ fun MainScreen(
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Other")
                         }
-                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
                     }
                     items(pinNotePad.second) { notePadUiState ->
                         NoteCard(
