@@ -58,6 +58,7 @@ Some highlight features:
 ## Clean architecture with 3 main modules
 
 <img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
+
 - Data (for database, API and preferences code)
 - Domain (for business logic and models)
 - AndroidApp (for UI logic, with MVVM)
@@ -123,7 +124,7 @@ Here are other ways you can help:
 
 * [Report bugs](https://github.com/mshdabiola/Play_NotePad/issues)
 
-[//]: # ( * [Translate the app]&#40;https://poeditor.com/join/project?hash=b2IRyfaJv6&#41;)
+ * [Translate the app](https://poeditor.com/join/project/rdWI3SpnSW)
 
 ## Development
 
@@ -132,11 +133,10 @@ Here are other ways you can help:
 Play Notepad is licensed under the GNU General Public License (GPL-3.0). You can find the license
 text in the `LICENSE` file.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Contact
 
-mshdabiola - [@your_twitter](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
+mshdabiola - [@Mshdabiiola](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
 
 
 
