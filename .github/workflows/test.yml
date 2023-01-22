@@ -2,8 +2,7 @@ name: Deploy to github
 
 on:
   push:
-    tags:
-      - '*'
+    branches: [ "develop" ]
 
 ## 2
 jobs:
@@ -29,10 +28,3 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-      # 4
-      - name: Draft Release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "app/build/outputs/apk/release/*signed.apk"
-          token: ${{ secrets.TOKEN }}
