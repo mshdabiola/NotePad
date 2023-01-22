@@ -10,11 +10,9 @@
 [<img src="/images/ic_launcher-playstore.png" align="left"
 width="200" hspace="10" vspace="10">](/images/ic_launcher-playstore.png)
 
-Play Notepad is a comprehensive note-taking app for Android devices that offers a wide range of
-features to help users stay organized and productive. The app allows users to create, edit and
-organize text notes, set reminders, capture images, record voice, transcribe the voice notes, draw
-images, check notes, search notes, label notes, trash and archive notes, all in one convenient
-place.
+Play Notepad is a versatile note-taking app that allows you to easily capture and organize your
+thoughts, ideas, and tasks. With a variety of features, Play Notepad makes it easy to stay on top of
+your notes and stay organized.
 
 Play NotePad is available on the Google Play Store:
 
@@ -52,12 +50,34 @@ Some highlight features:
 
 - Lazy mode: Automatic scrolling of posts enables you to enjoy amazing posts without moving your
   thumb
+- Easily create and edit text notes.
+- Snap a photo or choose one from your camera roll to attach to a note.
+- Draw freehand sketches and diagrams to annotate your notes.
+- Record audio notes and play them back later.
+- Keep important notes at the top of your list for easy access.
+- Create checklists and keep track of your tasks with checkboxes.
+- Organize your notes by tagging them with labels.
+- Duplicate notes for easy reference.
+- Share your notes with others via email or messaging.
+- Set reminders for notes so you never forget important tasks or events.
+- Delete notes you no longer need.
+- Keep your notes organized by archiving old or completed tasks.
+- Add color to your notes to make them more visually appealing.
+- Add an image to the background of your notes for a more personalized look.
+- View your notes in list or column format for easy reading and editing.
+- Search your notes by keyword label and type.
+- Use the app offline and access your notes at any time.
 
 ## Built With
 
 ## Clean architecture with 3 main modules
 
 <img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
+
+- Declarative UI (with [Jetpack Compose](https://developer.android.com/jetpack/compose))
+    - Compose Navigation (
+      with [Hilt Support](https://developer.android.com/jetpack/compose/libraries#hilt-navigation)
+      and Assisted Inject Example)
 - Data (for database, API and preferences code)
 - Domain (for business logic and models)
 - AndroidApp (for UI logic, with MVVM)
@@ -67,16 +87,12 @@ Some highlight features:
 - Shared Build Logic (
   with [Convention plugins](https://docs.gradle.org/current/samples/sample_convention_plugins.html))
 - Dependency injection (with [Hilt](http://google.github.io/hilt/))
-- Network calls (with [Ktor](https://ktor.io/docs/http-client-engines.html#minimal-version))
 - Reactive programming (
   with [Kotlin Flows](https://kotlinlang.org/docs/reference/coroutines/flow.html))
 - Android architecture components to share ViewModels during configuration changes
 - [Splash Screen](https://developer.android.com/develop/ui/views/launch/splash-screen) Support
-- Google [Material Design](https://material.io/blog/android-material-theme-color) library
-- Declarative UI (with [Jetpack Compose](https://developer.android.com/jetpack/compose))
-    - Compose Navigation (
-      with [Hilt Support](https://developer.android.com/jetpack/compose/libraries#hilt-navigation)
-      and Assisted Inject Example)
+- Google Material 3 [Material Design](https://material.io/blog/android-material-theme-color) library
+
 - Edge To Edge Configuration
 
 [//]: # (## Tests)
@@ -123,7 +139,7 @@ Here are other ways you can help:
 
 * [Report bugs](https://github.com/mshdabiola/Play_NotePad/issues)
 
-[//]: # ( * [Translate the app]&#40;https://poeditor.com/join/project?hash=b2IRyfaJv6&#41;)
+* [Translate the app](https://poeditor.com/join/project/rdWI3SpnSW)
 
 ## Development
 
@@ -132,11 +148,10 @@ Here are other ways you can help:
 Play Notepad is licensed under the GNU General Public License (GPL-3.0). You can find the license
 text in the `LICENSE` file.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Contact
 
-mshdabiola - [@your_twitter](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
+mshdabiola - [@Mshdabiola](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
 
 
 
