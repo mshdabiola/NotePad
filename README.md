@@ -1,8 +1,8 @@
-[![Contributors](https://img.shields.io/github/contributors/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/graphs/contributors)
-[![Forks](https://img.shields.io/github/forks/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/metworks/members)
-[![Stargazers](https://img.shields.io/github/stars/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/stargazers)
-[![Issues](https://img.shields.io/github/issues/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/issues)
-[![License](https://img.shields.io/github/license/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/blob/master/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/metworks/members)
+[![Stargazers](https://img.shields.io/github/stars/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/stargazers)
+[![Issues](https://img.shields.io/github/issues/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/issues)
+[![License](https://img.shields.io/github/license/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/blob/master/LICENSE)
 
 
 # Infinity for Reddit
@@ -29,11 +29,11 @@ Infinity For Reddit is available on the Google Play Store and F-Droid:
 <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
 <br />
-<a href="https://github.com/mshdabiola/Play_NotePad">View Demo</a>
+<a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
     ·
-    <a href="https://github.com/mshdabiola/Play_NotePad/issues">Report Bug</a>
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
     ·
-    <a href="https://github.com/mshdabiola/Play_NotePad/issues">Request Feature</a>
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 
 <details>
@@ -72,6 +72,7 @@ width="200"
 [<img src="images/screenshot3.png" align="center"
 width="200"
     hspace="10" vspace="10">](images/screenshot3.png)
+
 
 Some highlight features:
 - Lazy mode: Automatic scrolling of posts enables you to enjoy amazing posts without moving your thumb
