@@ -1,13 +1,13 @@
-[![Contributors](https://img.shields.io/github/contributors/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/graphs/contributors)
-[![Forks](https://img.shields.io/github/forks/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/metworks/members)
-[![Stargazers](https://img.shields.io/github/stars/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/stargazers)
-[![Issues](https://img.shields.io/github/issues/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/issues)
-[![License](https://img.shields.io/github/license/Wladefant/Android-app-README-Template.svg?style=for-the-badge)](https://github.com/Wladefant/Android-app-README-Template/blob/master/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/metworks/members)
+[![Stargazers](https://img.shields.io/github/stars/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/stargazers)
+[![Issues](https://img.shields.io/github/issues/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/Wladefant/mshdabiola/Play_NotePad/issues)
+[![License](https://img.shields.io/github/license/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/master/LICENSE)
 
 
-# Infinity for Reddit
+# Play NotePad
 
-[<img src="/images/logo.png" align="left"
+[<img src="/images/ic_launcher-playstore.png" align="left"
 width="200" hspace="10" vspace="10">](/images/ic_launcher-playstore.png)
 
 Play Notepad is a comprehensive note-taking app for Android devices that offers a wide range of
@@ -35,13 +35,13 @@ Play NotePad is available on the Google Play Store:
 
 [//]: # (        </a>)
 
-        </p>
+        
 
-<a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+<a href="https://github.com/mshdabiola/Play_NotePad">View Demo</a>
 ·
-<a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+<a href="https://github.com/mshdabiola/Play_NotePad/issues">Report Bug</a>
 ·
-<a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+<a href="https://github.com/mshdabiola/Play_NotePad/issues">Request Feature</a>
   </p>
 
 <details>
@@ -71,7 +71,7 @@ Play NotePad is available on the Google Play Store:
 
 ## About The Project
 
-[<img src="images/screenshot1.png" align="left"
+[<img src="/images/screenshot1.png" align="left"
 width="200"
     hspace="10" vspace="10">](images/screenshot1.png)
 [<img src="images/screenshot2.png" align="center"
@@ -94,7 +94,7 @@ Some highlight features:
 - Domain (for business logic and models)
 - AndroidApp (for UI logic, with MVVM)
 
- <img src="images/AndroidTemplate-CleanArchitecture.jpg" alt="ArchiTecture logo"/>
+ <img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
 
 ## Tests
 
