@@ -25,15 +25,6 @@ Play NotePad is available on the Google Play Store:
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>  
 
-[//]: # (<a href="https://f-droid.org/packages/ml.docilealligator.infinityforreddit/">)
-
-[//]: # (    <img alt="Get it on F-Droid")
-
-[//]: # (        height="70")
-
-[//]: # (        src="https://f-droid.org/badge/get-it-on.png" />)
-
-[//]: # (        </a>)
 
         
 
@@ -44,30 +35,6 @@ Play NotePad is available on the Google Play Store:
 <a href="https://github.com/mshdabiola/Play_NotePad/issues">Request Feature</a>
   </p>
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
 
 ## About The Project
 
@@ -90,23 +57,10 @@ Some highlight features:
 
 ## Clean architecture with 3 main modules
 
+<img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
 - Data (for database, API and preferences code)
 - Domain (for business logic and models)
 - AndroidApp (for UI logic, with MVVM)
-
- <img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
-
-## Tests
-
-- [Mockk](https://mockk.io/) library
-- Unit tests
-- Application tests
-    - example on how to work with tests
-- Activity tests (with [Compose Testing](https://developer.android.com/jetpack/compose/testing))
-    - example on how to work with coroutine scopes in tests
-
-## Other useful features
-
 - This version brings [Modularization](https://developer.android.com/topic/modularization)
 - Version Management (
   with [Version catalog](https://docs.gradle.org/current/userguide/platforms.html))
@@ -125,6 +79,20 @@ Some highlight features:
       and Assisted Inject Example)
 - Edge To Edge Configuration
 
+[//]: # (## Tests)
+
+[//]: # (- [Mockk]&#40;https://mockk.io/&#41; library)
+
+[//]: # (- Unit tests)
+
+[//]: # (- Application tests)
+
+[//]: # (    - example on how to work with tests)
+
+[//]: # (- Activity tests &#40;with [Compose Testing]&#40;https://developer.android.com/jetpack/compose/testing&#41;&#41;)
+
+[//]: # (    - example on how to work with coroutine scopes in tests)
+
 ## Contribution
 
 1. Contributions are what make the open source community such an amazing place to learn, inspire,
@@ -140,7 +108,10 @@ Some highlight features:
 
 Don't forget to give the project a star! Thanks again!
 
-You can use [Github Discussions](https://github.com/Docile-Alligator/Infinity-For-Reddit/discussions) for discussions about the app or just questions in general. There you can also submit Feature Requests (please read the instructions on how to submit a feature request first!) or if you are a developer fork this project and create a pull request
+You can use [Github Discussions](https://github.com/mshdabiola/Play_NotePad/discussions) for
+discussions about the app or just questions in general. There you can also submit Feature Requests (
+please read the instructions on how to submit a feature request first!) or if you are a developer
+fork this project and create a pull request
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -150,18 +121,16 @@ You can use [Github Discussions](https://github.com/Docile-Alligator/Infinity-Fo
 
 Here are other ways you can help:
 
-* [Report bugs](https://github.com/Docile-Alligator/Infinity-For-Reddit/issues)
- * [Translate the app](https://poeditor.com/join/project?hash=b2IRyfaJv6)
+* [Report bugs](https://github.com/mshdabiola/Play_NotePad/issues)
 
- ## Development
+[//]: # ( * [Translate the app]&#40;https://poeditor.com/join/project?hash=b2IRyfaJv6&#41;)
 
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
+## Development
 
 ## License
 
-AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the `LICENSE` file.
+Play Notepad is licensed under the GNU General Public License (GPL-3.0). You can find the license
+text in the `LICENSE` file.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -169,9 +138,6 @@ AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can f
 
 mshdabiola - [@your_twitter](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
 
-Project
-Link: [https://github.com/Docile-Alligator/Infinity-For-Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Acknowledgments
