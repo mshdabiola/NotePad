@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.FormatColorReset
+import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +52,7 @@ fun ColorAndImageBottomSheet(
 
     ) {
 
-    val coroutineScope = rememberCoroutineScope()
+    rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
     } else {
@@ -94,7 +96,7 @@ fun ColorAndImageBottomSheet(
                                 )
                             } else {
                                 Icon(
-                                    painter = painterResource(id = NoteIcon.ColorNotSupported),
+                                    imageVector = Icons.Outlined.FormatColorReset,
                                     contentDescription = "done",
                                     tint = Color.Gray,
                                     modifier = Modifier.padding(4.dp)
@@ -143,7 +145,7 @@ fun ColorAndImageBottomSheet(
                                     )
                                     .size(56.dp)
                                     .padding(8.dp),
-                                painter = painterResource(id = NoteIcon.ImageNoteSupported),
+                                imageVector = Icons.Outlined.ImageNotSupported,
                                 contentDescription = ""
                             )
                             if (-1 == currentImage) {

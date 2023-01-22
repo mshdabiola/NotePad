@@ -1,0 +1,93 @@
+name: Deploy to Play Store and Firebase
+
+on:
+  push:
+    branches: [ "test" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release_bundle
+          path: app/release/app-release.aab
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mapping
+          path: app/release/mapping.txt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: distribution
+
+  deploy-play-store:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      # 1
+      - uses: actions/download-artifact@v3
+        with:
+          name: release_bundle
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: mapping
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: distribution
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      # 2
+      - name: Publish to Play Store internal test track
+        uses: r0adkll/upload-google-play@v1.0.18
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          # 3
+          packageName: com.mshdabiola.ludo
+          releaseFiles: app-release.aab
+          track: internal
+          userFraction: 0.50
+          status: inProgress
+          inAppUpdatePriority: 2
+          mappingFile: mapping.txt
+          whatsNewDirectory: whatsnew
+
+  deploy-firebase:
+    # 1
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      # 2
+      - uses: actions/download-artifact@v3
+        with:
+          name: release_bundle
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: distribution
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+      #3
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_CREDENTIALS_FILE_CONTENT }}
+          groups: QA
+          file: app-release.aab
+          releaseNotesFile: whatsnew/whatsnew-en-US

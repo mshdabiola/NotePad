@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,13 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.bottomsheet.ModalBottomSheet
 import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.bottomsheet.rememberModalState
-import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -88,7 +89,7 @@ fun NotificationBottomSheet(
                     top = 8.dp
                 )
             ) {
-                NotificationItem(icon = NoteIcon.Time,
+                NotificationItem(
                     title = if (pastToday) "Tomorrow morning" else "Later today",
                     time = if (pastToday) morning.toTimeString() else evening.toTimeString(),
                     onClick = {
@@ -104,7 +105,6 @@ fun NotificationBottomSheet(
                     }
                 )
                 NotificationItem(
-                    icon = NoteIcon.Time,
                     title = if (pastToday) "Tomorrow evening" else "Tomorrow morning",
                     time = if (pastToday) evening.toTimeString() else morning.toTimeString(),
                     onClick = {
@@ -122,7 +122,6 @@ fun NotificationBottomSheet(
 
                 )
                 NotificationItem(
-                    icon = NoteIcon.Time,
                     title = "$dayOfWeek morning",
                     time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
                     onClick = {
@@ -133,7 +132,6 @@ fun NotificationBottomSheet(
                     }
                 )
                 NotificationItem(
-                    icon = NoteIcon.Time,
                     title = "Pick a date & time",
                     time = "",
                     onClick = {
@@ -150,7 +148,7 @@ fun NotificationBottomSheet(
 
 @Composable
 fun NotificationItem(
-    icon: Int,
+    icon: ImageVector = Icons.Outlined.AccessTime,
     title: String,
     time: String,
     onClick: () -> Unit = {}
@@ -160,7 +158,7 @@ fun NotificationItem(
             .clickable { onClick() }
             .fillMaxWidth()
             .height(36.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(painter = painterResource(id = icon), contentDescription = "")
+        Icon(imageVector = icon, contentDescription = "time")
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = title, Modifier.weight(1f))
         Text(text = time)

@@ -2,7 +2,6 @@ package com.mshdabiola.mainscreen
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
@@ -12,11 +11,12 @@ import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
 import com.mshdabiola.designsystem.component.state.toNotePadUiState
-import com.mshdabiola.designsystem.component.state.toNoteType
 import com.mshdabiola.model.Label
+import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +33,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel
 @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val notepadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val labelRepository: LabelRepository,
@@ -64,10 +63,10 @@ class MainViewModel
                         labels = pair.first.map { it.toLabelUiState() }.toImmutableList()
                     )
 
-                    when (pair.second) {
-                        is NoteTypeUi.LABEL -> {
+                    when (pair.second.type) {
+                        NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.filter { it.labels.any { it.labelId == (pair.second as NoteTypeUi.LABEL).id } }
+                                notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
                                     .map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
@@ -84,7 +83,7 @@ class MainViewModel
                             }
                         }
 
-                        is NoteTypeUi.REMAINDER -> {
+                        NoteType.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
@@ -103,7 +102,7 @@ class MainViewModel
                         }
 
                         else -> {
-                            notepadRepository.getNotePads(pair.second.toNoteType()).map { notes ->
+                            notepadRepository.getNotePads(pair.second.type).map { notes ->
                                 notes.map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
@@ -264,7 +263,7 @@ class MainViewModel
             .map { it.toNotePad().note }
 
         clearSelected()
-        val notes = selectedNotes.map { it.copy(noteType = com.mshdabiola.model.NoteType.ARCHIVE) }
+        val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
 
         viewModelScope.launch {
             noteRepository.upsert(notes)
@@ -279,7 +278,7 @@ class MainViewModel
             .map { it.toNotePad().note }
 
         clearSelected()
-        val notes = selectedNotes.map { it.copy(noteType = com.mshdabiola.model.NoteType.TRASH) }
+        val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
 
         viewModelScope.launch {
             noteRepository.upsert(notes)
@@ -312,9 +311,9 @@ class MainViewModel
     }
 
     fun deleteLabel() {
-        val labelId = (mainState.value.noteType as NoteTypeUi.LABEL).id
+        val labelId = (mainState.value.noteType).id
 
-        _mainState.value = mainState.value.copy(noteType = NoteTypeUi.NOTE)
+        _mainState.value = mainState.value.copy(noteType = NoteTypeUi())
 
         viewModelScope.launch {
             labelRepository.delete(labelId)
@@ -323,7 +322,7 @@ class MainViewModel
     }
 
     fun renameLabel(name: String) {
-        val labelId = (mainState.value.noteType as NoteTypeUi.LABEL).id
+        val labelId = (mainState.value.noteType).id
 
 
 
@@ -340,17 +339,17 @@ class MainViewModel
     }
 
     private fun addMessage(msg: String) {
-        val msgs = mainState.value.message.toMutableList()
+        val msgs = mainState.value.messages.toMutableList()
 
-        msgs.add(msg)
-        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
+        msgs.add(Notify(message = msg, callback = ::onMessageDeliver))
+        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
     }
 
-    fun onMessageDeliver() {
-        val msgs = mainState.value.message.toMutableList()
+    private fun onMessageDeliver() {
+        val msgs = mainState.value.messages.toMutableList()
 
         msgs.removeFirst()
-        _mainState.value = mainState.value.copy(message = msgs.toImmutableList())
+        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
     }
 
     fun deleteEmptyNote() {
@@ -373,5 +372,11 @@ class MainViewModel
 
             }
         }
+    }
+
+    fun onToggleGrid() {
+        val grid = mainState.value.isGrid
+
+        _mainState.value = mainState.value.copy(isGrid = !grid)
     }
 }

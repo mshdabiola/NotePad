@@ -1,6 +1,5 @@
 package com.mshdabiola.database.repository
 
-import com.mshdabiola.database.dao.LabelDao
 import com.mshdabiola.database.dao.NoteCheckDao
 import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.database.dao.NoteImageDao
@@ -26,7 +25,6 @@ import javax.inject.Inject
 
 class NotePadRepository
 @Inject constructor(
-    private val labelDao: LabelDao,
     private val noteCheckDao: NoteCheckDao,
     private val noteDao: NoteDao,
     private val noteImageDao: NoteImageDao,
@@ -74,7 +72,7 @@ class NotePadRepository
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
-    suspend fun getOneNotePad(id: Long): Flow<NotePad> {
+    fun getOneNotePad(id: Long): Flow<NotePad> {
         return notePadDao.getOneNotePad(id).map { it.toNotePad() }
     }
 
@@ -107,8 +105,8 @@ class NotePadRepository
         }
 
         notePads
-            .filter { it.images.any { it.isDrawing } }
-            .map { it.images.filter { it.isDrawing } }
+            .filter { it -> it.images.any { it.isDrawing } }
+            .map { it -> it.images.filter { it.isDrawing } }
             .flatten()
             .forEach {
                 pathDao.delete(it.id)

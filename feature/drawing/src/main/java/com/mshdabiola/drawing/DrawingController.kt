@@ -51,12 +51,11 @@ class DrawingController {
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 
     var lineWidth = 8
-    private var currentWith = lineWidth
     var lineCap = 0
-    var lineJoin = 0
+    private var lineJoin = 0
     var color = 1
     var draw_mode = DRAW_MODE.PEN
-    var id = 0
+    private var id = 0
     var colorAlpha = 1f
     lateinit var density: Density
     var width = 0.dp
@@ -75,11 +74,9 @@ class DrawingController {
 
 
     fun getColor(index: Int) = colors[index]
-    fun getCap(index: Int) = lineCaps[index]
-    fun getLineJoin(index: Int) = lineJoins[index]
 
-    var xx = 0f
-    var yy = 0f
+    private var xx = 0f
+    private var yy = 0f
     var pathData = PathData()
     fun setPathData(x: Float, y: Float, mode: MODE) {
         Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.${mode}),")
@@ -149,10 +146,6 @@ class DrawingController {
         paths.putAll(pathDatas)
         id = pathDatas.size
         listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
-    }
-
-    fun clearRedoPath() {
-        redoPaths.clear()
     }
 
     fun undo() {
@@ -228,8 +221,7 @@ class DrawingController {
         val h = with(density) { heigth.roundToPx() }
         val w = with(density) { width.roundToPx() }
         val bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val bitmap =
-            ImageBitmap(width.value.toInt(), heigth.value.toInt(), ImageBitmapConfig.Argb8888)
+        ImageBitmap(width.value.toInt(), heigth.value.toInt(), ImageBitmapConfig.Argb8888)
         val canvas = Canvas(bitmap2.asImageBitmap())
 
 

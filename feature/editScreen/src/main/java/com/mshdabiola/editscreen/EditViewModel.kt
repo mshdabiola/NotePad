@@ -4,7 +4,6 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,13 +15,13 @@ import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteVoiceRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
@@ -31,6 +30,7 @@ import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
@@ -40,15 +40,15 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val notePadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val voicePlayer: NotePlayer,
-    private val noteLabelRepository: NoteLabelRepository,
     private val labelRepository: LabelRepository,
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,
@@ -167,21 +167,26 @@ class EditViewModel @Inject constructor(
         }
 
 
-
     }
 
 
     private suspend fun insertNotePad(notePad: NotePadUiState) {
         if (!notePad.isEmpty()) {
-            Log.e("inset notepad", notePad.toString())
-            notePadRepository.insertNotepad(notePad.toNotePad())
+            // Log.e("inset notepad", notePad.toString())
+            val date = Clock.System.now().toEpochMilliseconds()
+            notePadRepository.insertNotepad(
+                notePad
+                    .copy(
+                        note = notePad.note.copy(editDate = date)
+                    ).toNotePad()
+            )
         }
     }
 
     private suspend fun getNewNotepad(): NotePadUiState {
         val notepad = NotePad()
         val id = notePadRepository.insertNotepad(notepad)
-        return notepad.copy(note = notepad.note.copy(id = id)).toNotePadUiState()
+        return NotePadUiState(note = NoteUiState(id = id))
     }
 
     private fun getNewId() = System.currentTimeMillis()
@@ -425,18 +430,18 @@ class EditViewModel @Inject constructor(
     }
 
     fun onArchive() {
-        notePadUiState = if (notePadUiState.note.noteType == NoteTypeUi.ARCHIVE) {
-            val note = notePadUiState.note.copy(noteType = NoteTypeUi.NOTE)
+        notePadUiState = if (notePadUiState.note.noteType.type == NoteType.ARCHIVE) {
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi())
             notePadUiState.copy(note = note)
         } else {
-            val note = notePadUiState.note.copy(noteType = NoteTypeUi.ARCHIVE)
+            val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.ARCHIVE))
             notePadUiState.copy(note = note)
         }
     }
 
     fun onDelete() {
 
-        val note = notePadUiState.note.copy(noteType = NoteTypeUi.TRASH)
+        val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.TRASH))
         notePadUiState = notePadUiState.copy(note = note)
     }
 

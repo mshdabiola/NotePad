@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LabelViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val labelRepository: LabelRepository,
     private val noteLabelRepository: NoteLabelRepository
 ) : ViewModel() {
@@ -75,13 +75,13 @@ class LabelViewModel @Inject constructor(
     fun onAddLabelDone() {
         val labels = labelScreenUiState.labels.toMutableList()
 
-        if (labels.any { it.label == labelScreenUiState.editText }) {
-            labelScreenUiState = labelScreenUiState.copy(errorOccur = true)
+        labelScreenUiState = if (labels.any { it.label == labelScreenUiState.editText }) {
+            labelScreenUiState.copy(errorOccur = true)
         } else {
             val nextId = (labels.lastOrNull()?.id ?: 0) + 1
             val labelUiState = LabelUiState(id = nextId, label = labelScreenUiState.editText)
             labels.add(labelUiState)
-            labelScreenUiState = labelScreenUiState.copy(
+            labelScreenUiState.copy(
                 labels = labels.toImmutableList(),
                 editText = "",
                 errorOccur = false

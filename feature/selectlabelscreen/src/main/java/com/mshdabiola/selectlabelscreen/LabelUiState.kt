@@ -10,4 +10,3 @@ data class LabelUiState(
 )
 
 fun Label.toLabelUiState() = LabelUiState(this.id, this.label)
-fun LabelUiState.toLabel() = Label(id, label)

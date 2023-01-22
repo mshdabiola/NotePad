@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,13 +23,11 @@ import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
-import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.collections.immutable.toImmutableList
 
 
@@ -106,7 +105,7 @@ fun LabelText(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "")
+        Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
         TriStateCheckbox(

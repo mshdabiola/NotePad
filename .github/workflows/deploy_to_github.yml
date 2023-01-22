@@ -1,0 +1,35 @@
+name: Deploy to github
+
+on:
+  push:
+    tags:
+      - '*'
+
+## 2
+jobs:
+  ## 3
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # 2
+      - name: Generate Release APK
+        run: ./gradlew assembleRelease
+      # 3
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      # 4
+      - name: Draft Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "app/build/outputs/apk/release/*signed.apk"
+          token: ${{ secrets.TOKEN }}

@@ -37,8 +37,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.AddBox
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.NotificationAdd
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -74,7 +83,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -92,19 +101,23 @@ import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toTime
+import com.mshdabiola.designsystem.component.toTimeAndDate
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 
 @Composable
@@ -146,16 +159,15 @@ fun EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
         onSubjectChange = editViewModel::onDetailChange,
-        addItem = editViewModel::addCheck,
-        onCheckChange = editViewModel::onCheckChange,
-        onCheck = editViewModel::onCheck,
-        onCheckDelete = editViewModel::onCheckDelete,
         onBackClick = onBack,
+        onCheckChange = editViewModel::onCheckChange,
+        onCheckDelete = editViewModel::onCheckDelete,
+        onCheck = editViewModel::onCheck,
+        addItem = editViewModel::addCheck,
         playVoice = editViewModel::playMusic,
         pauseVoice = editViewModel::pause,
         moreOptions = { coroutineScope.launch { modalState.show() } },
         noteOption = { coroutineScope.launch { noteModalState.show() } },
-        onColorClick = { coroutineScope.launch { colorModalState.show() } },
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
@@ -167,6 +179,7 @@ fun EditScreen(
                 )
             )
         },
+        onColorClick = { coroutineScope.launch { colorModalState.show() } },
         onNotification = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
@@ -257,8 +270,6 @@ fun EditScreen(
     onTitleChange: (String) -> Unit = {},
     onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
-    onDeleteNote: () -> Unit = {},
-    onSave: () -> Unit = {},
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
@@ -277,13 +288,10 @@ fun EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long, Long) -> Unit = { i, j -> },
-    navigateToDrawing: (Long, Long) -> Unit = { i, j -> },
+    navigateToGallery: (Long, Long) -> Unit = { _, _ -> },
+    navigateToDrawing: (Long, Long) -> Unit = { _, _ -> },
 ) {
 
-    var expand by remember {
-        mutableStateOf(false)
-    }
 
     var expandCheck by remember {
         mutableStateOf(false)
@@ -352,7 +360,7 @@ fun EditScreen(
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back button"
+                            contentDescription = "back"
                         )
                     }
                 },
@@ -360,19 +368,19 @@ fun EditScreen(
                 actions = {
                     IconButton(onClick = { pinNote() }) {
                         Icon(
-                            painter = painterResource(id = if (notepad.note.isPin) NoteIcon.PinFill else NoteIcon.Pin),
+                            imageVector = if (notepad.note.isPin) Icons.Default.PushPin else Icons.Outlined.PushPin,
                             contentDescription = "pin"
                         )
                     }
                     IconButton(onClick = { onNotification() }) {
                         Icon(
-                            painter = painterResource(id = NoteIcon.Alarm),
+                            imageVector = Icons.Outlined.NotificationAdd,
                             contentDescription = "notification"
                         )
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
-                            painter = painterResource(id = if (notepad.note.noteType == NoteTypeUi.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive),
+                            imageVector = if (notepad.note.noteType.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
                             contentDescription = "archive"
                         )
                     }
@@ -390,7 +398,8 @@ fun EditScreen(
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .testTag("edit:lazy"),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 if (notepad.images.isNotEmpty()) {
@@ -415,7 +424,7 @@ fun EditScreen(
                                             }
                                             .weight(1f)
                                             .height(200.dp),
-                                        model = it.imageName, contentDescription = "",
+                                        model = it.imageName, contentDescription = "note image",
                                         contentScale = ContentScale.Crop
                                     )
                                 }
@@ -446,6 +455,7 @@ fun EditScreen(
                             modifier = Modifier
                                 .padding(0.dp)
                                 .weight(1f)
+                                .testTag("title")
 
                         )
                         if (notepad.note.isCheck) {
@@ -514,6 +524,7 @@ fun EditScreen(
                                 .fillMaxWidth()
                                 .imePadding()
                                 .focusRequester(subjectFocus)
+                                .testTag("detail")
 
 
                         )
@@ -619,26 +630,37 @@ fun EditScreen(
 
             }
 
-            Row(Modifier.fillMaxWidth()) {
-                IconButton(onClick = { moreOptions() }) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:more"),
+                    onClick = { moreOptions() }) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Addbox),
-                        contentDescription = ""
+                        imageVector = Icons.Outlined.AddBox,
+                        contentDescription = "more note"
                     )
                 }
-                IconButton(onClick = { onColorClick() }) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:color"),
+                    onClick = { onColorClick() }) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.ColorLens),
-                        contentDescription = ""
+                        imageVector = Icons.Outlined.ColorLens,
+                        contentDescription = "color and background"
                     )
                 }
-                Row(Modifier.weight(1f)) {
-
+                Row(
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 32.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Edited ${notepad.note.editDate.toTimeAndDate()}")
                 }
-                IconButton(onClick = { noteOption() }) {
+                IconButton(
+                    modifier = Modifier.testTag("edit:option"),
+                    onClick = { noteOption() }) {
                     Icon(
                         imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = ""
+                        contentDescription = "note options"
                     )
                 }
             }
@@ -657,7 +679,15 @@ fun EditScreenPreview() {
             note = NoteUiState(
                 color = 1,
                 background = 1,
-                reminder = Clock.System.now().toEpochMilliseconds(),
+                editDate = LocalDateTime(
+                    2022,
+                    1,
+                    3,
+                    4,
+                    6,
+                    5,
+                    4
+                ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
                 interval = 1,
                 isCheck = true
             ),
@@ -781,11 +811,11 @@ fun NoteVoicePlayer(
             Box {
                 if (noteVoiceUiState.isPlaying) {
                     IconButton(onClick = pauseVoice) {
-                        Icon(painterResource(id = NoteIcon.Pause), contentDescription = "pause")
+                        Icon(imageVector = Icons.Outlined.PauseCircle, contentDescription = "pause")
                     }
                 } else {
                     IconButton(onClick = playVoice) {
-                        Icon(painterResource(id = NoteIcon.Play), contentDescription = "play")
+                        Icon(imageVector = Icons.Outlined.PlayCircle, contentDescription = "play")
                     }
                 }
 
@@ -804,7 +834,7 @@ fun NoteVoicePlayer(
 
 }
 
-@Preview()
+@Preview
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(

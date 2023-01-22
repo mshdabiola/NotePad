@@ -1,7 +1,6 @@
 package com.mshdabiola.designsystem.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -115,21 +114,4 @@ private val LightColorPalette = lightColorScheme(
     onPrimary = Color.Black,
     onSecondary = Color.Black
 )
-
-@Composable
-fun SketchbookDemoTheme(
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colors = if (isDarkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
-
-    MaterialTheme(
-        colorScheme = colors,
-        content = content
-    )
-}
 

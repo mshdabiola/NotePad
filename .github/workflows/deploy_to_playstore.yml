@@ -1,0 +1,79 @@
+name: Deploy to Play Store and Firebase
+
+on:
+  push:
+    branches: [ "test" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Generate Release Bundle
+        run: ./gradlew bundleRelease
+      - name: Sign Bundle
+        uses: r0adkll/sign-android-release@v1
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release_bundle
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mapping
+          path: app/build/outputs/mapping/release/mapping.txt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: distribution
+
+  deploy-play-store:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      # 1
+      - uses: actions/download-artifact@v3
+        with:
+          name: release_bundle
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: mapping
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: distribution
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+      # 2
+      - name: Publish to Play Store internal test track
+        uses: r0adkll/upload-google-play@v1.0.18
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          # 3
+          packageName: com.mshdabiola.play_notepad
+          releaseFiles: app-release.aab
+          track: internal
+          status: completed
+          inAppUpdatePriority: 2
+          mappingFile: mapping.txt
+          whatsNewDirectory: whatsnew
+
+

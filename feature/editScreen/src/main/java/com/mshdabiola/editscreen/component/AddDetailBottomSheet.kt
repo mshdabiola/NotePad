@@ -11,7 +11,12 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
@@ -21,9 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.bottomsheet.ModalBottomSheet
 import com.mshdabiola.bottomsheet.ModalState
@@ -31,7 +34,6 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBottomSheet(
     modalState: ModalState,
@@ -132,7 +134,7 @@ fun AddBottomSheet(
 
                 NavigationDrawerItem(icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Photo),
+                        imageVector = Icons.Outlined.PhotoCamera,
                         contentDescription = ""
                     )
                 }, label = { Text(text = "Take photo") },
@@ -145,7 +147,7 @@ fun AddBottomSheet(
 
                 NavigationDrawerItem(icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Image),
+                        imageVector = Icons.Outlined.Image,
                         contentDescription = ""
                     )
                 }, label = { Text(text = "Add image") },
@@ -162,7 +164,7 @@ fun AddBottomSheet(
                 )
                 NavigationDrawerItem(icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Brush),
+                        imageVector = Icons.Outlined.Brush,
                         contentDescription = ""
                     )
                 }, label = { Text(text = "Drawing") },
@@ -176,7 +178,7 @@ fun AddBottomSheet(
                 )
                 NavigationDrawerItem(icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = NoteIcon.Voice),
+                        imageVector = Icons.Outlined.KeyboardVoice,
                         contentDescription = ""
                     )
                 }, label = { Text(text = "Recording") },
@@ -209,7 +211,7 @@ fun AddBottomSheet(
                 if (!isNoteCheck) {
                     NavigationDrawerItem(icon = {
                         Icon(
-                            imageVector = ImageVector.vectorResource(id = NoteIcon.Check),
+                            imageVector = Icons.Outlined.CheckBox,
                             contentDescription = ""
                         )
                     }, label = { Text(text = "Checkboxes") },

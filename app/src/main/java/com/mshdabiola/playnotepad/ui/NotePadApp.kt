@@ -15,10 +15,9 @@ fun NotePadApp(
             navController = noteAppState.navHostController,
             navigateToEdit = noteAppState::navigateToEdit,
             navigateToLevel = noteAppState::navigateToLevel,
-            navigateToSelectLevel = noteAppState::navigateToSelectLevel,
-            navigateToMain = noteAppState::navigateToMain,
             navigateToSearch = noteAppState::navigateToSearch,
-            onBack = noteAppState::onBack
+            onBack = noteAppState::onBack,
+            navigateToSelectLevel = noteAppState::navigateToSelectLevel
         )
     }
 }

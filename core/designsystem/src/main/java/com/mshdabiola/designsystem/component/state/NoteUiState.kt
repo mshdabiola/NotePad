@@ -1,12 +1,13 @@
 package com.mshdabiola.designsystem.component.state
 
 import com.mshdabiola.model.Note
+import kotlinx.datetime.Clock
 
 data class NoteUiState(
     val id: Long = -1,
     val title: String = "",
     val detail: String = "",
-    val editDate: Long = 0,
+    val editDate: Long = Clock.System.now().toEpochMilliseconds(),
     val isCheck: Boolean = false,
     val color: Int = -1,
     val background: Int = -1,
@@ -14,7 +15,7 @@ data class NoteUiState(
     val reminder: Long = 0,
     val interval: Long = 0,
     val selected: Boolean = false,
-    val noteType: NoteTypeUi = NoteTypeUi.NOTE,
+    val noteType: NoteTypeUi = NoteTypeUi(),
     val focus: Boolean = false
 )
 
@@ -31,7 +32,7 @@ fun Note.toNoteUiState() =
         reminder,
         interval,
         false,
-        noteType.toNoteTypeUi()
+        NoteTypeUi(noteType, 0)
     )
 
 fun NoteUiState.toNote() =
@@ -46,7 +47,7 @@ fun NoteUiState.toNote() =
         isPin,
         reminder,
         interval,
-        noteType.toNoteType()
+        noteType.type
     )
 //fun NoteUiState.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin)
 

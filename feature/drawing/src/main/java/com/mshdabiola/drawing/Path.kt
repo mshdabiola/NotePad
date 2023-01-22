@@ -17,7 +17,6 @@ enum class MODE {
 }
 
 enum class DRAW_MODE {
-    SELECT,
     ERASE,
     PEN,
     MARKER,

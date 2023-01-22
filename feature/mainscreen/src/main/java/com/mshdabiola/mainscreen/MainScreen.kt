@@ -26,9 +26,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.ColorLens
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -37,6 +48,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,11 +77,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
@@ -82,10 +93,11 @@ import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
+import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -97,7 +109,8 @@ fun MainScreen(
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit,
     navigateToSearch: () -> Unit,
-    navigateToSelectLevel: (IntArray) -> Unit
+    navigateToSelectLevel: (IntArray) -> Unit,
+    navigateToAbout: () -> Unit
 ) {
 
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
@@ -138,7 +151,8 @@ fun MainScreen(
     MainScreen(
         notePads = mainState.value.notePads,
         labels = mainState.value.labels,
-        messages = mainState.value.message,
+        messages = mainState.value.messages,
+        isGrid = mainState.value.isGrid,
         navigateToEdit = navigateToEdit,
         navigateToLevel = navigateToLevel,
         navigateToSearch = navigateToSearch,
@@ -163,8 +177,10 @@ fun MainScreen(
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
-        onMessageDelive = mainViewModel::onMessageDeliver
-
+        onToggleGrid = mainViewModel::onToggleGrid,
+        navigateToAbout = navigateToAbout
+//        onMessageDelive = mainViewModel::onMessageDeliver
+//
     )
 
     val note = remember(mainState.value.notePads) {
@@ -203,7 +219,7 @@ fun MainScreen(
 
     RenameLabelAlertDialog(
         show = showRenameLabel,
-        label = (mainState.value.noteType as? NoteTypeUi.LABEL)?.name ?: "",
+        label = (mainState.value.noteType.type).name,
         onDismissRequest = { showRenameLabel = false },
         onChangeName = mainViewModel::renameLabel
     )
@@ -221,13 +237,14 @@ fun MainScreen(
 fun MainScreen(
     notePads: ImmutableList<NotePadUiState>,
     labels: ImmutableList<LabelUiState>,
-    messages: ImmutableList<String> = emptyList<String>().toImmutableList(),
+    messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
+    isGrid: Boolean = true,
     navigateToEdit: (Long, String, Long) -> Unit = { _, _, _ -> },
     navigateToLevel: (Boolean) -> Unit = {},
     saveImage: (Uri, Long) -> Unit = { _, _ -> },
     saveVoice: (Uri, Long) -> Unit = { _, _ -> },
     photoUri: (Long) -> Uri = { Uri.EMPTY },
-    currentNoteType: NoteTypeUi = NoteTypeUi.NOTE,
+    currentNoteType: NoteTypeUi = NoteTypeUi(),
     onNavigationNoteType: (NoteTypeUi) -> Unit = {},
     navigateToSearch: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
@@ -243,7 +260,8 @@ fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    onMessageDelive: () -> Unit = {}
+    onToggleGrid: () -> Unit = {},
+    navigateToAbout: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -343,16 +361,18 @@ fun MainScreen(
     }
     LaunchedEffect(key1 = messages, block = {
         if (messages.isNotEmpty()) {
+            val first = messages.first()
             when (snackHostState.showSnackbar(
-                message = messages.first(), withDismissAction = true,
-                duration = SnackbarDuration.Short
+                message = first.message, withDismissAction = first.withDismissAction,
+                actionLabel = first.label,
+                duration = if (first.isShort) SnackbarDuration.Short else SnackbarDuration.Long
             )) {
                 SnackbarResult.ActionPerformed -> {
                     Log.e("on Snacker", "click")
                 }
 
                 SnackbarResult.Dismissed -> {
-                    onMessageDelive()
+                    first.callback()
                 }
             }
         }
@@ -370,7 +390,14 @@ fun MainScreen(
                     onNavigationNoteType(it)
                     coroutineScope.launch { drawerState.close() }
                 },
-                navigateToLevel = navigateToLevel
+                navigateToLevel = {
+                    navigateToLevel(it)
+                    coroutineScope.launch { drawerState.close() }
+                },
+                navigateToAbout = {
+                    navigateToAbout()
+                    coroutineScope.launch { drawerState.close() }
+                }
 
             )
         },
@@ -398,8 +425,8 @@ fun MainScreen(
                     )
                 } else {
 //
-                    when (currentNoteType) {
-                        is NoteTypeUi.LABEL -> {
+                    when (currentNoteType.type) {
+                        NoteType.LABEL -> {
                             LabelTopAppBar(
                                 label = labels.single { it.id == currentNoteType.id }.label,
                                 onSearch = navigateToSearch,
@@ -410,7 +437,7 @@ fun MainScreen(
                             )
                         }
 
-                        NoteTypeUi.TRASH -> {
+                        NoteType.TRASH -> {
                             TrashTopAppBar(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
@@ -418,15 +445,17 @@ fun MainScreen(
                             )
                         }
 
-                        NoteTypeUi.NOTE -> {
+                        NoteType.NOTE -> {
                             MainTopAppBar(
                                 navigateToSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
+                                scrollBehavior = scrollBehavior,
+                                isGrid = isGrid,
+                                onToggleGrid = onToggleGrid
                             )
                         }
 
-                        NoteTypeUi.REMAINDER -> {
+                        NoteType.REMAINDER -> {
                             ArchiveTopAppBar(
                                 name = "Remainder",
                                 onSearch = navigateToSearch,
@@ -436,7 +465,7 @@ fun MainScreen(
                                 )
                         }
 
-                        NoteTypeUi.ARCHIVE -> {
+                        NoteType.ARCHIVE -> {
                             ArchiveTopAppBar(
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
@@ -453,36 +482,40 @@ fun MainScreen(
                 BottomAppBar(
                     actions = {
 
-                        IconButton(onClick = { navigateToEdit(-2, "", 0) }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:check"),
+                            onClick = { navigateToEdit(-2, "", 0) }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Check),
-                                contentDescription = "note check"
+                                imageVector = Icons.Outlined.CheckBox,
+                                contentDescription = "add note check"
                             )
                         }
 
-                        IconButton(onClick = {
-                            navigateToEdit(-5, "", 0)
-                        }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:draw"),
+                            onClick = {
+                                navigateToEdit(-5, "", 0)
+                            }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Brush),
-                                contentDescription = "note drawing"
+                                imageVector = Icons.Outlined.Brush,
+                                contentDescription = "add note drawing"
                             )
                         }
 
 
-                        IconButton(onClick = {
-                            //navigateToEdit(-4, "", Uri.EMPTY)
-                            if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                                PackageManager.PERMISSION_GRANTED
-                            ) {
-                                voiceLauncher.launch(
-                                    Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                        putExtra(
-                                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                                        )
+                        IconButton(
+                            modifier = Modifier.testTag("main:voice"),
+                            onClick = {
+                                //navigateToEdit(-4, "", Uri.EMPTY)
+                                if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                                    PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    voiceLauncher.launch(
+                                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                            putExtra(
+                                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                            )
                                         putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
                                         putExtra(
                                             "android.speech.extra.GET_AUDIO_FORMAT",
@@ -494,30 +527,35 @@ fun MainScreen(
 
                             } else {
                                 audioPermission.launch(Manifest.permission.RECORD_AUDIO)
-                            }
+                                }
 
 
-                        }) {
+                            }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Voice),
-                                contentDescription = "note check"
+                                imageVector = Icons.Outlined.KeyboardVoice,
+                                contentDescription = "add note voice"
                             )
                         }
 
-                        IconButton(onClick = {//
-                            showImageDialog = true
-                        }) {
+                        IconButton(
+                            modifier = Modifier.testTag("main:image"),
+                            onClick = {//
+                                showImageDialog = true
+                            }) {
                             Icon(
-                                imageVector = ImageVector
-                                    .vectorResource(id = NoteIcon.Image),
-                                contentDescription = "note check"
+                                imageVector = Icons.Outlined.Image,
+                                contentDescription = "add note image"
                             )
                         }
 
                     },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { navigateToEdit(-1, "", 0) }) {
+                        FloatingActionButton(
+                            modifier = Modifier.testTag("main:float"),
+                            onClick = { navigateToEdit(-1, "", 0) },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            elevation = FloatingActionButtonDefaults.elevation()
+                        ) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
                     }
@@ -532,9 +570,10 @@ fun MainScreen(
             ) {
 
 
-                LazyVerticalStaggeredGrid(
 
-                    columns = StaggeredGridCells.Fixed(2),
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.testTag("main:lazy"),
+                    columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
 
@@ -545,7 +584,6 @@ fun MainScreen(
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                         }
-                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
                     }
                     items(pinNotePad.first) { notePadUiState ->
                         NoteCard(
@@ -565,7 +603,6 @@ fun MainScreen(
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Other")
                         }
-                        item { Text(modifier = Modifier.fillMaxWidth(), text = "") }
                     }
                     items(pinNotePad.second) { notePadUiState ->
                         NoteCard(
@@ -619,7 +656,7 @@ fun MainScreenPreview() {
 
             )
                 .toImmutableList(),
-            labels = emptyList<LabelUiState>().toImmutableList(),
+            labels = emptyList<LabelUiState>().toImmutableList()
         )
     }
 
@@ -649,36 +686,50 @@ fun SelectTopBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onClear) {
-                Icon(imageVector = Icons.Default.Clear, contentDescription = "clear")
+                Icon(imageVector = Icons.Default.Clear, contentDescription = "clear note")
             }
         },
         title = {
             Text(text = "$selectNumber")
         },
         actions = {
-            IconButton(onClick = onPin) {
+            IconButton(
+                modifier = Modifier.testTag("main:pin"),
+                onClick = onPin
+            ) {
                 Icon(
-                    painter = painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
-                    contentDescription = "pin"
+                    imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin,//painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                    contentDescription = "pin note"
                 )
             }
-            IconButton(onClick = onNoti) {
+            IconButton(
+                modifier = Modifier.testTag("main:notification"),
+                onClick = onNoti
+            ) {
                 Icon(
-                    painter = painterResource(id = NoteIcon.Notification),
+                    imageVector = Icons.Outlined.Notifications,
                     contentDescription = "notification"
                 )
             }
-            IconButton(onClick = onColor) {
+            IconButton(
+                modifier = Modifier.testTag("main:color"),
+                onClick = onColor
+            ) {
                 Icon(
-                    painter = painterResource(id = NoteIcon.ColorLens),
+                    imageVector = Icons.Outlined.ColorLens,
                     contentDescription = "color"
                 )
             }
-            IconButton(onClick = onLabel) {
-                Icon(painter = painterResource(id = NoteIcon.Label), contentDescription = "Label")
+            IconButton(
+                modifier = Modifier.testTag("main:label"),
+                onClick = onLabel
+            ) {
+                Icon(imageVector = Icons.Outlined.Label, contentDescription = "Label")
             }
             Box {
-                IconButton(onClick = { showDropDown = true }) {
+                IconButton(
+                    modifier = Modifier.testTag("main:more"),
+                    onClick = { showDropDown = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
 
                 }
@@ -688,7 +739,8 @@ fun SelectTopBar(
                             showDropDown = false
                             onArchive()
                         })
-                    DropdownMenuItem(text = { Text(text = "Delete") },
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete") },
                         onClick = {
                             showDropDown = false
                             onDelete()
@@ -790,9 +842,9 @@ fun ArchiveTopAppBar(
     onSearch: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 ) {
-    var showDropDown by remember {
-        mutableStateOf(false)
-    }
+//    var showDropDown by remember {
+//        mutableStateOf(false)
+//    }
 
     TopAppBar(
         navigationIcon = {
@@ -874,9 +926,11 @@ fun TrashTopAppBarPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
+    isGrid: Boolean = false,
     navigateToSearch: () -> Unit = {},
     onNavigate: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    onToggleGrid: () -> Unit = {}
 ) {
     TopAppBar(
         modifier = Modifier,
@@ -905,9 +959,18 @@ fun MainTopAppBar(
                     )
                 }
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = "Search your note",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
                 )
+                IconButton(onClick = { onToggleGrid() }) {
+                    if (!isGrid)
+                        Icon(imageVector = Icons.Filled.GridView, contentDescription = "grid")
+                    else
+                        Icon(imageVector = Icons.Outlined.ViewAgenda, contentDescription = "column")
+
+                }
 
 
             }
@@ -971,7 +1034,6 @@ fun RenameLabelPreview() {
     RenameLabelAlertDialog(show = true)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteLabelAlertDialog(
     show: Boolean = false,

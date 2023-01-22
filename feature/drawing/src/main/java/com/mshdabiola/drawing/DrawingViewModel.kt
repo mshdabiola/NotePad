@@ -25,15 +25,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DrawingViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val contentManager: ContentManager,
     private val noteImageRepository: NoteImageRepository,
     private val drawingPathRepository: DrawingPathRepository
 ) : ViewModel() {
 
-    val noteId = savedStateHandle.get<Long>(noteIdArg)!!
-    val imageI = savedStateHandle.get<Long>(imageIdArg)!!
-    val imageID = if (imageI == (-1L)) System.currentTimeMillis() else imageI
+    private val noteId = savedStateHandle.get<Long>(noteIdArg)!!
+    private val imageI = savedStateHandle.get<Long>(imageIdArg)!!
+    private val imageID = if (imageI == (-1L)) System.currentTimeMillis() else imageI
 
     var drawingUiState by mutableStateOf(
         DrawingUiState(
@@ -78,8 +78,8 @@ class DrawingViewModel @Inject constructor(
 
     }
 
-    var job: Job? = null
-    fun saveDrawing(map: Map<PathData, List<Offset>>) {
+    private var job: Job? = null
+    private fun saveDrawing(map: Map<PathData, List<Offset>>) {
         val data = changeToDrawPath(map)
         Log.e("saveDrawing", data.joinToString())
         job?.cancel()
@@ -94,7 +94,7 @@ class DrawingViewModel @Inject constructor(
     }
 
 
-    fun changeToDrawPath(map: Map<PathData, List<Offset>>): List<DrawPath> {
+    private fun changeToDrawPath(map: Map<PathData, List<Offset>>): List<DrawPath> {
         return map.map { entry ->
             DrawPath(
                 imageID,
@@ -108,7 +108,7 @@ class DrawingViewModel @Inject constructor(
         }
     }
 
-    fun toPathMap(list: List<DrawPath>): Map<PathData, List<Offset>> {
+    private fun toPathMap(list: List<DrawPath>): Map<PathData, List<Offset>> {
         val map = HashMap<PathData, List<Offset>>()
         list.forEach { drawPath ->
             val path = PathData(
@@ -119,12 +119,12 @@ class DrawingViewModel @Inject constructor(
                 drawPath.alpha,
                 drawPath.pathId
             )
-            val list = drawPath.paths
+            val offsetList = drawPath.paths
                 .split(",")
                 .map { it.trim().toFloat() }
                 .chunked(2)
                 .map { Offset(it[0], it[1]) }
-            map[path] = list
+            map[path] = offsetList
         }
         return map
     }

@@ -76,7 +76,7 @@ fun NotificationDialog(
                         if (it.time == LocalTime(0, 0)) {
                             TimePickerDialog(
                                 context,
-                                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                                { _, hourOfDay, minute ->
                                     dateTime = LocalDateTime(
                                         dateTime.date,
                                         LocalTime(hourOfDay, minute)
@@ -217,9 +217,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
     val nowtime = remember {
         now.toLocalDateTime(TimeZone.UTC).time
     }
-    val valueTime = remember(value) {
-        Instant.fromEpochMilliseconds(value).toLocalDateTime(TimeZone.currentSystemDefault()).time
-    }
+
 
 
 

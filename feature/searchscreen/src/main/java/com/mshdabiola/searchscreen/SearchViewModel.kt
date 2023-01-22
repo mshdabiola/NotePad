@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.database.repository.LabelRepository
@@ -23,13 +22,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val notePadRepository: NotePadRepository,
     private val labelRepository: LabelRepository
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
-    var notePads: List<NotePadUiState> = emptyList()
+    private var notePads: List<NotePadUiState> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -37,7 +35,7 @@ class SearchViewModel @Inject constructor(
                 .collectLatest { pads ->
                     val lab = labelRepository.getAllLabels().first()
 
-                    notePads = pads.map {
+                    notePads = pads.map { it ->
                         val labels =
                             it.labels.map { notelab -> lab.single { it.id == notelab.labelId }.label }
                         it.toNotePadUiState().copy(labels = labels.toImmutableList())

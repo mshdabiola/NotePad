@@ -31,7 +31,7 @@ android {
             // who clones the code to sign and run the release variant, use the debug signing key.
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             // Todo: comment code before release
-             signingConfig = signingConfigs.getByName("debug")
+//              signingConfig = signingConfigs.getByName("debug")
         }
         val benchmark by creating {
             // Enable all the optimizations from release build through initWith(release).
@@ -68,6 +68,7 @@ dependencies {
     implementation(project(":feature:searchscreen"))
     implementation(project(":feature:gallery"))
     implementation(project(":feature:drawing"))
+    implementation(project(":feature:about"))
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)

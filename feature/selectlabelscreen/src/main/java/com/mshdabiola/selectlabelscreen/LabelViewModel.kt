@@ -21,14 +21,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LabelViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val labelRepository: LabelRepository,
     private val noteLabelRepository: NoteLabelRepository
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
 
-    var list: List<LabelUiState> = emptyList()
+    private var list: List<LabelUiState> = emptyList()
     private val labelsArgs = LabelsArgs(savedStateHandle)
 
     init {
@@ -93,7 +93,7 @@ class LabelViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateList() {
+    private suspend fun updateList() {
 
 
         val labelsCount = labelsArgs.ids.map {
