@@ -8,32 +8,40 @@
 # Infinity for Reddit
 
 [<img src="/images/logo.png" align="left"
-width="200" hspace="10" vspace="10">](/images/logo.png)
+width="200" hspace="10" vspace="10">](/images/ic_launcher-playstore.png)
 
-Infinity For Reddit is a Reddit client on Android written in Java. It does not have any ads and it features a clean UI and smooth browsing experience.
+Play Notepad is a comprehensive note-taking app for Android devices that offers a wide range of
+features to help users stay organized and productive. The app allows users to create, edit and
+organize text notes, set reminders, capture images, record voice, transcribe the voice notes, draw
+images, check notes, search notes, label notes, trash and archive notes, all in one convenient
+place.
 
-Infinity For Reddit is available on the Google Play Store and F-Droid:
+Play NotePad is available on the Google Play Store:
 
 <p align="left">
-<a href="https://play.google.com/store/apps/details?id=ml.docilealligator.infinityforreddit">
+<a href="https://play.google.com/store/apps/">
     <img alt="Get it on Google Play"
         height="70"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>  
-<a href="https://f-droid.org/packages/ml.docilealligator.infinityforreddit/">
-    <img alt="Get it on F-Droid"
-        height="70"
-        src="https://f-droid.org/badge/get-it-on.png" />
-        </a>
+
+[//]: # (<a href="https://f-droid.org/packages/ml.docilealligator.infinityforreddit/">)
+
+[//]: # (    <img alt="Get it on F-Droid")
+
+[//]: # (        height="70")
+
+[//]: # (        src="https://f-droid.org/badge/get-it-on.png" />)
+
+[//]: # (        </a>)
+
         </p>
-<br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-<br />
+
 <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+·
+<a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+·
+<a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 
 <details>
@@ -71,23 +79,62 @@ width="200"
     hspace="10" vspace="10">](images/screenshot2.png)
 [<img src="images/screenshot3.png" align="center"
 width="200"
-    hspace="10" vspace="10">](images/screenshot3.png)
-
+hspace="10" vspace="10">](images/screenshot3.png)
 
 Some highlight features:
-- Lazy mode: Automatic scrolling of posts enables you to enjoy amazing posts without moving your thumb
+
+- Lazy mode: Automatic scrolling of posts enables you to enjoy amazing posts without moving your
+  thumb
 
 ## Built With
 
-Major Frameworks
+## Clean architecture with 3 main modules
+
+- Data (for database, API and preferences code)
+- Domain (for business logic and models)
+- AndroidApp (for UI logic, with MVVM)
+
+ <img src="images/AndroidTemplate-CleanArchitecture.jpg" alt="ArchiTecture logo"/>
+
+## Tests
+
+- [Mockk](https://mockk.io/) library
+- Unit tests
+- Application tests
+    - example on how to work with tests
+- Activity tests (with [Compose Testing](https://developer.android.com/jetpack/compose/testing))
+    - example on how to work with coroutine scopes in tests
+
+## Other useful features
+
+- This version brings [Modularization](https://developer.android.com/topic/modularization)
+- Version Management (
+  with [Version catalog](https://docs.gradle.org/current/userguide/platforms.html))
+- Shared Build Logic (
+  with [Convention plugins](https://docs.gradle.org/current/samples/sample_convention_plugins.html))
+- Dependency injection (with [Hilt](http://google.github.io/hilt/))
+- Network calls (with [Ktor](https://ktor.io/docs/http-client-engines.html#minimal-version))
+- Reactive programming (
+  with [Kotlin Flows](https://kotlinlang.org/docs/reference/coroutines/flow.html))
+- Android architecture components to share ViewModels during configuration changes
+- [Splash Screen](https://developer.android.com/develop/ui/views/launch/splash-screen) Support
+- Google [Material Design](https://material.io/blog/android-material-theme-color) library
+- Declarative UI (with [Jetpack Compose](https://developer.android.com/jetpack/compose))
+    - Compose Navigation (
+      with [Hilt Support](https://developer.android.com/jetpack/compose/libraries#hilt-navigation)
+      and Assisted Inject Example)
+- Edge To Edge Configuration
 
 ## Contribution
 
-1. Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+1. Contributions are what make the open source community such an amazing place to learn, inspire,
+   and create. Any contributions you make are **greatly appreciated**.
 
-2. Whether you're helping us fix bugs, improve the docs, or spread the word, we'd love to have you as part of the Gatsby community!
+2. Whether you're helping us fix bugs, improve the docs, or spread the word, we'd love to have you
+   as part of the Gatsby community!
 
-3. Thanks for your interest in contributing! There are many ways to contribute to this project. Get started here (Contributing.md link)
+3. Thanks for your interest in contributing! There are many ways to contribute to this project. Get
+   started here (Contributing.md link)
 
 ### Feedback
 
@@ -108,20 +155,7 @@ Here are other ways you can help:
 
  ## Development
 
- - Magisk builds on any OS Android Studio supports. Install Android Studio and do the initial setups.
-- Clone sources: `git clone --recurse-submodules https://github.com/topjohnwu/Magisk.git`
-- Install Python 3.6+ \
-  (Windows only: select **'Add Python to PATH'** in installer, and run `pip install colorama` after install)
-- Configure to use the JDK bundled in Android Studio:
-  - macOS: `export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home"`
-  - Linux: `export PATH="/path/to/androidstudio/jre/bin:$PATH"`
-  - Windows: Add `C:\Path\To\Android Studio\jre\bin` to environment variable `PATH`
-- Set environment variable `ANDROID_SDK_ROOT` to the Android SDK folder (can be found in Android Studio settings)
-- Run `./build.py ndk` to let the script download and install NDK for you
-- To start building, run `build.py` to see your options. \
-  For each action, use `-h` to access help (e.g. `./build.py all -h`)
-- To start development, open the project with Android Studio. The IDE can be used for both app (Kotlin/Java) and native sources.
-- Optionally, set custom configs with `config.prop`. A sample `config.prop.sample` is provided.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -133,9 +167,10 @@ AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can f
 
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+mshdabiola - [@your_twitter](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
 
-Project Link: [https://github.com/Docile-Alligator/Infinity-For-Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit)
+Project
+Link: [https://github.com/Docile-Alligator/Infinity-For-Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
