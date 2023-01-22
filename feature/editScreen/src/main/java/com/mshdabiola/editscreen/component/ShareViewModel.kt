@@ -58,7 +58,7 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             snapshotFlow { labels }
                 .distinctUntilChanged()
-                .collectLatest {
+                .collectLatest { it ->
                     selectLabels = it.filter { it.isCheck }.toImmutableList()
                 }
         }
@@ -67,7 +67,7 @@ class ShareViewModel @Inject constructor(
 
     fun toggleLabel(id: Long) {
         val labelsMutableList = labels.toMutableList()
-        var index = labelsMutableList.indexOfFirst { it.id == id }
+        val index = labelsMutableList.indexOfFirst { it.id == id }
         var label = labelsMutableList[index]
         label = label.copy(isCheck = !label.isCheck)
         labelsMutableList[index] = label

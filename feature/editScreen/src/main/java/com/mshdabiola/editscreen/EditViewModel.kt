@@ -15,7 +15,6 @@ import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteVoiceRepository
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
@@ -46,11 +45,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val notePadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val voicePlayer: NotePlayer,
-    private val noteLabelRepository: NoteLabelRepository,
     private val labelRepository: LabelRepository,
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,

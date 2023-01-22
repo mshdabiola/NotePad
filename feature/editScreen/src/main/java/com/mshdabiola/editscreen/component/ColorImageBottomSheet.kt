@@ -52,7 +52,7 @@ fun ColorAndImageBottomSheet(
 
     ) {
 
-    val coroutineScope = rememberCoroutineScope()
+    rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
     } else {

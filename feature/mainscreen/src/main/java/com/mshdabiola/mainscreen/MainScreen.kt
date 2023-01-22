@@ -1034,7 +1034,6 @@ fun RenameLabelPreview() {
     RenameLabelAlertDialog(show = true)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteLabelAlertDialog(
     show: Boolean = false,

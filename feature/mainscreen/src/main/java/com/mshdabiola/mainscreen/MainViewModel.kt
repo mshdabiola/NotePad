@@ -2,7 +2,6 @@ package com.mshdabiola.mainscreen
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
@@ -34,7 +33,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel
 @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val notepadRepository: NotePadRepository,
     private val contentManager: ContentManager,
     private val labelRepository: LabelRepository,
@@ -68,7 +66,7 @@ class MainViewModel
                     when (pair.second.type) {
                         NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.filter { it.labels.any { it.labelId == (pair.second).id } }
+                                notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
                                     .map { it.toNotePadUiState(pair.first) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {

@@ -118,7 +118,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import kotlin.time.ExperimentalTime
 
 
 @Composable
@@ -160,16 +159,15 @@ fun EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
         onSubjectChange = editViewModel::onDetailChange,
-        addItem = editViewModel::addCheck,
-        onCheckChange = editViewModel::onCheckChange,
-        onCheck = editViewModel::onCheck,
-        onCheckDelete = editViewModel::onCheckDelete,
         onBackClick = onBack,
+        onCheckChange = editViewModel::onCheckChange,
+        onCheckDelete = editViewModel::onCheckDelete,
+        onCheck = editViewModel::onCheck,
+        addItem = editViewModel::addCheck,
         playVoice = editViewModel::playMusic,
         pauseVoice = editViewModel::pause,
         moreOptions = { coroutineScope.launch { modalState.show() } },
         noteOption = { coroutineScope.launch { noteModalState.show() } },
-        onColorClick = { coroutineScope.launch { colorModalState.show() } },
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
@@ -181,6 +179,7 @@ fun EditScreen(
                 )
             )
         },
+        onColorClick = { coroutineScope.launch { colorModalState.show() } },
         onNotification = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
@@ -271,8 +270,6 @@ fun EditScreen(
     onTitleChange: (String) -> Unit = {},
     onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
-    onDeleteNote: () -> Unit = {},
-    onSave: () -> Unit = {},
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
@@ -291,14 +288,10 @@ fun EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long, Long) -> Unit = { i, j -> },
-    navigateToDrawing: (Long, Long) -> Unit = { i, j -> },
+    navigateToGallery: (Long, Long) -> Unit = { _, _ -> },
+    navigateToDrawing: (Long, Long) -> Unit = { _, _ -> },
 ) {
 
-
-    var expand by remember {
-        mutableStateOf(false)
-    }
 
     var expandCheck by remember {
         mutableStateOf(false)
@@ -678,7 +671,6 @@ fun EditScreen(
 }
 
 
-@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 fun EditScreenPreview() {
@@ -842,7 +834,7 @@ fun NoteVoicePlayer(
 
 }
 
-@Preview()
+@Preview
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(

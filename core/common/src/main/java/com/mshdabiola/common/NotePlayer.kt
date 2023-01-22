@@ -32,14 +32,10 @@ class NotePlayer
         mediaPlayer.pause()
     }
 
-    fun onClose() {
-        mediaPlayer.release()
-    }
-
 
 }
 
-fun MediaPlayer.listerner() = flow<Int> {
+fun MediaPlayer.listerner() = flow {
     if (!isPlaying) return@flow
     while (currentPosition < duration) {
         emit(currentPosition)

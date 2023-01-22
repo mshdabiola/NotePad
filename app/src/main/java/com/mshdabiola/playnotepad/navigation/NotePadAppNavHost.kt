@@ -26,7 +26,6 @@ import com.mshdabiola.selectlabelscreen.selectLabelScreen
 @Composable
 fun NotePadAppNavHost(
     navController: NavHostController,
-    navigateToMain: () -> Unit,
     navigateToEdit: (Long, String, Long) -> Unit,
     navigateToLevel: (Boolean) -> Unit,
     navigateToSearch: () -> Unit,

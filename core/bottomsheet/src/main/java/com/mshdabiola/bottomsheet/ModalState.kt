@@ -56,6 +56,6 @@ internal class ModalStateImpl(
         appendLine("isAnimationRunning: " + _state.isAnimationRunning.toString())
     }
 
-    var showRequestsPendingCount by mutableStateOf(0)
+    private var showRequestsPendingCount by mutableStateOf(0)
     val hasPendingShowRequests by derivedStateOf { showRequestsPendingCount > 0 }
 }

@@ -48,19 +48,6 @@ fun flowLayoutMeasurePolicy() = MeasurePolicy { measurables, constraints ->
     }
 }
 
-@Composable
-fun FlowLayout(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    val measurePolicy = flowLayoutMeasurePolicy()
-    Layout(
-        measurePolicy = measurePolicy,
-        content = content,
-        modifier = modifier
-    )
-}
-
 
 @Composable
 fun FlowLayout2(
@@ -120,19 +107,19 @@ fun FlowLayout2(
                     3,
                     LayoutDirection.Ltr
                 )
-                val rowHeight = rowInfo.height
+                val height = rowInfo.height
                 val nextChildIndex = rowInfo.nextChildIndex
                 while (childIndex < nextChildIndex) {
                     val placeable = placeables[childIndex]
                     placeable.placeRelative(
                         x = x,
-                        y = y + childVerticalGravity.align(rowHeight - placeable.height, 3)
+                        y = y + childVerticalGravity.align(height - placeable.height, 3)
                     )
                     x += placeable.width
                     childIndex++
                 }
 
-                y += rowHeight
+                y += height
             }
         }
     }
