@@ -33,7 +33,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 compileSdk = 33
                 defaultConfig.targetSdk = 33
                 defaultConfig.minSdk = 24
-                defaultConfig.versionName = "0.1.1"
+                defaultConfig.versionName = "0.1.2"
                 defaultConfig.versionCode = 2
 
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
