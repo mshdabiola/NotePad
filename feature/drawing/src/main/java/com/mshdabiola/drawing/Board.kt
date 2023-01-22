@@ -2,6 +2,7 @@ package com.mshdabiola.drawing
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.drawing.gesture.dragMotionEvent
 
 @Composable
 fun Board(
@@ -33,11 +34,19 @@ fun Board(
 
     Canvas(
         modifier = modifier
-            .dragMotionEvent(
-                onDragStart = { onPointChange(it.position, MODE.DOWN) },
-                onDrag = { onPointChange(it.position, MODE.MOVE) },
-                onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
-            )
+
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = { onPointChange(it, MODE.DOWN) },
+                    onDrag = { change, _ -> onPointChange(change.position, MODE.MOVE) },
+                    onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
+                )
+            }
+//            .dragMotionEvent(
+//                onDragStart = { onPointChange(it.position, MODE.DOWN) },
+//                onDrag = { onPointChange(it.position, MODE.MOVE) },
+//                onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
+//            )
     ) {
 
 

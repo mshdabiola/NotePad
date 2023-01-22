@@ -31,3 +31,10 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+#https://issuetracker.google.com/issues/265188224
+
+-keep,allowshrinking class * extends androidx.compose.ui.node.ModifierNodeElement {
+
+}
+
