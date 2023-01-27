@@ -8,7 +8,7 @@ import com.mshdabiola.playnotepad.navigation.NotePadAppNavHost
 @Composable
 fun NotePadApp(
     windowSizeClass: WindowSizeClass,
-    noteAppState: NotePadAppState = rememberNotePadAppState(windowSizeClass = windowSizeClass)
+    noteAppState: NotePadAppState = rememberNotePadAppState(windowSizeClass = windowSizeClass),
 ) {
     NotePadAppTheme {
         NotePadAppNavHost(
@@ -17,7 +17,7 @@ fun NotePadApp(
             navigateToLevel = noteAppState::navigateToLevel,
             navigateToSearch = noteAppState::navigateToSearch,
             onBack = noteAppState::onBack,
-            navigateToSelectLevel = noteAppState::navigateToSelectLevel
+            navigateToSelectLevel = noteAppState::navigateToSelectLevel,
         )
     }
 }

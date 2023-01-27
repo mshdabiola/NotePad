@@ -1,6 +1,5 @@
 package com.mshdabiola.searchscreen
 
-
 import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,16 +57,17 @@ import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-
 
 @Composable
 fun SearchScreen(
     onBack: () -> Unit = {},
     navigateToEdit: (Long, String, Long) -> Unit,
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
 ) {
+    FirebaseScreenLog(screen = "search_screen")
     SearchScreen(
         onBack = onBack,
         navigateToEdit = navigateToEdit,
@@ -75,7 +75,7 @@ fun SearchScreen(
         onSearchTextChange = viewModel::onSearchTextChange,
         onClearSearchText = viewModel::onClearSearchText,
         onItemLabelClick = viewModel::onItemLabelClick,
-        onItemTypeClick = viewModel::onItemTypeClick
+        onItemTypeClick = viewModel::onItemTypeClick,
     )
 }
 
@@ -88,7 +88,7 @@ fun SearchScreen(
     onSearchTextChange: (String) -> Unit = {},
     onClearSearchText: () -> Unit = {},
     onItemLabelClick: (Int) -> Unit = {},
-    onItemTypeClick: (Int) -> Unit = {}
+    onItemTypeClick: (Int) -> Unit = {},
 
 ) {
     val focusRequester = remember {
@@ -121,46 +121,42 @@ fun SearchScreen(
                             IconButton(onClick = { onClearSearchText() }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = "delete"
+                                    contentDescription = "delete",
                                 )
                             }
-                        }
+                        },
                     )
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
             Modifier
                 .padding(paddingValues)
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
-
             if (searchUiState.notes.isNotEmpty()) {
                 LazyVerticalStaggeredGrid(
 
                     columns = StaggeredGridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
 
                 ) {
-
                     items(searchUiState.notes) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
-                            onCardClick = { navigateToEdit(it, "", 0) })
+                            onCardClick = { navigateToEdit(it, "", 0) },
+                        )
                     }
-
                 }
             } else {
                 EmptySearchScreen(
                     labels = searchUiState.labels,
                     onItemLabelClick = onItemLabelClick,
-                    onItemTypeClick = onItemTypeClick
+                    onItemTypeClick = onItemTypeClick,
                 )
             }
-
-
         }
     }
 }
@@ -182,7 +178,7 @@ fun SearchScreenPreview() {
                             editDate = 6901L,
                             isCheck = false,
                             isPin = false,
-                        )
+                        ),
                     ),
                     NotePadUiState(
                         note = NoteUiState(
@@ -192,27 +188,22 @@ fun SearchScreenPreview() {
                             editDate = 6901L,
                             isCheck = false,
                             isPin = false,
-                        )
-                    )
-                ).toImmutableList()
-            )
+                        ),
+                    ),
+                ).toImmutableList(),
+            ),
         )
     }
-
-
 }
 
 @Composable
 fun EmptySearchScreen(
     labels: ImmutableList<String> = emptyList<String>().toImmutableList(),
     onItemLabelClick: (Int) -> Unit = {},
-    onItemTypeClick: (Int) -> Unit = {}
+    onItemTypeClick: (Int) -> Unit = {},
 ) {
-
     val labelPair = remember(labels) {
-
         labels.map { Pair(it, Icons.Outlined.Label) }
-
     }
     LabelBox(
         title = "Types",
@@ -223,16 +214,14 @@ fun EmptySearchScreen(
             Pair("Voice", Icons.Outlined.KeyboardVoice),
             Pair("Drawings", Icons.Outlined.Brush),
 
-            ),
-        onItemClick = onItemTypeClick
+        ),
+        onItemClick = onItemTypeClick,
     )
     LabelBox(
         title = "Labels",
         labelIcon = labelPair,
-        onItemClick = onItemLabelClick
+        onItemClick = onItemLabelClick,
     )
-
-
 }
 
 @Preview(device = "spec:parent=pixel_5,orientation=portrait")
@@ -240,7 +229,7 @@ fun EmptySearchScreen(
 fun EmptyScreenPreview() {
     Column {
         EmptySearchScreen(
-            labels = listOf("Voice", "Voice", "Voice", "Voice", "Voice").toImmutableList()
+            labels = listOf("Voice", "Voice", "Voice", "Voice", "Voice").toImmutableList(),
         )
     }
 }
@@ -249,7 +238,7 @@ fun EmptyScreenPreview() {
 fun LabelBox(
     title: String = "Label",
     labelIcon: List<Pair<String, ImageVector>> = emptyList(),
-    onItemClick: (Int) -> Unit = {}
+    onItemClick: (Int) -> Unit = {},
 ) {
     val configuration = LocalConfiguration.current
 
@@ -269,9 +258,8 @@ fun LabelBox(
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth(),
         ) {
-
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(modifier = Modifier.weight(1f), text = title)
                 if (labelIcon.size > number) {
@@ -279,31 +267,26 @@ fun LabelBox(
                         Text(text = if (h == number) "More" else "Less")
                     }
                 }
-
             }
             Column(Modifier.animateContentSize()) {
                 datas.forEachIndexed { index1, pairList ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         pairList.forEachIndexed { index, pair ->
 
                             SearchLabel(
                                 modifier = Modifier.clickable { onItemClick(index + (index1 * number)) },
                                 iconId = pair.second,
-                                name = pair.first
+                                name = pair.first,
                             )
-
                         }
-
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-
         }
-
     }
 }
 
@@ -320,7 +303,7 @@ fun LabelBoxPreview() {
             Pair("Voice", Icons.Default.KeyboardVoice),
             Pair("Voice", Icons.Default.KeyboardVoice),
 
-            )
+        ),
     )
 }
 
@@ -328,7 +311,7 @@ fun LabelBoxPreview() {
 fun SearchLabel(
     modifier: Modifier = Modifier,
     iconId: ImageVector = Icons.Default.Label,
-    name: String = "Label"
+    name: String = "Label",
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Surface(
@@ -336,13 +319,12 @@ fun SearchLabel(
             color = MaterialTheme.colorScheme.secondaryContainer,
             modifier = Modifier
                 .width(72.dp)
-                .aspectRatio(1f)
+                .aspectRatio(1f),
         ) {
-
             Icon(
                 imageVector = iconId,
                 contentDescription = "label icon",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

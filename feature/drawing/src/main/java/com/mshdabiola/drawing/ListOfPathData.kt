@@ -6,5 +6,5 @@ import kotlinx.collections.immutable.toImmutableMap
 
 data class ListOfPathData(
 
-    val paths2: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap()
+    val paths2: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap(),
 )

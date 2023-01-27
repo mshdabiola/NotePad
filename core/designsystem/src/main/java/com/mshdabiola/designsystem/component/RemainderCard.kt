@@ -32,40 +32,40 @@ fun ReminderCard(
     interval: Long,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     Surface(
         modifier = Modifier.clickable(enabled = onClick != null) { onClick?.invoke() },
         shape = RoundedCornerShape(8.dp),
         color = color,
-        border = BorderStroke(1.dp, Color.Gray)
+        border = BorderStroke(1.dp, Color.Gray),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(4.dp),
         ) {
             if (interval > 0) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.Repeat,
-                    contentDescription = ""
+                    contentDescription = "",
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             } else {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Outlined.Alarm,
-                    contentDescription = ""
+                    contentDescription = "",
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             }
             Text(
                 text = "${remainder.toDateString()}, ${
                     remainder.toTimeString(
-                        true
+                        true,
                     )
                 }",
-                style = style
+                style = style,
 
             )
         }
@@ -84,19 +84,18 @@ fun LabelCard(
     name: String,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     Surface(
         modifier = Modifier.clickable(enabled = onClick != null, onClick = { onClick?.invoke() }),
         shape = RoundedCornerShape(8.dp),
         color = color,
-        border = BorderStroke(1.dp, Color.Gray)
+        border = BorderStroke(1.dp, Color.Gray),
     ) {
-
         Text(
             text = name,
             style = style,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(4.dp),
         )
     }
 }
@@ -106,6 +105,6 @@ fun LabelCard(
 fun LabelCardPreview() {
     LabelCard(
         name = "Food",
-        color = Color.Red
+        color = Color.Red,
     )
 }

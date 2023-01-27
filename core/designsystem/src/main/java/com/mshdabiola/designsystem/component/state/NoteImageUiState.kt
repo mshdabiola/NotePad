@@ -6,7 +6,7 @@ data class NoteImageUiState(
     val id: Long,
     val noteId: Long,
     val imageName: String,
-    val isDrawing: Boolean
+    val isDrawing: Boolean,
 )
 
 fun NoteImage.toNoteImageUiState() = NoteImageUiState(id, noteId, imageName, isDrawing)

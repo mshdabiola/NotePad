@@ -18,7 +18,7 @@ data class NoteEntity(
     val isPin: Boolean,
     val reminder: Long,
     val interval: Long,
-    val noteType: NoteType
+    val noteType: NoteType,
 )
 
 fun Note.toNoteEntity() =
@@ -33,7 +33,7 @@ fun Note.toNoteEntity() =
         isPin,
         reminder,
         interval,
-        noteType
+        noteType,
     )
 
 fun NoteEntity.toNote() = Note(
@@ -47,5 +47,5 @@ fun NoteEntity.toNote() = Note(
     isPin,
     reminder,
     interval,
-    noteType
+    noteType,
 )

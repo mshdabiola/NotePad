@@ -7,9 +7,8 @@ data class NoteCheckUiState(
     val noteId: Long,
     val content: String = "",
     val isCheck: Boolean = false,
-    val focus: Boolean = false
+    val focus: Boolean = false,
 )
-
 
 fun NoteCheck.toNoteCheckUiState() = NoteCheckUiState(id, noteId, content, isCheck)
 

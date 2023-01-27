@@ -37,7 +37,6 @@ fun Search() {
 //    val datePickerState= rememberDatePickerState()
 //    datePickerState.
 //    DatePicker(datePickerState =datePickerState)
-
 }
 
 @Preview(showBackground = true)

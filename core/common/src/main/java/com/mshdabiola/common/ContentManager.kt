@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class ContentManager
 @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) {
 
     private val photoDir = context.filesDir.absolutePath + "/photo"
@@ -74,8 +74,5 @@ class ContentManager
         File(path).outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
-
     }
-
-
 }

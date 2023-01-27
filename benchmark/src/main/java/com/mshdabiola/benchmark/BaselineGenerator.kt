@@ -15,7 +15,7 @@ class BaselineGenerator {
 
     @Test
     fun startUp() = baselineProfileRule.collectBaselineProfile(
-        packageName = "com.mshdabiola.playnotepad"
+        packageName = "com.mshdabiola.playnotepad",
     ) {
         pressHome()
         startActivityAndWait()

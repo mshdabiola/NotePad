@@ -5,7 +5,7 @@ import com.mshdabiola.model.NoteVoice
 
 @Entity(
     tableName = "note_voice_table",
-    primaryKeys = ["id", "noteId"]
+    primaryKeys = ["id", "noteId"],
 )
 data class NoteVoiceEntity(
 

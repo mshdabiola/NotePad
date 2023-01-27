@@ -95,6 +95,7 @@ import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
+import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.model.NoteType
@@ -110,16 +111,15 @@ fun MainScreen(
     navigateToLevel: (Boolean) -> Unit,
     navigateToSearch: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
-    navigateToAbout: () -> Unit
+    navigateToAbout: () -> Unit,
 ) {
-
+    FirebaseScreenLog(screen = "main_screen")
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit, block = {
         delay(2000)
         mainViewModel.deleteEmptyNote()
     })
-
 
     var showDialog by remember {
         mutableStateOf(false)
@@ -146,7 +146,6 @@ fun MainScreen(
             .setChooserTitle("From Notepad")
             .createChooserIntent()
         context.startActivity(Intent(intent))
-
     }
     MainScreen(
         notePads = mainState.value.notePads,
@@ -178,7 +177,7 @@ fun MainScreen(
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
         onToggleGrid = mainViewModel::onToggleGrid,
-        navigateToAbout = navigateToAbout
+        navigateToAbout = navigateToAbout,
 //        onMessageDelive = mainViewModel::onMessageDeliver
 //
     )
@@ -207,29 +206,28 @@ fun MainScreen(
         remainder = note?.reminder ?: -1,
         interval = if (note?.interval == (-1L)) null else note?.interval,
         onSetAlarm = mainViewModel::setAlarm,
-        onDeleteAlarm = mainViewModel::deleteAlarm
+        onDeleteAlarm = mainViewModel::deleteAlarm,
     )
 
     ColorDialog(
         show = showColor,
         onDismissRequest = { showColor = false },
         onColorClick = mainViewModel::setAllColor,
-        currentColor = colorIndex ?: -1
+        currentColor = colorIndex ?: -1,
     )
 
     RenameLabelAlertDialog(
         show = showRenameLabel,
         label = (mainState.value.noteType.type).name,
         onDismissRequest = { showRenameLabel = false },
-        onChangeName = mainViewModel::renameLabel
+        onChangeName = mainViewModel::renameLabel,
     )
 
     DeleteLabelAlertDialog(
         show = showDeleteLabel,
         onDismissRequest = { showDeleteLabel = false },
-        onDelete = mainViewModel::deleteLabel
+        onDelete = mainViewModel::deleteLabel,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -261,7 +259,7 @@ fun MainScreen(
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     onToggleGrid: () -> Unit = {},
-    navigateToAbout: () -> Unit = {}
+    navigateToAbout: () -> Unit = {},
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -284,8 +282,8 @@ fun MainScreen(
                 saveImage(it, time)
                 navigateToEdit(-3, "image text", time)
             }
-
-        })
+        },
+    )
 
     val snapPictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
@@ -293,8 +291,8 @@ fun MainScreen(
             if (it) {
                 navigateToEdit(-3, "image text", photoId)
             }
-        })
-
+        },
+    )
 
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -303,39 +301,34 @@ fun MainScreen(
                 val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 val audiouri = intent.data
 
-
                 if (audiouri != null) {
                     val time = System.currentTimeMillis()
                     saveVoice(audiouri, time)
                     Log.e("voice ", "uri $audiouri ${strArr?.joinToString()}")
                     navigateToEdit(-4, strArr?.joinToString() ?: "", time)
                 }
-
-
             }
-        }
+        },
     )
 
     val audioPermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
             onResult = {
                 if (it) {
                     voiceLauncher.launch(
                         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                             putExtra(
                                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
                             )
                             putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
                             putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
                             putExtra("android.speech.extra.GET_AUDIO", true)
-
-                        })
-
-
+                        },
+                    )
                 }
-
-            }
+            },
         )
 
     val pinNotePad by remember(notePads) {
@@ -362,11 +355,14 @@ fun MainScreen(
     LaunchedEffect(key1 = messages, block = {
         if (messages.isNotEmpty()) {
             val first = messages.first()
-            when (snackHostState.showSnackbar(
-                message = first.message, withDismissAction = first.withDismissAction,
-                actionLabel = first.label,
-                duration = if (first.isShort) SnackbarDuration.Short else SnackbarDuration.Long
-            )) {
+            when (
+                snackHostState.showSnackbar(
+                    message = first.message,
+                    withDismissAction = first.withDismissAction,
+                    actionLabel = first.label,
+                    duration = if (first.isShort) SnackbarDuration.Short else SnackbarDuration.Long,
+                )
+            ) {
                 SnackbarResult.ActionPerformed -> {
                     Log.e("on Snacker", "click")
                 }
@@ -376,10 +372,7 @@ fun MainScreen(
                 }
             }
         }
-
-
     })
-
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -397,17 +390,16 @@ fun MainScreen(
                 navigateToAbout = {
                     navigateToAbout()
                     coroutineScope.launch { drawerState.close() }
-                }
+                },
 
             )
         },
         drawerState = drawerState,
-        gesturesEnabled = true
+        gesturesEnabled = true,
     ) {
         Scaffold(
             modifier = Modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
             topBar = {
-
                 if (noOfSelected > 0) {
                     SelectTopBar(
                         selectNumber = noOfSelected,
@@ -421,7 +413,7 @@ fun MainScreen(
                         onArchive = onArchive,
                         onDelete = onDelete,
                         onSend = onSend,
-                        onCopy = onCopy
+                        onCopy = onCopy,
                     )
                 } else {
 //
@@ -433,7 +425,7 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
                                 onDeleteLabel = onDeleteLabel,
-                                onRenameLabel = onRenameLabel
+                                onRenameLabel = onRenameLabel,
                             )
                         }
 
@@ -441,7 +433,7 @@ fun MainScreen(
                             TrashTopAppBar(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
-                                onEmptyTrash = onEmptyTrash
+                                onEmptyTrash = onEmptyTrash,
                             )
                         }
 
@@ -451,7 +443,7 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
                                 isGrid = isGrid,
-                                onToggleGrid = onToggleGrid
+                                onToggleGrid = onToggleGrid,
                             )
                         }
 
@@ -462,32 +454,30 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
 
-                                )
+                            )
                         }
 
                         NoteType.ARCHIVE -> {
                             ArchiveTopAppBar(
                                 onSearch = navigateToSearch,
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
-                                scrollBehavior = scrollBehavior
+                                scrollBehavior = scrollBehavior,
                             )
                         }
                     }
                 }
-
-
             },
             snackbarHost = { SnackbarHost(hostState = snackHostState) },
             bottomBar = {
                 BottomAppBar(
                     actions = {
-
                         IconButton(
                             modifier = Modifier.testTag("main:check"),
-                            onClick = { navigateToEdit(-2, "", 0) }) {
+                            onClick = { navigateToEdit(-2, "", 0) },
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.CheckBox,
-                                contentDescription = "add note check"
+                                contentDescription = "add note check",
                             )
                         }
 
@@ -495,18 +485,18 @@ fun MainScreen(
                             modifier = Modifier.testTag("main:draw"),
                             onClick = {
                                 navigateToEdit(-5, "", 0)
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.Brush,
-                                contentDescription = "add note drawing"
+                                contentDescription = "add note drawing",
                             )
                         }
-
 
                         IconButton(
                             modifier = Modifier.testTag("main:voice"),
                             onClick = {
-                                //navigateToEdit(-4, "", Uri.EMPTY)
+                                // navigateToEdit(-4, "", Uri.EMPTY)
                                 if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
                                     PackageManager.PERMISSION_GRANTED
                                 ) {
@@ -514,72 +504,66 @@ fun MainScreen(
                                         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                                             putExtra(
                                                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
                                             )
-                                        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                                        putExtra(
-                                            "android.speech.extra.GET_AUDIO_FORMAT",
-                                            "audio/AMR"
-                                        )
-                                        putExtra("android.speech.extra.GET_AUDIO", true)
-
-                                    })
-
-                            } else {
-                                audioPermission.launch(Manifest.permission.RECORD_AUDIO)
+                                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                                            putExtra(
+                                                "android.speech.extra.GET_AUDIO_FORMAT",
+                                                "audio/AMR",
+                                            )
+                                            putExtra("android.speech.extra.GET_AUDIO", true)
+                                        },
+                                    )
+                                } else {
+                                    audioPermission.launch(Manifest.permission.RECORD_AUDIO)
                                 }
-
-
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.KeyboardVoice,
-                                contentDescription = "add note voice"
+                                contentDescription = "add note voice",
                             )
                         }
 
                         IconButton(
                             modifier = Modifier.testTag("main:image"),
-                            onClick = {//
+                            onClick = {
+                                //
                                 showImageDialog = true
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.Image,
-                                contentDescription = "add note image"
+                                contentDescription = "add note image",
                             )
                         }
-
                     },
                     floatingActionButton = {
                         FloatingActionButton(
                             modifier = Modifier.testTag("main:float"),
                             onClick = { navigateToEdit(-1, "", 0) },
                             containerColor = MaterialTheme.colorScheme.primary,
-                            elevation = FloatingActionButtonDefaults.elevation()
+                            elevation = FloatingActionButtonDefaults.elevation(),
                         ) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
                         }
-                    }
+                    },
                 )
-            }
+            },
         ) { paddingValues ->
 
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(8.dp)
+                    .padding(8.dp),
             ) {
-
-
-
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.testTag("main:lazy"),
                     columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
 
                 ) {
-
-
                     if (pinNotePad.first.isNotEmpty()) {
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
@@ -589,15 +573,15 @@ fun MainScreen(
                         NoteCard(
                             notePad = notePadUiState,
                             onCardClick = {
-                                if (noOfSelected > 0)
+                                if (noOfSelected > 0) {
                                     onSelectedCard(it)
-                                else
+                                } else {
                                     navigateToEdit(it, "", 0)
+                                }
                             },
-                            onLongClick = onSelectedCard
+                            onLongClick = onSelectedCard,
                         )
                     }
-
 
                     if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
                         item {
@@ -608,17 +592,16 @@ fun MainScreen(
                         NoteCard(
                             notePad = notePadUiState,
                             onCardClick = {
-                                if (noOfSelected > 0)
+                                if (noOfSelected > 0) {
                                     onSelectedCard(it)
-                                else
+                                } else {
                                     navigateToEdit(it, "", 0)
+                                }
                             },
-                            onLongClick = onSelectedCard
+                            onLongClick = onSelectedCard,
                         )
                     }
-
                 }
-
             }
 
             ImageDialog(
@@ -630,12 +613,11 @@ fun MainScreen(
                 onSnapImage = {
                     photoId = System.currentTimeMillis()
                     snapPictureLauncher.launch(photoUri(photoId))
-                }
+                },
             )
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -645,21 +627,20 @@ fun MainScreenPreview() {
             notePads =
             listOf(
                 NotePadUiState(
-                    note = NoteUiState(title = "hammed", detail = "adiola")
+                    note = NoteUiState(title = "hammed", detail = "adiola"),
                 ),
                 NotePadUiState(
-                    note = NoteUiState(title = "hammed", detail = "adiola", selected = true)
+                    note = NoteUiState(title = "hammed", detail = "adiola", selected = true),
                 ),
                 NotePadUiState(
-                    note = NoteUiState(title = "hammed", detail = "adiola")
-                )
+                    note = NoteUiState(title = "hammed", detail = "adiola"),
+                ),
 
             )
                 .toImmutableList(),
-            labels = emptyList<LabelUiState>().toImmutableList()
+            labels = emptyList<LabelUiState>().toImmutableList(),
         )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -676,10 +657,9 @@ fun SelectTopBar(
     onArchive: () -> Unit = {},
     onDelete: () -> Unit = {},
     onSend: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
 
 ) {
-
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -695,56 +675,59 @@ fun SelectTopBar(
         actions = {
             IconButton(
                 modifier = Modifier.testTag("main:pin"),
-                onClick = onPin
+                onClick = onPin,
             ) {
                 Icon(
-                    imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin,//painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
-                    contentDescription = "pin note"
+                    imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                    contentDescription = "pin note",
                 )
             }
             IconButton(
                 modifier = Modifier.testTag("main:notification"),
-                onClick = onNoti
+                onClick = onNoti,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
-                    contentDescription = "notification"
+                    contentDescription = "notification",
                 )
             }
             IconButton(
                 modifier = Modifier.testTag("main:color"),
-                onClick = onColor
+                onClick = onColor,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ColorLens,
-                    contentDescription = "color"
+                    contentDescription = "color",
                 )
             }
             IconButton(
                 modifier = Modifier.testTag("main:label"),
-                onClick = onLabel
+                onClick = onLabel,
             ) {
                 Icon(imageVector = Icons.Outlined.Label, contentDescription = "Label")
             }
             Box {
                 IconButton(
                     modifier = Modifier.testTag("main:more"),
-                    onClick = { showDropDown = true }) {
+                    onClick = { showDropDown = true },
+                ) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
-
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
-                    DropdownMenuItem(text = { Text(text = "Archive") },
+                    DropdownMenuItem(
+                        text = { Text(text = "Archive") },
                         onClick = {
                             showDropDown = false
                             onArchive()
-                        })
+                        },
+                    )
                     DropdownMenuItem(
                         text = { Text(text = "Delete") },
                         onClick = {
                             showDropDown = false
                             onDelete()
-                        })
+                        },
+                    )
                     if (selectNumber == 1) {
                         DropdownMenuItem(text = { Text(text = "Make a Copy") }, onClick = {
                             showDropDown = false
@@ -758,7 +741,7 @@ fun SelectTopBar(
                 }
             }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
 
     )
 }
@@ -778,7 +761,7 @@ fun LabelTopAppBar(
     onSearch: () -> Unit = {},
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
     var showDropDown by remember {
         mutableStateOf(false)
@@ -795,14 +778,13 @@ fun LabelTopAppBar(
             IconButton(onClick = onSearch) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "search"
+                    contentDescription = "search",
                 )
             }
 
             Box {
                 IconButton(onClick = { showDropDown = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
-
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -810,21 +792,21 @@ fun LabelTopAppBar(
                         onClick = {
                             showDropDown = false
                             onRenameLabel()
-                        })
+                        },
+                    )
                     DropdownMenuItem(
                         text = { Text(text = "Delete Label") },
                         onClick = {
                             showDropDown = false
                             onDeleteLabel()
-                        })
+                        },
+                    )
                 }
-
             }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
 
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -840,7 +822,7 @@ fun ArchiveTopAppBar(
     name: String = "Archive",
     onNavigate: () -> Unit = {},
     onSearch: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
 //    var showDropDown by remember {
 //        mutableStateOf(false)
@@ -857,14 +839,13 @@ fun ArchiveTopAppBar(
             IconButton(onClick = onSearch) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "search"
+                    contentDescription = "search",
                 )
             }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
 
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -879,7 +860,7 @@ fun ArchiveTopAppBarPreview() {
 fun TrashTopAppBar(
     onNavigate: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
     var showDropDown by remember {
         mutableStateOf(false)
@@ -893,27 +874,24 @@ fun TrashTopAppBar(
         },
         title = { Text(text = "Trash") },
         actions = {
-
             Box {
                 IconButton(onClick = { showDropDown = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
-
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
-                    DropdownMenuItem(text = { Text(text = "Empty Trash") },
+                    DropdownMenuItem(
+                        text = { Text(text = "Empty Trash") },
                         onClick = {
                             showDropDown = false
                             onEmptyTrash()
-                        })
-
+                        },
+                    )
                 }
-
             }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
 
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -930,7 +908,7 @@ fun MainTopAppBar(
     navigateToSearch: () -> Unit = {},
     onNavigate: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    onToggleGrid: () -> Unit = {}
+    onToggleGrid: () -> Unit = {},
 ) {
     TopAppBar(
         modifier = Modifier,
@@ -947,39 +925,37 @@ fun MainTopAppBar(
                             topEnd = 50f,
                             topStart = 50f,
                             bottomEnd = 50f,
-                            bottomStart = 50f
-                        )
+                            bottomStart = 50f,
+                        ),
                     )
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
             ) {
                 IconButton(onClick = onNavigate) {
                     Icon(
                         imageVector = Icons.Default.Menu,
-                        contentDescription = "menu"
+                        contentDescription = "menu",
                     )
                 }
                 Text(
                     modifier = Modifier.weight(1f),
                     text = "Search your note",
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
                 IconButton(onClick = { onToggleGrid() }) {
-                    if (!isGrid)
+                    if (!isGrid) {
                         Icon(imageVector = Icons.Filled.GridView, contentDescription = "grid")
-                    else
+                    } else {
                         Icon(imageVector = Icons.Outlined.ViewAgenda, contentDescription = "column")
-
+                    }
                 }
-
-
             }
         },
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent
-        )
+            scrolledContainerColor = Color.Transparent,
+        ),
     )
 }
 
@@ -996,7 +972,7 @@ fun RenameLabelAlertDialog(
     show: Boolean = false,
     label: String = "Label",
     onDismissRequest: () -> Unit = {},
-    onChangeName: (String) -> Unit = {}
+    onChangeName: (String) -> Unit = {},
 ) {
     var name by remember(label) {
         mutableStateOf(label)
@@ -1021,11 +997,9 @@ fun RenameLabelAlertDialog(
                 TextButton(onClick = { onDismissRequest() }) {
                     Text(text = "Cancel")
                 }
-            }
+            },
         )
-
     }
-
 }
 
 @Preview
@@ -1038,10 +1012,8 @@ fun RenameLabelPreview() {
 fun DeleteLabelAlertDialog(
     show: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
 ) {
-
-
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
@@ -1061,11 +1033,9 @@ fun DeleteLabelAlertDialog(
                 TextButton(onClick = { onDismissRequest() }) {
                     Text(text = "Cancel")
                 }
-            }
+            },
         )
-
     }
-
 }
 
 @Preview

@@ -46,10 +46,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun DrawingBar(
     modifier: Modifier = Modifier,
-    controller: DrawingController = rememberDrawingController()
+    controller: DrawingController = rememberDrawingController(),
 
 ) {
-
     var isUp by remember {
         mutableStateOf(false)
     }
@@ -79,16 +78,13 @@ fun DrawingBar(
         }
     })
 
-
     val pagerState = rememberPagerState(initialPage = 1)
     val coroutineScope = rememberCoroutineScope()
     Surface(modifier) {
         Column {
-
             TabRow(
-                selectedTabIndex = pagerState.currentPage
+                selectedTabIndex = pagerState.currentPage,
             ) {
-
                 Tab(
                     selected = pagerState.currentPage == 0,
                     onClick = {
@@ -100,17 +96,18 @@ fun DrawingBar(
                         }
 
                         coroutineScope.launch { pagerState.animateScrollToPage(0) }
-                    }) {
+                    },
+                ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.eraser),
                             contentDescription = "eraser",
-                            tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray
+                            tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray,
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.eraser_tiny),
                             contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray
+                            tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray,
                         )
                     }
                 }
@@ -128,20 +125,20 @@ fun DrawingBar(
                             true
                         }
                         coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                    }) {
+                    },
+                ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.pen),
                             contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray
+                            tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray,
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.pen_cap),
                             contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray
+                            tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray,
                         )
                     }
-
                 }
 
                 Tab(
@@ -159,17 +156,18 @@ fun DrawingBar(
                             true
                         }
                         coroutineScope.launch { pagerState.animateScrollToPage(2) }
-                    }) {
+                    },
+                ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.markerr),
                             contentDescription = "marker",
-                            tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray
+                            tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray,
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.marker_cap),
                             contentDescription = "marker",
-                            tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray
+                            tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray,
                         )
                     }
                 }
@@ -188,17 +186,18 @@ fun DrawingBar(
                             true
                         }
                         coroutineScope.launch { pagerState.animateScrollToPage(3) }
-                    }) {
+                    },
+                ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.crayon),
                             contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray
+                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.crayon_cap),
                             contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray
+                            tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray,
                         )
                     }
                 }
@@ -217,7 +216,7 @@ fun DrawingBar(
                 state = pagerState,
                 modifier = Modifier
                     .navigationBarsPadding()
-                    .animateContentSize()
+                    .animateContentSize(),
             ) { index ->
                 if (isUp) {
                     when (index) {
@@ -241,7 +240,7 @@ fun DrawingBar(
                                 onlineClick = {
                                     penWidth = it
                                     controller.lineWidth = (it + 1) * 4
-                                }
+                                },
                             )
                         }
 
@@ -257,7 +256,7 @@ fun DrawingBar(
                                 onlineClick = {
                                     markWidth = it
                                     controller.lineWidth = (it + 1) * 8
-                                }
+                                },
                             )
                         }
 
@@ -273,17 +272,14 @@ fun DrawingBar(
                                 onlineClick = {
                                     crayonWidth = it
                                     controller.lineWidth = (it + 1) * 8
-                                }
+                                },
                             )
                         }
                     }
                 }
-
             }
         }
     }
-
-
 }
 
 @Composable
@@ -292,59 +288,51 @@ fun ColorAndWidth(
     currentColor: Int,
     currentWidth: Int,
     onColorClick: (Int) -> Unit = {},
-    onlineClick: (Int) -> Unit = {}
+    onlineClick: (Int) -> Unit = {},
 ) {
-
-
     Column {
         FlowLayout2(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            verticalSpacing = 8.dp
+            verticalSpacing = 8.dp,
         ) {
             colors.forEachIndexed { index, color ->
                 Box(
                     modifier = Modifier
                         .clickable {
-
                             onColorClick(index)
                         }
                         .clip(CircleShape)
                         .background(color)
-                        .size(if (index == currentColor) 34.dp else 30.dp)
+                        .size(if (index == currentColor) 34.dp else 30.dp),
 
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
 
-
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
 
         ) {
             repeat(10) {
                 Box(
                     modifier = Modifier
                         .clickable {
-
-
                             onlineClick(it)
                         }
                         .clip(CircleShape)
-
                         .border(
                             1.dp,
                             if (it == currentWidth) Color.Gray else Color.Transparent,
-                            CircleShape
+                            CircleShape,
                         )
-                        .size(30.dp)
-
+                        .size(30.dp),
 
                 ) {
                     Box(
@@ -354,15 +342,12 @@ fun ColorAndWidth(
                             .background(Color.Black)
                             .align(Alignment.Center)
                             .padding(2.dp)
-                            .size(((it + 1) * 2).dp)
+                            .size(((it + 1) * 2).dp),
 
                     )
-
                 }
-
             }
         }
-
     }
 }
 
@@ -371,4 +356,3 @@ fun ColorAndWidth(
 fun DrawingBarPreview() {
     DrawingBar()
 }
-

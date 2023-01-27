@@ -9,7 +9,7 @@ import com.mshdabiola.model.NoteLabel
 )
 data class NoteLabelEntity(
     val noteId: Long,
-    val labelId: Long
+    val labelId: Long,
 )
 
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)

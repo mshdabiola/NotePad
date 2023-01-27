@@ -46,7 +46,7 @@ class DrawingController {
         Color(0xFFF50057),
         Color(0xFFFF3D00),
 
-        )
+    )
     val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Round)
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 
@@ -61,9 +61,8 @@ class DrawingController {
     var width = 0.dp
     var heigth = 0.dp
 
-
     var listOfPathData by mutableStateOf(ListOfPathData())
-    //val drawingPaths = listOfPathData
+    // val drawingPaths = listOfPathData
 
     private val redoPaths = HashMap<PathData, List<Offset>>()
     private val _canUndo = mutableStateOf(false)
@@ -72,14 +71,13 @@ class DrawingController {
     private val _canRedo = mutableStateOf(false)
     val canRedo: State<Boolean> = _canRedo
 
-
     fun getColor(index: Int) = colors[index]
 
     private var xx = 0f
     private var yy = 0f
     var pathData = PathData()
     fun setPathData(x: Float, y: Float, mode: MODE) {
-        Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.${mode}),")
+        Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.$mode),")
 
         when (draw_mode) {
             DRAW_MODE.ERASE -> {
@@ -118,7 +116,6 @@ class DrawingController {
                         list.add(Offset(x, y))
                         paths2[pathData] = list
                         listOfPathData = listOfPathData.copy(paths2 = paths2.toImmutableMap())
-
                     }
 
                     MODE.MOVE -> {
@@ -131,11 +128,8 @@ class DrawingController {
                     }
 
                     MODE.UP -> {
-
                     }
                 }
-
-
             }
         }
         setDoUnDo()
@@ -165,7 +159,6 @@ class DrawingController {
 
     fun redo() {
         if (canRedo.value) {
-
             val paths = listOfPathData.paths2.toMutableMap()
             val lastKey = redoPaths.keys.last()
             paths[lastKey] = redoPaths.remove(lastKey)!!
@@ -196,13 +189,13 @@ class DrawingController {
                         offset
                     } else {
                         yPath.quadraticBezierTo(
-                            prevOff.x, prevOff.y,
+                            prevOff.x,
+                            prevOff.y,
                             (prevOff.x + offset.x) / 2,
-                            (prevOff.y + offset.y) / 2
+                            (prevOff.y + offset.y) / 2,
                         )
                         offset
                     }
-
                 }
                 Pair(yPath, it.key)
             }
@@ -224,30 +217,27 @@ class DrawingController {
         ImageBitmap(width.value.toInt(), heigth.value.toInt(), ImageBitmapConfig.Argb8888)
         val canvas = Canvas(bitmap2.asImageBitmap())
 
-
         val paint = Paint()
         canvas.drawRect(
             Rect(0f, 0f, w.toFloat(), h.toFloat()),
-            paint.apply { this.color = Color.White })
+            paint.apply { this.color = Color.White },
+        )
         getPathAndData().forEach {
-
             paint.color = colors[it.second.color]
             paint.alpha = it.second.colorAlpha
             paint.strokeWidth = with(density) {
                 (it.second.lineWidth.dp).roundToPx().toFloat()
-            }//(it.second.lineWidth.dp).roundToPx().toFloat()
+            } // (it.second.lineWidth.dp).roundToPx().toFloat()
             paint.strokeCap = lineCaps[it.second.lineCap]
             paint.strokeJoin = lineJoins[it.second.lineJoin]
             paint.blendMode = DrawScope.DefaultBlendMode
             paint.style = PaintingStyle.Stroke
 
             canvas.drawPath(it.first, paint)
-
         }
 
         return bitmap2
     }
-
 }
 
 @Composable
@@ -263,5 +253,3 @@ fun rememberDrawingController(): DrawingController {
         }
     }
 }
-
-

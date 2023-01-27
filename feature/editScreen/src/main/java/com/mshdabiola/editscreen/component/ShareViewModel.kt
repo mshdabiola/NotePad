@@ -32,7 +32,7 @@ import javax.inject.Inject
 class ShareViewModel @Inject constructor(
     private val labelRepository: LabelRepository,
     private val notePadRepository: NotePadRepository,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
 ) : ViewModel() {
     private val c = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(c)
@@ -62,7 +62,6 @@ class ShareViewModel @Inject constructor(
                     selectLabels = it.filter { it.isCheck }.toImmutableList()
                 }
         }
-
     }
 
     fun toggleLabel(id: Long) {
@@ -88,17 +87,16 @@ class ShareViewModel @Inject constructor(
                 .map { NoteLabel(noteId, it.id) }
             val notePad = NotePad(
                 note = Note(
-                    id = noteId, title, subject,
-                    editDate = Clock.System.now().toEpochMilliseconds()
+                    id = noteId,
+                    title,
+                    subject,
+                    editDate = Clock.System.now().toEpochMilliseconds(),
                 ),
                 images = noteImages,
-                labels = labels
+                labels = labels,
             )
 
             notePadRepository.insertNotepad(notePad)
         }
-
-
     }
-
 }

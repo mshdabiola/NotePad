@@ -44,8 +44,8 @@ fun NoteTextField(
     colors: TextFieldColors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
-        containerColor = Color.Transparent
-    )
+        containerColor = Color.Transparent,
+    ),
 ) {
     TextField(
         value = value,
@@ -68,7 +68,7 @@ fun NoteTextField(
         minLines = minLines,
         interactionSource = interactionSource,
         shape = shape,
-        colors = colors
+        colors = colors,
     )
     TextFieldValue
 }
@@ -78,6 +78,6 @@ fun NoteTextField(
 fun NoteTextPreview() {
     NoteTextField(
         value = "judge",
-        onValueChange = {}
+        onValueChange = {},
     )
 }

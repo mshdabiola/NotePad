@@ -31,15 +31,13 @@ class NotePadRepository
     private val noteLabelDao: NoteLabelDao,
     private val noteVoiceDao: NoteVoiceDao,
     private val notePadDao: NotepadDao,
-    private val pathDao: PathDao
+    private val pathDao: PathDao,
 ) {
     suspend fun insertNote(note: Note) = noteDao.upsert(note.toNoteEntity())
 
     suspend fun insertNotepad(notePad: NotePad): Long {
-
         val id = noteDao.upsert(notePad.note.toNoteEntity())
         if (notePad.checks.isNotEmpty()) {
-
             noteCheckDao.upsert(notePad.checks.map { it.toNoteCheckEntity() })
         }
         if (notePad.voices.isNotEmpty()) {
@@ -63,7 +61,6 @@ class NotePadRepository
         noteCheckDao.deleteByNoteId(noteId)
     }
 
-
     fun getNotePads(noteType: NoteType) = notePadDao
         .getListOfNotePad(noteType).map { entities -> entities.map { it.toNotePad() } }
 
@@ -83,25 +80,25 @@ class NotePadRepository
     }
 
     suspend fun deleteNotePad(notePads: List<NotePad>) = withContext(Dispatchers.IO) {
-
-
         delete(notePads)
     }
 
     private suspend fun delete(notePads: List<NotePad>) {
         notePads.forEach {
-
             val id = it.note.id!!
             noteDao.delete(id)
-            if (it.images.isNotEmpty())
+            if (it.images.isNotEmpty()) {
                 noteImageDao.deleteByNoteId(id)
-            if (it.labels.isNotEmpty())
+            }
+            if (it.labels.isNotEmpty()) {
                 noteLabelDao.deleteByNoteId(id)
-            if (it.voices.isNotEmpty())
+            }
+            if (it.voices.isNotEmpty()) {
                 noteVoiceDao.deleteVoiceByNoteId(id)
-            if (it.checks.isNotEmpty())
+            }
+            if (it.checks.isNotEmpty()) {
                 noteCheckDao.deleteByNoteId(id)
-
+            }
         }
 
         notePads
@@ -112,6 +109,4 @@ class NotePadRepository
                 pathDao.delete(it.id)
             }
     }
-
-
 }

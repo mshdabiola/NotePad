@@ -9,9 +9,8 @@ import javax.inject.Inject
 
 class AlarmManager
 @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) {
-
 
     fun setAlarm(
         timeInMil: Long,
@@ -19,7 +18,7 @@ class AlarmManager
         requestCode: Int = 0,
         title: String,
         noteId: Long,
-        content: String
+        content: String,
     ) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -43,18 +42,16 @@ class AlarmManager
             alarmMgr.setExact(
                 /* type = */ AlarmManager.RTC_WAKEUP,
                 /* triggerAtMillis = */ timeInMil,
-                /* operation = */ alarmIntent
+                /* operation = */ alarmIntent,
             )
         } else {
             alarmMgr.setInexactRepeating(
                 /* type = */ AlarmManager.RTC_WAKEUP,
                 /* triggerAtMillis = */ timeInMil,
                 /* intervalMillis = 1000 * 60 * 20*/interval,
-                /* operation = */ alarmIntent
+                /* operation = */ alarmIntent,
             )
         }
-
-
     }
 
     fun deleteAlarm(requestCode: Int = 0) {
@@ -65,11 +62,10 @@ class AlarmManager
                 context,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_IMMUTABLE,
             )
         }
 
         alarmMgr.cancel(alarmIntent)
-
     }
 }

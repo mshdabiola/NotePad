@@ -6,21 +6,18 @@ data class PathData(
     val lineCap: Int = 0,
     val lineJoin: Int = 0,
     val colorAlpha: Float = 1f,
-    val id: Int = 0
+    val id: Int = 0,
 )
-
 
 enum class MODE {
     UP,
     MOVE,
-    DOWN
+    DOWN,
 }
 
 enum class DRAW_MODE {
     ERASE,
     PEN,
     MARKER,
-    CRAYON
+    CRAYON,
 }
-
-

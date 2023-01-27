@@ -64,12 +64,11 @@ val md_theme_dark_surfaceTint = Color(0xFFFFB77D)
 val md_theme_dark_outlineVariant = Color(0xFF51443B)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-
 val seed = Color(0xFF603813)
 
 val Purple200 = Color(0xFFBB86FC)
 
-//val Purple500 = Color(0xFF6200EE)
+// val Purple500 = Color(0xFF6200EE)
 val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 
@@ -92,10 +91,8 @@ val gradientColors = listOf(
     Color.Cyan,
     Color.Green,
     Color.Yellow,
-    Color.Red
+    Color.Red,
 )
-
 
 val streamAccent = Color(0xFF005FFF)
 val purple500 = Color(0xFFdb94fe)
-

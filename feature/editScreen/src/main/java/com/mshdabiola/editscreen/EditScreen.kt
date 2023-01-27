@@ -1,6 +1,6 @@
 package com.mshdabiola.editscreen
 
-//import androidx.compose.foundation.layout.padding
+// import androidx.compose.foundation.layout.padding
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -110,6 +110,7 @@ import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
@@ -119,16 +120,14 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
-
 @Composable
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
     navigateToGallery: (Long, Long) -> Unit,
-    navigateToDrawing: (Long, Long?) -> Unit
+    navigateToDrawing: (Long, Long?) -> Unit,
 ) {
-
     val modalState = rememberModalState()
     val noteModalState = rememberModalState()
     val colorModalState = rememberModalState()
@@ -144,7 +143,7 @@ fun EditScreen(
             if (it) {
                 coroutineScope.launch { notificationModalState.show() }
             }
-        }
+        },
     )
     val context = LocalContext.current
 
@@ -154,7 +153,7 @@ fun EditScreen(
             editViewModel.navigateToDrawing = false
         }
     })
-
+    FirebaseScreenLog(screen = "edit_screen")
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
@@ -175,14 +174,14 @@ fun EditScreen(
         onLabel = {
             navigateToSelectLevel(
                 intArrayOf(
-                    editViewModel.notePadUiState.note.id.toInt()
-                )
+                    editViewModel.notePadUiState.note.id.toInt(),
+                ),
             )
         },
         onColorClick = { coroutineScope.launch { colorModalState.show() } },
         onNotification = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
             ) {
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
@@ -195,8 +194,7 @@ fun EditScreen(
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
         navigateToGallery = navigateToGallery,
-        navigateToDrawing = navigateToDrawing
-
+        navigateToDrawing = navigateToDrawing,
 
     )
     AddBottomSheet(
@@ -209,7 +207,7 @@ fun EditScreen(
         getPhotoUri = editViewModel::getPhotoUri,
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) }
+        onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) },
     )
 
     val send = {
@@ -220,7 +218,6 @@ fun EditScreen(
             .setChooserTitle("From Notepad")
             .createChooserIntent()
         context.startActivity(Intent(intent))
-
     }
     NoteOptionBottomSheet(
         modalState = noteModalState,
@@ -229,27 +226,26 @@ fun EditScreen(
         onLabel = {
             navigateToSelectLevel(
                 intArrayOf(
-                    editViewModel.notePadUiState.note.id.toInt()
-                )
+                    editViewModel.notePadUiState.note.id.toInt(),
+                ),
             )
         },
         onDelete = editViewModel::onDelete,
         onCopy = editViewModel::copyNote,
-        onSendNote = send
+        onSendNote = send,
     )
     ColorAndImageBottomSheet(
         modalState = colorModalState,
         currentColor = editViewModel.notePadUiState.note.color,
         currentImage = editViewModel.notePadUiState.note.background,
         onColorClick = editViewModel::onColorChange,
-        onImageClick = editViewModel::onImageChange
+        onImageClick = editViewModel::onImageChange,
     )
-
 
     NotificationBottomSheet(
         modalState = notificationModalState,
         onAlarm = editViewModel::setAlarm,
-        showDialog = { showDialog = true }
+        showDialog = { showDialog = true },
     )
 
     NotificationDialog(
@@ -258,10 +254,9 @@ fun EditScreen(
         remainder = editViewModel.notePadUiState.note.reminder,
         interval = if (editViewModel.notePadUiState.note.interval == (-1L)) null else editViewModel.notePadUiState.note.interval,
         onSetAlarm = editViewModel::setAlarm,
-        onDeleteAlarm = editViewModel::deleteAlarm
+        onDeleteAlarm = editViewModel::deleteAlarm,
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -291,12 +286,9 @@ fun EditScreen(
     navigateToGallery: (Long, Long) -> Unit = { _, _ -> },
     navigateToDrawing: (Long, Long) -> Unit = { _, _ -> },
 ) {
-
-
     var expandCheck by remember {
         mutableStateOf(false)
     }
-
 
     val subjectFocus = remember {
         FocusRequester()
@@ -315,23 +307,25 @@ fun EditScreen(
     val bg = if (notepad.note.background != -1) {
         Color.Transparent
     } else {
-        if (notepad.note.color != -1)
+        if (notepad.note.color != -1) {
             NoteIcon.noteColors[notepad.note.color]
-        else
+        } else {
             MaterialTheme.colorScheme.background
+        }
     }
     val color = NoteIcon.noteColors.getOrNull(notepad.note.color) ?: Color.Transparent
 
-    val sColor = if (notepad.note.background != -1)
+    val sColor = if (notepad.note.background != -1) {
         NoteIcon.background[notepad.note.background].fgColor
-    else
+    } else {
         MaterialTheme.colorScheme.secondaryContainer
+    }
 
-
-    val painter = if (notepad.note.background != -1)
+    val painter = if (notepad.note.background != -1) {
         rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.note.background].bg))
-    else
+    } else {
         null
+    }
 
     val images = remember(notepad.images) {
         notepad.images.reversed().chunked(3)
@@ -360,7 +354,7 @@ fun EditScreen(
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = "back",
                         )
                     }
                 },
@@ -369,47 +363,44 @@ fun EditScreen(
                     IconButton(onClick = { pinNote() }) {
                         Icon(
                             imageVector = if (notepad.note.isPin) Icons.Default.PushPin else Icons.Outlined.PushPin,
-                            contentDescription = "pin"
+                            contentDescription = "pin",
                         )
                     }
                     IconButton(onClick = { onNotification() }) {
                         Icon(
                             imageVector = Icons.Outlined.NotificationAdd,
-                            contentDescription = "notification"
+                            contentDescription = "notification",
                         )
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
                             imageVector = if (notepad.note.noteType.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
-                            contentDescription = "archive"
+                            contentDescription = "archive",
                         )
                     }
-
-                }
+                },
             )
         },
 
-        ) { paddingValues ->
+    ) { paddingValues ->
         Column(
             Modifier
-
                 .padding(paddingValues)
-                .fillMaxHeight()
+                .fillMaxHeight(),
         ) {
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .testTag("edit:lazy"),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 if (notepad.images.isNotEmpty()) {
                     item {
-
                         images.forEach { imageList ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(200.dp)
+                                    .height(200.dp),
                             ) {
                                 imageList.forEach {
                                     AsyncImage(
@@ -420,23 +411,22 @@ fun EditScreen(
                                                 } else {
                                                     navigateToGallery(notepad.note.id, it.id)
                                                 }
-
                                             }
                                             .weight(1f)
                                             .height(200.dp),
-                                        model = it.imageName, contentDescription = "note image",
-                                        contentScale = ContentScale.Crop
+                                        model = it.imageName,
+                                        contentDescription = "note image",
+                                        contentScale = ContentScale.Crop,
                                     )
                                 }
                             }
                         }
-
                     }
                 }
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         TextField(
                             value = notepad.note.title,
@@ -446,30 +436,30 @@ fun EditScreen(
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
-                                containerColor = Color.Transparent
+                                containerColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 autoCorrect = true,
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
                             ),
                             modifier = Modifier
                                 .padding(0.dp)
                                 .weight(1f)
-                                .testTag("title")
+                                .testTag("title"),
 
                         )
                         if (notepad.note.isCheck) {
                             Box {
                                 IconButton(onClick = { expandCheck = true }) {
-
                                     Icon(
                                         imageVector = Icons.Default.MoreVert,
-                                        contentDescription = ""
+                                        contentDescription = "",
                                     )
                                 }
                                 DropdownMenu(
                                     expanded = expandCheck,
-                                    onDismissRequest = { expandCheck = false }) {
+                                    onDismissRequest = { expandCheck = false },
+                                ) {
                                     DropdownMenuItem(
                                         text = { Text(text = "Hide checkboxes") },
                                         onClick = {
@@ -493,17 +483,13 @@ fun EditScreen(
                                             },
                                         )
                                     }
-
-
                                 }
                             }
                         }
                     }
                 }
                 if (!notepad.note.isCheck) {
-
                     item {
-
                         TextField(
                             value = notepad.note.detail,
                             onValueChange = onSubjectChange,
@@ -512,7 +498,7 @@ fun EditScreen(
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
-                                containerColor = Color.Transparent
+                                containerColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 autoCorrect = true,
@@ -524,11 +510,9 @@ fun EditScreen(
                                 .fillMaxWidth()
                                 .imePadding()
                                 .focusRequester(subjectFocus)
-                                .testTag("detail")
-
+                                .testTag("detail"),
 
                         )
-
                     }
                 }
                 if (notepad.note.isCheck) {
@@ -537,7 +521,7 @@ fun EditScreen(
                             noteCheckUiState = it,
                             onCheckChange,
                             onCheckDelete,
-                            onCheck
+                            onCheck,
                         )
                     }
 
@@ -554,17 +538,15 @@ fun EditScreen(
                             TextButton(onClick = { showCheckNote = !showCheckNote }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
-                                    contentDescription = ""
+                                    contentDescription = "",
                                 )
                                 Text(
                                     text = "${checkNote.size} Checked Items",
-                                    style = MaterialTheme.typography.titleMedium
+                                    style = MaterialTheme.typography.titleMedium,
                                 )
                             }
                         }
-
                     }
-
 
                     if (showCheckNote) {
                         items(checkNote, key = { it.id }) {
@@ -573,11 +555,10 @@ fun EditScreen(
                                 onCheckChange,
                                 onCheckDelete,
                                 onCheck,
-                                strickText = true
+                                strickText = true,
                             )
                         }
                     }
-
                 }
                 itemsIndexed(items = notepad.voices, key = { _, item -> item.id }) { index, item ->
                     NoteVoicePlayer(
@@ -585,14 +566,14 @@ fun EditScreen(
                         playVoice = { playVoice(index) },
                         pauseVoice = pauseVoice,
                         delete = { deleteVoiceNote(index) },
-                        color = sColor
+                        color = sColor,
                     )
                 }
 
                 item {
                     FlowLayout2(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalSpacing = 8.dp
+                        verticalSpacing = 8.dp,
                     ) {
                         if (notepad.note.reminder > 0) {
                             ReminderCard(
@@ -600,7 +581,7 @@ fun EditScreen(
                                 interval = notepad.note.interval,
                                 color = sColor,
                                 style = MaterialTheme.typography.bodyLarge,
-                                onClick = showNotificationDialog
+                                onClick = showNotificationDialog,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                         }
@@ -609,67 +590,65 @@ fun EditScreen(
                                 name = it,
                                 color = sColor,
                                 style = MaterialTheme.typography.bodyLarge,
-                                onClick = onLabel
+                                onClick = onLabel,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                         if (notepad.note.background > -1 && notepad.note.color > -1) {
-                            Box(modifier = Modifier
-                                .clickable { onColorClick() }
-                                .clip(CircleShape)
-                                .background(color)
-                                .border(1.dp, Color.Gray, CircleShape)
-                                .size(30.dp)
+                            Box(
+                                modifier = Modifier
+                                    .clickable { onColorClick() }
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .border(1.dp, Color.Gray, CircleShape)
+                                    .size(30.dp),
 
                             )
-
                         }
                     }
                 }
-
-
             }
 
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                     modifier = Modifier.testTag("edit:more"),
-                    onClick = { moreOptions() }) {
+                    onClick = { moreOptions() },
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.AddBox,
-                        contentDescription = "more note"
+                        contentDescription = "more note",
                     )
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:color"),
-                    onClick = { onColorClick() }) {
+                    onClick = { onColorClick() },
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.ColorLens,
-                        contentDescription = "color and background"
+                        contentDescription = "color and background",
                     )
                 }
                 Row(
                     Modifier
                         .weight(1f)
                         .padding(end = 32.dp),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(text = "Edited ${notepad.note.editDate.toTimeAndDate()}")
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:option"),
-                    onClick = { noteOption() }) {
+                    onClick = { noteOption() },
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = "note options"
+                        contentDescription = "note options",
                     )
                 }
             }
         }
-
-
     }
 }
-
 
 @Preview
 @Composable
@@ -686,21 +665,25 @@ fun EditScreenPreview() {
                     4,
                     6,
                     5,
-                    4
+                    4,
                 ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
                 interval = 1,
-                isCheck = true
+                isCheck = true,
             ),
             labels = listOf("abiola", "moshood").toImmutableList(),
             images = listOf(
                 NoteImageUiState(
-                    id = 7898L, noteId = 9313L, imageName = "",
-                    isDrawing = false
+                    id = 7898L,
+                    noteId = 9313L,
+                    imageName = "",
+                    isDrawing = false,
                 ),
                 NoteImageUiState(
-                    id = 34L, noteId = 9513L, imageName = "",
-                    isDrawing = false
-                )
+                    id = 34L,
+                    noteId = 9513L,
+                    imageName = "",
+                    isDrawing = false,
+                ),
             ).toImmutableList(),
             voices = listOf(
                 NoteVoiceUiState(
@@ -709,26 +692,33 @@ fun EditScreenPreview() {
                     voiceName = "Mayte",
                     length = 1187L,
                     currentProgress = 500f,
-                    isPlaying = false
+                    isPlaying = false,
 
-                )
+                ),
             ).toImmutableList(),
             checks = listOf(
                 NoteCheckUiState(
-                    id = 2721L, noteId = 1931L, content = "Hosea", isCheck = false, focus = false
+                    id = 2721L,
+                    noteId = 1931L,
+                    content = "Hosea",
+                    isCheck = false,
+                    focus = false,
 
                 ),
                 NoteCheckUiState(
-                    id = 7481L, noteId = 5389L, content = "Domenica", isCheck = true, focus = false
+                    id = 7481L,
+                    noteId = 5389L,
+                    content = "Domenica",
+                    isCheck = true,
+                    focus = false,
 
-                )
-            ).toImmutableList()
+                ),
+            ).toImmutableList(),
 
         ),
 
-        )
+    )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -737,9 +727,8 @@ fun NoteCheck(
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
-    strickText: Boolean = false
+    strickText: Boolean = false,
 ) {
-
     val mutableInteractionSource = remember {
         MutableInteractionSource()
     }
@@ -762,8 +751,10 @@ fun NoteCheck(
     })
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(checked = noteCheckUiState.isCheck,
-            onCheckedChange = { onCheck(it, noteCheckUiState.id) })
+        Checkbox(
+            checked = noteCheckUiState.isCheck,
+            onCheckedChange = { onCheck(it, noteCheckUiState.id) },
+        )
         TextField(
             modifier = Modifier
                 .focusRequester(focusRequester)
@@ -773,7 +764,7 @@ fun NoteCheck(
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.Transparent
+                containerColor = Color.Transparent,
             ),
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
@@ -785,10 +776,9 @@ fun NoteCheck(
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "")
                     }
                 }
-            }
+            },
 
         )
-
     }
 }
 
@@ -798,15 +788,13 @@ fun NoteVoicePlayer(
     playVoice: () -> Unit = {},
     pauseVoice: () -> Unit = {},
     delete: () -> Unit = {},
-    color: Color = Color.Red
+    color: Color = Color.Red,
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.padding(horizontal = 16.dp),
-        color = color
+        color = color,
     ) {
-
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box {
                 if (noteVoiceUiState.isPlaying) {
@@ -818,20 +806,17 @@ fun NoteVoicePlayer(
                         Icon(imageVector = Icons.Outlined.PlayCircle, contentDescription = "play")
                     }
                 }
-
             }
             LinearProgressIndicator(
                 modifier = Modifier.weight(1f),
-                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length)
+                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length),
             )
             Text(text = noteVoiceUiState.length.toTime())
             IconButton(onClick = { delete() }) {
                 Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
             }
         }
-
     }
-
 }
 
 @Preview
@@ -840,15 +825,5 @@ fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
         NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
-        )
+    )
 }
-
-
-
-
-
-
-
-
-
-

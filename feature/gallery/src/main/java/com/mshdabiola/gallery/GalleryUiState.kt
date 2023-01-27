@@ -6,5 +6,5 @@ import kotlinx.collections.immutable.toImmutableList
 
 data class GalleryUiState(
     val images: ImmutableList<NoteImageUiState> = emptyList<NoteImageUiState>().toImmutableList(),
-    val currentIndex: Int = 0
+    val currentIndex: Int = 0,
 )

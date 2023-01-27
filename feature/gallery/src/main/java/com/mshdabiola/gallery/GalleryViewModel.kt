@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val noteImageRepository: NoteImageRepository
+    private val noteImageRepository: NoteImageRepository,
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Long>(noteIdStr)!!
@@ -38,7 +38,7 @@ class GalleryViewModel @Inject constructor(
                             reverseImages.map {
                                 it.toNoteImageUiState()
                             }.toImmutableList(),
-                            currentIndex = index
+                            currentIndex = index,
                         )
                 }
         }
@@ -49,5 +49,4 @@ class GalleryViewModel @Inject constructor(
             noteImageRepository.delete(id)
         }
     }
-
 }

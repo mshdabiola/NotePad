@@ -10,19 +10,21 @@ data class NotePadUiState(
     val images: ImmutableList<NoteImageUiState> = emptyList<NoteImageUiState>().toImmutableList(),
     val voices: ImmutableList<NoteVoiceUiState> = emptyList<NoteVoiceUiState>().toImmutableList(),
     val checks: ImmutableList<NoteCheckUiState> = emptyList<NoteCheckUiState>().toImmutableList(),
-    val labels: ImmutableList<String> = emptyList<String>().toImmutableList()
+    val labels: ImmutableList<String> = emptyList<String>().toImmutableList(),
 ) {
     override fun toString(): String {
         val checkString = checks.joinToString(separator = "\n") {
-            if (it.isCheck)
+            if (it.isCheck) {
                 "[*] ${it.content}"
-            else
+            } else {
                 "[ ] ${it.content}"
+            }
         }
-        return if (checkString.isNotBlank())
+        return if (checkString.isNotBlank()) {
             "${note.title} \n $checkString"
-        else
+        } else {
             "${note.title} \n ${note.detail}"
+        }
     }
 
     fun isEmpty(): Boolean {
@@ -46,9 +48,7 @@ data class NotePadUiState(
         val labelsIsEmpty = labels.isEmpty()
         return titleIsBlank && detailIsBlank && !emptyImage && voiceEmpty && checkIsEmpty && checksBlank && labelsIsEmpty
     }
-
 }
-
 
 fun NotePad.toNotePadUiState(list: List<Label> = emptyList()) = NotePadUiState(
     note = note.toNoteUiState(),
@@ -56,13 +56,12 @@ fun NotePad.toNotePadUiState(list: List<Label> = emptyList()) = NotePadUiState(
     voices = voices.map { it.toNoteVoiceUiState() }.toImmutableList(),
     checks = checks.map { it.toNoteCheckUiState() }.toImmutableList(),
     labels = labels.map { s -> list.singleOrNull { it.id == s.labelId }?.label ?: "" }
-        .toImmutableList()
+        .toImmutableList(),
 )
-
 
 fun NotePadUiState.toNotePad() = NotePad(
     note = note.toNote(),
     images = images.map { it.toNoteImage() },
     voices = voices.map { it.toNoteVoice() },
-    checks = checks.map { it.toNoteCheck() }
+    checks = checks.map { it.toNoteCheck() },
 )

@@ -1,6 +1,5 @@
 package com.mshdabiola.bottomsheet
 
-
 import android.app.Activity
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
@@ -17,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -25,7 +24,7 @@ fun ModalBottomSheet(
     modalState: ModalState = rememberModalState().also {
         rememberCoroutineScope().launch { it.show() }
     },
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     val contentView: ViewGroup = remember {
@@ -68,7 +67,7 @@ fun ModalBottomSheet(
                 sheetState = state,
                 sheetContent = {
                     content()
-                }
+                },
             ) {}
         }
         onDispose {}

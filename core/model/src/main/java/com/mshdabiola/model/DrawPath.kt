@@ -8,5 +8,5 @@ data class DrawPath(
     val join: Int,
     val alpha: Float,
     val cap: Int,
-    val paths: String
+    val paths: String,
 )

@@ -5,5 +5,5 @@ data class Notify(
     val label: String? = null,
     val withDismissAction: Boolean = false,
     val isShort: Boolean = true,
-    val callback: () -> Unit = {}
+    val callback: () -> Unit = {},
 )

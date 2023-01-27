@@ -8,7 +8,7 @@ import com.mshdabiola.model.Label
 data class LabelEntity(
     @PrimaryKey
     val id: Long,
-    val name: String
+    val name: String,
 )
 
 fun LabelEntity.toLabel() = Label(id, name)

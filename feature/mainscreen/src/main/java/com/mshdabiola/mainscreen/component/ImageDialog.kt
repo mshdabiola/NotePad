@@ -27,7 +27,7 @@ fun ImageDialog(
     onChooseImage: () -> Unit = {},
     onSnapImage: () -> Unit = {},
 
-    ) {
+) {
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
@@ -40,10 +40,11 @@ fun ImageDialog(
                             .fillMaxWidth()
                             .padding(16.dp),
 
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.PhotoCamera,
-                            contentDescription = "take image"
+                            contentDescription = "take image",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Take Image")
@@ -54,22 +55,20 @@ fun ImageDialog(
                             .fillMaxWidth()
                             .padding(16.dp),
 
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Image,
-                            contentDescription = "take phone"
+                            contentDescription = "take phone",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Choose Image")
                     }
-
-
                 }
             },
-            confirmButton = {}
+            confirmButton = {},
         )
     }
-
 }
 
 @Preview

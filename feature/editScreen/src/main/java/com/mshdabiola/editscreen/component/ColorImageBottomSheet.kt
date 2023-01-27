@@ -40,7 +40,6 @@ import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorAndImageBottomSheet(
@@ -50,8 +49,7 @@ fun ColorAndImageBottomSheet(
     onColorClick: (Int) -> Unit = {},
     onImageClick: (Int) -> Unit = {},
 
-    ) {
-
+) {
     rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -70,8 +68,8 @@ fun ColorAndImageBottomSheet(
                     bottom = 36.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    top = 8.dp
-                )
+                    top = 8.dp,
+                ),
             ) {
                 Text(text = "Color")
                 Spacer(modifier = Modifier.height(8.dp))
@@ -84,25 +82,24 @@ fun ColorAndImageBottomSheet(
                             modifier = Modifier.size(40.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (-1 == currentColor) Color.Blue else Color.Gray
-                            )
+                                if (-1 == currentColor) Color.Blue else Color.Gray,
+                            ),
                         ) {
                             if (-1 == currentColor) {
                                 Icon(
                                     imageVector = Icons.Default.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
-                                    modifier = Modifier.padding(4.dp)
+                                    modifier = Modifier.padding(4.dp),
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Outlined.FormatColorReset,
                                     contentDescription = "done",
                                     tint = Color.Gray,
-                                    modifier = Modifier.padding(4.dp)
+                                    modifier = Modifier.padding(4.dp),
                                 )
                             }
-
                         }
                     }
                     itemsIndexed(NoteIcon.noteColors) { index, color ->
@@ -113,18 +110,17 @@ fun ColorAndImageBottomSheet(
                             modifier = Modifier.size(40.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (index == currentColor) Color.Blue else Color.Gray
-                            )
+                                if (index == currentColor) Color.Blue else Color.Gray,
+                            ),
                         ) {
                             if (index == currentColor) {
                                 Icon(
                                     imageVector = Icons.Default.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
-                                    modifier = Modifier.padding(4.dp)
+                                    modifier = Modifier.padding(4.dp),
                                 )
                             }
-
                         }
                     }
                 }
@@ -132,7 +128,6 @@ fun ColorAndImageBottomSheet(
                 Text(text = "Background")
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
                     item {
                         Box(Modifier.clickable { onImageClick(-1) }) {
                             Icon(
@@ -141,12 +136,12 @@ fun ColorAndImageBottomSheet(
                                     .border(
                                         1.dp,
                                         if (-1 == currentImage) Color.Blue else Color.Gray,
-                                        CircleShape
+                                        CircleShape,
                                     )
                                     .size(56.dp)
                                     .padding(8.dp),
                                 imageVector = Icons.Outlined.ImageNotSupported,
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                             if (-1 == currentImage) {
                                 Icon(
@@ -154,15 +149,13 @@ fun ColorAndImageBottomSheet(
                                         .clip(CircleShape)
                                         .background(Color.Blue)
                                         .size(16.dp)
-
                                         .align(Alignment.TopEnd),
                                     imageVector = Icons.Default.Done,
                                     contentDescription = "",
-                                    tint = Color.White
+                                    tint = Color.White,
 
                                 )
                             }
-
                         }
                     }
                     itemsIndexed(NoteIcon.background) { index, noteBg ->
@@ -174,12 +167,12 @@ fun ColorAndImageBottomSheet(
                                     .border(
                                         1.dp,
                                         if (index == currentImage) Color.Blue else Color.Gray,
-                                        CircleShape
+                                        CircleShape,
                                     )
                                     .size(56.dp),
                                 painter = painterResource(id = noteBg.bg),
                                 contentDescription = "",
-                                contentScale = ContentScale.Crop
+                                contentScale = ContentScale.Crop,
                             )
                             if (index == currentImage) {
                                 Icon(
@@ -187,23 +180,18 @@ fun ColorAndImageBottomSheet(
                                         .clip(CircleShape)
                                         .background(Color.Blue)
                                         .size(16.dp)
-
                                         .align(Alignment.TopEnd),
                                     imageVector = Icons.Default.Done,
                                     contentDescription = "",
-                                    tint = Color.White
+                                    tint = Color.White,
 
                                 )
                             }
-
                         }
-
                     }
                 }
-
             }
         }
-
     }
 }
 
@@ -213,6 +201,6 @@ fun ImageAndColorBottomSheetPreview() {
     ColorAndImageBottomSheet(
         modalState = rememberModalState(),
         currentColor = -1,
-        currentImage = -1
+        currentImage = -1,
     )
 }

@@ -5,8 +5,5 @@ enum class NoteType(val index: Int? = null) {
     ARCHIVE,
     TRASH,
     LABEL,
-    REMAINDER
-    ;
-
-
+    REMAINDER,
 }

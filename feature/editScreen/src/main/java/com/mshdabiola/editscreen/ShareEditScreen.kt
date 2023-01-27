@@ -58,9 +58,8 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ActionEditScreen(
-    shareViewModel: ShareViewModel = hiltViewModel()
+    shareViewModel: ShareViewModel = hiltViewModel(),
 ) {
-
     var showLabel by remember {
         mutableStateOf(false)
     }
@@ -68,16 +67,15 @@ fun ActionEditScreen(
         onSaveNote = shareViewModel::saveNote,
         labels = shareViewModel.selectLabels,
         showLabel = shareViewModel.showLabel,
-        showLabelDialog = { showLabel = true }
+        showLabelDialog = { showLabel = true },
     )
 
     EditLabels(
         show = showLabel,
         labels = shareViewModel.labels,
         onDismissRequest = { showLabel = false },
-        onToggleLabel = shareViewModel::toggleLabel
+        onToggleLabel = shareViewModel::toggleLabel,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -86,7 +84,7 @@ fun ActionEditScreen(
     showLabel: Boolean = true,
     labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList(),
     onSaveNote: (String, String, List<Uri>) -> Unit = { _, _, _ -> },
-    showLabelDialog: () -> Unit = {}
+    showLabelDialog: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var title by remember {
@@ -99,7 +97,6 @@ fun ActionEditScreen(
     var images by remember {
         mutableStateOf(emptyList<List<Uri>>())
     }
-
 
     LaunchedEffect(key1 = Unit, block = {
         val intent = (context as Activity).intent
@@ -130,7 +127,8 @@ fun ActionEditScreen(
                 onClick = {
                     onSaveNote(title, subject, images.flatten())
                     (context as Activity).finish()
-                })
+                },
+            )
         },
         topBar = {
             TopAppBar(
@@ -139,42 +137,40 @@ fun ActionEditScreen(
                     IconButton(onClick = { (context as Activity).finish() }) {
                         Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Cancel")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
 
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
                 .imePadding(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (images.isNotEmpty()) {
                 item {
-
                     images.forEach { imageList ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(200.dp),
                         ) {
                             imageList.forEach {
                                 AsyncImage(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(200.dp),
-                                    model = it, contentDescription = "",
-                                    contentScale = ContentScale.Crop
+                                    model = it,
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
                                 )
                             }
                         }
                     }
-
                 }
             }
             item {
-
                 TextField(
                     value = title,
                     onValueChange = { title = it },
@@ -183,23 +179,19 @@ fun ActionEditScreen(
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
+                        containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         autoCorrect = true,
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Next,
                     ),
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
 
                 )
-
-
             }
 
-
             item {
-
                 TextField(
                     value = subject,
                     onValueChange = { subject = it },
@@ -208,38 +200,35 @@ fun ActionEditScreen(
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
+                        containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         autoCorrect = true,
                         keyboardType = KeyboardType.Text,
                         // imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(onDone = { //Todo(Save)
-                    }
+                    keyboardActions = KeyboardActions(
+                        onDone = { // Todo(Save)
+                        },
                     ),
                     modifier = Modifier
-                        .fillMaxWidth()
-
+                        .fillMaxWidth(),
 
                 )
-
             }
             if (labels.isNotEmpty()) {
                 item {
                     FlowRow(
                         modifier = Modifier.padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         labels.forEach {
                             LabelCard(
                                 name = it.label,
                                 color = MaterialTheme.colorScheme.secondary,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
-
                         }
-
                     }
                 }
             }
@@ -250,11 +239,8 @@ fun ActionEditScreen(
                     }
                 }
             }
-
-
         }
     }
-
 }
 
 @Composable
@@ -262,7 +248,7 @@ fun EditLabels(
     show: Boolean = false,
     onDismissRequest: () -> Unit = {},
     labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList(),
-    onToggleLabel: (Long) -> Unit = {}
+    onToggleLabel: (Long) -> Unit = {},
 ) {
     AnimatedVisibility(visible = show) {
         AlertDialog(
@@ -277,23 +263,21 @@ fun EditLabels(
                 LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
                     items(labels, key = { it.id }) { label ->
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
 
                         ) {
                             Text(text = label.label, modifier = Modifier.weight(1f))
                             Checkbox(
                                 checked = label.isCheck,
-                                onCheckedChange = { onToggleLabel(label.id) })
+                                onCheckedChange = { onToggleLabel(label.id) },
+                            )
                         }
                     }
-
                 }
-            }
+            },
         )
     }
-
 }
-
 
 @Preview
 @Composable
@@ -301,34 +285,52 @@ fun ActionEditScreenPreview() {
     ActionEditScreen(
         labels = listOf(
             LabelUiState(
-                id = 759L, label = "Emanuel", isCheck = false
+                id = 759L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 79L, label = "Emanuel", isCheck = false
+                id = 79L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 59L, label = "Emanuel", isCheck = false
+                id = 59L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7529L, label = "Emanuel", isCheck = false
+                id = 7529L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7519L, label = "Emanuel", isCheck = false
+                id = 7519L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 79L, label = "Emanuel", isCheck = false
+                id = 79L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 59L, label = "Emanuel", isCheck = false
+                id = 59L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7529L, label = "Emanuel", isCheck = false
+                id = 7529L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7519L, label = "Emanuel", isCheck = false
+                id = 7519L,
+                label = "Emanuel",
+                isCheck = false,
             ),
 
-            ).toImmutableList()
+        ).toImmutableList(),
     )
 }
 
@@ -339,21 +341,31 @@ fun DialogPreview() {
         show = true,
         labels = listOf(
             LabelUiState(
-                id = 759L, label = "Emanuel", isCheck = false
+                id = 759L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 79L, label = "Emanuel", isCheck = false
+                id = 79L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 59L, label = "Emanuel", isCheck = false
+                id = 59L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7529L, label = "Emanuel", isCheck = false
+                id = 7529L,
+                label = "Emanuel",
+                isCheck = false,
             ),
             LabelUiState(
-                id = 7519L, label = "Emanuel", isCheck = false
+                id = 7519L,
+                label = "Emanuel",
+                isCheck = false,
             ),
 
-            ).toImmutableList()
+        ).toImmutableList(),
     )
 }

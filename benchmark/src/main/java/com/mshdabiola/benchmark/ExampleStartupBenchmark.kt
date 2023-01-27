@@ -33,7 +33,7 @@ class ExampleStartupBenchmark {
         packageName = "com.mshdabiola.playnotepad",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
-        startupMode = StartupMode.COLD
+        startupMode = StartupMode.COLD,
     ) {
         pressHome()
         startActivityAndWait()
@@ -76,8 +76,8 @@ abstract class AbstractStartupBenchmark(private val startupMode: StartupMode) {
     fun startupBaselineProfileDisabled() = startup(
         CompilationMode.Partial(
             baselineProfileMode = BaselineProfileMode.Disable,
-            warmupIterations = 1
-        )
+            warmupIterations = 1,
+        ),
     )
 
     @Test
@@ -95,7 +95,7 @@ abstract class AbstractStartupBenchmark(private val startupMode: StartupMode) {
         startupMode = startupMode,
         setupBlock = {
             pressHome()
-        }
+        },
     ) {
         startActivityAndWait()
         // Waits until the content is ready to capture Time To Full Display

@@ -28,7 +28,7 @@ class DrawingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentManager: ContentManager,
     private val noteImageRepository: NoteImageRepository,
-    private val drawingPathRepository: DrawingPathRepository
+    private val drawingPathRepository: DrawingPathRepository,
 ) : ViewModel() {
 
     private val noteId = savedStateHandle.get<Long>(noteIdArg)!!
@@ -38,9 +38,9 @@ class DrawingViewModel @Inject constructor(
     var drawingUiState by mutableStateOf(
         DrawingUiState(
             filePath = contentManager.getImagePath(
-                imageID
-            )
-        )
+                imageID,
+            ),
+        ),
     )
 
     init {
@@ -53,15 +53,11 @@ class DrawingViewModel @Inject constructor(
                 }
             }
         }
-
     }
-
 
     fun saveImage(bitmap: Bitmap, map: Map<PathData, List<Offset>>) {
         saveDrawing(map)
         viewModelScope.launch {
-
-
             val path = contentManager.getImagePath(imageID)
 
             noteImageRepository.upsert(NoteImage(imageID, noteId, path, true))
@@ -75,7 +71,6 @@ class DrawingViewModel @Inject constructor(
             noteImageRepository.delete(imageID)
             File(contentManager.getImagePath(imageID)).delete()
         }
-
     }
 
     private var job: Job? = null
@@ -93,7 +88,6 @@ class DrawingViewModel @Inject constructor(
         }
     }
 
-
     private fun changeToDrawPath(map: Map<PathData, List<Offset>>): List<DrawPath> {
         return map.map { entry ->
             DrawPath(
@@ -104,7 +98,8 @@ class DrawingViewModel @Inject constructor(
                 entry.key.lineJoin,
                 entry.key.colorAlpha,
                 entry.key.lineCap,
-                entry.value.joinToString { "${it.x}, ${it.y}" })
+                entry.value.joinToString { "${it.x}, ${it.y}" },
+            )
         }
     }
 
@@ -117,7 +112,7 @@ class DrawingViewModel @Inject constructor(
                 drawPath.cap,
                 drawPath.join,
                 drawPath.alpha,
-                drawPath.pathId
+                drawPath.pathId,
             )
             val offsetList = drawPath.paths
                 .split(",")
@@ -128,6 +123,4 @@ class DrawingViewModel @Inject constructor(
         }
         return map
     }
-
-
 }

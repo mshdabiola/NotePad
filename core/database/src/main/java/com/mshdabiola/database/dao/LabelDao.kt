@@ -14,7 +14,6 @@ interface LabelDao {
     @Query("DELETE FROM label_table WHERE id = :id")
     suspend fun delete(id: Long)
 
-
     @Query("SELECT * FROM label_table")
     fun getAllLabel(): Flow<LabelEntity>
 
@@ -23,5 +22,4 @@ interface LabelDao {
 
     @Query("SELECT * FROM label_table")
     fun getAllLabels(): Flow<List<LabelEntity>>
-
 }

@@ -1,6 +1,5 @@
 package com.mshdabiola.gallery
 
-
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -13,7 +12,7 @@ const val currentId = "currentImageIndex"
 
 fun NavGraphBuilder.galleryScreen(
     onBack: () -> Unit,
-    navigateToEditScreen: (Long, String, Long) -> Unit
+    navigateToEditScreen: (Long, String, Long) -> Unit,
 ) {
     composable(
         route = "$galleryRoute?$noteIdStr={$noteIdStr}?$currentId={$currentId}",
@@ -23,18 +22,18 @@ fun NavGraphBuilder.galleryScreen(
             },
             navArgument(currentId) {
                 type = NavType.LongType
-            }
-        )
+            },
+        ),
     ) {
         GalleryScreen(
             onBack = onBack,
-            navigateToEditScreen = navigateToEditScreen
+            navigateToEditScreen = navigateToEditScreen,
         )
     }
 }
 
 fun NavController.navigateToGallery(noteId: Long, currentIndex: Long) {
     navigate(
-        route = "$galleryRoute?$noteIdStr=$noteId?$currentId=$currentIndex"
+        route = "$galleryRoute?$noteIdStr=$noteId?$currentId=$currentIndex",
     )
 }

@@ -20,7 +20,7 @@ import javax.inject.Inject
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository
+    private val noteLabelRepository: NoteLabelRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
@@ -45,7 +45,6 @@ class LabelViewModel @Inject constructor(
         }
     }
 
-
     fun onLabelChange(value: String, id: Long) {
         val labels = labelScreenUiState.labels.toMutableList()
         val index = labels.indexOfFirst { it.id == id }
@@ -63,13 +62,10 @@ class LabelViewModel @Inject constructor(
             labelRepository.delete(id)
             noteLabelRepository.deleteByLabelId(id)
         }
-
     }
 
     fun onAddLabelChange(value: String) {
-
         labelScreenUiState = labelScreenUiState.copy(editText = value)
-
     }
 
     fun onAddLabelDone() {
@@ -84,14 +80,12 @@ class LabelViewModel @Inject constructor(
             labelScreenUiState.copy(
                 labels = labels.toImmutableList(),
                 editText = "",
-                errorOccur = false
+                errorOccur = false,
             )
         }
-
     }
 
     fun onAddDeleteValue() {
         labelScreenUiState = labelScreenUiState.copy(editText = "")
     }
-
 }

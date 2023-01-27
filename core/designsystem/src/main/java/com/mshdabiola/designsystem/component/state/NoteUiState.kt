@@ -16,7 +16,7 @@ data class NoteUiState(
     val interval: Long = 0,
     val selected: Boolean = false,
     val noteType: NoteTypeUi = NoteTypeUi(),
-    val focus: Boolean = false
+    val focus: Boolean = false,
 )
 
 fun Note.toNoteUiState() =
@@ -32,7 +32,7 @@ fun Note.toNoteUiState() =
         reminder,
         interval,
         false,
-        NoteTypeUi(noteType, 0)
+        NoteTypeUi(noteType, 0),
     )
 
 fun NoteUiState.toNote() =
@@ -47,8 +47,6 @@ fun NoteUiState.toNote() =
         isPin,
         reminder,
         interval,
-        noteType.type
+        noteType.type,
     )
-//fun NoteUiState.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin)
-
-
+// fun NoteUiState.toNote() = Note(id, title, detail, date, isCheck, color, background, isPin)

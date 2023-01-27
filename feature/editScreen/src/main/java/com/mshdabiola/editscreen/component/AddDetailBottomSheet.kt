@@ -33,7 +33,6 @@ import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun AddBottomSheet(
     modalState: ModalState,
@@ -45,9 +44,8 @@ fun AddBottomSheet(
     getPhotoUri: () -> Uri = { Uri.EMPTY },
     savePhoto: () -> Unit = {},
     changeToCheckBoxes: () -> Unit = {},
-    onDrawing: () -> Unit = {}
+    onDrawing: () -> Unit = {},
 ) {
-
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
     } else {
@@ -66,10 +64,9 @@ fun AddBottomSheet(
 
                 val time = System.currentTimeMillis()
                 saveImage(it, time)
-
             }
-
-        })
+        },
+    )
     val snapPictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = {
@@ -77,8 +74,8 @@ fun AddBottomSheet(
                 savePhoto()
                 // navigateToEdit(-3, "image text", photoId)
             }
-        })
-
+        },
+    )
 
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -87,102 +84,103 @@ fun AddBottomSheet(
                 val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 val audiouri = intent.data
 
-
                 if (audiouri != null) {
                     val time = System.currentTimeMillis()
                     saveVoice(audiouri, strArr?.joinToString() ?: "", time)
-
                 }
-
-
             }
-        }
+        },
     )
 
     val audioPermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
             onResult = {
                 if (it) {
                     voiceLauncher.launch(
                         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                             putExtra(
                                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
                             )
                             putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
                             putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
                             putExtra("android.speech.extra.GET_AUDIO", true)
-
-                        })
-
-
+                        },
+                    )
                 }
-
-            }
+            },
         )
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-
-
     ModalBottomSheet(modalState = modalState) {
         Surface(
-            color = background
+            color = background,
         ) {
             Column(modifier = Modifier.padding(bottom = 36.dp)) {
-
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.PhotoCamera,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Take photo") },
-                    selected = false, onClick = {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.PhotoCamera,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Take photo") },
+                    selected = false,
+                    onClick = {
                         snapPictureLauncher.launch(getPhotoUri())
                         coroutineScope.launch { modalState.hide() }
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
 
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Image,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Add image") },
-                    selected = false, onClick = {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Image,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Add image") },
+                    selected = false,
+                    onClick = {
                         imageLauncher.launch(
                             PickVisualMediaRequest(
-                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
+                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly,
+                            ),
                         )
                         coroutineScope.launch { modalState.hide() }
-
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Brush,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Drawing") },
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Brush,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Drawing") },
                     selected = false,
                     onClick = {
                         coroutineScope.launch { modalState.hide() }
                         onDrawing()
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
 
                 )
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardVoice,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Recording") },
-                    selected = false, onClick = {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardVoice,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Recording") },
+                    selected = false,
+                    onClick = {
                         coroutineScope.launch { modalState.hide() }
                         if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
                             PackageManager.PERMISSION_GRANTED
@@ -191,41 +189,40 @@ fun AddBottomSheet(
                                 Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                                     putExtra(
                                         RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
                                     )
                                     putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
                                     putExtra(
                                         "android.speech.extra.GET_AUDIO_FORMAT",
-                                        "audio/AMR"
+                                        "audio/AMR",
                                     )
                                     putExtra("android.speech.extra.GET_AUDIO", true)
-
-                                })
-
+                                },
+                            )
                         } else {
                             audioPermission.launch(Manifest.permission.RECORD_AUDIO)
                         }
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
                 if (!isNoteCheck) {
-                    NavigationDrawerItem(icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.CheckBox,
-                            contentDescription = ""
-                        )
-                    }, label = { Text(text = "Checkboxes") },
+                    NavigationDrawerItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.CheckBox,
+                                contentDescription = "",
+                            )
+                        },
+                        label = { Text(text = "Checkboxes") },
                         selected = false,
                         onClick = {
                             coroutineScope.launch { modalState.hide() }
                             changeToCheckBoxes()
                         },
-                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                     )
                 }
-
             }
         }
-
     }
 }

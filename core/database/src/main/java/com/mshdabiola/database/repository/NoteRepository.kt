@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class NoteRepository
 @Inject constructor(
-    private val noteDao: NoteDao
+    private val noteDao: NoteDao,
 ) {
 
     suspend fun upsert(notes: List<Note>) = withContext(Dispatchers.IO) {

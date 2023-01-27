@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class LabelRepository
 @Inject constructor(
-    private val labelDao: LabelDao
+    private val labelDao: LabelDao,
 ) {
 
     suspend fun upsert(labels: List<Label>) = withContext(Dispatchers.IO) {

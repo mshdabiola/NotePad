@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val notePadRepository: NotePadRepository,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
@@ -40,7 +40,6 @@ class SearchViewModel @Inject constructor(
                             it.labels.map { notelab -> lab.single { it.id == notelab.labelId }.label }
                         it.toNotePadUiState().copy(labels = labels.toImmutableList())
                     }
-
 
                     val labels = notePads
                         .map { it.labels }
@@ -62,8 +61,6 @@ class SearchViewModel @Inject constructor(
                         searchUiState = searchUiState.copy(notes = list)
                     }
             }
-
-
     }
 
     fun onSearchTextChange(text: String) {
@@ -71,7 +68,6 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun isMatch(notePadUiState1: NotePadUiState, text: String): Boolean {
-
         if (text.isBlank()) return false
         val titleMatch = notePadUiState1.note.title.contains(text, true)
         val detailMatch = notePadUiState1.note.detail.contains(text, ignoreCase = true)
@@ -83,7 +79,6 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onItemTypeClick(index: Int) {
-
         when (index) {
             0 -> {
                 Log.e(this::class.simpleName, "Reminder")
@@ -91,42 +86,41 @@ class SearchViewModel @Inject constructor(
                 searchUiState = searchUiState.copy(
                     search = "",
                     placeholder = "Reminders",
-                    notes = remainder.toImmutableList()
+                    notes = remainder.toImmutableList(),
                 )
-            }   //Reminders
+            } // Reminders
             1 -> {
                 Log.e(this::class.simpleName, "Lists")
                 val lists = notePads.filter { it.checks.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",
                     placeholder = "Lists",
-                    notes = lists.toImmutableList()
+                    notes = lists.toImmutableList(),
                 )
-            }  //Lists
+            } // Lists
             2 -> {
                 Log.e(this::class.simpleName, "image")
                 val images = notePads.filter { it.images.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",
                     placeholder = "Images",
-                    notes = images.toImmutableList()
+                    notes = images.toImmutableList(),
                 )
-            }  //Images
+            } // Images
             3 -> {
                 Log.e(this::class.simpleName, "Voice")
                 val voices = notePads.filter { it.voices.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",
                     placeholder = "Voice",
-                    notes = voices.toImmutableList()
+                    notes = voices.toImmutableList(),
                 )
-            }  //Voice
-            4 -> {}  //Drawings
+            } // Voice
+            4 -> {} // Drawings
             else -> {
                 Log.e(this::class.simpleName, "else")
             }
         }
-
     }
 
     fun onItemLabelClick(index: Int) {
@@ -134,6 +128,5 @@ class SearchViewModel @Inject constructor(
 
         val labels = notePads.filter { it.labels.contains(label) }
         searchUiState = searchUiState.copy(placeholder = label, notes = labels.toImmutableList())
-
     }
 }

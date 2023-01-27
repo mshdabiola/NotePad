@@ -45,18 +45,18 @@ fun NotificationDialog(
     remainder: Long = -1,
     interval: Long? = null,
     onSetAlarm: (Long, Long?) -> Unit = { _, _ -> },
-    onDeleteAlarm: () -> Unit = {}
+    onDeleteAlarm: () -> Unit = {},
 ) {
-
     val now = remember {
         Clock.System.now()
     }
     var dateTime by remember(remainder) {
-        val time = if (remainder > -1)
+        val time = if (remainder > -1) {
             Instant.fromEpochMilliseconds(remainder)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
-        else
+        } else {
             now.toLocalDateTime(TimeZone.currentSystemDefault())
+        }
 
         mutableStateOf(time)
     }
@@ -70,8 +70,9 @@ fun NotificationDialog(
             onDismissRequest = onDismissRequest,
             title = { Text(text = if (remainder > 0) "Edit Reminder" else "Add Reminder") },
             text = {
-
-                TimeContent(inter, dateTime,
+                TimeContent(
+                    inter,
+                    dateTime,
                     onDateChange = {
                         if (it.time == LocalTime(0, 0)) {
                             TimePickerDialog(
@@ -79,40 +80,37 @@ fun NotificationDialog(
                                 { _, hourOfDay, minute ->
                                     dateTime = LocalDateTime(
                                         dateTime.date,
-                                        LocalTime(hourOfDay, minute)
+                                        LocalTime(hourOfDay, minute),
                                     )
                                 },
                                 dateTime.hour,
                                 dateTime.minute,
-                                false
+                                false,
                             ).show()
-                        } else
+                        } else {
                             if (it.date == LocalDate(1993, 1, 1)) {
                                 DatePickerDialog(
                                     context,
                                     { _, y, m, d ->
                                         dateTime = LocalDateTime(
                                             LocalDate(y, m + 1, d),
-                                            dateTime.time
+                                            dateTime.time,
                                         )
                                     },
                                     dateTime.year,
                                     dateTime.monthNumber - 1,
-                                    dateTime.dayOfMonth
+                                    dateTime.dayOfMonth,
 
                                 ).show()
-
                             } else {
                                 dateTime = it
                             }
-
+                        }
                     },
                     onIntervalChange = {
                         inter = it
-                    }
+                    },
                 )
-
-
             },
             confirmButton = {
                 Button(onClick = {
@@ -122,10 +120,9 @@ fun NotificationDialog(
                         onSetAlarm(
                             dateTime.toInstant(TimeZone.currentSystemDefault())
                                 .toEpochMilliseconds(),
-                            inter
+                            inter,
                         )
                     }
-
                 }) {
                     Text(text = "Save")
                 }
@@ -145,11 +142,9 @@ fun NotificationDialog(
                         Text(text = "Cancel")
                     }
                 }
-
-            }
+            },
         )
     }
-
 }
 
 @Preview
@@ -158,15 +153,13 @@ fun NotificationDialogPreview() {
     NotificationDialog()
 }
 
-
 @Composable
 fun TimeContent(
     interval: Long? = null,
     dateTime: LocalDateTime,
     onDateChange: (LocalDateTime) -> Unit = {},
-    onIntervalChange: (Long?) -> Unit = {}
+    onIntervalChange: (Long?) -> Unit = {},
 ) {
-
     val instant = dateTime.toInstant(TimeZone.UTC)
 
     Column {
@@ -174,26 +167,24 @@ fun TimeContent(
             value = instant.toEpochMilliseconds(),
             onValueChange = {
                 onDateChange(LocalDateTime(dateTime.date, it))
-            }
+            },
         )
         DateDropbox(
             value = instant.toEpochMilliseconds(),
             onValueChange = {
                 onDateChange(LocalDateTime(it, dateTime.time))
-            }
+            },
         )
         RepeatDropbox(
             value = interval,
-            onValueChange = onIntervalChange
+            onValueChange = onIntervalChange,
         )
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
-
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -205,7 +196,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
                 Pair("Afternoon", LocalTime(13, 0)),
                 Pair("Evening", LocalTime(19, 0)),
                 Pair("Night", LocalTime(20, 0)),
-                Pair("Pick time", LocalTime(0, 0))
+                Pair("Pick time", LocalTime(0, 0)),
             )
         }
     val lastIndex = remember {
@@ -218,13 +209,10 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
         now.toLocalDateTime(TimeZone.UTC).time
     }
 
-
-
-
     ExposedDropdownMenuBox(
         modifier = Modifier,
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
             modifier = Modifier.menuAnchor(),
@@ -235,7 +223,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            singleLine = true
+            singleLine = true,
 
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
@@ -245,7 +233,6 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
                 DropdownMenuItem(
                     text = { Text(text = pair.first) },
                     onClick = {
-
                         onValueChange(pair.second)
                         expanded = false
                     },
@@ -253,17 +240,15 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
                     trailingIcon = {
                         if (index != lastIndex) {
                             Text(
-                                text = pair.second.toMillisecondOfDay().toLong().toTimeString()
+                                text = pair.second.toMillisecondOfDay().toLong().toTimeString(),
                             )
                         }
-
-                    }
+                    },
                 )
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -279,13 +264,13 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
         listOf(
             Pair("Today", date),
             Pair("Tomorrow", date.plus(DateTimeUnit.DAY)),
-            Pair("Pick date", LocalDate(1993, 1, 1))
+            Pair("Pick date", LocalDate(1993, 1, 1)),
         )
     }
     ExposedDropdownMenuBox(
         modifier = Modifier,
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
             modifier = Modifier.menuAnchor(),
@@ -294,7 +279,7 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            singleLine = true
+            singleLine = true,
 
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
@@ -304,16 +289,14 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
                 DropdownMenuItem(
                     text = { Text(text = string.first) },
                     onClick = {
-
                         onValueChange(string.second)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -328,36 +311,33 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
             Pair("Daily", DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)),
             Pair(
                 "Weekly",
-                DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
+                DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS),
             ),
             Pair(
                 "Monthly",
-                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS),
             ),
             Pair(
                 "Yearly",
-                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+                DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS),
             ),
             //  Pair("Pick time", 0L)
         )
     }
 
-
     val index = remember(value) {
-
         val i = options.indexOfFirst { it.second == value }
-        if (value == null || i == -1)
+        if (value == null || i == -1) {
             0
-        else {
+        } else {
             i
         }
-
     }
 
     ExposedDropdownMenuBox(
         modifier = Modifier,
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
             modifier = Modifier.menuAnchor(),
@@ -366,7 +346,7 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            singleLine = true
+            singleLine = true,
 
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
@@ -376,16 +356,14 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
                 DropdownMenuItem(
                     text = { Text(text = string.first) },
                     onClick = {
-
                         onValueChange(string.second)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -394,4 +372,3 @@ fun TimeColumnPreview() {
         dateTime = LocalDateTime(2021, 4, 5, 0, 0, 0),
     )
 }
-

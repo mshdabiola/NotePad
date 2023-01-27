@@ -34,20 +34,17 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-
 @Composable
 fun NotificationBottomSheet(
     modalState: ModalState,
     onAlarm: (Long, Long?) -> Unit = { _, _ -> },
-    showDialog: () -> Unit = {}
+    showDialog: () -> Unit = {},
 ) {
-
     val coroutineScope = rememberCoroutineScope()
 
     val dateTime = remember {
         Clock.System.now().toLocalDateTime(TimeZone.UTC)
     }
-
 
     val morning = remember {
         LocalDateTime(dateTime.date, LocalTime(8, 0, 0))
@@ -75,10 +72,10 @@ fun NotificationBottomSheet(
         nextWk.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
     }
 
-    //7.22pm,19.22
-    //if now 19.22> morning 7
-    //later today 10pm22/tomorrow morning 7am
-    //Tomorrow morning 10am/Tomorrow evening 7pm 19
+    // 7.22pm,19.22
+    // if now 19.22> morning 7
+    // later today 10pm22/tomorrow morning 7am
+    // Tomorrow morning 10am/Tomorrow evening 7pm 19
     ModalBottomSheet(modalState = modalState) {
         Surface(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -86,8 +83,8 @@ fun NotificationBottomSheet(
                     bottom = 36.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    top = 8.dp
-                )
+                    top = 8.dp,
+                ),
             ) {
                 NotificationItem(
                     title = if (pastToday) "Tomorrow morning" else "Later today",
@@ -95,14 +92,15 @@ fun NotificationBottomSheet(
                     onClick = {
                         coroutineScope.launch { modalState.hide() }
 
-                        val time = if (pastToday)
+                        val time = if (pastToday) {
                             morningTom.toInstant(TimeZone.currentSystemDefault())
                                 .toEpochMilliseconds()
-                        else
+                        } else {
                             evening.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                        }
 
                         onAlarm(time, null)
-                    }
+                    },
                 )
                 NotificationItem(
                     title = if (pastToday) "Tomorrow evening" else "Tomorrow morning",
@@ -110,15 +108,16 @@ fun NotificationBottomSheet(
                     onClick = {
                         coroutineScope.launch { modalState.hide() }
 
-                        val time = if (pastToday)
+                        val time = if (pastToday) {
                             eveningTom.toInstant(TimeZone.currentSystemDefault())
                                 .toEpochMilliseconds()
-                        else
+                        } else {
                             morningTom.toInstant(TimeZone.currentSystemDefault())
                                 .toEpochMilliseconds()
+                        }
 
                         onAlarm(time, null)
-                    }
+                    },
 
                 )
                 NotificationItem(
@@ -127,22 +126,20 @@ fun NotificationBottomSheet(
                     onClick = {
                         onAlarm(
                             nextWk.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-                            null
+                            null,
                         )
-                    }
+                    },
                 )
                 NotificationItem(
                     title = "Pick a date & time",
                     time = "",
                     onClick = {
-
                         showDialog()
                         coroutineScope.launch { modalState.hide() }
-                    }
+                    },
                 )
             }
         }
-
     }
 }
 
@@ -151,20 +148,21 @@ fun NotificationItem(
     icon: ImageVector = Icons.Outlined.AccessTime,
     title: String,
     time: String,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Row(
         Modifier
             .clickable { onClick() }
             .fillMaxWidth()
-            .height(36.dp), verticalAlignment = Alignment.CenterVertically) {
+            .height(36.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Icon(imageVector = icon, contentDescription = "time")
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = title, Modifier.weight(1f))
         Text(text = time)
     }
 }
-
 
 @Preview
 @Composable

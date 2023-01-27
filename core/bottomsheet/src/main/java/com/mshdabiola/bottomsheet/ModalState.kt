@@ -32,7 +32,7 @@ sealed interface ModalState {
 @Stable
 @ExperimentalMaterialApi
 internal class ModalStateImpl(
-    val _state: ModalBottomSheetState
+    val _state: ModalBottomSheetState,
 ) : ModalState {
     override val isVisible: Boolean get() = _state.isVisible
     override val isAtLeastPartiallyVisible: Boolean get() = _state.isAtLeastPartiallyVisible

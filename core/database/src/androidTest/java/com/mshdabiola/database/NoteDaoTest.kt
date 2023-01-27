@@ -68,7 +68,6 @@ class NoteDaoTest {
 
     @Test
     fun getOneTest() = runBlocking {
-
 //        ludoDao.upsert(ludoEntity)
 //        val ludo = ludoDao.getOne(1).first()
 //        println("ludo $ludo")

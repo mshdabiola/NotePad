@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class DrawingPathRepository
 @Inject constructor(
-    private val pathDao: PathDao
+    private val pathDao: PathDao,
 ) {
 
     suspend fun delete(imageId: Long) = withContext(Dispatchers.IO) {

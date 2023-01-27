@@ -70,14 +70,12 @@ private val DarkColors = darkColorScheme(
     surfaceTint = md_theme_dark_surfaceTint,
 )
 
-
 @Composable
 fun NotePadAppTheme(
     useDarkTheme: Boolean = false, // isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -91,10 +89,9 @@ fun NotePadAppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = LudoTypography,
-        content = content
+        content = content,
     )
 }
-
 
 private val DarkColorPalette = darkColorScheme(
     background = Color.Black,
@@ -102,7 +99,7 @@ private val DarkColorPalette = darkColorScheme(
     inversePrimary = streamAccent,
     secondary = streamAccent,
     onPrimary = Color.White,
-    onSecondary = Color.White
+    onSecondary = Color.White,
 )
 
 private val LightColorPalette = lightColorScheme(
@@ -112,6 +109,5 @@ private val LightColorPalette = lightColorScheme(
     inversePrimary = streamAccent,
     secondary = streamAccent,
     onPrimary = Color.Black,
-    onSecondary = Color.Black
+    onSecondary = Color.Black,
 )
-

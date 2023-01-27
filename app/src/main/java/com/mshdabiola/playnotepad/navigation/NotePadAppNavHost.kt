@@ -21,7 +21,6 @@ import com.mshdabiola.mainscreen.mainScreen
 import com.mshdabiola.searchscreen.searchScreen
 import com.mshdabiola.selectlabelscreen.selectLabelScreen
 
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NotePadAppNavHost(
@@ -31,23 +30,25 @@ fun NotePadAppNavHost(
     navigateToSearch: () -> Unit,
     onBack: () -> Unit,
     startDestination: String = mainNavigationRoute,
-    navigateToSelectLevel: (IntArray) -> Unit
+    navigateToSelectLevel: (IntArray) -> Unit,
 ) {
     NavHost(
         modifier = Modifier.semantics { testTagsAsResourceId = true },
-        navController = navController, startDestination = startDestination
+        navController = navController,
+        startDestination = startDestination,
     ) {
         mainScreen(
             navigateToEditScreen = navigateToEdit,
             navigateToLevel = navigateToLevel,
             navigateToSearch = navigateToSearch,
             navigateToSelectLevel = navigateToSelectLevel,
-            navigateToAbout = { navController.navigateToAbout() }
+            navigateToAbout = { navController.navigateToAbout() },
         )
-        editScreen(onBack = onBack,
+        editScreen(
+            onBack = onBack,
             navigateToSelectLevel = navigateToSelectLevel,
             navigateToGallery = { id, index -> navController.navigateToGallery(id, index) },
-            navigateToDrawing = { id, image -> navController.navigateToDrawing(id, image) }
+            navigateToDrawing = { id, image -> navController.navigateToDrawing(id, image) },
         )
         labelScreen(onBack = onBack)
         selectLabelScreen(onBack)
@@ -56,7 +57,7 @@ fun NotePadAppNavHost(
             navController.navigateToEditScreenWIthPop(
                 l,
                 s,
-                l2
+                l2,
             )
         }
         drawingScreen(onBack)

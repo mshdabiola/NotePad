@@ -13,7 +13,7 @@ import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
 
 data class NotePadAppState(
     val windowSizeClass: WindowSizeClass,
-    val navHostController: NavHostController
+    val navHostController: NavHostController,
 ) {
     fun navigateToMain() {
         navHostController.navigateToMain()
@@ -22,7 +22,7 @@ data class NotePadAppState(
     fun navigateToEdit(
         id: Long,
         content: String,
-        data: Long
+        data: Long,
     ) {
         navHostController.navigateToEditScreen(id, content, data)
     }
@@ -47,7 +47,7 @@ data class NotePadAppState(
 @Composable
 fun rememberNotePadAppState(
     windowSizeClass: WindowSizeClass,
-    navHostController: NavHostController = rememberNavController()
+    navHostController: NavHostController = rememberNavController(),
 ): NotePadAppState {
     return remember(key1 = windowSizeClass) {
         NotePadAppState(windowSizeClass, navHostController)

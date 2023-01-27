@@ -25,7 +25,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun databaseProvider(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): NoteDatabase {
         return Room.databaseBuilder(context, NoteDatabase::class.java, "ludoDb.db")
             .build()
@@ -80,6 +80,4 @@ object DatabaseModule {
     fun pathDaoProvider(noteDatabase: NoteDatabase): PathDao {
         return noteDatabase.getPath()
     }
-
-
 }

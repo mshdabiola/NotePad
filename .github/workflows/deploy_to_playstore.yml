@@ -2,7 +2,8 @@ name: Deploy to Play Store and Firebase
 
 on:
   push:
-    branches: [ "test" ]
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -68,7 +69,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           # 3
-          packageName: com.mshdabiola.play_notepad
+          packageName: com.mshdabiola.playnotepad
           releaseFiles: app-release.aab
           track: internal
           status: completed

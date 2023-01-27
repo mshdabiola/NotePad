@@ -18,38 +18,31 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Board(
     modifier: Modifier = Modifier,
-    drawingController: DrawingController = rememberDrawingController()
+    drawingController: DrawingController = rememberDrawingController(),
 ) {
-
-
     val onPointChange = { offset: Offset, mode: MODE ->
         drawingController.setPathData(offset.x, offset.y, mode)
     }
-
 
     val p2 = remember(drawingController.listOfPathData) {
         drawingController.getPathAndData()
     }
 
-
     Canvas(
         modifier = modifier
-
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { onPointChange(it, MODE.DOWN) },
                     onDrag = { change, _ -> onPointChange(change.position, MODE.MOVE) },
-                    onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
+                    onDragEnd = { onPointChange(Offset.Zero, MODE.UP) },
                 )
-            }
+            },
 //            .dragMotionEvent(
 //                onDragStart = { onPointChange(it.position, MODE.DOWN) },
 //                onDrag = { onPointChange(it.position, MODE.MOVE) },
 //                onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
 //            )
     ) {
-
-
         //  drawPath(cPath,Color.Black)
         p2.forEach {
             drawPath(
@@ -58,18 +51,13 @@ fun Board(
                 style = Stroke(
                     width = (it.second.lineWidth.dp).roundToPx().toFloat(),
                     cap = drawingController.lineCaps[it.second.lineCap],
-                    join = drawingController.lineJoins[it.second.lineJoin]
+                    join = drawingController.lineJoins[it.second.lineJoin],
                 ),
-                blendMode = DrawScope.DefaultBlendMode
+                blendMode = DrawScope.DefaultBlendMode,
             )
         }
-
-
     }
-
-
 }
-
 
 @SuppressLint("MutableCollectionMutableState")
 @Preview(showBackground = true)
@@ -77,16 +65,13 @@ fun Board(
 fun CanvasPreview() {
     val controller = rememberDrawingController()
 
-
     controller.setPathData(mapOf(PathData() to listOf(Offset(0f, 0f), Offset(500f, 500f))))
     controller.color = 1
 
     Column {
         Board(
             modifier = Modifier.fillMaxSize(),
-            drawingController = controller
+            drawingController = controller,
         )
     }
-
 }
-
