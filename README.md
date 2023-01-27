@@ -72,7 +72,7 @@ Some highlight features:
 
 ## Clean architecture with 3 main modules
 
-<img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>
+[//]: # (<img src="/images/AndroidTemplate-CleanArchitecture.jpeg" alt="ArchiTecture logo"/>)
 
 - Declarative UI (with [Jetpack Compose](https://developer.android.com/jetpack/compose))
     - Compose Navigation (
