@@ -19,25 +19,24 @@ internal class EditArg(val id: Long, val content: String, val data: Long) {
             this(
                 id = checkNotNull(savedStateHandle[noteId]),
                 content = checkNotNull(savedStateHandle[contentId]),
-                data = checkNotNull(savedStateHandle[dataId])
+                data = checkNotNull(savedStateHandle[dataId]),
             )
 
     companion object {
         fun decode(string: String): Uri {
             return Uri.decode(string).toUri()
-
         }
     }
 }
 
 fun NavController.navigateToEditScreen(id: Long, content: String = "", data: Long = 0) {
-    //val encodeUri = Uri.encode(uri.toString())
+    // val encodeUri = Uri.encode(uri.toString())
     // val encodeString = Uri.encode(content)
     navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$content?$dataId=$data")
 }
 
 fun NavController.navigateToEditScreenWIthPop(id: Long, content: String = "", data: Long = 0) {
-    //val encodeUri = Uri.encode(uri.toString())
+    // val encodeUri = Uri.encode(uri.toString())
     // val encodeString = Uri.encode(content)
     navigate(route = "$editDestinationRoute?$noteId=$id?$contentId=$content?$dataId=$data") {
         this.popUpTo("main_route")
@@ -48,7 +47,7 @@ fun NavGraphBuilder.editScreen(
     onBack: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
     navigateToGallery: (Long, Long) -> Unit,
-    navigateToDrawing: (Long, Long?) -> Unit
+    navigateToDrawing: (Long, Long?) -> Unit,
 ) {
     composable(
         route = "$editDestinationRoute?$noteId={$noteId}?$contentId={$contentId}?$dataId={$dataId}",
@@ -61,14 +60,14 @@ fun NavGraphBuilder.editScreen(
             },
             navArgument(dataId) {
                 type = NavType.LongType
-            }
-        )
+            },
+        ),
     ) {
         EditScreen(
             onBack = onBack,
             navigateToSelectLevel = navigateToSelectLevel,
             navigateToGallery = navigateToGallery,
-            navigateToDrawing = navigateToDrawing
+            navigateToDrawing = navigateToDrawing,
         )
     }
 }

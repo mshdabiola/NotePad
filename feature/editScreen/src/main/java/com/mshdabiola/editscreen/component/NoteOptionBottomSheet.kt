@@ -22,7 +22,6 @@ import com.mshdabiola.bottomsheet.ModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun NoteOptionBottomSheet(
     modalState: ModalState,
@@ -33,7 +32,6 @@ fun NoteOptionBottomSheet(
     onSendNote: () -> Unit = {},
     onLabel: () -> Unit = {},
 ) {
-
     val coroutineScope = rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -47,27 +45,30 @@ fun NoteOptionBottomSheet(
 
     ModalBottomSheet(modalState = modalState) {
         Surface(
-            color = background
+            color = background,
         ) {
             Column(modifier = Modifier.padding(bottom = 36.dp)) {
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Delete") },
-                    selected = false, onClick = {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Delete") },
+                    selected = false,
+                    onClick = {
                         onDelete()
                         coroutineScope.launch { modalState.hide() }
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
 
                 NavigationDrawerItem(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.ContentCopy,
-                            contentDescription = ""
+                            contentDescription = "",
                         )
                     },
                     label = { Text(text = "Make a copy") },
@@ -75,35 +76,38 @@ fun NoteOptionBottomSheet(
                     onClick = {
                         onCopy()
                         coroutineScope.launch { modalState.hide() }
-
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Send") },
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Send") },
                     selected = false,
                     onClick = {
                         onSendNote()
                         coroutineScope.launch { modalState.hide() }
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
-                NavigationDrawerItem(icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Label,
-                        contentDescription = ""
-                    )
-                }, label = { Text(text = "Labels") },
-                    selected = false, onClick = {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Label,
+                            contentDescription = "",
+                        )
+                    },
+                    label = { Text(text = "Labels") },
+                    selected = false,
+                    onClick = {
                         onLabel()
                         coroutineScope.launch { modalState.hide() }
-
                     },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background)
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
 
 //                NavigationDrawerItem(icon = {
@@ -117,10 +121,7 @@ fun NoteOptionBottomSheet(
 //                        coroutineScope.launch { modalState.hide() }
 //
 //                    })
-
-
             }
         }
-
     }
 }

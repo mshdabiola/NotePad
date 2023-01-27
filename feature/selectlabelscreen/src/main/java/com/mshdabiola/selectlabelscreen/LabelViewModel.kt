@@ -18,12 +18,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository
+    private val noteLabelRepository: NoteLabelRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
@@ -39,8 +38,6 @@ class LabelViewModel @Inject constructor(
         viewModelScope.launch {
             updateList()
         }
-
-
     }
 
     fun onCheckClick(id: Long) {
@@ -72,12 +69,11 @@ class LabelViewModel @Inject constructor(
         if (text.isBlank()) {
             labelScreenUiState =
                 labelScreenUiState.copy(
-                    editText = text
+                    editText = text,
                 )
             viewModelScope.launch {
                 updateList()
             }
-
         } else {
             val labels = list.filter { it.label.contains(text) }
 
@@ -86,20 +82,15 @@ class LabelViewModel @Inject constructor(
                 labelScreenUiState.copy(
                     editText = text,
                     labels = labels.toImmutableList(),
-                    showAddLabel = haveSameText.not()
+                    showAddLabel = haveSameText.not(),
                 )
-
-
         }
     }
 
     private suspend fun updateList() {
-
-
         val labelsCount = labelsArgs.ids.map {
             noteLabelRepository.getAll(it).first()
         }.flatten().groupingBy { it.labelId }.eachCount()
-
 
         val labels = labelRepository.getAllLabels().first().map {
             val state = when (labelsCount[it.id]) {
@@ -113,9 +104,9 @@ class LabelViewModel @Inject constructor(
 
         labelScreenUiState = labelScreenUiState.copy(
             showAddLabel = false,
-            labels = labels.toImmutableList(), editText = ""
+            labels = labels.toImmutableList(),
+            editText = "",
         )
-
     }
 
     fun onCreateLabel() {
@@ -124,8 +115,6 @@ class LabelViewModel @Inject constructor(
             labelRepository.upsert(listOf(Label(id, labelScreenUiState.editText)))
             updateList()
             onCheckClick(id)
-
         }
     }
-
 }

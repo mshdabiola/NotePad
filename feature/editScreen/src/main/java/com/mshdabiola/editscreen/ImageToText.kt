@@ -14,7 +14,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class ImageToText @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) {
 
     suspend fun toText(string: String) = suspendCoroutine { cont ->
@@ -33,6 +33,5 @@ class ImageToText @Inject constructor(
                 it.printStackTrace()
                 cont.resumeWithException(it)
             }
-
     }
 }

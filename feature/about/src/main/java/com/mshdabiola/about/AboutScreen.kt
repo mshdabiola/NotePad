@@ -1,6 +1,5 @@
 package com.mshdabiola.about
 
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,11 +31,10 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var lastUpdate by remember {
@@ -55,7 +53,6 @@ fun AboutScreen(
         version = pInfo.versionName
     })
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,24 +63,25 @@ fun AboutScreen(
                 },
                 title = {
                     Text(text = "About")
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)) {
+                .padding(paddingValues),
+        ) {
             Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 200.dp)) {
                 Text(
                     text = "Play NotePad",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
                 )
                 Spacer(Modifier.height(8.dp))
                 Divider(
                     modifier = Modifier.width(64.dp),
                     thickness = 4.dp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -91,7 +89,7 @@ fun AboutScreen(
                 Text(
                     text = "Version",
                     color = Color.Gray,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 Text(text = version, style = MaterialTheme.typography.bodyLarge)
 
@@ -99,7 +97,7 @@ fun AboutScreen(
                 Text(
                     text = "Last Update",
                     color = Color.Gray,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 Text(text = lastUpdate, style = MaterialTheme.typography.bodyLarge)
                 Spacer(Modifier.height(16.dp))
@@ -107,7 +105,6 @@ fun AboutScreen(
                 Spacer(Modifier.height(16.dp))
                 Text(text = "Terms and Condition")
             }
-
         }
     }
 }
@@ -116,5 +113,4 @@ fun AboutScreen(
 @Composable
 fun AboutScreenPreview() {
     AboutScreen()
-
 }

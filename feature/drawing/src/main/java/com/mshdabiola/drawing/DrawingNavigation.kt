@@ -1,6 +1,5 @@
 package com.mshdabiola.drawing
 
-
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -12,9 +11,9 @@ const val noteIdArg = "note_id_arg"
 const val imageIdArg = "image_id_arg"
 
 fun NavGraphBuilder.drawingScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
 
-) {
+    ) {
     composable(
         route = "$drawingRoute?$noteIdArg={$noteIdArg}?$imageIdArg={$imageIdArg}",
         arguments = listOf(
@@ -23,12 +22,10 @@ fun NavGraphBuilder.drawingScreen(
             },
             navArgument(imageIdArg) {
                 type = NavType.LongType
-            }
-        )
+            },
+        ),
     ) {
         DrawingScreen(onBack = onBack)
-
-
     }
 }
 

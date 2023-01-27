@@ -20,6 +20,4 @@ interface NotepadDao {
     @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")
     fun getOneNotePad(noteId: Long): Flow<NotePadEntity>
-
-
 }

@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class NoteLabelRepository
 @Inject constructor(
-    private val noteLabelDao: NoteLabelDao
+    private val noteLabelDao: NoteLabelDao,
 ) {
 
     suspend fun upsert(labels: List<NoteLabel>) = withContext(Dispatchers.IO) {

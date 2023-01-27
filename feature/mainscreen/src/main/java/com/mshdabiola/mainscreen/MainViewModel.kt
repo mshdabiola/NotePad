@@ -38,15 +38,13 @@ class MainViewModel
     private val labelRepository: LabelRepository,
     private val noteLabelRepository: NoteLabelRepository,
     private val noteRepository: NoteRepository,
-    private val alarmManager: AlarmManager
+    private val alarmManager: AlarmManager,
 ) : ViewModel() {
-
 
     private val _mainState = MutableStateFlow(MainState())
     val mainState = _mainState.asStateFlow()
 
     init {
-
 
         viewModelScope.launch {
             combine(
@@ -55,12 +53,13 @@ class MainViewModel
                 transform = { T1, T2 ->
 
                     Pair(T1, T2)
-                })
+                },
+            )
                 .distinctUntilChanged { old, new -> old == new }
                 .collectLatest { pair ->
 
                     _mainState.value = mainState.value.copy(
-                        labels = pair.first.map { it.toLabelUiState() }.toImmutableList()
+                        labels = pair.first.map { it.toLabelUiState() }.toImmutableList(),
                     )
 
                     when (pair.second.type) {
@@ -75,7 +74,7 @@ class MainViewModel
                                         .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
                                     it.copy(
                                         images = it.images.takeLast(6).toImmutableList(),
-                                        labels = labels.toImmutableList()
+                                        labels = labels.toImmutableList(),
                                     )
                                 }
                                 _mainState.value =
@@ -93,7 +92,7 @@ class MainViewModel
                                         .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
                                     it.copy(
                                         images = it.images.takeLast(6).toImmutableList(),
-                                        labels = labels.toImmutableList()
+                                        labels = labels.toImmutableList(),
                                     )
                                 }
                                 _mainState.value =
@@ -111,7 +110,7 @@ class MainViewModel
                                         .mapIndexed { index, s -> if (index == 2) "${it.labels.size - 2}+" else s }
                                     it.copy(
                                         images = it.images.takeLast(6).toImmutableList(),
-                                        labels = labels.toImmutableList()
+                                        labels = labels.toImmutableList(),
                                     )
                                 }
                                     .filter { !it.isEmpty() }
@@ -121,11 +120,7 @@ class MainViewModel
                         }
                     }
                 }
-
-
         }
-
-
     }
 
     fun onSelectCard(id: Long) {
@@ -137,8 +132,6 @@ class MainViewModel
         listNOtePad[index] = newNotepad
 
         _mainState.value = mainState.value.copy(notePads = listNOtePad.toImmutableList())
-
-
     }
 
     fun clearSelected() {
@@ -174,7 +167,6 @@ class MainViewModel
 
         clearSelected()
 
-
         if (selectedNotepad.any { !it.note.isPin }) {
             val pinNotepad = selectedNotepad.map { it.note.copy(isPin = true) }
 
@@ -188,7 +180,6 @@ class MainViewModel
                 noteRepository.upsert(unPinNote)
             }
         }
-
     }
 
     fun setAlarm(time: Long, interval: Long?) {
@@ -211,17 +202,13 @@ class MainViewModel
                     requestCode = it.id?.toInt() ?: -1,
                     title = it.title,
                     content = it.detail,
-                    noteId = it.id ?: 0L
+                    noteId = it.id ?: 0L,
                 )
             }
-
-
         }
-
     }
 
     fun deleteAlarm() {
-
         val selectedNotes = mainState.value.notePads
             .filter { it.note.selected }
             .map { it.toNotePad().note }
@@ -237,12 +224,10 @@ class MainViewModel
             notes.forEach {
                 alarmManager.deleteAlarm(it.id?.toInt() ?: 0)
             }
-
         }
     }
 
     fun setAllColor(colorId: Int) {
-
         val selectedNotes = mainState.value.notePads
             .filter { it.note.selected }
             .map { it.toNotePad().note }
@@ -253,11 +238,9 @@ class MainViewModel
         viewModelScope.launch {
             noteRepository.upsert(notes)
         }
-
     }
 
     fun setAllArchive() {
-
         val selectedNotes = mainState.value.notePads
             .filter { it.note.selected }
             .map { it.toNotePad().note }
@@ -268,11 +251,9 @@ class MainViewModel
         viewModelScope.launch {
             noteRepository.upsert(notes)
         }
-
     }
 
     fun setAllDelete() {
-
         val selectedNotes = mainState.value.notePads
             .filter { it.note.selected }
             .map { it.toNotePad().note }
@@ -283,7 +264,6 @@ class MainViewModel
         viewModelScope.launch {
             noteRepository.upsert(notes)
         }
-
     }
 
     fun copyNote() {
@@ -300,14 +280,11 @@ class MainViewModel
                 images = copy.images.map { it.copy(noteId = newId) },
                 voices = copy.voices.map { it.copy(noteId = newId) },
                 labels = copy.labels.map { it.copy(noteId = newId) },
-                checks = copy.checks.map { it.copy(noteId = newId) }
+                checks = copy.checks.map { it.copy(noteId = newId) },
             )
 
             notepadRepository.insertNotepad(copy)
-
-
         }
-
     }
 
     fun deleteLabel() {
@@ -324,8 +301,6 @@ class MainViewModel
     fun renameLabel(name: String) {
         val labelId = (mainState.value.noteType).id
 
-
-
         viewModelScope.launch {
             labelRepository.upsert(listOf(Label(labelId, name)))
         }
@@ -335,7 +310,6 @@ class MainViewModel
         viewModelScope.launch {
             notepadRepository.deleteTrashType()
         }
-
     }
 
     private fun addMessage(msg: String) {
@@ -360,16 +334,12 @@ class MainViewModel
                 .map { it.toNotePadUiState() }
                 .filter { it.isEmpty() }
 
-
             if (emptyList.isNotEmpty()) {
-
                 Log.e("empty list ", emptyList.joinToString())
 
                 notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
 
                 addMessage("Remove empty note")
-
-
             }
         }
     }

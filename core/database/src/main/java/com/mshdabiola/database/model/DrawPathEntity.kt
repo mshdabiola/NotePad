@@ -12,7 +12,7 @@ data class DrawPathEntity(
     val join: Int,
     val alpha: Float,
     val cap: Int,
-    val paths: String
+    val paths: String,
 )
 
 fun DrawPathEntity.toDrawPath() = DrawPath(imageId, pathId, color, width, join, alpha, cap, paths)

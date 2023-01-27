@@ -11,12 +11,11 @@ import javax.inject.Inject
 
 class NotePlayer
 @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) {
     private val mediaPlayer = MediaPlayer()
 
     fun playMusic(path: String, position: Int): Flow<Int> {
-
         mediaPlayer.reset()
         mediaPlayer.setDataSource(path)
         mediaPlayer.prepare()
@@ -24,15 +23,12 @@ class NotePlayer
         mediaPlayer.seekTo(position)
         mediaPlayer.start()
 
-
         return mediaPlayer.listerner()
     }
 
     fun pause() {
         mediaPlayer.pause()
     }
-
-
 }
 
 fun MediaPlayer.listerner() = flow {
@@ -40,8 +36,6 @@ fun MediaPlayer.listerner() = flow {
     while (currentPosition < duration) {
         emit(currentPosition)
         delay(100)
-
-
     }
-    //emit(currentPosition)
+    // emit(currentPosition)
 }.distinctUntilChanged()

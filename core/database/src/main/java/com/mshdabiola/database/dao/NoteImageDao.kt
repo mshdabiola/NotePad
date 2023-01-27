@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteImageDao {
 
-
     @Upsert
     suspend fun upsert(noteImageEntity: List<NoteImageEntity>)
 

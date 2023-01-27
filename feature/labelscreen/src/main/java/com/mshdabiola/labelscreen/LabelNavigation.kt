@@ -12,10 +12,12 @@ const val editModeArg = "edit_arg"
 fun NavGraphBuilder.labelScreen(onBack: () -> Unit) {
     composable(
         route = "$labelRoute?$editModeArg={$editModeArg}",
-        arguments = listOf(navArgument(editModeArg) {
-            this.type = NavType.BoolType
-            defaultValue = false
-        })
+        arguments = listOf(
+            navArgument(editModeArg) {
+                this.type = NavType.BoolType
+                defaultValue = false
+            },
+        ),
     ) {
         LabelScreen(onBack = onBack)
     }
@@ -26,6 +28,6 @@ fun NavController.navigateToLabel(editMode: Boolean) {
 }
 
 data class LabelArg(val editMode: Boolean) {
-    constructor(savedStateHandle: SavedStateHandle)
-            : this(savedStateHandle.get<Boolean>(editModeArg) ?: false)
+    constructor(savedStateHandle: SavedStateHandle) :
+            this(savedStateHandle.get<Boolean>(editModeArg) ?: false)
 }

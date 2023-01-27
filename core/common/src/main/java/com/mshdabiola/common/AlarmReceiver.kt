@@ -26,7 +26,6 @@ class AlarmReceiver : BroadcastReceiver() {
             createNotificationChannel(id, "NotePad Notification", "for alarm", notificationManager)
         }
         sendNotification(id, title, content, context, noteId, notificationManager)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -34,7 +33,7 @@ class AlarmReceiver : BroadcastReceiver() {
         id: String,
         name: String,
         description: String,
-        notificationManager: NotificationManager
+        notificationManager: NotificationManager,
     ) {
         val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_DEFAULT)
         channel.description = description
@@ -44,7 +43,6 @@ class AlarmReceiver : BroadcastReceiver() {
         channel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 100)
 
         notificationManager.createNotificationChannel(channel)
-
     }
 
     private fun sendNotification(
@@ -53,7 +51,7 @@ class AlarmReceiver : BroadcastReceiver() {
         message: String,
         context: Context,
         notiId: Long,
-        notificationManager: NotificationManager
+        notificationManager: NotificationManager,
     ) {
         val notification = NotificationCompat.Builder(context, id)
             .setSmallIcon(android.R.drawable.stat_notify_chat)
@@ -63,6 +61,5 @@ class AlarmReceiver : BroadcastReceiver() {
             .build()
 
         notificationManager.notify(notiId.toInt(), notification)
-
     }
 }

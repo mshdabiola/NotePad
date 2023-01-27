@@ -1,6 +1,5 @@
 package com.mshdabiola.gallery
 
-
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -41,12 +40,11 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import java.io.File
 
-
 @Composable
 fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    navigateToEditScreen: (Long, String, Long) -> Unit
+    navigateToEditScreen: (Long, String, Long) -> Unit,
 ) {
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
     GalleryScreen(
@@ -56,7 +54,7 @@ fun GalleryScreen(
         onToText = {
             val id = galleryUiState.value.images[0].noteId
             navigateToEditScreen(id, "extract", it.toLong())
-        }
+        },
     )
 }
 
@@ -66,9 +64,8 @@ fun GalleryScreen(
     galleryUiState: GalleryUiState,
     onBack: () -> Unit = {},
     onDelete: (Long) -> Unit = {},
-    onToText: (Int) -> Unit = {}
+    onToText: (Int) -> Unit = {},
 ) {
-
     val pagerState = rememberPagerState()
 //    var currIndex = remember(pagerState.currentPage) {
 //        pa
@@ -119,27 +116,26 @@ fun GalleryScreen(
                 onGrabText = { onToText(pagerState.currentPage) },
                 name = "${pagerState.currentPage + 1} of ${galleryUiState.images.size}",
                 onSend = onSend,
-                onCopy = onCopy
+                onCopy = onCopy,
             )
-        }
+        },
     ) { paddingValues ->
 
         HorizontalPager(
             modifier = Modifier.padding(paddingValues),
             pageCount = galleryUiState.images.size,
-            state = pagerState
+            state = pagerState,
         ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 val image = galleryUiState.images[it]
-                /// currIndex=it
+                // / currIndex=it
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = image.imageName,
                     contentDescription = "",
-                    alignment = Alignment.Center
+                    alignment = Alignment.Center,
 
-                )
-
+                    )
             }
         }
     }
@@ -149,7 +145,6 @@ fun GalleryScreen(
 @Composable
 fun GalleryScreenPreview() {
     GalleryScreen(galleryUiState = GalleryUiState(), onDelete = {})
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,14 +155,12 @@ fun GalleryTopAppBar(
     onDelete: () -> Unit = {},
     onGrabText: () -> Unit = {},
     onSend: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
 
-) {
+    ) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
-
-
 
     TopAppBar(
         navigationIcon = {
@@ -177,12 +170,9 @@ fun GalleryTopAppBar(
         },
         title = { Text(text = name) },
         actions = {
-
-
             Box {
                 IconButton(onClick = { showDropDown = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = "more")
-
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -190,34 +180,32 @@ fun GalleryTopAppBar(
                         onClick = {
                             showDropDown = false
                             onGrabText()
-                        })
+                        },
+                    )
                     DropdownMenuItem(
                         text = { Text(text = "Copy") },
                         onClick = {
                             showDropDown = false
                             onCopy()
-
-                        })
+                        },
+                    )
                     DropdownMenuItem(
                         text = { Text(text = "Send") },
                         onClick = {
                             showDropDown = false
                             onSend()
-
-                        })
+                        },
+                    )
                     DropdownMenuItem(
                         text = { Text(text = "Delete") },
                         onClick = {
                             showDropDown = false
                             onDelete()
-
-                        })
-
+                        },
+                    )
                 }
-
             }
-        }
+        },
 
-    )
-
+        )
 }

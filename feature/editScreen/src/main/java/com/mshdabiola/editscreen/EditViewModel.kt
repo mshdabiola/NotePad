@@ -1,6 +1,5 @@
 package com.mshdabiola.editscreen
 
-
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -52,16 +51,15 @@ class EditViewModel @Inject constructor(
     private val labelRepository: LabelRepository,
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,
-    private val imageToText: ImageToText
+    private val imageToText: ImageToText,
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
     var navigateToDrawing by mutableStateOf(false)
 
     private var photoId: Long = 0
-
 
     init {
         viewModelScope.launch {
@@ -75,9 +73,10 @@ class EditViewModel @Inject constructor(
                         checks = listOf(
                             NoteCheckUiState(
                                 id = getNewId(),
-                                noteId = notePad.note.id, focus = true
-                            )
-                        ).toImmutableList()
+                                noteId = notePad.note.id,
+                                focus = true,
+                            ),
+                        ).toImmutableList(),
                     )
                 }
 
@@ -86,15 +85,15 @@ class EditViewModel @Inject constructor(
                     notePad.copy(
                         images = listOf(
                             NoteImageUiState(
-                                id = getNewId(), noteId = notePad.note.id,
+                                id = getNewId(),
+                                noteId = notePad.note.id,
                                 imageName = contentManager.getImagePath(editArg.data),
-                                isDrawing = false
-                            )
+                                isDrawing = false,
+                            ),
                         )
-                            .toImmutableList()
+                            .toImmutableList(),
                     )
                 }
-
 
                 (-4).toLong() -> {
                     val voicePath = contentManager.getVoicePath(editArg.data)
@@ -103,15 +102,15 @@ class EditViewModel @Inject constructor(
                     notePad.copy(
                         voices = listOf(
                             NoteVoiceUiState(
-                                id = getNewId(), noteId = notePad.note.id,
+                                id = getNewId(),
+                                noteId = notePad.note.id,
                                 voiceName = voicePath,
                                 length = length,
-                                currentProgress = 0f
-                            )
+                                currentProgress = 0f,
+                            ),
                         )
-                            .toImmutableList()
+                            .toImmutableList(),
                     )
-
                 }
 
                 (-5).toLong() -> {
@@ -132,9 +131,7 @@ class EditViewModel @Inject constructor(
                         onImage(editArg.data.toInt())
                     }
                     notePad.copy(voices = voices.toImmutableList())
-
                 }
-
             }
 
             notePadRepository.getOneNotePad(notePadUiState.note.id)
@@ -149,7 +146,7 @@ class EditViewModel @Inject constructor(
 
                     notePadUiState = notePadUiState.copy(
                         labels = strLabel.toImmutableList(),
-                        images = image.toImmutableList()
+                        images = image.toImmutableList(),
                     )
                 }
         }
@@ -158,17 +155,13 @@ class EditViewModel @Inject constructor(
             snapshotFlow {
                 notePadUiState
             }
-
                 .distinctUntilChanged { old, new -> old == new }
                 .collectLatest {
                     //   Log.e("flow", "$it")
                     insertNotePad(it)
                 }
         }
-
-
     }
-
 
     private suspend fun insertNotePad(notePad: NotePadUiState) {
         if (!notePad.isEmpty()) {
@@ -177,8 +170,8 @@ class EditViewModel @Inject constructor(
             notePadRepository.insertNotepad(
                 notePad
                     .copy(
-                        note = notePad.note.copy(editDate = date)
-                    ).toNotePad()
+                        note = notePad.note.copy(editDate = date),
+                    ).toNotePad(),
             )
         }
     }
@@ -202,7 +195,6 @@ class EditViewModel @Inject constructor(
     }
 
     fun addCheck() {
-
         val noteId = notePadUiState.note.id
         val noteCheck = NoteCheckUiState(id = getNewId(), noteId = noteId, focus = true)
 
@@ -212,8 +204,6 @@ class EditViewModel @Inject constructor(
     }
 
     fun onCheckChange(value: String, id: Long) {
-
-
         val noteChecks = notePadUiState.checks.toMutableList()
         val index = noteChecks.indexOfFirst { it.id == id }
         val noteCheck = noteChecks[index].copy(content = value)
@@ -252,11 +242,8 @@ class EditViewModel @Inject constructor(
         }
         currentIndex = index
         playJob = viewModelScope.launch {
-
             voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
                 .collect {
-
-
                     voices[index] =
                         voiceUiState.copy(currentProgress = it.toFloat(), isPlaying = true)
 
@@ -264,13 +251,11 @@ class EditViewModel @Inject constructor(
                 }
             voices[index] = voiceUiState.copy(currentProgress = 0f, isPlaying = false)
             notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
-
-
         }
     }
 
     fun pause() {
-        //prevIndex=currentIndex
+        // prevIndex=currentIndex
         val voiceUiState = notePadUiState.voices[currentIndex]
         val voices = notePadUiState.voices.toMutableList()
         voices[currentIndex] = voiceUiState.copy(isPlaying = false)
@@ -288,8 +273,6 @@ class EditViewModel @Inject constructor(
         listImage.add(noteImage.toNoteImageUiState())
 
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
-
-
     }
 
     fun saveVoice(uri: Uri, content: String, id: Long) {
@@ -304,21 +287,16 @@ class EditViewModel @Inject constructor(
 
         val note = notePadUiState.note.copy(detail = notePadUiState.note.detail + "\n" + content)
 
-
-
         notePadUiState = notePadUiState.copy(note = note, voices = listVoices.toImmutableList())
-
-
     }
 
     fun savePhoto() {
-
         val noteImage =
             NoteImage(
                 photoId,
                 notePadUiState.note.id,
                 contentManager.getImagePath(photoId),
-                false
+                false,
             )
         val listImage = notePadUiState.images.toMutableList()
         listImage.add(noteImage.toNoteImageUiState())
@@ -339,16 +317,14 @@ class EditViewModel @Inject constructor(
         }
         notePadUiState = notePadUiState.copy(
             note = notePadUiState.note.copy(isCheck = true, detail = ""),
-            checks = noteChecks.toImmutableList()
+            checks = noteChecks.toImmutableList(),
         )
-
     }
 
     fun unCheckAllItems() {
         val noteChecks = notePadUiState.checks.map { it.copy(isCheck = false) }
 
         notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
-
     }
 
     fun deleteCheckedItems() {
@@ -362,22 +338,19 @@ class EditViewModel @Inject constructor(
                 notePadRepository.deleteCheckNote(it.id, it.noteId)
             }
         }
-
     }
 
     fun hideCheckBoxes() {
-
         val noteCheck = notePadUiState.checks.joinToString(separator = "\n") { it.content }
 
         notePadUiState = notePadUiState.copy(
             note = notePadUiState.note.copy(detail = noteCheck, isCheck = false),
-            checks = emptyList<NoteCheckUiState>().toImmutableList()
+            checks = emptyList<NoteCheckUiState>().toImmutableList(),
         )
 
         viewModelScope.launch {
             notePadRepository.deleteNoteCheckByNoteId(notePadUiState.note.id)
         }
-
     }
 
     fun pinNote() {
@@ -388,7 +361,6 @@ class EditViewModel @Inject constructor(
     fun onColorChange(index: Int) {
         val note = notePadUiState.note.copy(color = index)
         notePadUiState = notePadUiState.copy(note = note)
-
     }
 
     fun onImageChange(index: Int) {
@@ -400,20 +372,16 @@ class EditViewModel @Inject constructor(
         val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1)
         notePadUiState = notePadUiState.copy(note = note)
 
-
         viewModelScope.launch {
-
-
             alarmManager.setAlarm(
                 time,
                 interval,
                 requestCode = notePadUiState.note.id.toInt(),
                 title = notePadUiState.note.title,
                 content = notePadUiState.note.detail,
-                noteId = notePadUiState.note.id
+                noteId = notePadUiState.note.id,
             )
         }
-
     }
 
     fun deleteAlarm() {
@@ -424,8 +392,6 @@ class EditViewModel @Inject constructor(
             val id = note.id
 
             alarmManager.deleteAlarm(id.toInt())
-
-
         }
     }
 
@@ -440,14 +406,12 @@ class EditViewModel @Inject constructor(
     }
 
     fun onDelete() {
-
         val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.TRASH))
         notePadUiState = notePadUiState.copy(note = note)
     }
 
     fun copyNote() {
         viewModelScope.launch {
-
             val notepads = notePadUiState.toNotePad()
 
             var copy = notepads.copy(note = notepads.note.copy(id = null))
@@ -459,14 +423,11 @@ class EditViewModel @Inject constructor(
                 images = copy.images.map { it.copy(noteId = newId) },
                 voices = copy.voices.map { it.copy(noteId = newId) },
                 labels = copy.labels.map { it.copy(noteId = newId) },
-                checks = copy.checks.map { it.copy(noteId = newId) }
+                checks = copy.checks.map { it.copy(noteId = newId) },
             )
 
             notePadRepository.insertNotepad(copy)
-
-
         }
-
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -498,7 +459,5 @@ class EditViewModel @Inject constructor(
             val note = notePadUiState.note
             notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
         }
-
     }
-
 }

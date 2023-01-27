@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class NoteImageRepository
 @Inject constructor(
-    private val noteImageDao: NoteImageDao
+    private val noteImageDao: NoteImageDao,
 ) {
     fun getImageByNoteId(noteId: Long) = noteImageDao
         .getImageByNoteId(noteId)
@@ -24,5 +24,4 @@ class NoteImageRepository
     suspend fun upsert(noteImage: NoteImage) = withContext(Dispatchers.IO) {
         noteImageDao.upsert(listOf(noteImage.toNoteImageEntity()))
     }
-
 }

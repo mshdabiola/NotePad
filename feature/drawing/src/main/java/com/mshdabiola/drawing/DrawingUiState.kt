@@ -6,5 +6,5 @@ import kotlinx.collections.immutable.toImmutableMap
 
 data class DrawingUiState(
     val paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>().toImmutableMap(),
-    val filePath: String = ""
+    val filePath: String = "",
 )

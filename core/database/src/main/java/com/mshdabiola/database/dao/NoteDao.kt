@@ -14,8 +14,6 @@ interface NoteDao {
     @Upsert
     suspend fun upsert(noteEntity: List<NoteEntity>)
 
-
     @Query("DELETE FROM note_table WHERE id = :noteId")
     suspend fun delete(noteId: Long)
-
 }

@@ -47,13 +47,12 @@ import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteCard(
     notePad: NotePadUiState,
     onCardClick: (Long) -> Unit = {},
-    onLongClick: (Long) -> Unit = {}
+    onLongClick: (Long) -> Unit = {},
 ) {
     val unCheckNote by remember(notePad.checks) {
         derivedStateOf { notePad.checks.filter { !it.isCheck } }
@@ -67,17 +66,18 @@ fun NoteCard(
     val bg = if (notePad.note.background != -1) {
         Color.Transparent
     } else {
-        if (notePad.note.color != -1)
+        if (notePad.note.color != -1) {
             NoteIcon.noteColors[notePad.note.color]
-        else
+        } else {
             MaterialTheme.colorScheme.background
+        }
     }
 
-    val sColor = if (notePad.note.background != -1)
+    val sColor = if (notePad.note.background != -1) {
         NoteIcon.background[notePad.note.background].fgColor
-    else
+    } else {
         MaterialTheme.colorScheme.secondaryContainer
-
+    }
 
     var size by remember {
         mutableStateOf(IntSize.Zero)
@@ -91,13 +91,17 @@ fun NoteCard(
     OutlinedCard(
         modifier = Modifier.combinedClickable(
             onClick = { notePad.note.id.let { onCardClick(it) } },
-            onLongClick = { notePad.note.id.let { onLongClick(it) } }
+            onLongClick = { notePad.note.id.let { onLongClick(it) } },
         ),
-        border = if (notePad.note.selected) BorderStroke(3.dp, Color.Blue) else BorderStroke(
-            1.dp,
-            sColor
-        ),
-        colors = CardDefaults.outlinedCardColors(containerColor = bg)
+        border = if (notePad.note.selected) {
+            BorderStroke(3.dp, Color.Blue)
+        } else {
+            BorderStroke(
+                1.dp,
+                sColor,
+            )
+        },
+        colors = CardDefaults.outlinedCardColors(containerColor = bg),
     ) {
         Box {
             if (notePad.note.background != -1) {
@@ -107,47 +111,52 @@ fun NoteCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(
                         with(de) { size.width.toDp() },
-                        with(de) { size.height.toDp() })
+                        with(de) { size.height.toDp() },
+                    ),
                 )
             }
 
-            Column(Modifier
-                .onSizeChanged {
-                    size = it
-                }) {
+            Column(
+                Modifier
+                    .onSizeChanged {
+                        size = it
+                    },
+            ) {
                 if (notePad.images.isNotEmpty()) {
                     images.forEach { imageList ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp)
+                                .height(100.dp),
                         ) {
                             imageList.forEach {
                                 AsyncImage(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(100.dp),
-                                    model = it.imageName, contentDescription = "",
-                                    contentScale = ContentScale.Crop
+                                    model = it.imageName,
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
                                 )
                             }
                         }
                     }
-
                 }
 
                 if (!notePad.isImageOnly()) {
                     Column(
                         Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(8.dp),
                     ) {
                         Text(
                             text = notePad.note.title.ifEmpty { notePad.note.detail },
-                            style = if (notePad.note.title.isNotEmpty())
+                            style = if (notePad.note.title.isNotEmpty()) {
                                 MaterialTheme.typography.titleMedium
-                            else MaterialTheme.typography.bodyMedium,
-                            maxLines = 10
+                            } else {
+                                MaterialTheme.typography.bodyMedium
+                            },
+                            maxLines = 10,
                         )
                         if (!notePad.note.isCheck) {
                             if (notePad.note.title.isNotEmpty()) {
@@ -163,20 +172,18 @@ fun NoteCard(
                             }
                         } else {
                             unCheckNote.take(10).forEach {
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         modifier = Modifier.size(16.dp),
                                         imageVector = Icons.Default.CheckBoxOutlineBlank,
-                                        contentDescription = ""
+                                        contentDescription = "",
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         it.content,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1
+                                        maxLines = 1,
                                     )
-
                                 }
                             }
                             if (unCheckNote.size > 10) {
@@ -188,14 +195,13 @@ fun NoteCard(
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-
                         FlowLayout2(
-                            verticalSpacing = 4.dp
+                            verticalSpacing = 4.dp,
                         ) {
                             if (haveVoice) {
                                 Icon(
                                     imageVector = Icons.Default.PlayCircle,
-                                    contentDescription = "play"
+                                    contentDescription = "play",
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
@@ -203,7 +209,7 @@ fun NoteCard(
                                 ReminderCard(
                                     remainder = notePad.note.reminder,
                                     interval = notePad.note.interval,
-                                    color = sColor
+                                    color = sColor,
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
@@ -212,14 +218,10 @@ fun NoteCard(
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
                         }
-
                     }
                 }
             }
-
         }
-
-
     }
 }
 
@@ -238,7 +240,7 @@ fun NoteCardPreview() {
                 color = 2,
                 isPin = false,
                 background = 3,
-                selected = true
+                selected = true,
             ),
             labels = listOf(
                 "ade",
@@ -246,7 +248,7 @@ fun NoteCardPreview() {
                 "abiola",
                 "kdlskdflsjfslf",
                 "klslssljsl",
-                "alskfk"
+                "alskfk",
             ).toImmutableList(),
             checks = listOf(
                 NoteCheckUiState(
@@ -254,15 +256,15 @@ fun NoteCardPreview() {
                     noteId = 6429L,
                     content = "Maegan",
                     isCheck = false,
-                    focus = false
+                    focus = false,
                 ),
                 NoteCheckUiState(
                     id = 2418L,
                     noteId = 6429L,
                     content = "Book",
                     isCheck = false,
-                    focus = false
-                )
+                    focus = false,
+                ),
             ).toImmutableList(),
             voices = listOf(
                 NoteVoiceUiState(
@@ -271,10 +273,10 @@ fun NoteCardPreview() {
                     voiceName = "Danniel",
                     length = 1940L,
                     currentProgress = .179f,
-                    isPlaying = false
+                    isPlaying = false,
 
-                )
-            ).toImmutableList()
-        )
+                    ),
+            ).toImmutableList(),
+        ),
     )
 }

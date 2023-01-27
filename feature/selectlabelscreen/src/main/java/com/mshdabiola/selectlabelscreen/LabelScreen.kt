@@ -30,7 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
 
-
 @Composable
 fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel()) {
     LabelScreen(
@@ -38,7 +37,7 @@ fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel())
         onBack = onBack,
         onCheckClick = viewModel::onCheckClick,
         onSearchText = viewModel::onSearchChange,
-        onCreateLabel = viewModel::onCreateLabel
+        onCreateLabel = viewModel::onCreateLabel,
     )
 }
 
@@ -49,7 +48,7 @@ fun LabelScreen(
     onBack: () -> Unit = {},
     onCheckClick: (Long) -> Unit = {},
     onSearchText: (String) -> Unit = {},
-    onCreateLabel: () -> Unit = {}
+    onCreateLabel: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -64,11 +63,11 @@ fun LabelScreen(
                         modifier = Modifier.fillMaxWidth(),
                         value = labelScreenUiState.editText,
                         placeholder = { Text(text = "Enter text") },
-                        onValueChange = onSearchText
+                        onValueChange = onSearchText,
                     )
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             if (labelScreenUiState.showAddLabel) {
@@ -80,11 +79,11 @@ fun LabelScreen(
             }
             LazyColumn {
                 items(
-                    items = labelScreenUiState.labels
+                    items = labelScreenUiState.labels,
                 ) {
                     LabelText(
                         labelUiState = it,
-                        onCheckClick = onCheckClick
+                        onCheckClick = onCheckClick,
                     )
                 }
             }
@@ -95,25 +94,23 @@ fun LabelScreen(
 @Composable
 fun LabelText(
     labelUiState: LabelUiState,
-    onCheckClick: (Long) -> Unit = {}
+    onCheckClick: (Long) -> Unit = {},
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
 
-    ) {
+        ) {
         Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
         TriStateCheckbox(
             state = labelUiState.toggleableState,
-            onClick = { onCheckClick(labelUiState.id) })
+            onClick = { onCheckClick(labelUiState.id) },
+        )
     }
-
-
 }
 
 @Preview(showBackground = true)
@@ -123,10 +120,9 @@ fun NoteTextPreview() {
         labelUiState = LabelUiState(
             id = 8382L,
             label = "Derron",
-            toggleableState = ToggleableState.Off
-        )
+            toggleableState = ToggleableState.Off,
+        ),
     )
-
 }
 
 @Preview
@@ -139,22 +135,21 @@ fun LabelScreenPreview() {
                 LabelUiState(
                     id = 8382L,
                     label = "Derron",
-                    toggleableState = ToggleableState.Off
+                    toggleableState = ToggleableState.Off,
                 ),
                 LabelUiState(
                     id = 8983L,
                     label = "Nakeshia",
-                    toggleableState = ToggleableState.Indeterminate
+                    toggleableState = ToggleableState.Indeterminate,
                 ),
                 LabelUiState(
                     id = 8983L,
                     label = "Nakeshia",
-                    toggleableState = ToggleableState.Indeterminate
+                    toggleableState = ToggleableState.Indeterminate,
                 ),
-                LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On)
+                LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On),
 
-            ).toImmutableList()
-        )
+                ).toImmutableList(),
+        ),
     )
-
 }

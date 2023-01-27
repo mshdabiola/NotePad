@@ -26,9 +26,9 @@ import com.mshdabiola.database.model.NoteVoiceEntity
         NoteCheckEntity::class,
         NoteLabelEntity::class,
         LabelEntity::class,
-        DrawPathEntity::class
+        DrawPathEntity::class,
     ],
-    version = 1
+    version = 1,
 )
 abstract class NoteDatabase : RoomDatabase() {
 

@@ -4,9 +4,6 @@ import android.media.MediaRecorder
 import javax.inject.Inject
 
 class VoiceRecorder
-@Inject constructor(
-
-) {
+@Inject constructor() {
     private var mediaRecorder: MediaRecorder? = null
-
 }

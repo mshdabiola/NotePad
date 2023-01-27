@@ -38,7 +38,7 @@ fun flowLayoutMeasurePolicy() = MeasurePolicy { measurables, constraints ->
             }
             placeable.placeRelative(
                 x = xPos,
-                y = yPos
+                y = yPos,
             )
             xPos += placeable.width
             if (maxY < placeable.height) {
@@ -48,20 +48,19 @@ fun flowLayoutMeasurePolicy() = MeasurePolicy { measurables, constraints ->
     }
 }
 
-
 @Composable
 fun FlowLayout2(
     modifier: Modifier = Modifier,
     rowHorizontalGravity: Alignment.Horizontal = Alignment.Start,
     childVerticalGravity: Alignment.Vertical = Alignment.Top,
     verticalSpacing: Dp = 0.dp,
-    children: @Composable () -> Unit
+    children: @Composable () -> Unit,
 ) {
     class RowInfo(val width: Int, val height: Int, val nextChildIndex: Int)
 
     Layout(
         content = children,
-        modifier = modifier
+        modifier = modifier,
     ) { measurables, constraints ->
         var contentWidth = 0
         var contentHeight = 0
@@ -78,8 +77,8 @@ fun FlowLayout2(
                         RowInfo(
                             width = rowWidth,
                             height = rowHeight + verticalSpacing.roundToPx(),
-                            nextChildIndex = index
-                        )
+                            nextChildIndex = index,
+                        ),
                     )
                     contentWidth = maxOf(contentWidth, rowWidth)
                     contentHeight += rowHeight
@@ -97,7 +96,7 @@ fun FlowLayout2(
 
         layout(
             width = maxOf(contentWidth, constraints.minWidth),
-            height = maxOf(contentHeight, constraints.minHeight)
+            height = maxOf(contentHeight, constraints.minHeight),
         ) {
             var childIndex = 0
             var y = 0
@@ -105,7 +104,7 @@ fun FlowLayout2(
                 var x = rowHorizontalGravity.align(
                     constraints.maxWidth - rowInfo.width,
                     3,
-                    LayoutDirection.Ltr
+                    LayoutDirection.Ltr,
                 )
                 val height = rowInfo.height
                 val nextChildIndex = rowInfo.nextChildIndex
@@ -113,7 +112,7 @@ fun FlowLayout2(
                     val placeable = placeables[childIndex]
                     placeable.placeRelative(
                         x = x,
-                        y = y + childVerticalGravity.align(height - placeable.height, 3)
+                        y = y + childVerticalGravity.align(height - placeable.height, 3),
                     )
                     x += placeable.width
                     childIndex++
@@ -130,7 +129,7 @@ fun FlowLayout(
     modifier: Modifier = Modifier,
     verticalSpacing: Dp = 0.dp,
     horizontalSpacing: Dp = 0.dp,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Layout(modifier = modifier, content = content) { measurables, constraints ->
         val placeables = measurables.map { measurable ->
@@ -140,7 +139,7 @@ fun FlowLayout(
         data class FlowContent(
             val placeable: Placeable,
             val x: Int,
-            val y: Int
+            val y: Int,
         )
 
         var y = 0
@@ -186,41 +185,41 @@ private fun PreviewFlowRow() {
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Blue)
+                        .background(color = Color.Blue),
                 )
 
                 Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Red)
+                        .background(color = Color.Red),
                 )
 
                 Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Blue)
+                        .background(color = Color.Blue),
                 )
 
                 Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Red)
+                        .background(color = Color.Red),
                 )
 
                 Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Blue)
+                        .background(color = Color.Blue),
                 )
                 Box(
                     modifier = Modifier
                         .width(80.dp)
                         .height(40.dp)
-                        .background(color = Color.Red)
+                        .background(color = Color.Red),
                 )
             }
         }

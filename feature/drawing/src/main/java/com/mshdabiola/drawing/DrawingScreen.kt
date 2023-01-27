@@ -1,6 +1,5 @@
 package com.mshdabiola.drawing
 
-
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -42,11 +41,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-
 @Composable
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     DrawingScreen(
         onBackk = onBack,
@@ -56,9 +54,8 @@ fun DrawingScreen(
         onDeleteImage = {
             viewModel.deleteImage()
             onBack()
-        }
+        },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +66,7 @@ fun DrawingScreen(
         .toImmutableMap(),
     saveImage: (Bitmap, Map<PathData, List<Offset>>) -> Unit = { _, _ -> },
     filePath: String = "",
-    onDeleteImage: () -> Unit = {}
+    onDeleteImage: () -> Unit = {},
 ) {
     val controller = rememberDrawingController()
     var showDropDown by remember {
@@ -77,8 +74,6 @@ fun DrawingScreen(
     }
     val context = LocalContext.current
     val onSend = {
-
-
         val file = File(filePath)
         val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
         val intent = ShareCompat.IntentBuilder(context)
@@ -90,7 +85,6 @@ fun DrawingScreen(
         context.startActivity(intent)
     }
     val onCopy = {
-
         val file = File(filePath)
         val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
 
@@ -108,7 +102,6 @@ fun DrawingScreen(
         withContext(Dispatchers.IO) {
             saveImage(controller.getBitMap(), controller.listOfPathData.paths2)
         }
-
     })
 
     Scaffold(
@@ -119,7 +112,7 @@ fun DrawingScreen(
                     IconButton(onClick = onBackk) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = "back",
                         )
                     }
                 },
@@ -130,54 +123,55 @@ fun DrawingScreen(
                 actions = {
                     IconButton(
                         enabled = controller.canUndo.value,
-                        onClick = { controller.undo() }) {
+                        onClick = { controller.undo() },
+                    ) {
                         Icon(imageVector = Icons.Default.Undo, contentDescription = "redo")
                     }
                     IconButton(
                         enabled = controller.canRedo.value,
-                        onClick = { controller.redo() }) {
+                        onClick = { controller.redo() },
+                    ) {
                         Icon(imageVector = Icons.Default.Redo, contentDescription = "redo")
                     }
                     Box {
                         IconButton(onClick = { showDropDown = true }) {
                             Icon(Icons.Default.MoreVert, contentDescription = "more")
-
                         }
                         DropdownMenu(
                             expanded = showDropDown,
-                            onDismissRequest = { showDropDown = false }) {
+                            onDismissRequest = { showDropDown = false },
+                        ) {
                             DropdownMenuItem(
                                 text = { Text(text = "Grab Image Text") },
                                 onClick = {
                                     showDropDown = false
                                     //  onGrabText()
-                                })
+                                },
+                            )
                             DropdownMenuItem(
                                 text = { Text(text = "Copy") },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
-
-                                })
+                                },
+                            )
                             DropdownMenuItem(
                                 text = { Text(text = "Send") },
                                 onClick = {
                                     showDropDown = false
                                     onSend()
-
-                                })
+                                },
+                            )
                             DropdownMenuItem(
                                 text = { Text(text = "Delete") },
                                 onClick = {
                                     showDropDown = false
                                     onDeleteImage()
-
-                                })
-
+                                },
+                            )
                         }
-
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -186,14 +180,14 @@ fun DrawingScreen(
 //                    .navigationBarsPadding()
 //                    .align(Alignment.BottomCenter)
                     .padding(horizontal = 8.dp),
-                controller = controller
+                controller = controller,
             )
-        }
+        },
     ) { paddingValues: PaddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Board(
                 modifier = Modifier.fillMaxSize(),
-                drawingController = controller
+                drawingController = controller,
             )
 //            DrawingBar(
 //                modifier = Modifier
@@ -203,12 +197,10 @@ fun DrawingScreen(
 //            )
         }
     }
-
 }
 
 @Preview
 @Composable
 fun DrawingScreenPreview() {
     DrawingScreen()
-
 }

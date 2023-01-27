@@ -15,7 +15,7 @@ fun NavGraphBuilder.mainScreen(
     navigateToLevel: (Boolean) -> Unit,
     navigateToSearch: () -> Unit,
     navigateToSelectLevel: (IntArray) -> Unit,
-    navigateToAbout: () -> Unit
+    navigateToAbout: () -> Unit,
 ) {
     composable(route = mainNavigationRoute) {
         MainScreen(
@@ -23,7 +23,7 @@ fun NavGraphBuilder.mainScreen(
             navigateToLevel = navigateToLevel,
             navigateToSearch = navigateToSearch,
             navigateToSelectLevel = navigateToSelectLevel,
-            navigateToAbout = navigateToAbout
+            navigateToAbout = navigateToAbout,
         )
     }
 }

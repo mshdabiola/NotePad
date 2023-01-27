@@ -16,10 +16,8 @@ class ShareActivity : ComponentActivity() {
         setContent {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             NotePadAppTheme {
-                ActionEditScreen(
-                )
+                ActionEditScreen()
             }
         }
-
     }
 }

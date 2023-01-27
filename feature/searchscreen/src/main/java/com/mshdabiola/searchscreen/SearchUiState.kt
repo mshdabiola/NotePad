@@ -8,5 +8,5 @@ data class SearchUiState(
     val search: String = "",
     val placeholder: String = "Search",
     val notes: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
-    val labels: ImmutableList<String> = emptyList<String>().toImmutableList()
+    val labels: ImmutableList<String> = emptyList<String>().toImmutableList(),
 )

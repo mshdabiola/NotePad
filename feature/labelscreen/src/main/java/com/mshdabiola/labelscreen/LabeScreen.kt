@@ -47,7 +47,7 @@ fun LabelScreen(onBack: () -> Unit, labelViewModel: LabelViewModel = hiltViewMod
         onDelete = labelViewModel::onDelete,
         onAddLabelChange = labelViewModel::onAddLabelChange,
         onAddLabelDone = labelViewModel::onAddLabelDone,
-        onAddDelete = labelViewModel::onAddDeleteValue
+        onAddDelete = labelViewModel::onAddDeleteValue,
     )
 }
 
@@ -60,7 +60,7 @@ fun LabelScreen(
     onDelete: (Long) -> Unit = {},
     onAddLabelChange: (String) -> Unit = {},
     onAddLabelDone: () -> Unit = {},
-    onAddDelete: () -> Unit = {}
+    onAddDelete: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -72,11 +72,10 @@ fun LabelScreen(
                 },
                 title = {
                     Text(text = "Edit Label")
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
-
 
         LazyColumn(Modifier.padding(paddingValues)) {
             item {
@@ -86,15 +85,13 @@ fun LabelScreen(
                     errorOccur = labelScreenUiState.errorOccur,
                     onValueChange = onAddLabelChange,
                     onAddLabelDone = onAddLabelDone,
-                    onAddDelete = onAddDelete
+                    onAddDelete = onAddDelete,
                 )
             }
 
             items(labelScreenUiState.labels, key = { it.id }) {
                 LabelTextField(it, onLabelChange, onDelete)
             }
-
-
         }
     }
 }
@@ -106,9 +103,8 @@ fun EditLabelTextField(
     errorOccur: Boolean,
     onValueChange: (String) -> Unit,
     onAddLabelDone: () -> Unit,
-    onAddDelete: () -> Unit
+    onAddDelete: () -> Unit,
 ) {
-
     val focusRequester by remember {
         mutableStateOf(FocusRequester())
     }
@@ -119,24 +115,24 @@ fun EditLabelTextField(
         mutableStateOf(false)
     }
 
-
     LaunchedEffect(key1 = isEditMode, block = {
         if (isEditMode && !isFirstTime) {
             focusRequester.requestFocus()
             isFirstTime = true
         }
     })
-    NoteTextField(modifier =
-    Modifier
-        .fillMaxWidth()
-        .focusRequester(focusRequester)
-        .onFocusChanged { isFocus = it.isFocused },
+    NoteTextField(
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
+            .onFocusChanged { isFocus = it.isFocused },
         value = value,
         onValueChange = onValueChange,
         placeholder = {
             Text(
                 text = "Create new label",
-                color = TextStyle.Default.color.copy(alpha = 0.5f)
+                color = TextStyle.Default.color.copy(alpha = 0.5f),
             )
         },
         supportingText = { Text(text = if (errorOccur) "Label already exists" else "") },
@@ -152,7 +148,6 @@ fun EditLabelTextField(
             } else {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "add")
             }
-
         },
         trailingIcon = {
             IconButton(onClick = { onAddLabelDone() }) {
@@ -160,7 +155,7 @@ fun EditLabelTextField(
             }
         },
         keyboardActions = KeyboardActions { onAddLabelDone() },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     )
 }
 
@@ -168,7 +163,7 @@ fun EditLabelTextField(
 fun LabelTextField(
     labelUiState: LabelUiState,
     onValue: (String, Long) -> Unit = { _, _ -> },
-    onDelete: (Long) -> Unit = {}
+    onDelete: (Long) -> Unit = {},
 ) {
     val focusRequester by remember {
         mutableStateOf(FocusRequester())
@@ -190,11 +185,8 @@ fun LabelTextField(
                     Icon(imageVector = Icons.Outlined.Delete, contentDescription = "add")
                 }
             } else {
-
                 Icon(imageVector = Icons.Outlined.Label, contentDescription = "add")
-
             }
-
         },
         trailingIcon = {
             if (isFocus) {
@@ -206,10 +198,9 @@ fun LabelTextField(
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "add")
                 }
             }
-
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions { focusManager.clearFocus() }
+        keyboardActions = KeyboardActions { focusManager.clearFocus() },
     )
 }
 
@@ -223,9 +214,7 @@ fun LabelScreenPreview() {
                 LabelUiState(id = 124L, label = "Tabatha"),
                 LabelUiState(id = 3724L, label = "Vicent"),
                 LabelUiState(id = 1958L, label = "Isabelle"),
-            ).toImmutableList()
-        )
+            ).toImmutableList(),
+        ),
     )
-
 }
-

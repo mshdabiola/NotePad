@@ -53,76 +53,75 @@ fun MainNavigation(
     currentType: NoteTypeUi = NoteTypeUi(),
     navigateToLevel: (Boolean) -> Unit = {},
     labels: ImmutableList<LabelUiState>,
-    navigateToAbout: () -> Unit = {}
+    navigateToAbout: () -> Unit = {},
 
-) {
+    ) {
     Surface(
         modifier = Modifier
             .fillMaxHeight()
-            .width(300.dp)
+            .width(300.dp),
     ) {
-
         Column(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
                 .padding(horizontal = 8.dp)
-                .safeDrawingPadding()
-        )
-        {
-
+                .safeDrawingPadding(),
+        ) {
             Text(
                 text = "Play NotePad",
                 style = MaterialTheme.typography.headlineSmall
                     .copy(
                         brush = Brush.horizontalGradient(
                             0.2f to MaterialTheme.colorScheme.primary,
-                            1f to MaterialTheme.colorScheme.secondary
+                            1f to MaterialTheme.colorScheme.secondary,
                         ),
                         shadow = Shadow(
                             color = Color.LightGray,
                             offset = Offset(4f, 2f),
-                            blurRadius = 1f
-                        )
-                    )
+                            blurRadius = 1f,
+                        ),
+                    ),
 
-            )
+                )
             Spacer(
-                modifier = Modifier.height(16.dp)
+                modifier = Modifier.height(16.dp),
 
-            )
+                )
             NavigationDrawerItem(
                 icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.app_icon),
-                        contentDescription = "note"
+                        contentDescription = "note",
                     )
                 },
                 label = { Text(text = "Notes") },
                 selected = currentType.type == NoteType.NOTE,
-                onClick = { onNavigation(NoteTypeUi()) })
+                onClick = { onNavigation(NoteTypeUi()) },
+            )
             NavigationDrawerItem(
                 icon = {
-
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
                 label = { Text(text = "Reminders") },
                 selected = currentType.type == NoteType.REMAINDER,
-                onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) })
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp))
+                onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) },
+            )
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(modifier = Modifier.weight(1f), text = "Labels")
                 TextButton(onClick = { navigateToLevel(false) }) {
                     Text(text = "Edit")
                 }
-
             }
 
             labels.forEach {
@@ -130,12 +129,13 @@ fun MainNavigation(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Label,
-                            contentDescription = ""
+                            contentDescription = "",
                         )
                     },
                     label = { Text(text = it.label) },
                     selected = currentType.type == NoteType.LABEL && currentType.id == it.id,
-                    onClick = { onNavigation(NoteTypeUi(NoteType.LABEL, it.id)) })
+                    onClick = { onNavigation(NoteTypeUi(NoteType.LABEL, it.id)) },
+                )
             }
             NavigationDrawerItem(
                 icon = {
@@ -143,10 +143,13 @@ fun MainNavigation(
                 },
                 label = { Text(text = "Create new label") },
                 selected = false,
-                onClick = { navigateToLevel(true) })
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp))
+                onClick = { navigateToLevel(true) },
+            )
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            )
 
             NavigationDrawerItem(
                 icon = {
@@ -154,7 +157,8 @@ fun MainNavigation(
                 },
                 label = { Text(text = "Archive") },
                 selected = currentType.type == NoteType.ARCHIVE,
-                onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) })
+                onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) },
+            )
 
             NavigationDrawerItem(
                 icon = {
@@ -162,7 +166,8 @@ fun MainNavigation(
                 },
                 label = { Text(text = "Trash") },
                 selected = currentType.type == NoteType.TRASH,
-                onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) })
+                onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) },
+            )
 //            NavigationDrawerItem(
 //                icon = {
 //                    Icon(Icons.Outlined.Settings, contentDescription = "")
@@ -178,18 +183,15 @@ fun MainNavigation(
                 selected = false,
                 onClick = {
                     navigateToAbout()
-                })
-
-
+                },
+            )
         }
     }
-
 }
 
 @Preview
 @Composable
 fun MainNavigationPreview() {
-
     Column(Modifier.fillMaxSize()) {
         MainNavigation(
             labels = listOf(
@@ -204,5 +206,4 @@ fun MainNavigationPreview() {
             ).toImmutableList(),
         )
     }
-
 }
