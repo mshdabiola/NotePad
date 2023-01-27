@@ -188,7 +188,7 @@ fun ActionEditScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
 
-                    )
+                )
             }
 
             item {
@@ -214,7 +214,7 @@ fun ActionEditScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
 
-                    )
+                )
             }
             if (labels.isNotEmpty()) {
                 item {
@@ -265,7 +265,7 @@ fun EditLabels(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
 
-                            ) {
+                        ) {
                             Text(text = label.label, modifier = Modifier.weight(1f))
                             Checkbox(
                                 checked = label.isCheck,
@@ -330,7 +330,7 @@ fun ActionEditScreenPreview() {
                 isCheck = false,
             ),
 
-            ).toImmutableList(),
+        ).toImmutableList(),
     )
 }
 
@@ -366,6 +366,6 @@ fun DialogPreview() {
                 isCheck = false,
             ),
 
-            ).toImmutableList(),
+        ).toImmutableList(),
     )
 }

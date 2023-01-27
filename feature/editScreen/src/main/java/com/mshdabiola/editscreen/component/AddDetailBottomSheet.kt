@@ -170,7 +170,7 @@ fun AddBottomSheet(
                     },
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
 
-                    )
+                )
                 NavigationDrawerItem(
                     icon = {
                         Icon(

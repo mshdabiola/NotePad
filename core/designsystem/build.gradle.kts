@@ -19,5 +19,6 @@ dependencies {
     implementation(libs.kotlinx.collection.immutable)
     implementation(libs.kotlinx.datetime)
     implementation(libs.coil.kt.compose)
+    implementation(libs.firebase.analytics.kts)
 
 }

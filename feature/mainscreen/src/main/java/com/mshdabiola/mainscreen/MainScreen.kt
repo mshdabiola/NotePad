@@ -95,6 +95,7 @@ import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
+import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.model.NoteType
@@ -112,6 +113,7 @@ fun MainScreen(
     navigateToSelectLevel: (IntArray) -> Unit,
     navigateToAbout: () -> Unit,
 ) {
+    FirebaseScreenLog(screen = "main_screen")
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit, block = {
@@ -390,7 +392,7 @@ fun MainScreen(
                     coroutineScope.launch { drawerState.close() }
                 },
 
-                )
+            )
         },
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -452,7 +454,7 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
 
-                                )
+                            )
                         }
 
                         NoteType.ARCHIVE -> {
@@ -561,7 +563,7 @@ fun MainScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
 
-                    ) {
+                ) {
                     if (pinNotePad.first.isNotEmpty()) {
                         item {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
@@ -634,7 +636,7 @@ fun MainScreenPreview() {
                     note = NoteUiState(title = "hammed", detail = "adiola"),
                 ),
 
-                )
+            )
                 .toImmutableList(),
             labels = emptyList<LabelUiState>().toImmutableList(),
         )
@@ -657,7 +659,7 @@ fun SelectTopBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -741,7 +743,7 @@ fun SelectTopBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -804,7 +806,7 @@ fun LabelTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -843,7 +845,7 @@ fun ArchiveTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -889,7 +891,7 @@ fun TrashTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

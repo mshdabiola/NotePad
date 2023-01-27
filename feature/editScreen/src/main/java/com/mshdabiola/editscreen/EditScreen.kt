@@ -110,6 +110,7 @@ import com.mshdabiola.editscreen.component.AddBottomSheet
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
+import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
@@ -152,7 +153,7 @@ fun EditScreen(
             editViewModel.navigateToDrawing = false
         }
     })
-
+    FirebaseScreenLog(screen = "edit_screen")
     EditScreen(
         notepad = editViewModel.notePadUiState,
         onTitleChange = editViewModel::onTitleChange,
@@ -195,7 +196,7 @@ fun EditScreen(
         navigateToGallery = navigateToGallery,
         navigateToDrawing = navigateToDrawing,
 
-        )
+    )
     AddBottomSheet(
         modalState = modalState,
         currentColor = editViewModel.notePadUiState.note.color,
@@ -381,7 +382,7 @@ fun EditScreen(
             )
         },
 
-        ) { paddingValues ->
+    ) { paddingValues ->
         Column(
             Modifier
                 .padding(paddingValues)
@@ -446,7 +447,7 @@ fun EditScreen(
                                 .weight(1f)
                                 .testTag("title"),
 
-                            )
+                        )
                         if (notepad.note.isCheck) {
                             Box {
                                 IconButton(onClick = { expandCheck = true }) {
@@ -511,7 +512,7 @@ fun EditScreen(
                                 .focusRequester(subjectFocus)
                                 .testTag("detail"),
 
-                            )
+                        )
                     }
                 }
                 if (notepad.note.isCheck) {
@@ -602,7 +603,7 @@ fun EditScreen(
                                     .border(1.dp, Color.Gray, CircleShape)
                                     .size(30.dp),
 
-                                )
+                            )
                         }
                     }
                 }
@@ -693,7 +694,7 @@ fun EditScreenPreview() {
                     currentProgress = 500f,
                     isPlaying = false,
 
-                    ),
+                ),
             ).toImmutableList(),
             checks = listOf(
                 NoteCheckUiState(
@@ -703,7 +704,7 @@ fun EditScreenPreview() {
                     isCheck = false,
                     focus = false,
 
-                    ),
+                ),
                 NoteCheckUiState(
                     id = 7481L,
                     noteId = 5389L,
@@ -711,12 +712,12 @@ fun EditScreenPreview() {
                     isCheck = true,
                     focus = false,
 
-                    ),
+                ),
             ).toImmutableList(),
 
-            ),
+        ),
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -777,7 +778,7 @@ fun NoteCheck(
                 }
             },
 
-            )
+        )
     }
 }
 
@@ -824,5 +825,5 @@ fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
         NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
-        )
+    )
 }

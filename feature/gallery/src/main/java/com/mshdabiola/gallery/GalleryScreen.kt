@@ -37,6 +37,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -46,6 +47,7 @@ fun GalleryScreen(
     onBack: () -> Unit = {},
     navigateToEditScreen: (Long, String, Long) -> Unit,
 ) {
+    FirebaseScreenLog(screen = "gallery_screen")
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
     GalleryScreen(
         galleryUiState = galleryUiState.value,
@@ -135,7 +137,7 @@ fun GalleryScreen(
                     contentDescription = "",
                     alignment = Alignment.Center,
 
-                    )
+                )
             }
         }
     }
@@ -157,7 +159,7 @@ fun GalleryTopAppBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -207,5 +209,5 @@ fun GalleryTopAppBar(
             }
         },
 
-        )
+    )
 }

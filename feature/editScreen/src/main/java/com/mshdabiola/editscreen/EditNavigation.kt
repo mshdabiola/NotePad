@@ -16,11 +16,11 @@ const val editDestinationRoute = "edit_screen_route"
 
 internal class EditArg(val id: Long, val content: String, val data: Long) {
     constructor(savedStateHandle: SavedStateHandle) :
-            this(
-                id = checkNotNull(savedStateHandle[noteId]),
-                content = checkNotNull(savedStateHandle[contentId]),
-                data = checkNotNull(savedStateHandle[dataId]),
-            )
+        this(
+            id = checkNotNull(savedStateHandle[noteId]),
+            content = checkNotNull(savedStateHandle[contentId]),
+            data = checkNotNull(savedStateHandle[dataId]),
+        )
 
     companion object {
         fun decode(string: String): Uri {

@@ -57,6 +57,7 @@ import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.theme.NotePadAppTheme
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -66,6 +67,7 @@ fun SearchScreen(
     navigateToEdit: (Long, String, Long) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
+    FirebaseScreenLog(screen = "search_screen")
     SearchScreen(
         onBack = onBack,
         navigateToEdit = navigateToEdit,
@@ -88,7 +90,7 @@ fun SearchScreen(
     onItemLabelClick: (Int) -> Unit = {},
     onItemTypeClick: (Int) -> Unit = {},
 
-    ) {
+) {
     val focusRequester = remember {
         FocusRequester()
     }
@@ -140,7 +142,7 @@ fun SearchScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
 
-                    ) {
+                ) {
                     items(searchUiState.notes) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
@@ -212,7 +214,7 @@ fun EmptySearchScreen(
             Pair("Voice", Icons.Outlined.KeyboardVoice),
             Pair("Drawings", Icons.Outlined.Brush),
 
-            ),
+        ),
         onItemClick = onItemTypeClick,
     )
     LabelBox(
@@ -301,7 +303,7 @@ fun LabelBoxPreview() {
             Pair("Voice", Icons.Default.KeyboardVoice),
             Pair("Voice", Icons.Default.KeyboardVoice),
 
-            ),
+        ),
     )
 }
 

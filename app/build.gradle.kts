@@ -3,8 +3,8 @@ plugins {
     id("mshdabiola.android.application")
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.hilt")
-    //alias(libs.plugins.google.services)
-    // alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services)
+     alias(libs.plugins.firebase.crashlytics)
 
 }
 
@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.firebase.crashlytics.kts)
+    implementation(libs.firebase.analytics.kts)
 
 
     //testImplementation (libs.junit4)

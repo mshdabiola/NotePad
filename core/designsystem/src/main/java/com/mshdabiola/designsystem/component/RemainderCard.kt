@@ -67,7 +67,7 @@ fun ReminderCard(
                 }",
                 style = style,
 
-                )
+            )
         }
     }
 }

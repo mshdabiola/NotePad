@@ -119,7 +119,7 @@ fun NotificationBottomSheet(
                         onAlarm(time, null)
                     },
 
-                    )
+                )
                 NotificationItem(
                     title = "$dayOfWeek morning",
                     time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",

@@ -36,10 +36,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, labelViewModel: LabelViewModel = hiltViewModel()) {
+    FirebaseScreenLog(screen = "label_screen")
     LabelScreen(
         labelScreenUiState = labelViewModel.labelScreenUiState,
         onBack = onBack,

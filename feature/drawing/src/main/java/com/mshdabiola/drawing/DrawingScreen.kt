@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,7 @@ fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
 ) {
+    FirebaseScreenLog(screen = "drawing_screen")
     DrawingScreen(
         onBackk = onBack,
         filePath = viewModel.drawingUiState.filePath,

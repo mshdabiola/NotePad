@@ -53,7 +53,7 @@ class EditViewModel @Inject constructor(
     private val noteVoiceRepository: NoteVoiceRepository,
     private val imageToText: ImageToText,
 
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())

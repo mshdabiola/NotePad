@@ -49,7 +49,7 @@ fun ColorAndImageBottomSheet(
     onColorClick: (Int) -> Unit = {},
     onImageClick: (Int) -> Unit = {},
 
-    ) {
+) {
     rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -154,7 +154,7 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                    )
+                                )
                             }
                         }
                     }
@@ -185,7 +185,7 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                    )
+                                )
                             }
                         }
                     }

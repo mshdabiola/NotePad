@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -43,6 +44,7 @@ fun AboutScreen(
     var version by remember {
         mutableStateOf("")
     }
+    FirebaseScreenLog(screen = "about_screen")
     LaunchedEffect(key1 = Unit, block = {
         val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         val datetime = Instant.fromEpochMilliseconds(pInfo.lastUpdateTime)

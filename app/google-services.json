@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "716745036463",
+    "project_id": "playnotepad",
+    "storage_bucket": "playnotepad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716745036463:android:996f8c3403f19aed773a5a",
+        "android_client_info": {
+          "package_name": "com.mshdabiola.playnotepad.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUvTJvtvTZNZ_pa690V_vtuyRiQavzhAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716745036463:android:996f8c3403f19aed773a5a",
+        "android_client_info": {
+          "package_name": "com.mshdabiola.playnotepad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUvTJvtvTZNZ_pa690V_vtuyRiQavzhAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716745036463:android:996f8c3403f19aed773a5a",
+        "android_client_info": {
+          "package_name": "com.mshdabiola.playnotepad.benchmark"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUvTJvtvTZNZ_pa690V_vtuyRiQavzhAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716745036463-h1geukd2oqlbu9f2a3crt9v8jnt2ve3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

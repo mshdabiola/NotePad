@@ -101,7 +101,7 @@ fun NotificationDialog(
                                     dateTime.monthNumber - 1,
                                     dateTime.dayOfMonth,
 
-                                    ).show()
+                                ).show()
                             } else {
                                 dateTime = it
                             }
@@ -225,7 +225,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-            )
+        )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
@@ -281,7 +281,7 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-            )
+        )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
@@ -348,7 +348,7 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-            )
+        )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {

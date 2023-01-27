@@ -28,10 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel()) {
+    FirebaseScreenLog(screen = "select_label_screen")
     LabelScreen(
         labelScreenUiState = viewModel.labelScreenUiState,
         onBack = onBack,
@@ -102,7 +104,7 @@ fun LabelText(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
 
-        ) {
+    ) {
         Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
@@ -149,7 +151,7 @@ fun LabelScreenPreview() {
                 ),
                 LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On),
 
-                ).toImmutableList(),
+            ).toImmutableList(),
         ),
     )
 }
