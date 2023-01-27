@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -565,7 +566,7 @@ fun MainScreen(
 
                 ) {
                     if (pinNotePad.first.isNotEmpty()) {
-                        item {
+                        item (span = StaggeredGridItemSpan.FullLine){
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                         }
                     }
@@ -584,7 +585,7 @@ fun MainScreen(
                     }
 
                     if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
-                        item {
+                        item(span = StaggeredGridItemSpan.FullLine) {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Other")
                         }
                     }
@@ -630,7 +631,7 @@ fun MainScreenPreview() {
                     note = NoteUiState(title = "hammed", detail = "adiola"),
                 ),
                 NotePadUiState(
-                    note = NoteUiState(title = "hammed", detail = "adiola", selected = true),
+                    note = NoteUiState(title = "hammed", detail = "adiola", isPin = true),
                 ),
                 NotePadUiState(
                     note = NoteUiState(title = "hammed", detail = "adiola"),
