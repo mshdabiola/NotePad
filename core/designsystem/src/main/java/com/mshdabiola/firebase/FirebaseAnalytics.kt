@@ -1,10 +1,10 @@
 package com.mshdabiola.firebase
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 
 @SuppressLint("MissingPermission")
@@ -15,10 +15,10 @@ fun FirebaseScreenLog(screen: String) {
         FirebaseAnalytics.getInstance(context)
             .logEvent(
                 FirebaseAnalytics.Event.SCREEN_VIEW,
-                bundleOf(
-                    FirebaseAnalytics.Param.SCREEN_NAME to screen,
-                    FirebaseAnalytics.Param.SCREEN_CLASS to screen,
-                ),
+                Bundle().apply {
+                    putString(FirebaseAnalytics.Param.SCREEN_NAME,screen)
+                    putString(FirebaseAnalytics.Param.SCREEN_CLASS,screen)
+                }
             )
     })
 }
