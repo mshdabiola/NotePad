@@ -115,8 +115,10 @@ class EditViewModel @Inject constructor(
                 }
 
                 (-5).toLong() -> {
+
+                    notePadUiState=getNewNotepad()
                     navigateToDrawing = true
-                    getNewNotepad()
+                    notePadUiState
                 }
 
                 else -> {
