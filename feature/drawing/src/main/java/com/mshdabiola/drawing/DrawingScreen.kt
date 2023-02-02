@@ -100,9 +100,11 @@ fun DrawingScreen(
         controller.setPathData(paths)
     })
 
-    LaunchedEffect(key1 = controller.listOfPathData, block = {
+
+    LaunchedEffect(key1 = controller.listOfPathData.value, block = {
         withContext(Dispatchers.IO) {
-            saveImage(controller.getBitMap(), controller.listOfPathData.paths2)
+            val res=context.resources.displayMetrics
+            saveImage(controller.getBitMap(res.widthPixels,res.heightPixels,res.density), controller.listOfPathData.value.paths2)
         }
     })
 
