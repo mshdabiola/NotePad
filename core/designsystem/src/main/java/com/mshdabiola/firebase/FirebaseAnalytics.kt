@@ -16,9 +16,9 @@ fun FirebaseScreenLog(screen: String) {
             .logEvent(
                 FirebaseAnalytics.Event.SCREEN_VIEW,
                 Bundle().apply {
-                    putString(FirebaseAnalytics.Param.SCREEN_NAME,screen)
-                    putString(FirebaseAnalytics.Param.SCREEN_CLASS,screen)
-                }
+                    putString(FirebaseAnalytics.Param.SCREEN_NAME, screen)
+                    putString(FirebaseAnalytics.Param.SCREEN_CLASS, screen)
+                },
             )
     })
 }

@@ -3,7 +3,6 @@ package com.mshdabiola.common
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -43,7 +42,7 @@ class ContentManager
         val file = File(photoDir, "Image_$id.jpg")
 
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        Log.e("uri", "$uri")
+
         return uri
     }
 

@@ -56,7 +56,7 @@ class SearchViewModel @Inject constructor(
                     .map { it.search }
                     .filter { it.isNotBlank() }
                     .collectLatest { text ->
-                        Log.e(this::class.simpleName, "seet to zero")
+
                         val list = notePads.filter { isMatch(it, text) }.toImmutableList()
                         searchUiState = searchUiState.copy(notes = list)
                     }
@@ -81,7 +81,6 @@ class SearchViewModel @Inject constructor(
     fun onItemTypeClick(index: Int) {
         when (index) {
             0 -> {
-                Log.e(this::class.simpleName, "Reminder")
                 val remainder = notePads.filter { it.note.reminder > 0 }
                 searchUiState = searchUiState.copy(
                     search = "",
@@ -90,7 +89,6 @@ class SearchViewModel @Inject constructor(
                 )
             } // Reminders
             1 -> {
-                Log.e(this::class.simpleName, "Lists")
                 val lists = notePads.filter { it.checks.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",
@@ -99,7 +97,6 @@ class SearchViewModel @Inject constructor(
                 )
             } // Lists
             2 -> {
-                Log.e(this::class.simpleName, "image")
                 val images = notePads.filter { it.images.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",
@@ -108,7 +105,6 @@ class SearchViewModel @Inject constructor(
                 )
             } // Images
             3 -> {
-                Log.e(this::class.simpleName, "Voice")
                 val voices = notePads.filter { it.voices.isNotEmpty() }
                 searchUiState = searchUiState.copy(
                     search = "",

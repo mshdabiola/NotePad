@@ -55,6 +55,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -87,11 +89,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.rememberModalState
@@ -102,6 +106,7 @@ import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
+import com.mshdabiola.designsystem.component.state.NoteUriState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toTime
 import com.mshdabiola.designsystem.component.toTimeAndDate
@@ -522,6 +527,7 @@ fun EditScreen(
                             onCheckChange,
                             onCheckDelete,
                             onCheck,
+                            onNextCheck = addItem,
                         )
                     }
 
@@ -556,6 +562,7 @@ fun EditScreen(
                                 onCheckDelete,
                                 onCheck,
                                 strickText = true,
+                                onNextCheck = addItem,
                             )
                         }
                     }
@@ -569,7 +576,9 @@ fun EditScreen(
                         color = sColor,
                     )
                 }
-
+                items(items = notepad.uris, key = { it.id }) {
+                    NoteUri(uriState = it, sColor)
+                }
                 item {
                     FlowLayout2(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -607,6 +616,9 @@ fun EditScreen(
                         }
                     }
                 }
+//                item {
+//                    AsyncImage(modifier = Modifier.size(200.dp), model = "https://icon.horse/icon/fb.com", contentDescription = "")
+//                }
             }
 
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -728,6 +740,7 @@ fun NoteCheck(
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false,
+    onNextCheck: () -> Unit,
 ) {
     val mutableInteractionSource = remember {
         MutableInteractionSource()
@@ -777,6 +790,12 @@ fun NoteCheck(
                     }
                 }
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = true,
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions { onNextCheck() },
 
         )
     }
@@ -826,4 +845,36 @@ fun NoteVoicePlayerPreview() {
         NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteUri(
+    uriState: NoteUriState,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
+    val context = LocalContext.current
+
+    ListItem(
+        modifier = Modifier.padding(horizontal = 16.dp).clickable {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = uriState.uri.toUri()
+            }
+            context.startActivity(intent)
+        },
+        colors = ListItemDefaults.colors(containerColor = color),
+        leadingContent = {
+            AsyncImage(modifier = Modifier.size(64.dp), model = uriState.icon, contentDescription = "icon")
+        },
+        headlineText = { Text(text = uriState.path) },
+        supportingText = { Text(text = uriState.uri, maxLines = 2) },
+        shadowElevation = 8.dp,
+        tonalElevation = 8.dp,
+    )
+}
+
+@Preview
+@Composable
+fun NoteUriPreview() {
+    NoteUri(uriState = NoteUriState(1, "", "Path", "akdkdk"))
 }

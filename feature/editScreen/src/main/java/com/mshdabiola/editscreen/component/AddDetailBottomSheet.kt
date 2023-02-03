@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.speech.RecognizerIntent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,8 +59,6 @@ fun AddBottomSheet(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             it?.let {
-                Log.e("imageUir", "$it")
-
                 val time = System.currentTimeMillis()
                 saveImage(it, time)
             }

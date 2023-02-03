@@ -1,7 +1,7 @@
 package com.mshdabiola.drawing
 
+import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,12 +15,14 @@ import com.mshdabiola.database.repository.NoteImageRepository
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.NoteImage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,49 +44,53 @@ class DrawingViewModel @Inject constructor(
             ),
         ),
     )
-
+    val controller = DrawingController()
+    val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    val coroutineScope = CoroutineScope(dispatcher + SupervisorJob())
     init {
         viewModelScope.launch {
             if (imageI != (-1L)) {
                 val drawPaths = drawingPathRepository.getAll(imageID).firstOrNull()
                 drawPaths?.let {
                     val map = toPathMap(it)
-                    drawingUiState = drawingUiState.copy(paths = map.toImmutableMap())
+                    controller.setPathData(map)
                 }
             }
         }
     }
 
-    fun saveImage(bitmap: Bitmap, map: Map<PathData, List<Offset>>) {
-        saveDrawing(map)
-        viewModelScope.launch {
-            val path = contentManager.getImagePath(imageID)
+    fun saveImage(bitmap: Bitmap) {
+        val path = contentManager.getImagePath(imageID)
+        contentManager.saveBitmap(path, bitmap)
+    }
 
-            noteImageRepository.upsert(NoteImage(imageID, noteId, path, true))
-
-            contentManager.saveBitmap(path, bitmap)
+    fun onPause(context: Context) {
+        coroutineScope.launch {
+            val res = context.resources.displayMetrics
+            val map = controller.listOfPathData.value.paths2
+            saveDrawing(map)
         }
     }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
             noteImageRepository.delete(imageID)
-            File(contentManager.getImagePath(imageID)).delete()
+            noteImageRepository.delete(imageID)
+            File(contentManager.getImagePath(imageID)).deleteOnExit()
         }
     }
 
-    private var job: Job? = null
-    private fun saveDrawing(map: Map<PathData, List<Offset>>) {
+    //  private var job: Job? = null
+    private suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
         val data = changeToDrawPath(map)
-        Log.e("saveDrawing", data.joinToString())
-        job?.cancel()
-        job = viewModelScope.launch(Dispatchers.IO) {
-            if (map.isEmpty()) {
-                drawingPathRepository.delete(imageID)
-            } else {
-                drawingPathRepository.delete(imageID)
-                drawingPathRepository.insert(data)
-            }
+        if (map.isEmpty()) {
+            drawingPathRepository.delete(imageID)
+            noteImageRepository.delete(imageID)
+            File(contentManager.getImagePath(imageID)).deleteOnExit()
+        } else {
+            noteImageRepository.upsert(NoteImage(imageID, noteId, drawingUiState.filePath, true))
+            drawingPathRepository.delete(imageID)
+            drawingPathRepository.insert(data)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.mshdabiola.mainscreen
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
@@ -335,8 +334,6 @@ class MainViewModel
                 .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {
-                Log.e("empty list ", emptyList.joinToString())
-
                 notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
 
                 addMessage("Remove empty note")
