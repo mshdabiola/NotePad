@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.speech.RecognizerIntent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -277,7 +276,6 @@ fun MainScreen(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             it?.let {
-                Log.e("imageUir", "$it")
                 showImageDialog = false
                 val time = System.currentTimeMillis()
                 saveImage(it, time)
@@ -305,7 +303,7 @@ fun MainScreen(
                 if (audiouri != null) {
                     val time = System.currentTimeMillis()
                     saveVoice(audiouri, time)
-                    Log.e("voice ", "uri $audiouri ${strArr?.joinToString()}")
+
                     navigateToEdit(-4, strArr?.joinToString() ?: "", time)
                 }
             }
@@ -365,7 +363,6 @@ fun MainScreen(
                 )
             ) {
                 SnackbarResult.ActionPerformed -> {
-                    Log.e("on Snacker", "click")
                 }
 
                 SnackbarResult.Dismissed -> {

@@ -1,6 +1,5 @@
 package com.mshdabiola.selectlabelscreen
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -25,7 +24,6 @@ fun NavGraphBuilder.selectLabelScreen(onBack: () -> Unit) {
 }
 
 fun NavController.navigateToSelectLabel(ids: IntArray) {
-    Log.e(this::class.simpleName, ids.joinToString())
     navigate(route = "$labelRoute?$labelArg=${ids.joinToString()}")
 }
 

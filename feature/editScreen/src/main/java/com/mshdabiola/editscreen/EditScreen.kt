@@ -527,7 +527,7 @@ fun EditScreen(
                             onCheckChange,
                             onCheckDelete,
                             onCheck,
-                            onNextCheck = addItem
+                            onNextCheck = addItem,
                         )
                     }
 
@@ -562,7 +562,7 @@ fun EditScreen(
                                 onCheckDelete,
                                 onCheck,
                                 strickText = true,
-                                onNextCheck = addItem
+                                onNextCheck = addItem,
                             )
                         }
                     }
@@ -576,8 +576,8 @@ fun EditScreen(
                         color = sColor,
                     )
                 }
-                items(items = notepad.uris, key = { it.id }){
-                    NoteUri(uriState = it,sColor)
+                items(items = notepad.uris, key = { it.id }) {
+                    NoteUri(uriState = it, sColor)
                 }
                 item {
                     FlowLayout2(
@@ -740,7 +740,7 @@ fun NoteCheck(
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false,
-    onNextCheck : ()->Unit
+    onNextCheck: () -> Unit,
 ) {
     val mutableInteractionSource = remember {
         MutableInteractionSource()
@@ -793,8 +793,9 @@ fun NoteCheck(
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
                 autoCorrect = true,
-                imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions { onNextCheck() }
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions { onNextCheck() },
 
         )
     }
@@ -846,38 +847,34 @@ fun NoteVoicePlayerPreview() {
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteUri(
     uriState: NoteUriState,
-    color: Color=MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val context= LocalContext.current
+    val context = LocalContext.current
 
-
-
-       ListItem(
-           modifier = Modifier.padding(horizontal = 16.dp).clickable {
-                val intent=Intent(Intent.ACTION_VIEW).apply {
-
-                    data=uriState.uri.toUri()
-                }
-               context.startActivity(intent)
-           },
-           colors=ListItemDefaults.colors(containerColor = color),
-           leadingContent = {
-               AsyncImage(modifier=Modifier.size(64.dp),model = uriState.icon, contentDescription = "icon")},
-           headlineText = { Text(text = uriState.path) },
-           supportingText = { Text(text = uriState.uri, maxLines = 2)},
-           shadowElevation = 8.dp,
-           tonalElevation = 8.dp
-       )
-
+    ListItem(
+        modifier = Modifier.padding(horizontal = 16.dp).clickable {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = uriState.uri.toUri()
+            }
+            context.startActivity(intent)
+        },
+        colors = ListItemDefaults.colors(containerColor = color),
+        leadingContent = {
+            AsyncImage(modifier = Modifier.size(64.dp), model = uriState.icon, contentDescription = "icon")
+        },
+        headlineText = { Text(text = uriState.path) },
+        supportingText = { Text(text = uriState.uri, maxLines = 2) },
+        shadowElevation = 8.dp,
+        tonalElevation = 8.dp,
+    )
 }
 
 @Preview
 @Composable
 fun NoteUriPreview() {
-    NoteUri(uriState = NoteUriState(1,"","Path", "akdkdk"))
+    NoteUri(uriState = NoteUriState(1, "", "Path", "akdkdk"))
 }

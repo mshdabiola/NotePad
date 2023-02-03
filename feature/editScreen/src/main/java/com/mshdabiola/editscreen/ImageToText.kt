@@ -1,7 +1,6 @@
 package com.mshdabiola.editscreen
 
 import android.content.Context
-import android.util.Log
 import androidx.core.content.FileProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
@@ -26,7 +25,6 @@ class ImageToText @Inject constructor(
 
         recognizer.process(image)
             .addOnSuccessListener {
-                Log.e("Image text", it.text)
                 cont.resume(it.text)
             }
             .addOnFailureListener {
