@@ -3,7 +3,6 @@ package com.mshdabiola.editscreen
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -114,7 +113,6 @@ fun ActionEditScreen(
             .mapNotNull { intent.clipData?.getItemAt(it)?.uri }
             .chunked(3)
 
-        Log.e("images", list.flatten().joinToString())
         images = list
     })
 

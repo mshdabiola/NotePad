@@ -3,7 +3,6 @@ package com.mshdabiola.drawing
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.RectF
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -65,8 +64,6 @@ class DrawingController {
     private var yy = 0f
     var pathData = PathData()
     fun setPathData(x: Float, y: Float, mode: MODE) {
-        Log.e("canvas ", "PathData(x = ${x}f, ${y}f,mode=MODE.$mode),")
-
         when (draw_mode) {
             DRAW_MODE.ERASE -> {
                 if (mode == MODE.DOWN) {

@@ -1,6 +1,5 @@
 package com.mshdabiola.searchscreen
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -98,7 +97,6 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
     LaunchedEffect(key1 = searchUiState, block = {
-        Log.e(this::class.simpleName, "$searchUiState from screen")
     })
     Scaffold(
         topBar = {

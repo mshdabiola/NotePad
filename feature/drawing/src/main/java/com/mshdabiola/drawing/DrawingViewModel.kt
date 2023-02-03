@@ -2,7 +2,6 @@ package com.mshdabiola.drawing
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -66,11 +65,9 @@ class DrawingViewModel @Inject constructor(
     }
 
     fun onPause(context: Context) {
-        Log.e("life", "on Pause")
         coroutineScope.launch {
             val res = context.resources.displayMetrics
             val map = controller.listOfPathData.value.paths2
-            Log.e("size", "pause size ${map.size}")
             saveDrawing(map)
         }
     }
@@ -86,7 +83,6 @@ class DrawingViewModel @Inject constructor(
     //  private var job: Job? = null
     private suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
         val data = changeToDrawPath(map)
-        Log.e("saveDrawing", data.joinToString())
         if (map.isEmpty()) {
             drawingPathRepository.delete(imageID)
             noteImageRepository.delete(imageID)

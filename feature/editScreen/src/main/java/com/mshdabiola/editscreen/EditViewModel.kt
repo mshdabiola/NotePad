@@ -3,7 +3,6 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -66,15 +65,15 @@ class EditViewModel @Inject constructor(
 
     private var photoId: Long = 0
     private var index = 0
-    val google="https://wwww.google.com/s2/favicons?domain=dev.to&sz=128"
-    val regex="https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
-    val uri=Uri.parse("https://wwww.google.com/s2/favicons?domain=dev.to&sz=128")
+
+    val regex = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+
     init {
-        val text="https://wwww.google.com/uru ikddhg iiso http://ggle.com https://wwww.google.com"
-        val tex=text.split(" ")
+        val text = "https://wwww.google.com/uru ikddhg iiso http://ggle.com https://wwww.google.com"
+        val tex = text.split(" ")
             .filter { it.matches(regex.toRegex()) }
             .map { it.toUri().host }
-        Log.e("Host",tex.joinToString())
+
         viewModelScope.launch {
 
             //   Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
@@ -175,11 +174,10 @@ class EditViewModel @Inject constructor(
                 .collectLatest {
                     //   Log.e("flow", "$it")
                     insertNotePad(it)
-                 //   computeUri(it.note)
+                    //   computeUri(it.note)
                 }
         }
         viewModelScope.launch {
-
         }
     }
 
@@ -196,25 +194,22 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private suspend fun computeUri(notepad : NoteUiState)= withContext(Dispatchers.IO){
-
-        if (notepad.detail.contains(regex.toRegex())){
-            val uri=notepad.detail.split("\\s".toRegex())
-
+    private suspend fun computeUri(notepad: NoteUiState) = withContext(Dispatchers.IO) {
+        if (notepad.detail.contains(regex.toRegex())) {
+            val uri = notepad.detail.split("\\s".toRegex())
                 .filter { it.trim().matches(regex.toRegex()) }
-
                 .mapIndexed { index, s ->
-                    val path= s.toUri().authority ?: ""
-                    val icon="https://icon.horse/icon/$path"
+                    val path = s.toUri().authority ?: ""
+                    val icon = "https://icon.horse/icon/$path"
                     NoteUriState(
-                        id=index,
-                        icon=icon,
-                        path=path,
-                        uri=s
+                        id = index,
+                        icon = icon,
+                        path = path,
+                        uri = s,
                     )
                 }
                 .toImmutableList()
-            notePadUiState=notePadUiState.copy(uris = uri)
+            notePadUiState = notePadUiState.copy(uris = uri)
         }
     }
 

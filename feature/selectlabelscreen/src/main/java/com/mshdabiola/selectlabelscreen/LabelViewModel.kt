@@ -1,6 +1,5 @@
 package com.mshdabiola.selectlabelscreen
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,8 +31,6 @@ class LabelViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            Log.e(this@LabelViewModel::class.simpleName, "from label")
-            Log.e(this@LabelViewModel::class.simpleName, labelsArgs.ids.joinToString())
         }
         viewModelScope.launch {
             updateList()
