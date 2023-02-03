@@ -87,6 +87,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -522,6 +523,7 @@ fun EditScreen(
                             onCheckChange,
                             onCheckDelete,
                             onCheck,
+                            onNextCheck = addItem
                         )
                     }
 
@@ -556,6 +558,7 @@ fun EditScreen(
                                 onCheckDelete,
                                 onCheck,
                                 strickText = true,
+                                onNextCheck = addItem
                             )
                         }
                     }
@@ -728,6 +731,7 @@ fun NoteCheck(
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false,
+    onNextCheck : ()->Unit
 ) {
     val mutableInteractionSource = remember {
         MutableInteractionSource()
@@ -777,6 +781,11 @@ fun NoteCheck(
                     }
                 }
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = true,
+                imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions { onNextCheck() }
 
         )
     }
