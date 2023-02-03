@@ -3,10 +3,12 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +23,7 @@ import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
+import com.mshdabiola.designsystem.component.state.NoteUriState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
@@ -32,6 +35,7 @@ import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -39,6 +43,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import javax.inject.Inject
 
@@ -61,9 +66,17 @@ class EditViewModel @Inject constructor(
 
     private var photoId: Long = 0
     private var index = 0
-
+    val google="https://wwww.google.com/s2/favicons?domain=dev.to&sz=128"
+    val regex="https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+    val uri=Uri.parse("https://wwww.google.com/s2/favicons?domain=dev.to&sz=128")
     init {
+        val text="https://wwww.google.com/uru ikddhg iiso http://ggle.com https://wwww.google.com"
+        val tex=text.split(" ")
+            .filter { it.matches(regex.toRegex()) }
+            .map { it.toUri().host }
+        Log.e("Host",tex.joinToString())
         viewModelScope.launch {
+
             //   Log.e("Editviewmodel", "${editArg.id} ${editArg.content} ${editArg.data}")
             notePadUiState = when (editArg.id) {
                 (-1).toLong() -> getNewNotepad()
@@ -136,7 +149,7 @@ class EditViewModel @Inject constructor(
                     notePad.copy(voices = voices.toImmutableList())
                 }
             }
-
+            computeUri(notePadUiState.note)
             notePadRepository.getOneNotePad(notePadUiState.note.id)
                 .map { it.images to it.labels }
                 .distinctUntilChanged()
@@ -162,7 +175,11 @@ class EditViewModel @Inject constructor(
                 .collectLatest {
                     //   Log.e("flow", "$it")
                     insertNotePad(it)
+                 //   computeUri(it.note)
                 }
+        }
+        viewModelScope.launch {
+
         }
     }
 
@@ -176,6 +193,28 @@ class EditViewModel @Inject constructor(
                         note = notePad.note.copy(editDate = date),
                     ).toNotePad(),
             )
+        }
+    }
+
+    private suspend fun computeUri(notepad : NoteUiState)= withContext(Dispatchers.IO){
+
+        if (notepad.detail.contains(regex.toRegex())){
+            val uri=notepad.detail.split("\\s".toRegex())
+
+                .filter { it.trim().matches(regex.toRegex()) }
+
+                .mapIndexed { index, s ->
+                    val path= s.toUri().authority ?: ""
+                    val icon="https://icon.horse/icon/$path"
+                    NoteUriState(
+                        id=index,
+                        icon=icon,
+                        path=path,
+                        uri=s
+                    )
+                }
+                .toImmutableList()
+            notePadUiState=notePadUiState.copy(uris = uri)
         }
     }
 
