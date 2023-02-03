@@ -6,16 +6,12 @@ import android.graphics.RectF
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
@@ -23,10 +19,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableMap
 
 @SuppressLint("MutableCollectionMutableState")
@@ -55,14 +47,10 @@ class DrawingController {
     private var lineJoin = 0
     var color = 1
     var draw_mode = DRAW_MODE.PEN
-    private var id = 0
     var colorAlpha = 1f
-    lateinit var density: Density
-    var width = 0.dp
-    var heigth = 0.dp
 
-    var listOfPathData by mutableStateOf(ListOfPathData())
-    // val drawingPaths = listOfPathData
+    private var _listOfPathData = mutableStateOf(ListOfPathData())
+    val listOfPathData: State<ListOfPathData> = _listOfPathData
 
     private val redoPaths = HashMap<PathData, List<Offset>>()
     private val _canUndo = mutableStateOf(false)
@@ -87,20 +75,21 @@ class DrawingController {
                 }
                 if (mode == MODE.MOVE) {
                     val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
-                    val paths = listOfPathData.paths2.toMutableMap()
+                    val paths = _listOfPathData.value.paths2.toMutableMap()
                     val path =
                         paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
                     path.forEach { p ->
                         paths.remove(p.key)
                         redoPaths[p.key] = p.value
                     }
-                    listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+                    setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
                 }
             }
 
             else -> {
                 when (mode) {
                     MODE.DOWN -> {
+                        val id = _listOfPathData.value.paths2.keys.size
                         pathData = PathData(
                             id = id,
                             color = color,
@@ -109,22 +98,22 @@ class DrawingController {
                             lineJoin = lineJoin,
                             colorAlpha = colorAlpha,
                         )
-                        id++
-                        val paths2 = listOfPathData.paths2.toMutableMap()
+                        //  id++
+                        val paths2 = _listOfPathData.value.paths2.toMutableMap()
                         val list = emptyList<Offset>().toMutableList()
 
                         list.add(Offset(x, y))
                         paths2[pathData] = list
-                        listOfPathData = listOfPathData.copy(paths2 = paths2.toImmutableMap())
+                        setListData(_listOfPathData.value.copy(paths2 = paths2.toImmutableMap()))
                     }
 
                     MODE.MOVE -> {
-                        val paths2 = listOfPathData.paths2.toMutableMap()
+                        val paths2 = _listOfPathData.value.paths2.toMutableMap()
                         val list = paths2[pathData]!!.toMutableList()
 
                         list.add(Offset(x, y))
                         paths2[pathData] = list
-                        listOfPathData = listOfPathData.copy(paths2 = paths2.toImmutableMap())
+                        setListData(_listOfPathData.value.copy(paths2 = paths2.toImmutableMap()))
                     }
 
                     MODE.UP -> {
@@ -135,34 +124,38 @@ class DrawingController {
         setDoUnDo()
     }
 
+    fun setListData(listOfPathDa: ListOfPathData) {
+        _listOfPathData.value = listOfPathDa
+    }
+
     fun setPathData(pathDatas: Map<PathData, List<Offset>>) {
-        val paths = listOfPathData.paths2.toMutableMap()
+        val paths = _listOfPathData.value.paths2.toMutableMap()
         paths.putAll(pathDatas)
-        id = pathDatas.size
-        listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+        //  id = pathDatas.size
+        setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
     }
 
     fun undo() {
         if (canUndo.value) {
-            val paths = listOfPathData.paths2.toMutableMap()
+            val paths = _listOfPathData.value.paths2.toMutableMap()
             val lastKey = paths.keys.last()
             redoPaths[lastKey] = paths.remove(lastKey)!!
-            listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+            setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
             setDoUnDo()
         }
     }
 
     private fun setDoUnDo() {
-        _canUndo.value = listOfPathData.paths2.isNotEmpty()
+        _canUndo.value = _listOfPathData.value.paths2.isNotEmpty()
         _canRedo.value = redoPaths.isNotEmpty()
     }
 
     fun redo() {
         if (canRedo.value) {
-            val paths = listOfPathData.paths2.toMutableMap()
+            val paths = _listOfPathData.value.paths2.toMutableMap()
             val lastKey = redoPaths.keys.last()
             paths[lastKey] = redoPaths.remove(lastKey)!!
-            listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+            setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
 
             setDoUnDo()
             // listOfPathData.value.add(redoPaths.removeLast())
@@ -179,7 +172,8 @@ class DrawingController {
     fun getPathAndData(): List<Pair<Path, PathData>> {
         var prevOff = Offset.Zero
 
-        val p = listOfPathData
+        val p = _listOfPathData
+            .value
             .paths2
             .map {
                 val yPath = Path()
@@ -203,31 +197,28 @@ class DrawingController {
     }
 
     fun clearPath() {
-        val paths = listOfPathData.paths2.toMutableMap()
+        val paths = _listOfPathData.value.paths2.toMutableMap()
         paths.clear()
         redoPaths.clear()
-        listOfPathData = listOfPathData.copy(paths2 = paths.toImmutableMap())
+        setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
         setDoUnDo()
     }
 
-    fun getBitMap(): Bitmap {
-        val h = with(density) { heigth.roundToPx() }
-        val w = with(density) { width.roundToPx() }
-        val bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        ImageBitmap(width.value.toInt(), heigth.value.toInt(), ImageBitmapConfig.Argb8888)
+    fun getBitMap(width: Int, heigth: Int, density: Float): Bitmap {
+        val he = heigth - (50 * density)
+        val bitmap2 = Bitmap.createBitmap(width, he.toInt(), Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap2.asImageBitmap())
 
         val paint = Paint()
         canvas.drawRect(
-            Rect(0f, 0f, w.toFloat(), h.toFloat()),
+            Rect(0f, 0f, width.toFloat(), he),
             paint.apply { this.color = Color.White },
         )
         getPathAndData().forEach {
             paint.color = colors[it.second.color]
             paint.alpha = it.second.colorAlpha
-            paint.strokeWidth = with(density) {
-                (it.second.lineWidth.dp).roundToPx().toFloat()
-            } // (it.second.lineWidth.dp).roundToPx().toFloat()
+            paint.strokeWidth = it.second.lineWidth * density
+            // (it.second.lineWidth.dp).roundToPx().toFloat()
             paint.strokeCap = lineCaps[it.second.lineCap]
             paint.strokeJoin = lineJoins[it.second.lineJoin]
             paint.blendMode = DrawScope.DefaultBlendMode
@@ -242,14 +233,8 @@ class DrawingController {
 
 @Composable
 fun rememberDrawingController(): DrawingController {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    Log.e("width heig", "h ${configuration.screenHeightDp} w ${configuration.screenWidthDp}")
     return remember {
         DrawingController().apply {
-            this.density = density
-            width = configuration.screenWidthDp.dp
-            heigth = configuration.screenHeightDp.dp - 50.dp
         }
     }
 }

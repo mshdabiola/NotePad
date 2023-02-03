@@ -566,7 +566,7 @@ fun MainScreen(
 
                 ) {
                     if (pinNotePad.first.isNotEmpty()) {
-                        item (span = StaggeredGridItemSpan.FullLine){
+                        item(span = StaggeredGridItemSpan.FullLine) {
                             Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
                         }
                     }

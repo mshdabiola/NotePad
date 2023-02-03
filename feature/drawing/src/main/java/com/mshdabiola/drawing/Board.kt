@@ -24,7 +24,7 @@ fun Board(
         drawingController.setPathData(offset.x, offset.y, mode)
     }
 
-    val p2 = remember(drawingController.listOfPathData) {
+    val p2 = remember(drawingController.listOfPathData.value) {
         drawingController.getPathAndData()
     }
 

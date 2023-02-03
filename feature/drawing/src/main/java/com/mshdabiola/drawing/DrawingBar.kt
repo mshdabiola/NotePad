@@ -72,7 +72,7 @@ fun DrawingBar(
         mutableStateOf(4)
     }
 
-    LaunchedEffect(key1 = controller.listOfPathData, block = {
+    LaunchedEffect(key1 = controller.listOfPathData.value, block = {
         if (isUp) {
             isUp = false
         }
