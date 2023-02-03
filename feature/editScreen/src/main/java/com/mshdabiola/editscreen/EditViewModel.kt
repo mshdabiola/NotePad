@@ -60,7 +60,7 @@ class EditViewModel @Inject constructor(
     var navigateToDrawing by mutableStateOf(false)
 
     private var photoId: Long = 0
-    private var index =0
+    private var index = 0
 
     init {
         viewModelScope.launch {
@@ -116,7 +116,7 @@ class EditViewModel @Inject constructor(
 
                 (-5).toLong() -> {
 
-                    notePadUiState=getNewNotepad()
+                    notePadUiState = getNewNotepad()
                     navigateToDrawing = true
                     notePadUiState
                 }
@@ -185,9 +185,9 @@ class EditViewModel @Inject constructor(
         return NotePadUiState(note = NoteUiState(id = id))
     }
 
-    private fun getNewId() :Long {
-        index+=1
-        return System.currentTimeMillis()+index
+    private fun getNewId(): Long {
+        index += 1
+        return System.currentTimeMillis() + index
     }
     fun onTitleChange(title: String) {
         val note = notePadUiState.note.copy(title = title)

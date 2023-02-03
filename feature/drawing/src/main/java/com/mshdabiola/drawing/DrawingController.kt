@@ -19,9 +19,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import kotlinx.collections.immutable.toImmutableMap
 
 @SuppressLint("MutableCollectionMutableState")
@@ -50,13 +47,10 @@ class DrawingController {
     private var lineJoin = 0
     var color = 1
     var draw_mode = DRAW_MODE.PEN
-    private var id = 0
     var colorAlpha = 1f
 
-
-     var _listOfPathData = mutableStateOf(ListOfPathData())
-    val listOfPathData :State<ListOfPathData> = _listOfPathData
-    // val drawingPaths = listOfPathData
+    private var _listOfPathData = mutableStateOf(ListOfPathData())
+    val listOfPathData: State<ListOfPathData> = _listOfPathData
 
     private val redoPaths = HashMap<PathData, List<Offset>>()
     private val _canUndo = mutableStateOf(false)
@@ -95,6 +89,7 @@ class DrawingController {
             else -> {
                 when (mode) {
                     MODE.DOWN -> {
+                        val id = _listOfPathData.value.paths2.keys.size
                         pathData = PathData(
                             id = id,
                             color = color,
@@ -103,7 +98,7 @@ class DrawingController {
                             lineJoin = lineJoin,
                             colorAlpha = colorAlpha,
                         )
-                        id++
+                        //  id++
                         val paths2 = _listOfPathData.value.paths2.toMutableMap()
                         val list = emptyList<Offset>().toMutableList()
 
@@ -129,14 +124,14 @@ class DrawingController {
         setDoUnDo()
     }
 
-    fun setListData(listOfPathDa: ListOfPathData){
-        _listOfPathData.value=listOfPathDa
+    fun setListData(listOfPathDa: ListOfPathData) {
+        _listOfPathData.value = listOfPathDa
     }
 
     fun setPathData(pathDatas: Map<PathData, List<Offset>>) {
         val paths = _listOfPathData.value.paths2.toMutableMap()
         paths.putAll(pathDatas)
-        id = pathDatas.size
+        //  id = pathDatas.size
         setListData(_listOfPathData.value.copy(paths2 = paths.toImmutableMap()))
     }
 
@@ -209,8 +204,8 @@ class DrawingController {
         setDoUnDo()
     }
 
-    fun getBitMap(width:Int,heigth:Int,density:Float): Bitmap {
-       val he=heigth-(50*density)
+    fun getBitMap(width: Int, heigth: Int, density: Float): Bitmap {
+        val he = heigth - (50 * density)
         val bitmap2 = Bitmap.createBitmap(width, he.toInt(), Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap2.asImageBitmap())
 
@@ -222,8 +217,8 @@ class DrawingController {
         getPathAndData().forEach {
             paint.color = colors[it.second.color]
             paint.alpha = it.second.colorAlpha
-            paint.strokeWidth =  it.second.lineWidth*density
-             // (it.second.lineWidth.dp).roundToPx().toFloat()
+            paint.strokeWidth = it.second.lineWidth * density
+            // (it.second.lineWidth.dp).roundToPx().toFloat()
             paint.strokeCap = lineCaps[it.second.lineCap]
             paint.strokeJoin = lineJoins[it.second.lineJoin]
             paint.blendMode = DrawScope.DefaultBlendMode
@@ -238,16 +233,8 @@ class DrawingController {
 
 @Composable
 fun rememberDrawingController(): DrawingController {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    val context= LocalContext.current
-    Log.e("widt","de ${context.resources.displayMetrics.density} " +
-            "h ${context.resources.displayMetrics.heightPixels/2} " +
-            "w ${context.resources.displayMetrics.widthPixels/2}" )
-    Log.e("width heig", "h ${configuration.screenHeightDp} w ${configuration.screenWidthDp}")
     return remember {
         DrawingController().apply {
-
         }
     }
 }

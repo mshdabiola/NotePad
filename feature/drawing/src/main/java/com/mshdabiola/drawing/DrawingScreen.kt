@@ -3,7 +3,6 @@ package com.mshdabiola.drawing
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,24 +21,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.mshdabiola.firebase.FirebaseScreenLog
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -48,11 +46,29 @@ fun DrawingScreen(
     onBack: () -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
+    val lifecycleOwner = LocalLifecycleOwner.current.lifecycle
+    val context = LocalContext.current
+    val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onPause(owner: LifecycleOwner) {
+            super.onPause(owner)
+            viewModel.onPause(context)
+        }
+    }
+
+    DisposableEffect(key1 = Unit, effect = {
+        lifecycleOwner.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.removeObserver(lifecycleObserver)
+        }
+    })
+    val res = context.resources.displayMetrics
+    LaunchedEffect(key1 = viewModel.controller.listOfPathData.value.paths2, block = {
+        viewModel.saveImage(viewModel.controller.getBitMap(res.widthPixels, res.heightPixels, res.density))
+    })
     DrawingScreen(
         onBackk = onBack,
         filePath = viewModel.drawingUiState.filePath,
-        paths = viewModel.drawingUiState.paths,
-        saveImage = viewModel::saveImage,
+        controller = viewModel.controller,
         onDeleteImage = {
             viewModel.deleteImage()
             onBack()
@@ -64,13 +80,10 @@ fun DrawingScreen(
 @Composable
 fun DrawingScreen(
     onBackk: () -> Unit = {},
-    paths: ImmutableMap<PathData, List<Offset>> = emptyMap<PathData, List<Offset>>()
-        .toImmutableMap(),
-    saveImage: (Bitmap, Map<PathData, List<Offset>>) -> Unit = { _, _ -> },
+    controller: DrawingController = rememberDrawingController(),
     filePath: String = "",
     onDeleteImage: () -> Unit = {},
 ) {
-    val controller = rememberDrawingController()
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -95,18 +108,6 @@ fun DrawingScreen(
         val c = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         c.setPrimaryClip(clip)
     }
-
-    LaunchedEffect(key1 = paths, block = {
-        controller.setPathData(paths)
-    })
-
-
-    LaunchedEffect(key1 = controller.listOfPathData.value, block = {
-        withContext(Dispatchers.IO) {
-            val res=context.resources.displayMetrics
-            saveImage(controller.getBitMap(res.widthPixels,res.heightPixels,res.density), controller.listOfPathData.value.paths2)
-        }
-    })
 
     Scaffold(
 
@@ -181,8 +182,6 @@ fun DrawingScreen(
         bottomBar = {
             DrawingBar(
                 modifier = Modifier
-//                    .navigationBarsPadding()
-//                    .align(Alignment.BottomCenter)
                     .padding(horizontal = 8.dp),
                 controller = controller,
             )
@@ -193,12 +192,6 @@ fun DrawingScreen(
                 modifier = Modifier.fillMaxSize(),
                 drawingController = controller,
             )
-//            DrawingBar(
-//                modifier = Modifier
-//                    .align(Alignment.BottomCenter)
-//                    .padding(horizontal = 8.dp),
-//                controller = controller
-//            )
         }
     }
 }
