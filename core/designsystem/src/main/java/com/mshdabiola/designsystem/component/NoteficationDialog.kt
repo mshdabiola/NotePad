@@ -2,6 +2,7 @@ package com.mshdabiola.designsystem.component
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -16,6 +20,9 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,8 +57,14 @@ fun NotificationDialog(
     val now = remember {
         Clock.System.now()
     }
+    var showDate by remember {
+        mutableStateOf(false)
+    }
+    var showTime by remember {
+        mutableStateOf(false)
+    }
     var dateTime by remember(remainder) {
-        val time = if (remainder > -1) {
+        val time = if (remainder > 0) {
             Instant.fromEpochMilliseconds(remainder)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
         } else {
@@ -75,33 +88,11 @@ fun NotificationDialog(
                     dateTime,
                     onDateChange = {
                         if (it.time == LocalTime(0, 0)) {
-                            TimePickerDialog(
-                                context,
-                                { _, hourOfDay, minute ->
-                                    dateTime = LocalDateTime(
-                                        dateTime.date,
-                                        LocalTime(hourOfDay, minute),
-                                    )
-                                },
-                                dateTime.hour,
-                                dateTime.minute,
-                                false,
-                            ).show()
+
+                          showTime=true
                         } else {
                             if (it.date == LocalDate(1993, 1, 1)) {
-                                DatePickerDialog(
-                                    context,
-                                    { _, y, m, d ->
-                                        dateTime = LocalDateTime(
-                                            LocalDate(y, m + 1, d),
-                                            dateTime.time,
-                                        )
-                                    },
-                                    dateTime.year,
-                                    dateTime.monthNumber - 1,
-                                    dateTime.dayOfMonth,
-
-                                ).show()
+                                showDate=true
                             } else {
                                 dateTime = it
                             }
@@ -145,12 +136,30 @@ fun NotificationDialog(
             },
         )
     }
+
+    TimeDialog(
+        showDialog=showTime,
+        hour = dateTime.hour,
+        minute = dateTime.minute,
+        onDismissRequest = {showTime=false},
+        onSetTime = {dateTime= LocalDateTime(dateTime.date,it) }
+    )
+    DateDialog(
+        showDialog=showDate,
+       currentDate = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+        onDismissRequest = {showDate=false},
+        onSetDate = {
+
+            dateTime=LocalDateTime(it,dateTime.time)}
+    )
 }
 
 @Preview
 @Composable
 fun NotificationDialogPreview() {
-    NotificationDialog()
+    NotificationDialog(
+        remainder = LocalDateTime(2023,2,14,12,30).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+    )
 }
 
 @Composable
@@ -371,4 +380,125 @@ fun TimeColumnPreview() {
     TimeContent(
         dateTime = LocalDateTime(2021, 4, 5, 0, 0, 0),
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateDialog(
+    currentDate : Long=System.currentTimeMillis()+(48*60*60*1000),
+    showDialog: Boolean=true,
+    onDismissRequest: () -> Unit={},
+    onSetDate :(LocalDate)->Unit={}
+) {
+//    DatePickerDialog(
+//        context,
+//        { _, y, m, d ->
+//            dateTime = LocalDateTime(
+//                LocalDate(y, m + 1, d),
+//                dateTime.time,
+//            )
+//        },
+//        dateTime.year,
+//        dateTime.monthNumber - 1,
+//        dateTime.dayOfMonth,
+//
+//        ).show()
+    val state= rememberDatePickerState(
+        initialSelectedDateMillis = currentDate,
+        initialDisplayedMonthMillis = currentDate
+
+    )
+
+    AnimatedVisibility(visible = showDialog) {
+        DatePickerDialog(onDismissRequest =onDismissRequest,
+            confirmButton = {
+                Button(onClick = {
+                    state.selectedDateMillis?.let {
+                        val dateTime=Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.currentSystemDefault())
+                        onSetDate(dateTime.date)
+                    }
+                }) {
+                    Text(text = "Set date")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = "Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = state,
+                dateValidator = {it>=System.currentTimeMillis()}
+            )
+        }
+    }
+
+}
+
+@Preview
+@Composable
+fun DateDialogPreview() {
+    DateDialog()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimeDialog(
+    hour : Int=13,
+    minute:Int=55,
+    showDialog: Boolean=true,
+    onDismissRequest: () -> Unit={},
+    onSetTime :(LocalTime)->Unit={}
+) {
+
+//    TimePickerDialog(
+//        context,
+//        { _, hourOfDay, minute ->
+//            dateTime = LocalDateTime(
+//                dateTime.date,
+//                LocalTime(hourOfDay, minute),
+//            )
+//        },
+//        dateTime.hour,
+//        dateTime.minute,
+//        false,
+//    ).show()
+
+    val state = rememberTimePickerState(initialHour = hour, initialMinute = minute,is24Hour = false)
+   AnimatedVisibility(visible =showDialog) {
+       DatePickerDialog(
+           onDismissRequest = onDismissRequest,
+           confirmButton = {
+               Button(onClick = {
+                   Log.e("Date Picker","hour ${state.hour} minute ${state.minute}")
+                   val time=LocalTime(state.hour,state.minute)
+                   Log.e("Date Picker","hour2 ${time.hour} minute2 ${time.minute}")
+                   onSetTime(time)
+
+                   onDismissRequest()
+               })
+               {
+                   Text(text = "Set time")
+               }
+           },
+           dismissButton = {
+               TextButton(onClick = onDismissRequest) {
+                   Text(text = "Cancel")
+               }
+           }
+           ) {
+
+           TimePicker(state = state)
+       }
+   }
+
+
+}
+
+@Preview
+@Composable
+fun TimeDialogPreview() {
+
+    TimeDialog()
 }
