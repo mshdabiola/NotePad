@@ -32,6 +32,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 configureKotlinAndroid(this)
                 compileSdk = 33
                 defaultConfig.targetSdk = 33
+                compileSdkPreview = "UpsideDownCake"
                 defaultConfig.minSdk = 24
                 defaultConfig.versionName = "1.0.0"
                 defaultConfig.versionCode = 8
