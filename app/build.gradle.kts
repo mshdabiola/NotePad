@@ -4,7 +4,7 @@ plugins {
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.hilt")
     alias(libs.plugins.google.services)
-     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.crashlytics)
 
 }
 

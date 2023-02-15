@@ -158,7 +158,7 @@ fun EditScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {
             if (it) {
-                noteficationModalState=true
+                noteficationModalState = true
             }
         },
     )
@@ -184,9 +184,9 @@ fun EditScreen(
         pauseVoice = editViewModel::pause,
         moreOptions = {
 //            coroutineScope.launch { modalState.show() }
-                      showModalState=true
-                      },
-        noteOption = { noteModalState=true },
+            showModalState = true
+        },
+        noteOption = { noteModalState = true },
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
@@ -198,14 +198,14 @@ fun EditScreen(
                 ),
             )
         },
-        onColorClick = { colorModalState=true},
+        onColorClick = { colorModalState = true },
         onNotification = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
             ) {
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                noteficationModalState=true
+                noteficationModalState = true
             }
         },
         showNotificationDialog = {
@@ -216,9 +216,9 @@ fun EditScreen(
         navigateToGallery = navigateToGallery,
         navigateToDrawing = navigateToDrawing,
 
-    )
+        )
     AddBottomSheet2(
-        show =showModalState,
+        show = showModalState,
         currentColor = editViewModel.notePadUiState.note.color,
         currentImage = editViewModel.notePadUiState.note.background,
         isNoteCheck = editViewModel.notePadUiState.note.isCheck,
@@ -228,7 +228,7 @@ fun EditScreen(
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
         onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) },
-        onDismiss = {showModalState=false}
+        onDismiss = { showModalState = false }
     )
 
     val send = {
@@ -254,7 +254,7 @@ fun EditScreen(
         onDelete = editViewModel::onDelete,
         onCopy = editViewModel::copyNote,
         onSendNote = send,
-        onDismissRequest={noteModalState=false}
+        onDismissRequest = { noteModalState = false }
     )
     ColorAndImageBottomSheet(
         show = colorModalState,
@@ -262,7 +262,7 @@ fun EditScreen(
         currentImage = editViewModel.notePadUiState.note.background,
         onColorClick = editViewModel::onColorChange,
         onImageClick = editViewModel::onImageChange,
-        onDismissRequest ={colorModalState=false}
+        onDismissRequest = { colorModalState = false }
     )
 
     NotificationBottomSheet(
@@ -276,7 +276,7 @@ fun EditScreen(
     val dateDialogUiData = editViewModel.dateDialog.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
-        showDialog=showDialog,
+        showDialog = showDialog,
         dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
         onSetAlarm = editViewModel::setAlarm,
@@ -287,14 +287,14 @@ fun EditScreen(
     )
 
     TimeDialog(
-        state=editViewModel.timePicker,
+        state = editViewModel.timePicker,
         showDialog = dateDialogUiData.value.showTimeDialog,
         onDismissRequest = editViewModel::hideTime,
         onSetTime = editViewModel::setTimeDialog
     )
     DateDialog(
-       state=editViewModel.datePicker,
-        showDialog=dateDialogUiData.value.showDateDialog,
+        state = editViewModel.datePicker,
+        showDialog = dateDialogUiData.value.showDateDialog,
         onDismissRequest = editViewModel::hideDate,
         onSetDate = editViewModel::setDateDialog
     )
@@ -425,7 +425,7 @@ fun EditScreen(
             )
         },
 
-    ) { paddingValues ->
+        ) { paddingValues ->
         Column(
             Modifier
                 .padding(paddingValues)
@@ -490,7 +490,7 @@ fun EditScreen(
                                 .weight(1f)
                                 .testTag("title"),
 
-                        )
+                            )
                         if (notepad.note.isCheck) {
                             Box {
                                 IconButton(onClick = { expandCheck = true }) {
@@ -555,7 +555,7 @@ fun EditScreen(
                                 .focusRequester(subjectFocus)
                                 .testTag("detail"),
 
-                        )
+                            )
                     }
                 }
                 if (notepad.note.isCheck) {
@@ -650,7 +650,7 @@ fun EditScreen(
                                     .border(1.dp, Color.Gray, CircleShape)
                                     .size(30.dp),
 
-                            )
+                                )
                         }
                     }
                 }
@@ -744,7 +744,7 @@ fun EditScreenPreview() {
                     currentProgress = 500f,
                     isPlaying = false,
 
-                ),
+                    ),
             ).toImmutableList(),
             checks = listOf(
                 NoteCheckUiState(
@@ -754,7 +754,7 @@ fun EditScreenPreview() {
                     isCheck = false,
                     focus = false,
 
-                ),
+                    ),
                 NoteCheckUiState(
                     id = 7481L,
                     noteId = 5389L,
@@ -762,12 +762,12 @@ fun EditScreenPreview() {
                     isCheck = true,
                     focus = false,
 
-                ),
+                    ),
             ).toImmutableList(),
 
-        ),
+            ),
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -835,7 +835,7 @@ fun NoteCheck(
             ),
             keyboardActions = KeyboardActions { onNextCheck() },
 
-        )
+            )
     }
 }
 
@@ -882,7 +882,7 @@ fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
         NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -904,7 +904,11 @@ fun NoteUri(
             },
         colors = ListItemDefaults.colors(containerColor = color),
         leadingContent = {
-            AsyncImage(modifier = Modifier.size(64.dp), model = uriState.icon, contentDescription = "icon")
+            AsyncImage(
+                modifier = Modifier.size(64.dp),
+                model = uriState.icon,
+                contentDescription = "icon"
+            )
         },
         headlineText = { Text(text = uriState.path) },
         supportingText = { Text(text = uriState.uri, maxLines = 2) },

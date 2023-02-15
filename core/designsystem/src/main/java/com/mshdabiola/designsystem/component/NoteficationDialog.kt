@@ -1,8 +1,5 @@
 package com.mshdabiola.designsystem.component
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -20,9 +14,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -89,10 +80,10 @@ fun NotificationDialog(
                     onDateChange = {
                         if (it.time == LocalTime(0, 0)) {
 
-                          showTime=true
+                            showTime = true
                         } else {
                             if (it.date == LocalDate(1993, 1, 1)) {
-                                showDate=true
+                                showDate = true
                             } else {
                                 dateTime = it
                             }
@@ -158,7 +149,8 @@ fun NotificationDialog(
 @Composable
 fun NotificationDialogPreview() {
     NotificationDialog(
-        remainder = LocalDateTime(2023,2,14,12,30).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        remainder = LocalDateTime(2023, 2, 14, 12, 30).toInstant(TimeZone.currentSystemDefault())
+            .toEpochMilliseconds()
     )
 }
 
@@ -234,7 +226,7 @@ fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-        )
+            )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
@@ -290,7 +282,7 @@ fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-        )
+            )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
@@ -357,7 +349,7 @@ fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-        )
+            )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {

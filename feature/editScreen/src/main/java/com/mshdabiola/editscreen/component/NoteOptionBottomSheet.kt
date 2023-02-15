@@ -16,7 +16,6 @@ import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.mshdabiola.designsystem.icon.NoteIcon
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +40,7 @@ fun NoteOptionBottomSheet(
         }
     }
 
-    if (show){
+    if (show) {
         ModalBottomSheet(
             sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,

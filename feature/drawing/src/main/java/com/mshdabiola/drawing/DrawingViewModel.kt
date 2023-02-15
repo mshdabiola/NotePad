@@ -47,6 +47,7 @@ class DrawingViewModel @Inject constructor(
     val controller = DrawingController()
     val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     val coroutineScope = CoroutineScope(dispatcher + SupervisorJob())
+
     init {
         viewModelScope.launch {
             if (imageI != (-1L)) {

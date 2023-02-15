@@ -10,29 +10,28 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateDialog(
-    state :DatePickerState = DatePickerState(System.currentTimeMillis(),System.currentTimeMillis(),DatePickerDefaults.YearRange,
-        DisplayMode.Picker),
+    state: DatePickerState = DatePickerState(
+        System.currentTimeMillis(), System.currentTimeMillis(), DatePickerDefaults.YearRange,
+        DisplayMode.Picker
+    ),
     showDialog: Boolean = true,
     onDismissRequest: () -> Unit = {},
     onSetDate: () -> Unit = {}
 ) {
 
 
-
     AnimatedVisibility(visible = showDialog) {
         DatePickerDialog(onDismissRequest = onDismissRequest,
             confirmButton = {
                 Button(onClick = {
-                        onSetDate()
+                    onSetDate()
                     onDismissRequest()
                 }) {
                     Text(text = "Set date")
@@ -46,7 +45,7 @@ fun DateDialog(
         ) {
             DatePicker(
                 state = state,
-                dateValidator = { it > (System.currentTimeMillis()-(48 * 60 * 60 * 1000)) }
+                dateValidator = { it > (System.currentTimeMillis() - (48 * 60 * 60 * 1000)) }
             )
         }
     }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,10 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.bottomsheet.ModalState
-import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,8 +45,8 @@ fun ColorAndImageBottomSheet(
     onColorClick: (Int) -> Unit = {},
     onImageClick: (Int) -> Unit = {},
     show: Boolean,
-    onDismissRequest : ()->Unit={}
-    ) {
+    onDismissRequest: () -> Unit = {}
+) {
     rememberCoroutineScope()
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -61,15 +57,15 @@ fun ColorAndImageBottomSheet(
             MaterialTheme.colorScheme.surface
         }
     }
-   if(show) {
+    if (show) {
         ModalBottomSheet(
             sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,
             containerColor = background,
 
-        ) {
+            ) {
 
-            Column(Modifier.padding(start=16.dp,end= 16.dp, bottom = 8.dp)) {
+            Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
                 Text(text = "Color", style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

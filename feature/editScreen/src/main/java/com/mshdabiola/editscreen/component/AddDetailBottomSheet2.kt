@@ -20,15 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +127,7 @@ fun AddBottomSheet2(
                 selected = false,
                 onClick = {
                     snapPictureLauncher.launch(getPhotoUri())
-                   onDismiss()
+                    onDismiss()
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
             )

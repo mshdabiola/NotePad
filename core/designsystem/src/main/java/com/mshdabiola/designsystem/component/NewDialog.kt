@@ -31,7 +31,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun NotificationDialogNew(
     dateDialogUiData: DateDialogUiData,
-    showDialog : Boolean=false,
+    showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
     onSetAlarm: () -> Unit = { },
     onDeleteAlarm: () -> Unit = {},
@@ -156,7 +156,7 @@ fun TextDropbox(
 @Preview
 @Composable
 fun NewDialogPreview() {
-    val dateDialog=DateDialogUiData(
+    val dateDialog = DateDialogUiData(
         isEdit = false,
         currentTime = 0,
         timeData = listOf(
@@ -198,7 +198,7 @@ fun NewDialogPreview() {
         ).toImmutableList(),
         timeError = false,
         currentDate = 0,
-        dateData =listOf(
+        dateData = listOf(
             DateListUiState(
                 title = "Today",
                 value = "Today",
@@ -207,7 +207,7 @@ fun NewDialogPreview() {
             ),
             DateListUiState(
                 title = "Tomorrow",
-                value ="Tomorrow" ,
+                value = "Tomorrow",
                 isOpenDialog = true,
                 enable = true
             ),
@@ -219,7 +219,7 @@ fun NewDialogPreview() {
             )
         ).toImmutableList(),
         currentInterval = 0,
-        interval =listOf(
+        interval = listOf(
             DateListUiState(
                 title = "Does not repeat",
                 value = "Does not repeat",
@@ -254,9 +254,10 @@ fun NewDialogPreview() {
 
     )
 
-   NotificationDialogNew(
+    NotificationDialogNew(
         showDialog = true,
-       dateDialogUiData = dateDialog)
+        dateDialogUiData = dateDialog
+    )
 }
 
 

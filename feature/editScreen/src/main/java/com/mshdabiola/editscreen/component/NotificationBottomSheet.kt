@@ -78,7 +78,7 @@ fun NotificationBottomSheet(
     // if now 19.22> morning 7
     // later today 10pm22/tomorrow morning 7am
     // Tomorrow morning 10am/Tomorrow evening 7pm 19
-    if (show){
+    if (show) {
         ModalBottomSheet(
             sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,
@@ -152,10 +152,11 @@ fun NotificationItem(
 ) {
     DropdownMenuItem(
         leadingIcon = {
-            Icon(imageVector = icon, contentDescription = "time")},
-        text = {  Text(text = title) },
+            Icon(imageVector = icon, contentDescription = "time")
+        },
+        text = { Text(text = title) },
         onClick = onClick,
-        trailingIcon = {Text(text = time)}
+        trailingIcon = { Text(text = time) }
     )
 }
 

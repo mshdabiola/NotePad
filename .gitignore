@@ -33,3 +33,4 @@ local.properties
 /feature/build/spotless/spotlessKotlin/editScreen/src/main/java/com/mshdabiola/editscreen/ShareEditScreen.kt
 /feature/build/spotless/spotlessKotlin/editScreen/src/main/java/com/mshdabiola/editscreen/component/ShareViewModel.kt
 /feature/build/spotless/spotlessKotlin/editScreen/src/main/java/com/mshdabiola/editscreen/VoiceRecorder.kt
+/feature/build/
