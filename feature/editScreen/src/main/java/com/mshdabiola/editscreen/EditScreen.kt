@@ -100,10 +100,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.rememberModalState
+import com.mshdabiola.designsystem.component.DateDialog
 import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.NotificationDialogNew
 import com.mshdabiola.designsystem.component.ReminderCard
+import com.mshdabiola.designsystem.component.TimeDialog
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
@@ -127,6 +129,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
     editViewModel: EditViewModel = hiltViewModel(),
@@ -265,6 +268,19 @@ fun EditScreen(
         onDateChange = editViewModel::onSetDate,
         onIntervalChange = editViewModel::onSetInterval,
         onDeleteAlarm = editViewModel::deleteAlarm,
+    )
+
+    TimeDialog(
+        state=editViewModel.timePicker,
+        showDialog = dateDialogUiData.value.showTimeDialog,
+        onDismissRequest = editViewModel::hideTime,
+        onSetTime = editViewModel::setTimeDialog
+    )
+    DateDialog(
+       state=editViewModel.datePicker,
+        showDialog=dateDialogUiData.value.showDateDialog,
+        onDismissRequest = editViewModel::hideDate,
+        onSetDate = editViewModel::setDateDialog
     )
 }
 

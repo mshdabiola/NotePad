@@ -157,7 +157,6 @@ fun TextDropbox(
 @Composable
 fun NewDialogPreview() {
     val dateDialog=DateDialogUiData(
-        showDialog = true,
         isEdit = false,
         currentTime = 0,
         timeData = listOf(

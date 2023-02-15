@@ -3,6 +3,11 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,6 +56,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -70,6 +76,7 @@ class EditViewModel @Inject constructor(
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,
     private val imageToText: ImageToText,
+    private val time12UserCase: Time12UserCase
 
     ) : ViewModel() {
 
@@ -520,25 +527,31 @@ class EditViewModel @Inject constructor(
 
     private val _dateDialog = MutableStateFlow(DateDialogUiData())
     val dateDialog = _dateDialog.asStateFlow()
-    private  var currentDatTime: LocalDateTime? = null
+    private  lateinit var currentDatTime: LocalDateTime
     private lateinit var datetime: LocalDateTime
-    val local = arrayOf(
+    val local = mutableListOf(
         LocalTime(7, 0, 0),
         LocalTime(13, 0, 0),
         LocalTime(19, 0, 0),
         LocalTime(20, 0, 0),
         LocalTime(20, 0, 0)
     )
+    @OptIn(ExperimentalMaterial3Api::class)
+    var datePicker : DatePickerState = DatePickerState(System.currentTimeMillis(),System.currentTimeMillis(),
+        DatePickerDefaults.YearRange,
+        DisplayMode.Picker)
+    var timePicker: TimePickerState = TimePickerState(12,4,is24Hour = false)
 
 
     fun initDate(note: NoteUiState) {
+        val now = Clock.System.now()
+        datetime = now.toLocalDateTime(TimeZone.currentSystemDefault())
         currentDatTime =
             if (note.reminder > 0) Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
                 TimeZone.currentSystemDefault()
-            ) else null
+            ) else datetime
 
-        val now = Clock.System.now()
-        datetime = now.toLocalDateTime(TimeZone.UTC)
+
 
         val timeList = listOf(
             DateListUiState(
@@ -579,8 +592,13 @@ class EditViewModel @Inject constructor(
         )
             .mapIndexed { index, dateListUiState ->
                 if (index != local.lastIndex) {
+
                     val greater = local[index] > datetime.time
-                    dateListUiState.copy(enable = greater)
+                    dateListUiState.copy(
+                        enable = greater,
+                        value = time12UserCase(local[index]),
+                        trail = time12UserCase(local[index])
+                    )
                 } else {
                     dateListUiState
                 }
@@ -588,82 +606,125 @@ class EditViewModel @Inject constructor(
             .toImmutableList()
 
 
-        val dateDialog = DateDialogUiData(
-            showDialog = true,
-            isEdit = currentDatTime != null,
-            currentTime = 0,
-            timeData = timeList,
-            timeError = false,
-            currentDate = 0,
-            dateData = listOf(
-                DateListUiState(
-                    title = "Today",
-                    value = "Today",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Tomorrow",
-                    value = "Tomorrow",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Pick date",
-                    value = "Jan 5",
-                    isOpenDialog = true,
-                    enable = true
-                )
-            ).toImmutableList(),
-            currentInterval = 0,
-            interval = listOf(
-                DateListUiState(
-                    title = "Does not repeat",
-                    value = "Does not repeat",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Daily",
-                    value = "Daily",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Weekly",
-                    value = "Weekly",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Monthly",
-                    value = "Monthly",
-                    isOpenDialog = false,
-                    enable = true
-                ),
-                DateListUiState(
-                    title = "Yearly",
-                    value = "Yearly",
-                    isOpenDialog = false,
-                    enable = true
-                )
-            ).toImmutableList()
-        )
 
-        _dateDialog.value = dateDialog
+
+        _dateDialog.update {
+            it.copy(
+                isEdit = note.reminder>0,
+                currentTime = 0,
+                timeData = timeList,
+                timeError = false,
+                currentDate = 0,
+                dateData = listOf(
+                    DateListUiState(
+                        title = "Today",
+                        value = "Today",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Tomorrow",
+                        value = "Tomorrow",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Pick date",
+                        value = "Jan 5",
+                        isOpenDialog = true,
+                        enable = true
+                    )
+                ).toImmutableList(),
+                currentInterval = 0,
+                interval = listOf(
+                    DateListUiState(
+                        title = "Does not repeat",
+                        value = "Does not repeat",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Daily",
+                        value = "Daily",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Weekly",
+                        value = "Weekly",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Monthly",
+                        value = "Monthly",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Yearly",
+                        value = "Yearly",
+                        isOpenDialog = false,
+                        enable = true
+                    )
+                ).toImmutableList()
+            )
+        }
+        setDate(currentDatTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds())
+        setTime( hour = currentDatTime.hour,
+                minute = currentDatTime.minute)
     }
 
     fun onSetDate(index: Int) {
-        _dateDialog.update {
-            it.copy(currentDate = index)
+        if (index==dateDialog.value.dateData.lastIndex){
+            _dateDialog.update {
+                it.copy(
+                    showDateDialog = true
+                )
+            }
+        }else{
+            _dateDialog.update {
+
+                it.copy(
+                    currentDate = index,
+
+                )
+            }
+            val date=if (index==0)
+                System.currentTimeMillis()
+            else
+                System.currentTimeMillis()+24*60*60*1000
+            setDate(date)
         }
 
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun setDate(date:Long){
+        datePicker= DatePickerState(date,date,
+            DatePickerDefaults.YearRange,
+            DisplayMode.Picker)
+    }
+
     fun onSetTime(index: Int) {
-        _dateDialog.update {
-            it.copy(currentTime = index)
+        if (index==dateDialog.value.timeData.lastIndex){
+            _dateDialog.update {
+                it.copy(
+                    showTimeDialog = true
+                )
+            }
+        }else{
+            _dateDialog.update {
+                it.copy(
+                    currentTime = index,
+                )
+            }
+            setTime(local[index].hour,
+                local[index].minute)
         }
+    }
+    fun setTime(hour:Int,minute:Int){
+        timePicker= TimePickerState(hour,minute,false)
     }
 
     fun onSetInterval(index: Int) {
@@ -696,6 +757,49 @@ class EditViewModel @Inject constructor(
         }
 
     }
+
+    fun hideTime(){
+        _dateDialog.update {
+            it.copy(showTimeDialog = false)
+        }
+    }
+    fun hideDate(){
+        _dateDialog.update {
+            it.copy(showDateDialog = false)
+        }
+    }
+
+    var dateNOe=LocalDate(1,2,3)
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun setDateDialog(){
+        datePicker.selectedDateMillis?.let { timee ->
+            val date=Instant.fromEpochMilliseconds(timee).toLocalDateTime(TimeZone.currentSystemDefault())
+            dateNOe=date.date
+
+            _dateDialog.update {
+                val im=it.dateData.toMutableList()
+                im[im.lastIndex]=im[im.lastIndex].copy(value="${date.month.name}, ${date.dayOfMonth}")
+                it.copy(dateData = im.toImmutableList(),
+                    currentDate = im.lastIndex)
+            }
+
+        }
+    }
+
+    fun setTimeDialog(){
+        val time=LocalTime(timePicker.hour,timePicker.minute)
+
+        local[local.lastIndex]=time
+
+        _dateDialog.update {
+            val im=it.timeData.toMutableList()
+            im[im.lastIndex]=im[im.lastIndex].copy(value=time12UserCase(time))
+            it.copy(timeData = im.toImmutableList(),
+                currentTime = im.lastIndex)
+        }
+    }
+
+
 
 
 }
