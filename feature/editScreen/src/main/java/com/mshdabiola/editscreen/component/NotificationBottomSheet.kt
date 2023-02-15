@@ -1,30 +1,19 @@
 package com.mshdabiola.editscreen.component
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.mshdabiola.bottomsheet.ModalBottomSheet
-import com.mshdabiola.bottomsheet.ModalState
-import com.mshdabiola.bottomsheet.rememberModalState
-import kotlinx.coroutines.launch
+import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
@@ -34,14 +23,27 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationBottomSheet(
-    modalState: ModalState,
     onAlarm: (Long, Long?) -> Unit = { _, _ -> },
     showDialog: () -> Unit = {},
+    show: Boolean,
+    currentColor: Int,
+    currentImage: Int,
+    onDismissRequest: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
+    val background = if (currentImage != -1) {
+        NoteIcon.background[currentImage].fgColor
+    } else {
+        if (currentColor != -1) {
+            NoteIcon.noteColors[currentColor]
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    }
     val dateTime = remember {
         Clock.System.now().toLocalDateTime(TimeZone.UTC)
     }
@@ -76,70 +78,68 @@ fun NotificationBottomSheet(
     // if now 19.22> morning 7
     // later today 10pm22/tomorrow morning 7am
     // Tomorrow morning 10am/Tomorrow evening 7pm 19
-    ModalBottomSheet(modalState = modalState) {
-        Surface(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.padding(
-                    bottom = 36.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp,
-                ),
-            ) {
-                NotificationItem(
-                    title = if (pastToday) "Tomorrow morning" else "Later today",
-                    time = if (pastToday) morning.toTimeString() else evening.toTimeString(),
-                    onClick = {
-                        coroutineScope.launch { modalState.hide() }
+    if (show){
+        ModalBottomSheet(
+            sheetState = rememberSheetState(),
+            onDismissRequest = onDismissRequest,
+            containerColor = background
+        ) {
 
-                        val time = if (pastToday) {
-                            morningTom.toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
-                        } else {
-                            evening.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
-                        }
 
-                        onAlarm(time, null)
-                    },
-                )
-                NotificationItem(
-                    title = if (pastToday) "Tomorrow evening" else "Tomorrow morning",
-                    time = if (pastToday) evening.toTimeString() else morning.toTimeString(),
-                    onClick = {
-                        coroutineScope.launch { modalState.hide() }
+            NotificationItem(
+                title = if (pastToday) "Tomorrow morning" else "Later today",
+                time = if (pastToday) morning.toTimeString() else evening.toTimeString(),
+                onClick = {
+                    onDismissRequest()
 
-                        val time = if (pastToday) {
-                            eveningTom.toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
-                        } else {
-                            morningTom.toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
-                        }
+                    val time = if (pastToday) {
+                        morningTom.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds()
+                    } else {
+                        evening.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                    }
 
-                        onAlarm(time, null)
-                    },
+                    onAlarm(time, null)
+                },
+            )
+            NotificationItem(
+                title = if (pastToday) "Tomorrow evening" else "Tomorrow morning",
+                time = if (pastToday) evening.toTimeString() else morning.toTimeString(),
+                onClick = {
+                    onDismissRequest()
+
+                    val time = if (pastToday) {
+                        eveningTom.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds()
+                    } else {
+                        morningTom.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds()
+                    }
+
+                    onAlarm(time, null)
+                },
 
                 )
-                NotificationItem(
-                    title = "$dayOfWeek morning",
-                    time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
-                    onClick = {
-                        onAlarm(
-                            nextWk.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-                            null,
-                        )
-                    },
-                )
-                NotificationItem(
-                    title = "Pick a date & time",
-                    time = "",
-                    onClick = {
-                        showDialog()
-                        coroutineScope.launch { modalState.hide() }
-                    },
-                )
-            }
+            NotificationItem(
+                title = "$dayOfWeek morning",
+                time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
+                onClick = {
+                    onAlarm(
+                        nextWk.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                        null,
+                    )
+                },
+            )
+            NotificationItem(
+                title = "Pick a date & time",
+                time = "",
+                onClick = {
+                    showDialog()
+                    onDismissRequest()
+                },
+            )
         }
+
     }
 }
 
@@ -150,25 +150,12 @@ fun NotificationItem(
     time: String,
     onClick: () -> Unit = {},
 ) {
-    Row(
-        Modifier
-            .clickable { onClick() }
-            .fillMaxWidth()
-            .height(36.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(imageVector = icon, contentDescription = "time")
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = title, Modifier.weight(1f))
-        Text(text = time)
-    }
-}
-
-@Preview
-@Composable
-fun NotificationBottomSheetPreview() {
-    NotificationBottomSheet(
-        modalState = rememberModalState(),
+    DropdownMenuItem(
+        leadingIcon = {
+            Icon(imageVector = icon, contentDescription = "time")},
+        text = {  Text(text = title) },
+        onClick = onClick,
+        trailingIcon = {Text(text = time)}
     )
 }
 

@@ -99,10 +99,8 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.component.DateDialog
 import com.mshdabiola.designsystem.component.LabelCard
-import com.mshdabiola.designsystem.component.NotificationDialog
 import com.mshdabiola.designsystem.component.NotificationDialogNew
 import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.TimeDialog
@@ -115,7 +113,7 @@ import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
 import com.mshdabiola.designsystem.component.toTime
 import com.mshdabiola.designsystem.component.toTimeAndDate
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.editscreen.component.AddBottomSheet
+import com.mshdabiola.editscreen.component.AddBottomSheet2
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
@@ -123,7 +121,6 @@ import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -138,10 +135,20 @@ fun EditScreen(
     navigateToGallery: (Long, Long) -> Unit,
     navigateToDrawing: (Long, Long?) -> Unit,
 ) {
-    val modalState = rememberModalState()
-    val noteModalState = rememberModalState()
-    val colorModalState = rememberModalState()
-    val notificationModalState = rememberModalState()
+
+    var showModalState by remember {
+        mutableStateOf(false)
+    }
+    var noteModalState by remember {
+        mutableStateOf(false)
+    }
+    var noteficationModalState by remember {
+        mutableStateOf(false)
+    }
+    var colorModalState by remember {
+        mutableStateOf(false)
+    }
+
     val coroutineScope = rememberCoroutineScope()
 
     var showDialog by remember {
@@ -151,7 +158,7 @@ fun EditScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {
             if (it) {
-                coroutineScope.launch { notificationModalState.show() }
+                noteficationModalState=true
             }
         },
     )
@@ -175,8 +182,11 @@ fun EditScreen(
         addItem = editViewModel::addCheck,
         playVoice = editViewModel::playMusic,
         pauseVoice = editViewModel::pause,
-        moreOptions = { coroutineScope.launch { modalState.show() } },
-        noteOption = { coroutineScope.launch { noteModalState.show() } },
+        moreOptions = {
+//            coroutineScope.launch { modalState.show() }
+                      showModalState=true
+                      },
+        noteOption = { noteModalState=true },
         unCheckAllItems = editViewModel::unCheckAllItems,
         deleteCheckItems = editViewModel::deleteCheckedItems,
         hideCheckBoxes = editViewModel::hideCheckBoxes,
@@ -188,14 +198,14 @@ fun EditScreen(
                 ),
             )
         },
-        onColorClick = { coroutineScope.launch { colorModalState.show() } },
+        onColorClick = { colorModalState=true},
         onNotification = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
             ) {
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                coroutineScope.launch { notificationModalState.show() }
+                noteficationModalState=true
             }
         },
         showNotificationDialog = {
@@ -207,8 +217,8 @@ fun EditScreen(
         navigateToDrawing = navigateToDrawing,
 
     )
-    AddBottomSheet(
-        modalState = modalState,
+    AddBottomSheet2(
+        show =showModalState,
         currentColor = editViewModel.notePadUiState.note.color,
         currentImage = editViewModel.notePadUiState.note.background,
         isNoteCheck = editViewModel.notePadUiState.note.isCheck,
@@ -218,6 +228,7 @@ fun EditScreen(
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
         onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) },
+        onDismiss = {showModalState=false}
     )
 
     val send = {
@@ -230,7 +241,7 @@ fun EditScreen(
         context.startActivity(Intent(intent))
     }
     NoteOptionBottomSheet(
-        modalState = noteModalState,
+        show = noteModalState,
         currentColor = editViewModel.notePadUiState.note.color,
         currentImage = editViewModel.notePadUiState.note.background,
         onLabel = {
@@ -243,20 +254,25 @@ fun EditScreen(
         onDelete = editViewModel::onDelete,
         onCopy = editViewModel::copyNote,
         onSendNote = send,
+        onDismissRequest={noteModalState=false}
     )
     ColorAndImageBottomSheet(
-        modalState = colorModalState,
+        show = colorModalState,
         currentColor = editViewModel.notePadUiState.note.color,
         currentImage = editViewModel.notePadUiState.note.background,
         onColorClick = editViewModel::onColorChange,
         onImageClick = editViewModel::onImageChange,
+        onDismissRequest ={colorModalState=false}
     )
 
     NotificationBottomSheet(
-        modalState = notificationModalState,
+        show = noteficationModalState,
         onAlarm = editViewModel::setAlarm,
         showDialog = { showDialog = true },
-    )
+        currentColor = editViewModel.notePadUiState.note.color,
+        currentImage = editViewModel.notePadUiState.note.background
+
+    ) { noteficationModalState = false }
     val dateDialogUiData = editViewModel.dateDialog.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
@@ -283,6 +299,7 @@ fun EditScreen(
         onSetDate = editViewModel::setDateDialog
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
