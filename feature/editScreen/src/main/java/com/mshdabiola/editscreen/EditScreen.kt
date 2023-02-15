@@ -273,7 +273,7 @@ fun EditScreen(
         currentImage = editViewModel.notePadUiState.note.background
 
     ) { noteficationModalState = false }
-    val dateDialogUiData = editViewModel.dateDialog.collectAsStateWithLifecycle()
+    val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
         showDialog = showDialog,
@@ -290,13 +290,13 @@ fun EditScreen(
         state = editViewModel.timePicker,
         showDialog = dateDialogUiData.value.showTimeDialog,
         onDismissRequest = editViewModel::hideTime,
-        onSetTime = editViewModel::setTimeDialog
+        onSetTime = editViewModel::onSetTime
     )
     DateDialog(
         state = editViewModel.datePicker,
         showDialog = dateDialogUiData.value.showDateDialog,
         onDismissRequest = editViewModel::hideDate,
-        onSetDate = editViewModel::setDateDialog
+        onSetDate = editViewModel::onSetDate
     )
 }
 

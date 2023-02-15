@@ -172,7 +172,10 @@ class EditViewModel @Inject constructor(
                 }
             }
             computeUri(notePadUiState.note)
-            initDate(notePadUiState.note)
+            viewModelScope.launch(Dispatchers.IO) {
+
+                initDate(notePadUiState.note)
+            }
             notePadRepository.getOneNotePad(notePadUiState.note.id)
                 .map { it.images to it.labels }
                 .distinctUntilChanged()
@@ -525,11 +528,11 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private val _dateDialog = MutableStateFlow(DateDialogUiData())
-    val dateDialog = _dateDialog.asStateFlow()
-    private lateinit var currentDatTime: LocalDateTime
-    private lateinit var datetime: LocalDateTime
-    val local = mutableListOf(
+    private val _dateTimeState = MutableStateFlow(DateDialogUiData())
+    val dateTimeState = _dateTimeState.asStateFlow()
+    private lateinit var todayDateTime: LocalDateTime
+    private lateinit var currentDateTime: LocalDateTime
+    private val timeList = mutableListOf(
         LocalTime(7, 0, 0),
         LocalTime(13, 0, 0),
         LocalTime(19, 0, 0),
@@ -544,15 +547,16 @@ class EditViewModel @Inject constructor(
         DisplayMode.Picker
     )
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
+    private var currentLocalDate = LocalDate(1, 2, 3)
 
 
-    fun initDate(note: NoteUiState) {
+    private fun initDate(note: NoteUiState) {
         val now = Clock.System.now()
-        datetime = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        currentDatTime =
+        currentDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+        todayDateTime =
             if (note.reminder > 0) Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
                 TimeZone.currentSystemDefault()
-            ) else datetime
+            ) else currentDateTime
 
 
         val timeList = listOf(
@@ -593,13 +597,13 @@ class EditViewModel @Inject constructor(
 
         )
             .mapIndexed { index, dateListUiState ->
-                if (index != local.lastIndex) {
+                if (index != timeList.lastIndex) {
 
-                    val greater = local[index] > datetime.time
+                    val greater = timeList[index] > currentDateTime.time
                     dateListUiState.copy(
                         enable = greater,
-                        value = time12UserCase(local[index]),
-                        trail = time12UserCase(local[index])
+                        value = time12UserCase(timeList[index]),
+                        trail = time12UserCase(timeList[index])
                     )
                 } else {
                     dateListUiState
@@ -610,7 +614,7 @@ class EditViewModel @Inject constructor(
 
 
 
-        _dateDialog.update {
+        _dateTimeState.update {
             it.copy(
                 isEdit = note.reminder > 0,
                 currentTime = 0,
@@ -672,22 +676,22 @@ class EditViewModel @Inject constructor(
                 ).toImmutableList()
             )
         }
-        setDate(currentDatTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds())
-        setTime(
-            hour = currentDatTime.hour,
-            minute = currentDatTime.minute
+        setDatePicker(todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds())
+        setTimePicker(
+            hour = todayDateTime.hour,
+            minute = todayDateTime.minute
         )
     }
 
     fun onSetDate(index: Int) {
-        if (index == dateDialog.value.dateData.lastIndex) {
-            _dateDialog.update {
+        if (index == dateTimeState.value.dateData.lastIndex) {
+            _dateTimeState.update {
                 it.copy(
                     showDateDialog = true
                 )
             }
         } else {
-            _dateDialog.update {
+            _dateTimeState.update {
 
                 it.copy(
                     currentDate = index,
@@ -698,13 +702,13 @@ class EditViewModel @Inject constructor(
                 System.currentTimeMillis()
             else
                 System.currentTimeMillis() + 24 * 60 * 60 * 1000
-            setDate(date)
+            setDatePicker(date)
         }
 
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    fun setDate(date: Long) {
+    fun setDatePicker(date: Long) {
         datePicker = DatePickerState(
             date, date,
             DatePickerDefaults.YearRange,
@@ -713,43 +717,43 @@ class EditViewModel @Inject constructor(
     }
 
     fun onSetTime(index: Int) {
-        if (index == dateDialog.value.timeData.lastIndex) {
-            _dateDialog.update {
+        if (index == dateTimeState.value.timeData.lastIndex) {
+            _dateTimeState.update {
                 it.copy(
                     showTimeDialog = true
                 )
             }
         } else {
-            _dateDialog.update {
+            _dateTimeState.update {
                 it.copy(
                     currentTime = index,
                 )
             }
-            setTime(
-                local[index].hour,
-                local[index].minute
+            setTimePicker(
+                timeList[index].hour,
+                timeList[index].minute
             )
         }
     }
 
-    fun setTime(hour: Int, minute: Int) {
+    private fun setTimePicker(hour: Int, minute: Int) {
         timePicker = TimePickerState(hour, minute, false)
     }
 
     fun onSetInterval(index: Int) {
-        _dateDialog.update {
+        _dateTimeState.update {
             it.copy(currentInterval = index)
         }
     }
 
     fun setAlarm() {
-        val time = local[dateDialog.value.currentTime]
-        val date = when (dateDialog.value.currentDate) {
-            0 -> datetime.date
-            1 -> datetime.date.plus(1, DateTimeUnit.DAY)
-            else -> datetime.date
+        val time = timeList[dateTimeState.value.currentTime]
+        val date = when (dateTimeState.value.currentDate) {
+            0 -> currentDateTime.date
+            1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
+            else -> currentDateTime.date
         }
-        val interval = when (dateDialog.value.currentInterval) {
+        val interval = when (dateTimeState.value.currentInterval) {
             0 -> null
             1 -> DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)
 
@@ -759,7 +763,7 @@ class EditViewModel @Inject constructor(
 
             else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
         }
-        val now = datetime.toInstant(TimeZone.UTC)
+        val now = currentDateTime.toInstant(TimeZone.UTC)
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
@@ -768,27 +772,26 @@ class EditViewModel @Inject constructor(
     }
 
     fun hideTime() {
-        _dateDialog.update {
+        _dateTimeState.update {
             it.copy(showTimeDialog = false)
         }
     }
 
     fun hideDate() {
-        _dateDialog.update {
+        _dateTimeState.update {
             it.copy(showDateDialog = false)
         }
     }
 
-    var dateNOe = LocalDate(1, 2, 3)
 
     @OptIn(ExperimentalMaterial3Api::class)
-    fun setDateDialog() {
+    fun onSetDate() {
         datePicker.selectedDateMillis?.let { timee ->
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
-            dateNOe = date.date
+            currentLocalDate = date.date
 
-            _dateDialog.update {
+            _dateTimeState.update {
                 val im = it.dateData.toMutableList()
                 im[im.lastIndex] =
                     im[im.lastIndex].copy(value = "${date.month.name}, ${date.dayOfMonth}")
@@ -801,12 +804,12 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun setTimeDialog() {
+    fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 
-        local[local.lastIndex] = time
+        timeList[timeList.lastIndex] = time
 
-        _dateDialog.update {
+        _dateTimeState.update {
             val im = it.timeData.toMutableList()
             im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
             it.copy(
