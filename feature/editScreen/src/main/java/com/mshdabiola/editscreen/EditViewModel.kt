@@ -17,6 +17,8 @@ import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteVoiceRepository
+import com.mshdabiola.designsystem.component.state.DateDialogUiData
+import com.mshdabiola.designsystem.component.state.DateListUiState
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
@@ -37,14 +39,26 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
+import kotlin.time.DurationUnit
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
@@ -57,16 +71,18 @@ class EditViewModel @Inject constructor(
     private val noteVoiceRepository: NoteVoiceRepository,
     private val imageToText: ImageToText,
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
     var navigateToDrawing by mutableStateOf(false)
 
+
     private var photoId: Long = 0
     private var index = 0
 
-    val regex = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+    val regex =
+        "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
 
     init {
         val text = "https://wwww.google.com/uru ikddhg iiso http://ggle.com https://wwww.google.com"
@@ -149,6 +165,7 @@ class EditViewModel @Inject constructor(
                 }
             }
             computeUri(notePadUiState.note)
+            initDate(notePadUiState.note)
             notePadRepository.getOneNotePad(notePadUiState.note.id)
                 .map { it.images to it.labels }
                 .distinctUntilChanged()
@@ -223,6 +240,7 @@ class EditViewModel @Inject constructor(
         index += 1
         return System.currentTimeMillis() + index
     }
+
     fun onTitleChange(title: String) {
         val note = notePadUiState.note.copy(title = title)
         notePadUiState = notePadUiState.copy(note = note)
@@ -499,4 +517,185 @@ class EditViewModel @Inject constructor(
             notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
         }
     }
+
+    private val _dateDialog = MutableStateFlow(DateDialogUiData())
+    val dateDialog = _dateDialog.asStateFlow()
+    private  var currentDatTime: LocalDateTime? = null
+    private lateinit var datetime: LocalDateTime
+    val local = arrayOf(
+        LocalTime(7, 0, 0),
+        LocalTime(13, 0, 0),
+        LocalTime(19, 0, 0),
+        LocalTime(20, 0, 0),
+        LocalTime(20, 0, 0)
+    )
+
+
+    fun initDate(note: NoteUiState) {
+        currentDatTime =
+            if (note.reminder > 0) Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
+                TimeZone.currentSystemDefault()
+            ) else null
+
+        val now = Clock.System.now()
+        datetime = now.toLocalDateTime(TimeZone.UTC)
+
+        val timeList = listOf(
+            DateListUiState(
+                title = "Morning",
+                value = "7:00 AM",
+                trail = "7:00 AM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Afternoon",
+                value = "1:00 PM",
+                trail = "1:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Evening",
+                value = "7:00 PM",
+                trail = "7:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Night",
+                value = "8:00 PM",
+                trail = "8:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Pick time",
+                value = "1:00 PM",
+                isOpenDialog = true,
+                enable = true
+            )
+
+        )
+            .mapIndexed { index, dateListUiState ->
+                if (index != local.lastIndex) {
+                    val greater = local[index] > datetime.time
+                    dateListUiState.copy(enable = greater)
+                } else {
+                    dateListUiState
+                }
+            }
+            .toImmutableList()
+
+
+        val dateDialog = DateDialogUiData(
+            showDialog = true,
+            isEdit = currentDatTime != null,
+            currentTime = 0,
+            timeData = timeList,
+            timeError = false,
+            currentDate = 0,
+            dateData = listOf(
+                DateListUiState(
+                    title = "Today",
+                    value = "Today",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Tomorrow",
+                    value = "Tomorrow",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Pick date",
+                    value = "Jan 5",
+                    isOpenDialog = true,
+                    enable = true
+                )
+            ).toImmutableList(),
+            currentInterval = 0,
+            interval = listOf(
+                DateListUiState(
+                    title = "Does not repeat",
+                    value = "Does not repeat",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Daily",
+                    value = "Daily",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Weekly",
+                    value = "Weekly",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Monthly",
+                    value = "Monthly",
+                    isOpenDialog = false,
+                    enable = true
+                ),
+                DateListUiState(
+                    title = "Yearly",
+                    value = "Yearly",
+                    isOpenDialog = false,
+                    enable = true
+                )
+            ).toImmutableList()
+        )
+
+        _dateDialog.value = dateDialog
+    }
+
+    fun onSetDate(index: Int) {
+        _dateDialog.update {
+            it.copy(currentDate = index)
+        }
+
+    }
+
+    fun onSetTime(index: Int) {
+        _dateDialog.update {
+            it.copy(currentTime = index)
+        }
+    }
+
+    fun onSetInterval(index: Int) {
+        _dateDialog.update {
+            it.copy(currentInterval = index)
+        }
+    }
+
+    fun setAlarm() {
+        val time = local[dateDialog.value.currentTime]
+        val date = when (dateDialog.value.currentDate) {
+            0 -> datetime.date
+            1 -> datetime.date.plus(1, DateTimeUnit.DAY)
+            else -> datetime.date
+        }
+        val interval = when (dateDialog.value.currentInterval) {
+            0 -> null
+            1 -> DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)
+
+            2 -> DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
+
+            3 -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+
+            else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+        }
+        val now=datetime.toInstant(TimeZone.UTC)
+        val setime=LocalDateTime(date,time).toInstant(TimeZone.currentSystemDefault())
+        if (setime.toEpochMilliseconds()>now.toEpochMilliseconds()) {
+            setAlarm(setime.toEpochMilliseconds(), interval)
+        }
+
+    }
+
+
 }

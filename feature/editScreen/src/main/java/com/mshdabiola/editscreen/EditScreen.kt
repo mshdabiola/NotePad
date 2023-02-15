@@ -97,10 +97,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.designsystem.component.NotificationDialog
+import com.mshdabiola.designsystem.component.NotificationDialogNew
 import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
 import com.mshdabiola.designsystem.component.state.NoteImageUiState
@@ -252,13 +254,16 @@ fun EditScreen(
         onAlarm = editViewModel::setAlarm,
         showDialog = { showDialog = true },
     )
+    val dateDialogUiData = editViewModel.dateDialog.collectAsStateWithLifecycle()
 
-    NotificationDialog(
-        showDialog,
+    NotificationDialogNew(
+        showDialog=showDialog,
+        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
-        remainder = editViewModel.notePadUiState.note.reminder,
-        interval = if (editViewModel.notePadUiState.note.interval == (-1L)) null else editViewModel.notePadUiState.note.interval,
         onSetAlarm = editViewModel::setAlarm,
+        onTimeChange = editViewModel::onSetTime,
+        onDateChange = editViewModel::onSetDate,
+        onIntervalChange = editViewModel::onSetInterval,
         onDeleteAlarm = editViewModel::deleteAlarm,
     )
 }
@@ -856,12 +861,14 @@ fun NoteUri(
     val context = LocalContext.current
 
     ListItem(
-        modifier = Modifier.padding(horizontal = 16.dp).clickable {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = uriState.uri.toUri()
-            }
-            context.startActivity(intent)
-        },
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = uriState.uri.toUri()
+                }
+                context.startActivity(intent)
+            },
         colors = ListItemDefaults.colors(containerColor = color),
         leadingContent = {
             AsyncImage(modifier = Modifier.size(64.dp), model = uriState.icon, contentDescription = "icon")

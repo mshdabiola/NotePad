@@ -137,21 +137,21 @@ fun NotificationDialog(
         )
     }
 
-    TimeDialog(
-        showDialog=showTime,
-        hour = dateTime.hour,
-        minute = dateTime.minute,
-        onDismissRequest = {showTime=false},
-        onSetTime = {dateTime= LocalDateTime(dateTime.date,it) }
-    )
-    DateDialog(
-        showDialog=showDate,
-       currentDate = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-        onDismissRequest = {showDate=false},
-        onSetDate = {
-
-            dateTime=LocalDateTime(it,dateTime.time)}
-    )
+//    TimeDialog(
+//        showDialog=showTime,
+//        hour = dateTime.hour,
+//        minute = dateTime.minute,
+//        onDismissRequest = {showTime=false},
+//        onSetTime = {dateTime= LocalDateTime(dateTime.date,it) }
+//    )
+//    DateDialog(
+//        showDialog=showDate,
+//       currentDate = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+//        onDismissRequest = {showDate=false},
+//        onSetDate = {
+//
+//            dateTime=LocalDateTime(it,dateTime.time)}
+//    )
 }
 
 @Preview
@@ -382,123 +382,3 @@ fun TimeColumnPreview() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DateDialog(
-    currentDate : Long=System.currentTimeMillis()+(48*60*60*1000),
-    showDialog: Boolean=true,
-    onDismissRequest: () -> Unit={},
-    onSetDate :(LocalDate)->Unit={}
-) {
-//    DatePickerDialog(
-//        context,
-//        { _, y, m, d ->
-//            dateTime = LocalDateTime(
-//                LocalDate(y, m + 1, d),
-//                dateTime.time,
-//            )
-//        },
-//        dateTime.year,
-//        dateTime.monthNumber - 1,
-//        dateTime.dayOfMonth,
-//
-//        ).show()
-    val state= rememberDatePickerState(
-        initialSelectedDateMillis = currentDate,
-        initialDisplayedMonthMillis = currentDate
-
-    )
-
-    AnimatedVisibility(visible = showDialog) {
-        DatePickerDialog(onDismissRequest =onDismissRequest,
-            confirmButton = {
-                Button(onClick = {
-                    state.selectedDateMillis?.let {
-                        val dateTime=Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.currentSystemDefault())
-                        onSetDate(dateTime.date)
-                    }
-                }) {
-                    Text(text = "Set date")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismissRequest) {
-                    Text(text = "Cancel")
-                }
-            }
-        ) {
-            DatePicker(
-                state = state,
-                dateValidator = {it>=System.currentTimeMillis()}
-            )
-        }
-    }
-
-}
-
-@Preview
-@Composable
-fun DateDialogPreview() {
-    DateDialog()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TimeDialog(
-    hour : Int=13,
-    minute:Int=55,
-    showDialog: Boolean=true,
-    onDismissRequest: () -> Unit={},
-    onSetTime :(LocalTime)->Unit={}
-) {
-
-//    TimePickerDialog(
-//        context,
-//        { _, hourOfDay, minute ->
-//            dateTime = LocalDateTime(
-//                dateTime.date,
-//                LocalTime(hourOfDay, minute),
-//            )
-//        },
-//        dateTime.hour,
-//        dateTime.minute,
-//        false,
-//    ).show()
-
-    val state = rememberTimePickerState(initialHour = hour, initialMinute = minute,is24Hour = false)
-   AnimatedVisibility(visible =showDialog) {
-       DatePickerDialog(
-           onDismissRequest = onDismissRequest,
-           confirmButton = {
-               Button(onClick = {
-                   Log.e("Date Picker","hour ${state.hour} minute ${state.minute}")
-                   val time=LocalTime(state.hour,state.minute)
-                   Log.e("Date Picker","hour2 ${time.hour} minute2 ${time.minute}")
-                   onSetTime(time)
-
-                   onDismissRequest()
-               })
-               {
-                   Text(text = "Set time")
-               }
-           },
-           dismissButton = {
-               TextButton(onClick = onDismissRequest) {
-                   Text(text = "Cancel")
-               }
-           }
-           ) {
-
-           TimePicker(state = state)
-       }
-   }
-
-
-}
-
-@Preview
-@Composable
-fun TimeDialogPreview() {
-
-    TimeDialog()
-}
