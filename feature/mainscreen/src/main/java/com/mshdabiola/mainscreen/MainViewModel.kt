@@ -594,7 +594,7 @@ class MainViewModel
         val date = when (dateTimeState.value.currentDate) {
             0 -> currentDateTime.date
             1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
-            else -> currentDateTime.date
+            else -> currentLocalDate
         }
         val interval = when (dateTimeState.value.currentInterval) {
             0 -> null

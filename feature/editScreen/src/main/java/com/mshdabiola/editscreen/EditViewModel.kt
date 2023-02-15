@@ -3,6 +3,7 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
@@ -755,7 +756,7 @@ class EditViewModel @Inject constructor(
         val date = when (dateTimeState.value.currentDate) {
             0 -> currentDateTime.date
             1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
-            else -> currentDateTime.date
+            else -> currentLocalDate
         }
         val interval = when (dateTimeState.value.currentInterval) {
             0 -> null
@@ -767,10 +768,13 @@ class EditViewModel @Inject constructor(
 
             else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
         }
-        val now = currentDateTime.toInstant(TimeZone.UTC)
+        val now = currentDateTime.toInstant(TimeZone.currentSystemDefault())
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
+            Log.e("editv","Set Alarm")
+        }else{
+            Log.e("editv","Alarm not set $now $setime")
         }
 
     }
