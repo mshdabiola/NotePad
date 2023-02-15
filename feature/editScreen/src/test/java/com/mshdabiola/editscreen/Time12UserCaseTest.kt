@@ -1,5 +1,6 @@
 package com.mshdabiola.editscreen
 
+import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.designsystem.component.toTime
 import kotlinx.datetime.LocalTime
 import org.junit.Test

@@ -1,6 +1,5 @@
 package com.mshdabiola.designsystem.component.state
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

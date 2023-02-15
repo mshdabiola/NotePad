@@ -27,7 +27,7 @@ fun ImageDialog(
     onChooseImage: () -> Unit = {},
     onSnapImage: () -> Unit = {},
 
-) {
+    ) {
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,

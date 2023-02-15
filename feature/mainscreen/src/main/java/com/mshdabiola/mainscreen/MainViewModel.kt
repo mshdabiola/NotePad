@@ -1,14 +1,22 @@
 package com.mshdabiola.mainscreen
 
 import android.net.Uri
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TimePickerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
+import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
+import com.mshdabiola.designsystem.component.state.DateDialogUiData
+import com.mshdabiola.designsystem.component.state.DateListUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toLabelUiState
@@ -26,8 +34,20 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
+import kotlin.time.DurationUnit
 
 @HiltViewModel
 class MainViewModel
@@ -38,6 +58,7 @@ class MainViewModel
     private val noteLabelRepository: NoteLabelRepository,
     private val noteRepository: NoteRepository,
     private val alarmManager: AlarmManager,
+    private val time12UserCase: Time12UserCase
 ) : ViewModel() {
 
     private val _mainState = MutableStateFlow(MainState())
@@ -120,6 +141,9 @@ class MainViewModel
                     }
                 }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            initDate()
+        }
     }
 
     fun onSelectCard(id: Long) {
@@ -181,7 +205,7 @@ class MainViewModel
         }
     }
 
-    fun setAlarm(time: Long, interval: Long?) {
+    private fun setAlarm(time: Long, interval: Long?) {
         val selectedNotes = mainState.value.notePads
             .filter { it.note.selected }
             .map { it.toNotePad().note }
@@ -346,4 +370,298 @@ class MainViewModel
 
         _mainState.value = mainState.value.copy(isGrid = !grid)
     }
+
+    private val _dateTimeState = MutableStateFlow(DateDialogUiData())
+    val dateTimeState = _dateTimeState.asStateFlow()
+    private lateinit var todayDateTime: LocalDateTime
+    private lateinit var currentDateTime: LocalDateTime
+    private val timeList = mutableListOf(
+        LocalTime(7, 0, 0),
+        LocalTime(13, 0, 0),
+        LocalTime(19, 0, 0),
+        LocalTime(20, 0, 0),
+        LocalTime(20, 0, 0)
+    )
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    var datePicker: DatePickerState = DatePickerState(
+        System.currentTimeMillis(), System.currentTimeMillis(),
+        DatePickerDefaults.YearRange,
+        DisplayMode.Picker
+    )
+    var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
+    private var currentLocalDate = LocalDate(1, 2, 3)
+
+    //date and time dialog logic
+
+    private fun initDate() {
+        val now = Clock.System.now()
+        currentDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+        todayDateTime = currentDateTime
+
+
+        val timeList = listOf(
+            DateListUiState(
+                title = "Morning",
+                value = "7:00 AM",
+                trail = "7:00 AM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Afternoon",
+                value = "1:00 PM",
+                trail = "1:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Evening",
+                value = "7:00 PM",
+                trail = "7:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Night",
+                value = "8:00 PM",
+                trail = "8:00 PM",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Pick time",
+                value = "1:00 PM",
+                isOpenDialog = true,
+                enable = true
+            )
+
+        )
+            .mapIndexed { index, dateListUiState ->
+                if (index != timeList.lastIndex) {
+
+                    val greater = timeList[index] > currentDateTime.time
+                    dateListUiState.copy(
+                        enable = greater,
+                        value = time12UserCase(timeList[index]),
+                        trail = time12UserCase(timeList[index])
+                    )
+                } else {
+                    dateListUiState
+                }
+            }
+            .toImmutableList()
+
+
+
+
+        _dateTimeState.update {
+            it.copy(
+                isEdit = false,
+                currentTime = 0,
+                timeData = timeList,
+                timeError = false,
+                currentDate = 0,
+                dateData = listOf(
+                    DateListUiState(
+                        title = "Today",
+                        value = "Today",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Tomorrow",
+                        value = "Tomorrow",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Pick date",
+                        value = "Jan 5",
+                        isOpenDialog = true,
+                        enable = true
+                    )
+                ).toImmutableList(),
+                currentInterval = 0,
+                interval = listOf(
+                    DateListUiState(
+                        title = "Does not repeat",
+                        value = "Does not repeat",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Daily",
+                        value = "Daily",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Weekly",
+                        value = "Weekly",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Monthly",
+                        value = "Monthly",
+                        isOpenDialog = false,
+                        enable = true
+                    ),
+                    DateListUiState(
+                        title = "Yearly",
+                        value = "Yearly",
+                        isOpenDialog = false,
+                        enable = true
+                    )
+                ).toImmutableList()
+            )
+        }
+        setDatePicker(
+            todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        )
+        setTimePicker(
+            hour = todayDateTime.hour,
+            minute = todayDateTime.minute
+        )
+    }
+
+    fun onSetDate(index: Int) {
+        if (index == dateTimeState.value.dateData.lastIndex) {
+            _dateTimeState.update {
+                it.copy(
+                    showDateDialog = true
+                )
+            }
+        } else {
+            _dateTimeState.update {
+
+                it.copy(
+                    currentDate = index,
+
+                    )
+            }
+            val date = if (index == 0)
+                System.currentTimeMillis()
+            else
+                System.currentTimeMillis() + 24 * 60 * 60 * 1000
+            setDatePicker(date)
+        }
+
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun setDatePicker(date: Long) {
+        datePicker = DatePickerState(
+            date, date,
+            DatePickerDefaults.YearRange,
+            DisplayMode.Picker
+        )
+    }
+
+    fun onSetTime(index: Int) {
+        if (index == dateTimeState.value.timeData.lastIndex) {
+            _dateTimeState.update {
+                it.copy(
+                    showTimeDialog = true
+                )
+            }
+        } else {
+            _dateTimeState.update {
+                it.copy(
+                    currentTime = index,
+                )
+            }
+            setTimePicker(
+                timeList[index].hour,
+                timeList[index].minute
+            )
+        }
+    }
+
+    private fun setTimePicker(hour: Int, minute: Int) {
+        timePicker = TimePickerState(hour, minute, false)
+    }
+
+    fun onSetInterval(index: Int) {
+        _dateTimeState.update {
+            it.copy(currentInterval = index)
+        }
+    }
+
+    fun setAlarm() {
+        val time = timeList[dateTimeState.value.currentTime]
+        val date = when (dateTimeState.value.currentDate) {
+            0 -> currentDateTime.date
+            1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
+            else -> currentDateTime.date
+        }
+        val interval = when (dateTimeState.value.currentInterval) {
+            0 -> null
+            1 -> DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)
+
+            2 -> DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
+
+            3 -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+
+            else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+        }
+        val now = currentDateTime.toInstant(TimeZone.UTC)
+        val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
+        if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
+            setAlarm(setime.toEpochMilliseconds(), interval)
+        }
+
+        clearSelected()
+
+    }
+
+    fun hideTime() {
+        _dateTimeState.update {
+            it.copy(showTimeDialog = false)
+        }
+    }
+
+    fun hideDate() {
+        _dateTimeState.update {
+            it.copy(showDateDialog = false)
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun onSetDate() {
+        datePicker.selectedDateMillis?.let { timee ->
+            val date = Instant.fromEpochMilliseconds(timee)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+            currentLocalDate = date.date
+
+            _dateTimeState.update {
+                val im = it.dateData.toMutableList()
+                im[im.lastIndex] =
+                    im[im.lastIndex].copy(value = "${date.month.name}, ${date.dayOfMonth}")
+                it.copy(
+                    dateData = im.toImmutableList(),
+                    currentDate = im.lastIndex
+                )
+            }
+
+        }
+    }
+
+    fun onSetTime() {
+        val time = LocalTime(timePicker.hour, timePicker.minute)
+
+        timeList[timeList.lastIndex] = time
+
+        _dateTimeState.update {
+            val im = it.timeData.toMutableList()
+            im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
+            it.copy(
+                timeData = im.toImmutableList(),
+                currentTime = im.lastIndex
+            )
+        }
+    }
+
 }

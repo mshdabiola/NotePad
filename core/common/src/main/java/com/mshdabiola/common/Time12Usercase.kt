@@ -1,4 +1,4 @@
-package com.mshdabiola.editscreen
+package com.mshdabiola.common
 
 import kotlinx.datetime.LocalTime
 import javax.inject.Inject

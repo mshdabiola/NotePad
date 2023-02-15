@@ -19,6 +19,7 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.NotePlayer
+import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteVoiceRepository
@@ -549,6 +550,7 @@ class EditViewModel @Inject constructor(
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private var currentLocalDate = LocalDate(1, 2, 3)
 
+    //date and time dialog logic
 
     private fun initDate(note: NoteUiState) {
         val now = Clock.System.now()
@@ -676,7 +678,9 @@ class EditViewModel @Inject constructor(
                 ).toImmutableList()
             )
         }
-        setDatePicker(todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds())
+        setDatePicker(
+            todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        )
         setTimePicker(
             hour = todayDateTime.hour,
             minute = todayDateTime.minute
