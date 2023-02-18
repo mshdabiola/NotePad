@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.designsystem.component.state.NotePadUiState
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val notePadRepository: NotePadRepository,
     private val labelRepository: LabelRepository,
+    private val dateShortStringUsercase: DateShortStringUsercase
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
@@ -38,7 +40,7 @@ class SearchViewModel @Inject constructor(
                     notePads = pads.map { it ->
                         val labels =
                             it.labels.map { notelab -> lab.single { it.id == notelab.labelId }.label }
-                        it.toNotePadUiState().copy(labels = labels.toImmutableList())
+                        it.toNotePadUiState(getTime=dateShortStringUsercase::invoke).copy(labels = labels.toImmutableList())
                     }
 
                     val labels = notePads

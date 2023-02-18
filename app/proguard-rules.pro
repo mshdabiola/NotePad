@@ -34,7 +34,7 @@
 
 #https://issuetracker.google.com/issues/265188224
 
--keep,allowshrinking class * extends androidx.compose.ui.node.ModifierNodeElement {
+#-keep,allowshrinking class * extends androidx.compose.ui.node.ModifierNodeElement {
 
-}
+#}
 

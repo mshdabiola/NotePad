@@ -4,7 +4,6 @@
 [![Issues](https://img.shields.io/github/issues/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/Wladefant/mshdabiola/Play_NotePad/issues)
 [![License](https://img.shields.io/github/license/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/master/LICENSE)
 
-
 # Play NotePad
 
 [<img src="/images/ic_launcher-playstore.png" align="left"
@@ -24,7 +23,7 @@ Play NotePad is available on the Google Play Store:
 </a>  
 
 
-        
+
 
 <a href="https://github.com/mshdabiola/Play_NotePad">View Demo</a>
 ·
@@ -33,15 +32,14 @@ Play NotePad is available on the Google Play Store:
 <a href="https://github.com/mshdabiola/Play_NotePad/issues">Request Feature</a>
   </p>
 
-
 ## About The Project
 
 [<img src="/images/screenshot1.png" align="left"
 width="200"
-    hspace="10" vspace="10">](images/screenshot1.png)
+hspace="10" vspace="10">](images/screenshot1.png)
 [<img src="images/screenshot2.png" align="center"
 width="200"
-    hspace="10" vspace="10">](images/screenshot2.png)
+hspace="10" vspace="10">](images/screenshot2.png)
 [<img src="images/screenshot3.png" align="center"
 width="200"
 hspace="10" vspace="10">](images/screenshot3.png)
@@ -148,11 +146,8 @@ Here are other ways you can help:
 Play Notepad is licensed under the GNU General Public License (GPL-3.0). You can find the license
 text in the `LICENSE` file.
 
-
 ## Contact
 
 mshdabiola - [@Mshdabiola](https://twitter.com/mshdabiola) - mshdabiola@gmail.com
-
-
 
 ## Acknowledgments

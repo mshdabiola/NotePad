@@ -4,7 +4,7 @@ plugins {
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.hilt")
     alias(libs.plugins.google.services)
-     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.crashlytics)
 
 }
 
@@ -36,7 +36,7 @@ android {
         val benchmark by creating {
             // Enable all the optimizations from release build through initWith(release).
             initWith(release)
-            matchingFallbacks += listOf("release")
+            matchingFallbacks.add("release")
             // Debug key signing is available to everyone.
             signingConfig = signingConfigs.getByName("debug")
             // Only use benchmark proguard rules

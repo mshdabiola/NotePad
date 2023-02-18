@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -86,9 +88,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.loader.content.Loader
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.designsystem.component.ColorDialog
+import com.mshdabiola.designsystem.component.DateDialog
 import com.mshdabiola.designsystem.component.NoteCard
-import com.mshdabiola.designsystem.component.NotificationDialog
+import com.mshdabiola.designsystem.component.NotificationDialogNew
+import com.mshdabiola.designsystem.component.TimeDialog
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
@@ -104,6 +112,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
@@ -200,13 +209,38 @@ fun MainScreen(
         }
     }
 
-    NotificationDialog(
-        showDialog,
+//    NotificationDialog(
+//        showDialog,
+//        onDismissRequest = { showDialog = false },
+//        remainder = note?.reminder ?: -1,
+//        interval = if (note?.interval == (-1L)) null else note?.interval,
+//        onSetAlarm = mainViewModel::setAlarm,
+//        onDeleteAlarm = mainViewModel::deleteAlarm,
+//    )
+    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
+
+    NotificationDialogNew(
+        showDialog = showDialog,
+        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
-        remainder = note?.reminder ?: -1,
-        interval = if (note?.interval == (-1L)) null else note?.interval,
         onSetAlarm = mainViewModel::setAlarm,
+        onTimeChange = mainViewModel::onSetTime,
+        onDateChange = mainViewModel::onSetDate,
+        onIntervalChange = mainViewModel::onSetInterval,
         onDeleteAlarm = mainViewModel::deleteAlarm,
+    )
+
+    TimeDialog(
+        state = mainViewModel.timePicker,
+        showDialog = dateDialogUiData.value.showTimeDialog,
+        onDismissRequest = mainViewModel::hideTime,
+        onSetTime = mainViewModel::onSetTime
+    )
+    DateDialog(
+        state = mainViewModel.datePicker,
+        showDialog = dateDialogUiData.value.showDateDialog,
+        onDismissRequest = mainViewModel::hideDate,
+        onSetDate = mainViewModel::onSetDate
     )
 
     ColorDialog(
@@ -390,7 +424,7 @@ fun MainScreen(
                     coroutineScope.launch { drawerState.close() }
                 },
 
-            )
+                )
         },
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -452,7 +486,7 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
 
-                            )
+                                )
                         }
 
                         NoteType.ARCHIVE -> {
@@ -555,49 +589,67 @@ fun MainScreen(
                     .padding(paddingValues)
                     .padding(8.dp),
             ) {
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier.testTag("main:lazy"),
-                    columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                if (notePads.isEmpty()) {
 
-                ) {
-                    if (pinNotePad.first.isNotEmpty()) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
+                    Column(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Loader(Modifier.size(300.dp))
+                        Button(onClick = {
+                            navigateToEdit(-1, "", 0)
+                        }) {
+                            Text(text = "Add note")
                         }
                     }
-                    items(pinNotePad.first) { notePadUiState ->
-                        NoteCard(
-                            notePad = notePadUiState,
-                            onCardClick = {
-                                if (noOfSelected > 0) {
-                                    onSelectedCard(it)
-                                } else {
-                                    navigateToEdit(it, "", 0)
-                                }
-                            },
-                            onLongClick = onSelectedCard,
-                        )
-                    }
+                }
+                else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.testTag("main:lazy"),
+                        columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
 
-                    if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            Text(modifier = Modifier.fillMaxWidth(), text = "Other")
+                        ) {
+                        if (pinNotePad.first.isNotEmpty()) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
+                            }
                         }
-                    }
-                    items(pinNotePad.second) { notePadUiState ->
-                        NoteCard(
-                            notePad = notePadUiState,
-                            onCardClick = {
-                                if (noOfSelected > 0) {
-                                    onSelectedCard(it)
-                                } else {
-                                    navigateToEdit(it, "", 0)
-                                }
-                            },
-                            onLongClick = onSelectedCard,
-                        )
+                        items(pinNotePad.first) { notePadUiState ->
+                            NoteCard(
+                                notePad = notePadUiState,
+                                onCardClick = {
+                                    if (noOfSelected > 0) {
+                                        onSelectedCard(it)
+                                    } else {
+                                        navigateToEdit(it, "", 0)
+                                    }
+                                },
+                                onLongClick = onSelectedCard,
+                            )
+                        }
+
+                        if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                Text(modifier = Modifier.fillMaxWidth(), text = "Other")
+                            }
+                        }
+                        items(pinNotePad.second) { notePadUiState ->
+                            NoteCard(
+                                notePad = notePadUiState,
+                                onCardClick = {
+                                    if (noOfSelected > 0) {
+                                        onSelectedCard(it)
+                                    } else {
+                                        navigateToEdit(it, "", 0)
+                                    }
+                                },
+                                onLongClick = onSelectedCard,
+                            )
+                        }
+
                     }
                 }
             }
@@ -634,7 +686,7 @@ fun MainScreenPreview() {
                     note = NoteUiState(title = "hammed", detail = "adiola"),
                 ),
 
-            )
+                )
                 .toImmutableList(),
             labels = emptyList<LabelUiState>().toImmutableList(),
         )
@@ -657,7 +709,7 @@ fun SelectTopBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-) {
+    ) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -741,7 +793,7 @@ fun SelectTopBar(
         },
         scrollBehavior = scrollBehavior,
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -804,7 +856,7 @@ fun LabelTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -843,7 +895,7 @@ fun ArchiveTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -889,7 +941,7 @@ fun TrashTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1040,4 +1092,15 @@ fun DeleteLabelAlertDialog(
 @Composable
 fun DeleteLabelPreview() {
     DeleteLabelAlertDialog(show = true)
+}
+
+@Composable
+fun Loader(modifier: Modifier=Modifier) {
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.note_taking))
+    LottieAnimation(
+        modifier=modifier,
+        composition = composition,
+        restartOnPlay = true,
+        iterations = 200
+        )
 }

@@ -37,7 +37,7 @@ class DrawingController {
         Color(0xFFF50057),
         Color(0xFFFF3D00),
 
-    )
+        )
     val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Round)
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 

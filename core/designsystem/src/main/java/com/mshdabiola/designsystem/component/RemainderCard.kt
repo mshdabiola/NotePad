@@ -1,6 +1,8 @@
 package com.mshdabiola.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,16 +28,19 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReminderCard(
-    remainder: Long,
+    date : String,
     interval: Long,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
     onClick: (() -> Unit)? = null,
 ) {
     Surface(
-        modifier = Modifier.clickable(enabled = onClick != null) { onClick?.invoke() },
+        modifier = Modifier
+            .clickable(enabled = onClick != null)
+            { onClick?.invoke() },
         shape = RoundedCornerShape(8.dp),
         color = color,
         border = BorderStroke(1.dp, Color.Gray),
@@ -60,14 +65,13 @@ fun ReminderCard(
                 Spacer(modifier = Modifier.width(2.dp))
             }
             Text(
-                text = "${remainder.toDateString()}, ${
-                    remainder.toTimeString(
-                        true,
-                    )
-                }",
+                modifier = Modifier.basicMarquee(),
+                text = date,
                 style = style,
+                maxLines = 1,
 
-            )
+
+                )
         }
     }
 }
@@ -76,7 +80,7 @@ fun ReminderCard(
 @Composable
 fun RemainderCardPreview() {
     val time = Clock.System.now().minus(24, DateTimeUnit.HOUR)
-    ReminderCard(remainder = time.toEpochMilliseconds(), interval = -1, color = Color.Red)
+    ReminderCard(date = "Today, 1:29 AM", interval = -1, color = Color.Red)
 }
 
 @Composable
