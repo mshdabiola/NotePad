@@ -207,7 +207,7 @@ fun NoteCard(
                             }
                             if (notePad.note.reminder > 0) {
                                 ReminderCard(
-                                    remainder = notePad.note.reminder,
+                                    date = notePad.note.date,
                                     interval = notePad.note.interval,
                                     color = sColor,
                                 )

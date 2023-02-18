@@ -110,8 +110,6 @@ import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteUriState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
-import com.mshdabiola.designsystem.component.toTime
-import com.mshdabiola.designsystem.component.toTimeAndDate
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet2
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
@@ -125,6 +123,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import toTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -624,7 +623,7 @@ fun EditScreen(
                     ) {
                         if (notepad.note.reminder > 0) {
                             ReminderCard(
-                                remainder = notepad.note.reminder,
+                                date = notepad.note.date,
                                 interval = notepad.note.interval,
                                 color = sColor,
                                 style = MaterialTheme.typography.bodyLarge,
@@ -684,7 +683,7 @@ fun EditScreen(
                         .padding(end = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = "Edited ${notepad.note.editDate.toTimeAndDate()}")
+                    Text(text = "Edited ${notepad.note.lastEdit}")
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:option"),

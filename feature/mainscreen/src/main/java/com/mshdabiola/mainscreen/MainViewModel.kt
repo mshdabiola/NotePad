@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
+import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
@@ -58,7 +59,8 @@ class MainViewModel
     private val noteLabelRepository: NoteLabelRepository,
     private val noteRepository: NoteRepository,
     private val alarmManager: AlarmManager,
-    private val time12UserCase: Time12UserCase
+    private val time12UserCase: Time12UserCase,
+    private val dateShortStringUsercase: DateShortStringUsercase
 ) : ViewModel() {
 
     private val _mainState = MutableStateFlow(MainState())
@@ -86,7 +88,7 @@ class MainViewModel
                         NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
-                                    .map { it.toNotePadUiState(pair.first) }
+                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -104,7 +106,7 @@ class MainViewModel
 
                         NoteType.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first) }
+                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.filter { it.note.reminder > 0 }.map {
                                     val labels = it.labels
@@ -122,7 +124,7 @@ class MainViewModel
 
                         else -> {
                             notepadRepository.getNotePads(pair.second.type).map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first) }
+                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -354,7 +356,7 @@ class MainViewModel
             val emptyList = notepadRepository
                 .getNotePads()
                 .first()
-                .map { it.toNotePadUiState() }
+                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke) }
                 .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {

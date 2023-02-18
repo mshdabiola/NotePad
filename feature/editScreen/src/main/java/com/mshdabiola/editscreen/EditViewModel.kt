@@ -19,6 +19,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
+import com.mshdabiola.common.DateShortStringUsercase
+import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.NotePlayer
 import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.database.repository.LabelRepository
@@ -78,12 +80,14 @@ class EditViewModel @Inject constructor(
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,
     private val imageToText: ImageToText,
-    private val time12UserCase: Time12UserCase
+    private val time12UserCase: Time12UserCase,
+    private val dateStringUsercase: DateStringUsercase,
+    private val dateShortStringUsercase: DateShortStringUsercase
 
 ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
-    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState())
+    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke))
     var navigateToDrawing by mutableStateOf(false)
 
 
@@ -163,7 +167,7 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository
                         .getOneNotePad(editArg.id)
                         .first()
-                        .toNotePadUiState(labels)
+                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke)
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
@@ -438,7 +442,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun setAlarm(time: Long, interval: Long?) {
-        val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1)
+        val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1, date = dateShortStringUsercase(time))
         notePadUiState = notePadUiState.copy(note = note)
 
         viewModelScope.launch {
@@ -609,10 +613,30 @@ class EditViewModel @Inject constructor(
                         trail = time12UserCase(timeList[index])
                     )
                 } else {
-                    dateListUiState
+                    dateListUiState.copy( value = time12UserCase(todayDateTime.time))
                 }
             }
             .toImmutableList()
+        val datelist=listOf(
+            DateListUiState(
+                title = "Today",
+                value = "Today",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Tomorrow",
+                value = "Tomorrow",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Pick date",
+                value = dateStringUsercase(todayDateTime.date),
+                isOpenDialog = true,
+                enable = true
+            )
+        ).toImmutableList()
 
 
 
@@ -620,30 +644,11 @@ class EditViewModel @Inject constructor(
         _dateTimeState.update {
             it.copy(
                 isEdit = note.reminder > 0,
-                currentTime = 0,
+                currentTime = if (note.reminder>0) timeList.lastIndex else 0,
                 timeData = timeList,
                 timeError = false,
-                currentDate = 0,
-                dateData = listOf(
-                    DateListUiState(
-                        title = "Today",
-                        value = "Today",
-                        isOpenDialog = false,
-                        enable = true
-                    ),
-                    DateListUiState(
-                        title = "Tomorrow",
-                        value = "Tomorrow",
-                        isOpenDialog = false,
-                        enable = true
-                    ),
-                    DateListUiState(
-                        title = "Pick date",
-                        value = "Jan 5",
-                        isOpenDialog = true,
-                        enable = true
-                    )
-                ).toImmutableList(),
+                currentDate = if (note.reminder>0) datelist.lastIndex else 0,
+                dateData = datelist,
                 currentInterval = 0,
                 interval = listOf(
                     DateListUiState(
@@ -802,7 +807,7 @@ class EditViewModel @Inject constructor(
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
                 im[im.lastIndex] =
-                    im[im.lastIndex].copy(value = "${date.month.name}, ${date.dayOfMonth}")
+                    im[im.lastIndex].copy(value = dateStringUsercase(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex

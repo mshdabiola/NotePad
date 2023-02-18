@@ -28,7 +28,7 @@ import kotlinx.datetime.minus
 
 @Composable
 fun ReminderCard(
-    remainder: Long,
+    date : String,
     interval: Long,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
@@ -60,11 +60,7 @@ fun ReminderCard(
                 Spacer(modifier = Modifier.width(2.dp))
             }
             Text(
-                text = "${remainder.toDateString()}, ${
-                    remainder.toTimeString(
-                        true,
-                    )
-                }",
+                text = date,
                 style = style,
 
                 )
@@ -76,7 +72,7 @@ fun ReminderCard(
 @Composable
 fun RemainderCardPreview() {
     val time = Clock.System.now().minus(24, DateTimeUnit.HOUR)
-    ReminderCard(remainder = time.toEpochMilliseconds(), interval = -1, color = Color.Red)
+    ReminderCard(date = "Today, 1:29 AM", interval = -1, color = Color.Red)
 }
 
 @Composable
