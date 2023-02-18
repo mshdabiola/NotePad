@@ -73,7 +73,9 @@ fun NotificationDialogNew(
                 Button(onClick = {
                     onSetAlarm()
                     onDismissRequest()
-                }) {
+                },
+                    enabled = !dateDialogUiData.timeError
+                ) {
                     Text(text = "Save")
                 }
             },

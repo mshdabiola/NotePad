@@ -639,6 +639,16 @@ class EditViewModel @Inject constructor(
                 enable = true
             )
         ).toImmutableList()
+        val interval = when (note.interval) {
+           DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)->1
+
+            DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)->2
+
+            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)->3
+
+            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)->4
+            else->0
+        }
 
 
 
@@ -651,7 +661,7 @@ class EditViewModel @Inject constructor(
                 timeError = today>currentDateTime,
                 currentDate = if (note.reminder>0) datelist.lastIndex else 0,
                 dateData = datelist,
-                currentInterval = 0,
+                currentInterval = interval,
                 interval = listOf(
                     DateListUiState(
                         title = "Does not repeat",
