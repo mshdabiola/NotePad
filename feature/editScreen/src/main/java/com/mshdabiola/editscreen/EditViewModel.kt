@@ -713,11 +713,14 @@ class EditViewModel @Inject constructor(
                 )
             }
         } else {
+            val date2=if (index==0)today.date else today.date.plus(1,DateTimeUnit.DAY)
+            val time=timeList[dateTimeState.value.currentTime]
+            val localtimedate=LocalDateTime(date2,time)
             _dateTimeState.update {
 
                 it.copy(
                     currentDate = index,
-
+                    timeError = today>localtimedate
                     )
             }
             val date = if (index == 0)
@@ -818,6 +821,8 @@ class EditViewModel @Inject constructor(
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             currentLocalDate = date.date
+            val time=timeList[dateTimeState.value.currentTime]
+            val localtimedate=LocalDateTime(currentLocalDate,time)
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
@@ -825,11 +830,13 @@ class EditViewModel @Inject constructor(
                     im[im.lastIndex].copy(value = dateStringUsercase(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
-                    currentDate = im.lastIndex
+                    currentDate = im.lastIndex,
+                    timeError = today>localtimedate
                 )
             }
 
         }
+
     }
 
     fun onSetTime() {
