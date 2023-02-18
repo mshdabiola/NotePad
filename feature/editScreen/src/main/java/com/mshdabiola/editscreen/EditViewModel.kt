@@ -536,8 +536,8 @@ class EditViewModel @Inject constructor(
 
     private val _dateTimeState = MutableStateFlow(DateDialogUiData())
     val dateTimeState = _dateTimeState.asStateFlow()
-    private lateinit var todayDateTime: LocalDateTime
     private lateinit var currentDateTime: LocalDateTime
+    private lateinit var today: LocalDateTime
     private val timeList = mutableListOf(
         LocalTime(7, 0, 0),
         LocalTime(13, 0, 0),
@@ -545,6 +545,7 @@ class EditViewModel @Inject constructor(
         LocalTime(20, 0, 0),
         LocalTime(20, 0, 0)
     )
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     var datePicker: DatePickerState = DatePickerState(
@@ -559,11 +560,12 @@ class EditViewModel @Inject constructor(
 
     private fun initDate(note: NoteUiState) {
         val now = Clock.System.now()
-        currentDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        todayDateTime =
+        today = now.toLocalDateTime(TimeZone.currentSystemDefault())
+        currentDateTime =
             if (note.reminder > 0) Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
                 TimeZone.currentSystemDefault()
-            ) else currentDateTime
+            ) else today
+        currentLocalDate=currentDateTime.date
 
 
         val timeList = listOf(
@@ -606,14 +608,14 @@ class EditViewModel @Inject constructor(
             .mapIndexed { index, dateListUiState ->
                 if (index != timeList.lastIndex) {
 
-                    val greater = timeList[index] > currentDateTime.time
+                    val greater = timeList[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
                         value = time12UserCase(timeList[index]),
                         trail = time12UserCase(timeList[index])
                     )
                 } else {
-                    dateListUiState.copy( value = time12UserCase(todayDateTime.time))
+                    dateListUiState.copy( value = time12UserCase(currentDateTime.time))
                 }
             }
             .toImmutableList()
@@ -632,7 +634,7 @@ class EditViewModel @Inject constructor(
             ),
             DateListUiState(
                 title = "Pick date",
-                value = dateStringUsercase(todayDateTime.date),
+                value = dateStringUsercase(currentDateTime.date),
                 isOpenDialog = true,
                 enable = true
             )
@@ -646,7 +648,7 @@ class EditViewModel @Inject constructor(
                 isEdit = note.reminder > 0,
                 currentTime = if (note.reminder>0) timeList.lastIndex else 0,
                 timeData = timeList,
-                timeError = false,
+                timeError = today>currentDateTime,
                 currentDate = if (note.reminder>0) datelist.lastIndex else 0,
                 dateData = datelist,
                 currentInterval = 0,
@@ -685,11 +687,11 @@ class EditViewModel @Inject constructor(
             )
         }
         setDatePicker(
-            todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
         )
         setTimePicker(
-            hour = todayDateTime.hour,
-            minute = todayDateTime.minute
+            hour = currentDateTime.hour,
+            minute = currentDateTime.minute
         )
     }
 
@@ -717,6 +719,8 @@ class EditViewModel @Inject constructor(
 
     }
 
+
+
     @OptIn(ExperimentalMaterial3Api::class)
     fun setDatePicker(date: Long) {
         datePicker = DatePickerState(
@@ -737,6 +741,7 @@ class EditViewModel @Inject constructor(
             _dateTimeState.update {
                 it.copy(
                     currentTime = index,
+                    timeError = false
                 )
             }
             setTimePicker(
@@ -759,8 +764,8 @@ class EditViewModel @Inject constructor(
     fun setAlarm() {
         val time = timeList[dateTimeState.value.currentTime]
         val date = when (dateTimeState.value.currentDate) {
-            0 -> currentDateTime.date
-            1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
+            0 -> today.date
+            1 -> today.date.plus(1, DateTimeUnit.DAY)
             else -> currentLocalDate
         }
         val interval = when (dateTimeState.value.currentInterval) {
@@ -773,7 +778,7 @@ class EditViewModel @Inject constructor(
 
             else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
         }
-        val now = currentDateTime.toInstant(TimeZone.currentSystemDefault())
+        val now = today.toInstant(TimeZone.currentSystemDefault())
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
@@ -821,13 +826,23 @@ class EditViewModel @Inject constructor(
         val time = LocalTime(timePicker.hour, timePicker.minute)
 
         timeList[timeList.lastIndex] = time
+        val date = when (dateTimeState.value.currentDate) {
+            0 -> today.date
+            1 -> today.date.plus(1, DateTimeUnit.DAY)
+            else -> currentLocalDate
+        }
+        val datetime=LocalDateTime(date,time)
+
+        Log.e("onSettime","current $today date $datetime")
+
 
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
             im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
             it.copy(
                 timeData = im.toImmutableList(),
-                currentTime = im.lastIndex
+                currentTime = im.lastIndex,
+                timeError = datetime<today
             )
         }
     }
