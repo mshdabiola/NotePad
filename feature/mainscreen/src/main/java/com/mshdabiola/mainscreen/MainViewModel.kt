@@ -404,12 +404,12 @@ class MainViewModel
     private fun initDate() {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        currentDateTime = today
-        currentLocalDate=today.date
+        currentDateTime = LocalDateTime(today.date,LocalTime(today.hour,today.minute+10))
+        currentLocalDate=currentDateTime.date
         Log.e("current date",currentLocalDate.toString())
 
 
-        val timeList = listOf(
+        val timeList = mutableListOf(
             DateListUiState(
                 title = "Morning",
                 value = "7:00 AM",
@@ -456,7 +456,9 @@ class MainViewModel
                         trail = time12UserCase(timeList[index])
                     )
                 } else {
+                    timeList[timeList.lastIndex]=currentDateTime.time
                     dateListUiState.copy( value = time12UserCase(currentDateTime.time))
+
                 }
             }
             .toImmutableList()
@@ -623,13 +625,15 @@ class MainViewModel
 
             else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
         }
-        val now = today.toInstant(TimeZone.currentSystemDefault())
-        val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
-        if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
-            setAlarm(setime.toEpochMilliseconds(), interval)
+
+        val setime = LocalDateTime(date, time)
+        if (setime > today) {
+            setAlarm(setime
+                .toInstant(TimeZone.currentSystemDefault())
+                .toEpochMilliseconds(), interval)
             Log.e("editv","Set Alarm")
         }else{
-            Log.e("editv","Alarm not set $now $setime")
+            Log.e("editv","Alarm not set $today time $time date$date")
         }
 
     }
