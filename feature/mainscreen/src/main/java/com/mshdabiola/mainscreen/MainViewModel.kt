@@ -1,6 +1,7 @@
 package com.mshdabiola.mainscreen
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
@@ -11,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
+import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.Time12UserCase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
@@ -19,6 +21,7 @@ import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.DateDialogUiData
 import com.mshdabiola.designsystem.component.state.DateListUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -60,7 +63,8 @@ class MainViewModel
     private val noteRepository: NoteRepository,
     private val alarmManager: AlarmManager,
     private val time12UserCase: Time12UserCase,
-    private val dateShortStringUsercase: DateShortStringUsercase
+    private val dateShortStringUsercase: DateShortStringUsercase,
+    private val dateStringUsercase: DateStringUsercase
 ) : ViewModel() {
 
     private val _mainState = MutableStateFlow(MainState())
@@ -375,8 +379,8 @@ class MainViewModel
 
     private val _dateTimeState = MutableStateFlow(DateDialogUiData())
     val dateTimeState = _dateTimeState.asStateFlow()
-    private lateinit var todayDateTime: LocalDateTime
     private lateinit var currentDateTime: LocalDateTime
+    private lateinit var today: LocalDateTime
     private val timeList = mutableListOf(
         LocalTime(7, 0, 0),
         LocalTime(13, 0, 0),
@@ -384,6 +388,7 @@ class MainViewModel
         LocalTime(20, 0, 0),
         LocalTime(20, 0, 0)
     )
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     var datePicker: DatePickerState = DatePickerState(
@@ -398,8 +403,10 @@ class MainViewModel
 
     private fun initDate() {
         val now = Clock.System.now()
-        currentDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        todayDateTime = currentDateTime
+        today = now.toLocalDateTime(TimeZone.currentSystemDefault())
+        currentDateTime = today
+        currentLocalDate=today.date
+        Log.e("current date",currentLocalDate.toString())
 
 
         val timeList = listOf(
@@ -442,17 +449,38 @@ class MainViewModel
             .mapIndexed { index, dateListUiState ->
                 if (index != timeList.lastIndex) {
 
-                    val greater = timeList[index] > currentDateTime.time
+                    val greater = timeList[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
                         value = time12UserCase(timeList[index]),
                         trail = time12UserCase(timeList[index])
                     )
                 } else {
-                    dateListUiState
+                    dateListUiState.copy( value = time12UserCase(currentDateTime.time))
                 }
             }
             .toImmutableList()
+        val datelist=listOf(
+            DateListUiState(
+                title = "Today",
+                value = "Today",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Tomorrow",
+                value = "Tomorrow",
+                isOpenDialog = false,
+                enable = true
+            ),
+            DateListUiState(
+                title = "Pick date",
+                value = dateStringUsercase(currentDateTime.date),
+                isOpenDialog = true,
+                enable = true
+            )
+        ).toImmutableList()
+        val interval = 0
 
 
 
@@ -460,31 +488,12 @@ class MainViewModel
         _dateTimeState.update {
             it.copy(
                 isEdit = false,
-                currentTime = 0,
+                currentTime = timeList.lastIndex ,
                 timeData = timeList,
-                timeError = false,
-                currentDate = 0,
-                dateData = listOf(
-                    DateListUiState(
-                        title = "Today",
-                        value = "Today",
-                        isOpenDialog = false,
-                        enable = true
-                    ),
-                    DateListUiState(
-                        title = "Tomorrow",
-                        value = "Tomorrow",
-                        isOpenDialog = false,
-                        enable = true
-                    ),
-                    DateListUiState(
-                        title = "Pick date",
-                        value = "Jan 5",
-                        isOpenDialog = true,
-                        enable = true
-                    )
-                ).toImmutableList(),
-                currentInterval = 0,
+                timeError = today>currentDateTime,
+                currentDate =  0,
+                dateData = datelist,
+                currentInterval = interval,
                 interval = listOf(
                     DateListUiState(
                         title = "Does not repeat",
@@ -520,11 +529,11 @@ class MainViewModel
             )
         }
         setDatePicker(
-            todayDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
         )
         setTimePicker(
-            hour = todayDateTime.hour,
-            minute = todayDateTime.minute
+            hour = currentDateTime.hour,
+            minute = currentDateTime.minute
         )
     }
 
@@ -536,12 +545,15 @@ class MainViewModel
                 )
             }
         } else {
+            val date2=if (index==0)today.date else today.date.plus(1,DateTimeUnit.DAY)
+            val time=timeList[dateTimeState.value.currentTime]
+            val localtimedate=LocalDateTime(date2,time)
             _dateTimeState.update {
 
                 it.copy(
                     currentDate = index,
-
-                    )
+                    timeError = today>localtimedate
+                )
             }
             val date = if (index == 0)
                 System.currentTimeMillis()
@@ -551,6 +563,8 @@ class MainViewModel
         }
 
     }
+
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun setDatePicker(date: Long) {
@@ -572,6 +586,7 @@ class MainViewModel
             _dateTimeState.update {
                 it.copy(
                     currentTime = index,
+                    timeError = false
                 )
             }
             setTimePicker(
@@ -594,8 +609,8 @@ class MainViewModel
     fun setAlarm() {
         val time = timeList[dateTimeState.value.currentTime]
         val date = when (dateTimeState.value.currentDate) {
-            0 -> currentDateTime.date
-            1 -> currentDateTime.date.plus(1, DateTimeUnit.DAY)
+            0 -> today.date
+            1 -> today.date.plus(1, DateTimeUnit.DAY)
             else -> currentLocalDate
         }
         val interval = when (dateTimeState.value.currentInterval) {
@@ -608,13 +623,14 @@ class MainViewModel
 
             else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
         }
-        val now = currentDateTime.toInstant(TimeZone.UTC)
+        val now = today.toInstant(TimeZone.currentSystemDefault())
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
+            Log.e("editv","Set Alarm")
+        }else{
+            Log.e("editv","Alarm not set $now $setime")
         }
-
-        clearSelected()
 
     }
 
@@ -637,33 +653,48 @@ class MainViewModel
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             currentLocalDate = date.date
+            val time=timeList[dateTimeState.value.currentTime]
+            val localtimedate=LocalDateTime(currentLocalDate,time)
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
                 im[im.lastIndex] =
-                    im[im.lastIndex].copy(value = "${date.month.name}, ${date.dayOfMonth}")
+                    im[im.lastIndex].copy(value = dateStringUsercase(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
-                    currentDate = im.lastIndex
+                    currentDate = im.lastIndex,
+                    timeError = today>localtimedate
                 )
             }
 
         }
+
     }
 
     fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 
         timeList[timeList.lastIndex] = time
+        val date = when (dateTimeState.value.currentDate) {
+            0 -> today.date
+            1 -> today.date.plus(1, DateTimeUnit.DAY)
+            else -> currentLocalDate
+        }
+        val datetime=LocalDateTime(date,time)
+
+        Log.e("onSettime","current $today date $datetime")
+
 
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
             im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
             it.copy(
                 timeData = im.toImmutableList(),
-                currentTime = im.lastIndex
+                currentTime = im.lastIndex,
+                timeError = datetime<today
             )
         }
     }
+
 
 }
