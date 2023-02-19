@@ -404,7 +404,8 @@ class MainViewModel
     private fun initDate() {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        currentDateTime = LocalDateTime(today.date,LocalTime(today.hour,today.minute+10))
+        val today2=now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
+        currentDateTime = today2
         currentLocalDate=currentDateTime.date
         Log.e("current date",currentLocalDate.toString())
 
