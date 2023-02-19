@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,8 +22,10 @@ import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,22 +34,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.bottomsheet.ModalBottomSheet
-import com.mshdabiola.bottomsheet.ModalState
-import com.mshdabiola.bottomsheet.rememberModalState
 import com.mshdabiola.designsystem.icon.NoteIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorAndImageBottomSheet(
-    modalState: ModalState,
     currentColor: Int,
     currentImage: Int,
     onColorClick: (Int) -> Unit = {},
     onImageClick: (Int) -> Unit = {},
-
+    show: Boolean,
+    onDismissRequest: () -> Unit = {}
 ) {
     rememberCoroutineScope()
     val background = if (currentImage != -1) {
@@ -60,18 +57,16 @@ fun ColorAndImageBottomSheet(
             MaterialTheme.colorScheme.surface
         }
     }
+    if (show) {
+        ModalBottomSheet(
+            sheetState = rememberSheetState(),
+            onDismissRequest = onDismissRequest,
+            containerColor = background,
 
-    ModalBottomSheet(modalState = modalState) {
-        Surface(modifier = Modifier.fillMaxWidth(), color = background) {
-            Column(
-                modifier = Modifier.padding(
-                    bottom = 36.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp,
-                ),
             ) {
-                Text(text = "Color")
+
+            Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+                Text(text = "Color", style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -125,7 +120,7 @@ fun ColorAndImageBottomSheet(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Background")
+                Text(text = "Background", style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -154,7 +149,7 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                )
+                                    )
                             }
                         }
                     }
@@ -185,22 +180,14 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                )
+                                    )
                             }
                         }
                     }
                 }
+
             }
+
         }
     }
-}
-
-@Preview
-@Composable
-fun ImageAndColorBottomSheetPreview() {
-    ColorAndImageBottomSheet(
-        modalState = rememberModalState(),
-        currentColor = -1,
-        currentImage = -1,
-    )
 }

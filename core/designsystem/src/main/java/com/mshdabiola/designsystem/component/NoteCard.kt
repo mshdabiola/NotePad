@@ -167,7 +167,7 @@ fun NoteCard(
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 10,
 
-                                    )
+                                        )
                                 }
                             }
                         } else {
@@ -207,7 +207,7 @@ fun NoteCard(
                             }
                             if (notePad.note.reminder > 0) {
                                 ReminderCard(
-                                    remainder = notePad.note.reminder,
+                                    date = notePad.note.date,
                                     interval = notePad.note.interval,
                                     color = sColor,
                                 )
@@ -275,7 +275,7 @@ fun NoteCardPreview() {
                     currentProgress = .179f,
                     isPlaying = false,
 
-                ),
+                    ),
             ).toImmutableList(),
         ),
     )

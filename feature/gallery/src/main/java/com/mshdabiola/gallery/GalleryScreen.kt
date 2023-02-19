@@ -137,7 +137,7 @@ fun GalleryScreen(
                     contentDescription = "",
                     alignment = Alignment.Center,
 
-                )
+                    )
             }
         }
     }
@@ -159,7 +159,7 @@ fun GalleryTopAppBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-) {
+    ) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -209,5 +209,5 @@ fun GalleryTopAppBar(
             }
         },
 
-    )
+        )
 }

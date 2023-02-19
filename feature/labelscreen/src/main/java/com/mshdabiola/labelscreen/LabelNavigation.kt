@@ -29,5 +29,5 @@ fun NavController.navigateToLabel(editMode: Boolean) {
 
 data class LabelArg(val editMode: Boolean) {
     constructor(savedStateHandle: SavedStateHandle) :
-        this(savedStateHandle.get<Boolean>(editModeArg) ?: false)
+            this(savedStateHandle.get<Boolean>(editModeArg) ?: false)
 }

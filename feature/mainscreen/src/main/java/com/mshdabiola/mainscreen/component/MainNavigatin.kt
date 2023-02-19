@@ -55,7 +55,7 @@ fun MainNavigation(
     labels: ImmutableList<LabelUiState>,
     navigateToAbout: () -> Unit = {},
 
-) {
+    ) {
     Surface(
         modifier = Modifier
             .fillMaxHeight()
@@ -82,11 +82,11 @@ fun MainNavigation(
                         ),
                     ),
 
-            )
+                )
             Spacer(
                 modifier = Modifier.height(16.dp),
 
-            )
+                )
             NavigationDrawerItem(
                 icon = {
                     Icon(

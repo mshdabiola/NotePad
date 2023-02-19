@@ -104,7 +104,7 @@ fun LabelText(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
 
-    ) {
+        ) {
         Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
@@ -151,7 +151,7 @@ fun LabelScreenPreview() {
                 ),
                 LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On),
 
-            ).toImmutableList(),
+                ).toImmutableList(),
         ),
     )
 }

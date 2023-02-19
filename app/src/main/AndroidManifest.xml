@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NotePadApplication"
@@ -31,7 +31,7 @@
         </provider>
         <meta-data
             android:name="google_analytics_automatics_screen_reporting_enabled"
-            android:value="false"/>
+            android:value="false" />
 
         <activity
             android:name=".MainActivity"

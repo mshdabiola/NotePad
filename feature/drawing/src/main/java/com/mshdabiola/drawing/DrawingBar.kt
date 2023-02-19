@@ -48,7 +48,7 @@ fun DrawingBar(
     modifier: Modifier = Modifier,
     controller: DrawingController = rememberDrawingController(),
 
-) {
+    ) {
     var isUp by remember {
         mutableStateOf(false)
     }
@@ -307,7 +307,7 @@ fun ColorAndWidth(
                         .background(color)
                         .size(if (index == currentColor) 34.dp else 30.dp),
 
-                )
+                    )
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
@@ -319,7 +319,7 @@ fun ColorAndWidth(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
 
-        ) {
+            ) {
             repeat(10) {
                 Box(
                     modifier = Modifier
@@ -334,7 +334,7 @@ fun ColorAndWidth(
                         )
                         .size(30.dp),
 
-                ) {
+                    ) {
                     Box(
                         modifier =
                         Modifier
@@ -344,7 +344,7 @@ fun ColorAndWidth(
                             .padding(2.dp)
                             .size(((it + 1) * 2).dp),
 
-                    )
+                        )
                 }
             }
         }

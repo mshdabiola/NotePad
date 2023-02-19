@@ -63,7 +63,13 @@ fun DrawingScreen(
     })
     val res = context.resources.displayMetrics
     LaunchedEffect(key1 = viewModel.controller.listOfPathData.value.paths2, block = {
-        viewModel.saveImage(viewModel.controller.getBitMap(res.widthPixels, res.heightPixels, res.density))
+        viewModel.saveImage(
+            viewModel.controller.getBitMap(
+                res.widthPixels,
+                res.heightPixels,
+                res.density,
+            ),
+        )
     })
     DrawingScreen(
         onBackk = onBack,

@@ -89,7 +89,7 @@ fun SearchScreen(
     onItemLabelClick: (Int) -> Unit = {},
     onItemTypeClick: (Int) -> Unit = {},
 
-) {
+    ) {
     val focusRequester = remember {
         FocusRequester()
     }
@@ -140,7 +140,7 @@ fun SearchScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
 
-                ) {
+                    ) {
                     items(searchUiState.notes) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
@@ -212,7 +212,7 @@ fun EmptySearchScreen(
             Pair("Voice", Icons.Outlined.KeyboardVoice),
             Pair("Drawings", Icons.Outlined.Brush),
 
-        ),
+            ),
         onItemClick = onItemTypeClick,
     )
     LabelBox(
@@ -301,7 +301,7 @@ fun LabelBoxPreview() {
             Pair("Voice", Icons.Default.KeyboardVoice),
             Pair("Voice", Icons.Default.KeyboardVoice),
 
-        ),
+            ),
     )
 }
 
