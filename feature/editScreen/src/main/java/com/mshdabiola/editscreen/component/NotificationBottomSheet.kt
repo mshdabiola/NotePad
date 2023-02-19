@@ -33,7 +33,7 @@ fun NotificationBottomSheet(
     currentImage: Int,
     onDismissRequest: () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
+
 
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -124,6 +124,7 @@ fun NotificationBottomSheet(
                 title = "$dayOfWeek morning",
                 time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
                 onClick = {
+                    onDismissRequest()
                     onAlarm(
                         nextWk.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
                         null,
