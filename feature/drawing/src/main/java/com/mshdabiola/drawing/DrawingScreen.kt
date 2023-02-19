@@ -62,7 +62,7 @@ fun DrawingScreen(
         }
     })
     val res = context.resources.displayMetrics
-    LaunchedEffect(key1 = viewModel.controller.listOfPathData.value.paths2, block = {
+    LaunchedEffect(key1 = viewModel.controller.unCompletePathData.value, block = {
         viewModel.saveImage(
             viewModel.controller.getBitMap(
                 res.widthPixels,

@@ -68,7 +68,7 @@ class DrawingViewModel @Inject constructor(
     fun onPause(context: Context) {
         coroutineScope.launch {
             val res = context.resources.displayMetrics
-            val map = controller.listOfPathData.value.paths2
+            val map = controller.unCompletePathData.value
             saveDrawing(map)
         }
     }
