@@ -33,7 +33,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
                 compileSdk = 33
-                compileSdkPreview = "UpsideDownCake"
+              //  compileSdkPreview = "UpsideDownCake"
                 defaultConfig.minSdk = 24
                 defaultConfig.targetSdk = 33
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
