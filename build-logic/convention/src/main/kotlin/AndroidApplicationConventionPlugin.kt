@@ -34,8 +34,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 defaultConfig.targetSdk = 33
                 compileSdkPreview = "UpsideDownCake"
                 defaultConfig.minSdk = 24
-                defaultConfig.versionName = "1.0.0"
-                defaultConfig.versionCode = 8
+                defaultConfig.versionName = "1.1.0"
+                defaultConfig.versionCode = 9
 
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 defaultConfig.vectorDrawables {
