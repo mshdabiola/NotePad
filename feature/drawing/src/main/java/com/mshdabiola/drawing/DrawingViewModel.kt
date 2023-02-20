@@ -45,8 +45,6 @@ class DrawingViewModel @Inject constructor(
         ),
     )
     val controller = DrawingController()
-    val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    val coroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     init {
         viewModelScope.launch {
@@ -65,13 +63,6 @@ class DrawingViewModel @Inject constructor(
         contentManager.saveBitmap(path, bitmap)
     }
 
-    fun onPause(context: Context) {
-        coroutineScope.launch {
-            val res = context.resources.displayMetrics
-            val map = controller.unCompletePathData.value
-            saveDrawing(map)
-        }
-    }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -82,7 +73,7 @@ class DrawingViewModel @Inject constructor(
     }
 
     //  private var job: Job? = null
-    private suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
+    suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
         val data = changeToDrawPath(map)
         if (map.isEmpty()) {
             drawingPathRepository.delete(imageID)

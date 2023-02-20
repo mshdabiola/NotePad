@@ -82,11 +82,24 @@ class DrawingController {
                         val paths = _unCompletePathData.value.toMutableMap()
                         val path =
                             paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
-                        path.forEach { p ->
-                            paths.remove(p.key)
-                            redoPaths[p.key] = p.value
+                        if (path.isNotEmpty()){
+                            path.forEach { p ->
+                                paths.remove(p.key)
+                                redoPaths[p.key] = p.value
+                            }
+                            //rearrange id
+                            val newPaths= HashMap<PathData,List<Offset>>()
+                           paths
+                                .toList()
+                                .forEachIndexed { index, pair ->
+                                    val newdata=pair.first.copy(id=index)
+                                    newPaths[newdata] = pair.second
+                                }
+
+
+                                _unCompletePathData.value=newPaths.toImmutableMap()
                         }
-                        _unCompletePathData.value=paths.toImmutableMap()
+
                     }
                     MODE.UP->{
                         setCompleteList()
@@ -159,6 +172,7 @@ class DrawingController {
         paths.putAll(pathDatas)
         //  id = pathDatas.size
         _unCompletePathData.value= paths.toImmutableMap()
+        _completePathData.value=paths.toImmutableMap()
     }
 
     fun undo() {
@@ -234,7 +248,7 @@ class DrawingController {
     }
 
     private fun setCompleteList(){
-        _completePathData.value=completePathData.value
+        _completePathData.value=unCompletePathData.value
 
     }
 
@@ -268,7 +282,6 @@ class DrawingController {
 @Composable
 fun rememberDrawingController(): DrawingController {
     return remember {
-        DrawingController().apply {
-        }
+        DrawingController()
     }
 }

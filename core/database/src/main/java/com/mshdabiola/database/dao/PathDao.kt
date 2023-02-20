@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PathDao {
-    @Query("SELECT * FROM path_table WHERE imageId=:imageID")
+    @Query("SELECT * FROM path_table WHERE imageId=:imageID ORDER BY pathId")
     fun getPaths(imageID: Long): Flow<List<DrawPathEntity>>
 
     @Query("DELETE FROM PATH_TABLE WHERE imageId=:imageID")

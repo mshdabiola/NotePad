@@ -397,7 +397,7 @@ class MainViewModel
         DisplayMode.Picker
     )
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
-    private var currentLocalDate = LocalDate(1, 2, 3)
+    private lateinit var currentLocalDate :LocalDate
 
     //date and time dialog logic
 
