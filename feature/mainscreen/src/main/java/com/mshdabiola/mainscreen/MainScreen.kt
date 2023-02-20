@@ -597,11 +597,14 @@ fun MainScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Loader(Modifier.size(300.dp))
-                        Button(onClick = {
-                            navigateToEdit(-1, "", 0)
-                        }) {
-                            Text(text = "Add note")
+                        if (currentNoteType.type==NoteType.NOTE){
+                            Button(onClick = {
+                                navigateToEdit(-1, "", 0)
+                            }) {
+                                Text(text = "Add note")
+                            }
                         }
+
                     }
                 }
                 else {

@@ -397,14 +397,15 @@ class MainViewModel
         DisplayMode.Picker
     )
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
-    private var currentLocalDate = LocalDate(1, 2, 3)
+    private lateinit var currentLocalDate :LocalDate
 
     //date and time dialog logic
 
     private fun initDate() {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        currentDateTime = LocalDateTime(today.date,LocalTime(today.hour,today.minute+10))
+        val today2=now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
+        currentDateTime = today2
         currentLocalDate=currentDateTime.date
         Log.e("current date",currentLocalDate.toString())
 

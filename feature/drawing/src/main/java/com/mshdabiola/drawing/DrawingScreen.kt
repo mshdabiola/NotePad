@@ -38,6 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.mshdabiola.firebase.FirebaseScreenLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -46,30 +48,23 @@ fun DrawingScreen(
     onBack: () -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
-    val lifecycleOwner = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
-    val lifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onPause(owner: LifecycleOwner) {
-            super.onPause(owner)
-            viewModel.onPause(context)
-        }
-    }
-
-    DisposableEffect(key1 = Unit, effect = {
-        lifecycleOwner.addObserver(lifecycleObserver)
-        onDispose {
-            lifecycleOwner.removeObserver(lifecycleObserver)
+    LaunchedEffect(key1=viewModel.controller.completePathData.value, block = {
+        withContext(Dispatchers.IO){
+            viewModel.saveDrawing(viewModel.controller.completePathData.value)
         }
     })
     val res = context.resources.displayMetrics
-    LaunchedEffect(key1 = viewModel.controller.listOfPathData.value.paths2, block = {
-        viewModel.saveImage(
-            viewModel.controller.getBitMap(
-                res.widthPixels,
-                res.heightPixels,
-                res.density,
-            ),
-        )
+    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
+       withContext(Dispatchers.IO){
+           viewModel.saveImage(
+               viewModel.controller.getBitMap(
+                   res.widthPixels,
+                   res.heightPixels,
+                   res.density,
+               ),
+           )
+       }
     })
     DrawingScreen(
         onBackk = onBack,

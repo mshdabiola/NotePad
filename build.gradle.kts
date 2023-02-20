@@ -25,3 +25,6 @@ versionCatalogUpdate {
         keepUnusedPlugins.set(true)
     }
 }
+
+//./gradlew assembleDebug -PenableComposeCompilerReports=true
+// ./gradlew assembleDebug -PenableComposeCompilerMetrics=true

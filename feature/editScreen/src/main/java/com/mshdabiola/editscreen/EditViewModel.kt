@@ -171,10 +171,14 @@ class EditViewModel @Inject constructor(
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
+                    val notePadUiState=notePad.copy(voices = voices.toImmutableList())
                     if (data == "extract") {
-                        onImage(editArg.data.toInt())
+                        onImage(editArg.data.toInt(),notePadUiState)
+                        notePadUiState
+                    }else{
+                        notePadUiState
                     }
-                    notePad.copy(voices = voices.toImmutableList())
+
                 }
             }
             computeUri(notePadUiState.note)
@@ -524,13 +528,17 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private fun onImage(index: Int) {
+    private fun onImage(index: Int,notePad: NotePadUiState) {
         viewModelScope.launch {
-            delay(1000)
-            val image = notePadUiState.images[index]
-            val text = imageToText.toText(image.imageName)
-            val note = notePadUiState.note
-            notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
+            try {
+                val image = notePad.images[index]
+                val text = imageToText.toText(image.imageName)
+                val note = notePad.note
+                notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+
         }
     }
 
