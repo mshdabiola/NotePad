@@ -21,7 +21,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,7 +110,6 @@ fun AddBottomSheet2(
 
     if (show) {
         ModalBottomSheet(
-            sheetState = rememberSheetState(),
             onDismissRequest = onDismiss,
             containerColor = background
         ) {

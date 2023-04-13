@@ -12,7 +12,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.mshdabiola.designsystem.icon.NoteIcon
@@ -42,7 +41,6 @@ fun NoteOptionBottomSheet(
 
     if (show) {
         ModalBottomSheet(
-            sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,
             containerColor = background
         ) {

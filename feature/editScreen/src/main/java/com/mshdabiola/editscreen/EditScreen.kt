@@ -909,8 +909,8 @@ fun NoteUri(
                 contentDescription = "icon"
             )
         },
-        headlineText = { Text(text = uriState.path) },
-        supportingText = { Text(text = uriState.uri, maxLines = 2) },
+        headlineContent = { Text(text = uriState.path) },
+        supportingContent = { Text(text = uriState.uri, maxLines = 2) },
         shadowElevation = 8.dp,
         tonalElevation = 8.dp,
     )

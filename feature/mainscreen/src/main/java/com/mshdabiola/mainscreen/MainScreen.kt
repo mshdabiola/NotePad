@@ -612,7 +612,7 @@ fun MainScreen(
                         modifier = Modifier.testTag("main:lazy"),
                         columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalItemSpacing = 8.dp,
 
                         ) {
                         if (pinNotePad.first.isNotEmpty()) {

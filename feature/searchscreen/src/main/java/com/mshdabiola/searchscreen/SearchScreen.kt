@@ -138,7 +138,7 @@ fun SearchScreen(
 
                     columns = StaggeredGridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp,
 
                     ) {
                     items(searchUiState.notes) { notePadUiState ->
