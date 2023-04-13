@@ -49,23 +49,23 @@ fun DrawingScreen(
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
     val context = LocalContext.current
-    LaunchedEffect(key1=viewModel.controller.completePathData.value, block = {
-        withContext(Dispatchers.IO){
-            viewModel.saveDrawing(viewModel.controller.completePathData.value)
-        }
-    })
+//    LaunchedEffect(key1=viewModel.controller.completePathData.value, block = {
+//        withContext(Dispatchers.IO){
+//            viewModel.saveDrawing(viewModel.controller.completePathData.value)
+//        }
+//    })
     val res = context.resources.displayMetrics
-    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
-       withContext(Dispatchers.IO){
-           viewModel.saveImage(
-               viewModel.controller.getBitMap(
-                   res.widthPixels,
-                   res.heightPixels,
-                   res.density,
-               ),
-           )
-       }
-    })
+//    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
+//       withContext(Dispatchers.IO){
+//           viewModel.saveImage(
+//               viewModel.controller.getBitMap(
+//                   res.widthPixels,
+//                   res.heightPixels,
+//                   res.density,
+//               ),
+//           )
+//       }
+//    })
     DrawingScreen(
         onBackk = onBack,
         filePath = viewModel.drawingUiState.filePath,
