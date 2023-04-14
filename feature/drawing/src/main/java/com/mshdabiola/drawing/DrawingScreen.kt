@@ -49,6 +49,19 @@ fun DrawingScreen(
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
     val context = LocalContext.current
+    val lifecycleObserver= LocalLifecycleOwner.current
+    val defaultLifecycleObserver= object : DefaultLifecycleObserver {
+        override fun onPause(owner: LifecycleOwner) {
+            super.onPause(owner)
+            viewModel.saveData()
+        }
+    }
+
+    DisposableEffect(key1 = Unit){
+        lifecycleObserver.lifecycle.addObserver(defaultLifecycleObserver)
+        onDispose {  lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver)}
+    }
+
 //    LaunchedEffect(key1=viewModel.controller.completePathData.value, block = {
 //        withContext(Dispatchers.IO){
 //            viewModel.saveDrawing(viewModel.controller.completePathData.value)

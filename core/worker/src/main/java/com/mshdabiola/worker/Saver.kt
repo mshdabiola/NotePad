@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.startup.AppInitializer
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
-import com.mshdabiola.naijaludo.model.LudoGameState
+import com.mshdabiola.model.DrawPath
 import com.mshdabiola.worker.util.Converter
 import com.mshdabiola.worker.work.SaveWorker
 
@@ -16,22 +16,18 @@ object Saver {
         workManager = saver.workManager
     }
 
-    private fun save(workName: String, players: String, pawns: String, id: Long) {
+    private fun save(workName: String,paths: String, imageId:Long,noteId: Long) {
         workManager
             .enqueueUniqueWork(
                 workName,
                 ExistingWorkPolicy.REPLACE,
-                SaveWorker.startUpSaveWork(players, pawns, id)
+                SaveWorker.startUpSaveWork(paths, imageId,noteId)
             )
 
     }
 
-    fun saveGame(ludoGameState: LudoGameState, id: Long) {
-        val pair = Converter.gameToString(
-            ludoGameState.listOfPlayer,
-            ludoGameState.listOfPawn,
-            id
-        )
-        save("updater", pawns = pair.first, players = pair.second, id = id)
+    fun saveGame(paths : List<DrawPath>, imageId:Long,noteId:Long) {
+
+        save("saver", Converter.pathToString(paths),imageId,noteId)
     }
 }

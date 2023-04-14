@@ -15,6 +15,9 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:model"))
 
+    implementation(project(":core:common"))
+
+    implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.startup)
     implementation(libs.androidx.work.ktx)
