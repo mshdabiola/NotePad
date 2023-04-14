@@ -10,6 +10,8 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ class GalleryViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             noteImageRepository.getImageByNoteId(id)
+                .map { noteImages -> noteImages.filter { !it.isDrawing } }
                 .collectLatest { noteImages ->
                     val reverseImages = noteImages.reversed()
                     val index = reverseImages.indexOfFirst { it.id == currentIndex }
