@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
@@ -94,7 +95,7 @@ fun MainNavigation(
                         contentDescription = "note",
                     )
                 },
-                label = { Text(text = "Notes") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.notes)) },
                 selected = currentType.type == NoteType.NOTE,
                 onClick = { onNavigation(NoteTypeUi()) },
             )
@@ -102,7 +103,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
-                label = { Text(text = "Reminders") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.reminders)) },
                 selected = currentType.type == NoteType.REMAINDER,
                 onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) },
             )
@@ -118,9 +119,9 @@ fun MainNavigation(
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(modifier = Modifier.weight(1f), text = "Labels")
+                Text(modifier = Modifier.weight(1f), text = stringResource(com.mshdabiola.mainscreen.R.string.labels))
                 TextButton(onClick = { navigateToLevel(false) }) {
-                    Text(text = "Edit")
+                    Text(text = stringResource(com.mshdabiola.mainscreen.R.string.edit))
                 }
             }
 
@@ -141,7 +142,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 },
-                label = { Text(text = "Create new label") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.create_new_label)) },
                 selected = false,
                 onClick = { navigateToLevel(true) },
             )
@@ -155,7 +156,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
-                label = { Text(text = "Archive") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.archive)) },
                 selected = currentType.type == NoteType.ARCHIVE,
                 onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) },
             )
@@ -164,7 +165,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
-                label = { Text(text = "Trash") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.trash)) },
                 selected = currentType.type == NoteType.TRASH,
                 onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) },
             )
@@ -179,7 +180,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Info, contentDescription = "")
                 },
-                label = { Text(text = "About") },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.about)) },
                 selected = false,
                 onClick = {
                     navigateToAbout()

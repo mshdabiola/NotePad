@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,7 +74,7 @@ fun LabelScreen(
                     }
                 },
                 title = {
-                    Text(text = "Edit Label")
+                    Text(text = stringResource(R.string.edit_label))
                 },
             )
         },
@@ -133,11 +134,11 @@ fun EditLabelTextField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "Create new label",
+                text = stringResource(R.string.create_new_label),
                 color = TextStyle.Default.color.copy(alpha = 0.5f),
             )
         },
-        supportingText = { Text(text = if (errorOccur) "Label already exists" else "") },
+        supportingText = { Text(text = if (errorOccur) stringResource(R.string.label_already_exists) else "") },
         isError = errorOccur,
         leadingIcon = {
             if (isFocus) {

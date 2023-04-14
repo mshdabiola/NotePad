@@ -23,8 +23,10 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.editscreen.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,7 +123,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Take photo") },
+                label = { Text(text = stringResource(R.string.take_photo)) },
                 selected = false,
                 onClick = {
                     snapPictureLauncher.launch(getPhotoUri())
@@ -138,7 +140,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Add image") },
+                label = { Text(text = stringResource(R.string.add_image)) },
                 selected = false,
                 onClick = {
                     imageLauncher.launch(
@@ -157,7 +159,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Drawing") },
+                label = { Text(text = stringResource(R.string.drawing)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -173,7 +175,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Recording") },
+                label = { Text(text = stringResource(R.string.recording)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -208,7 +210,7 @@ fun AddBottomSheet2(
                             contentDescription = "",
                         )
                     },
-                    label = { Text(text = "Checkboxes") },
+                    label = { Text(text = stringResource(R.string.checkboxes)) },
                     selected = false,
                     onClick = {
                         onDismiss()

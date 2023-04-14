@@ -82,6 +82,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -601,7 +602,7 @@ fun MainScreen(
                             Button(onClick = {
                                 navigateToEdit(-1, "", 0)
                             }) {
-                                Text(text = "Add note")
+                                Text(text = stringResource(R.string.add_note))
                             }
                         }
 
@@ -617,7 +618,7 @@ fun MainScreen(
                         ) {
                         if (pinNotePad.first.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
-                                Text(modifier = Modifier.fillMaxWidth(), text = "Pin")
+                                Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.pin))
                             }
                         }
                         items(pinNotePad.first) { notePadUiState ->
@@ -636,7 +637,7 @@ fun MainScreen(
 
                         if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
-                                Text(modifier = Modifier.fillMaxWidth(), text = "Other")
+                                Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.other))
                             }
                         }
                         items(pinNotePad.second) { notePadUiState ->
@@ -768,25 +769,25 @@ fun SelectTopBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = "Archive") },
+                        text = { Text(text = stringResource(R.string.archive)) },
                         onClick = {
                             showDropDown = false
                             onArchive()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Delete") },
+                        text = { Text(text = stringResource(R.string.delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
                         },
                     )
                     if (selectNumber == 1) {
-                        DropdownMenuItem(text = { Text(text = "Make a Copy") }, onClick = {
+                        DropdownMenuItem(text = { Text(text = stringResource(R.string.make_a_copy)) }, onClick = {
                             showDropDown = false
                             onCopy()
                         })
-                        DropdownMenuItem(text = { Text(text = "Send") }, onClick = {
+                        DropdownMenuItem(text = { Text(text = stringResource(R.string.send)) }, onClick = {
                             showDropDown = false
                             onSend()
                         })
@@ -841,14 +842,14 @@ fun LabelTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = "Rename Label") },
+                        text = { Text(text = stringResource(R.string.rename_label)) },
                         onClick = {
                             showDropDown = false
                             onRenameLabel()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Delete Label") },
+                        text = { Text(text = stringResource(R.string.delete_label)) },
                         onClick = {
                             showDropDown = false
                             onDeleteLabel()
@@ -933,7 +934,7 @@ fun TrashTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = "Empty Trash") },
+                        text = { Text(text = stringResource(R.string.empty_trash)) },
                         onClick = {
                             showDropDown = false
                             onEmptyTrash()
@@ -991,7 +992,7 @@ fun MainTopAppBar(
                 }
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Search your note",
+                    text = stringResource(R.string.search_note),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -1034,7 +1035,7 @@ fun RenameLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Rename Label") },
+            title = { Text(text = stringResource(id = R.string.rename_label)) },
             text = {
                 TextField(value = name, onValueChange = { name = it })
             },
@@ -1043,12 +1044,12 @@ fun RenameLabelAlertDialog(
                     onDismissRequest()
                     onChangeName(name)
                 }) {
-                    Text(text = "Rename")
+                    Text(text = stringResource(R.string.rename))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
             },
         )

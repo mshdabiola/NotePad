@@ -33,8 +33,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.editscreen.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +66,7 @@ fun ColorAndImageBottomSheet(
             ) {
 
             Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
-                Text(text = "Color", style = MaterialTheme.typography.titleSmall)
+                Text(text = stringResource(R.string.color), style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -118,7 +120,7 @@ fun ColorAndImageBottomSheet(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Background", style = MaterialTheme.typography.titleSmall)
+                Text(text = stringResource(R.string.background), style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {

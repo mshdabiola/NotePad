@@ -24,10 +24,10 @@ private fun Context.saveWorkNotification(): Notification {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(
             NotificationChannelID,
-            "game saver",
+            "drawing saver",
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
-            description = "for saving games"
+            description = "for saving drawing data"
         }
         // Register the channel with the system
         val notificationManager: NotificationManager? =
@@ -43,7 +43,7 @@ private fun Context.saveWorkNotification(): Notification {
         .setSmallIcon(
             android.R.drawable.ic_menu_save,
         )
-        .setContentTitle("Saving current game")
+        .setContentTitle("Saving drawing")
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .build()
 }

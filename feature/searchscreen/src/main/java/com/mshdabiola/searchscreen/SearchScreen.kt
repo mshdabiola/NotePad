@@ -48,6 +48,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -119,7 +120,7 @@ fun SearchScreen(
                             IconButton(onClick = { onClearSearchText() }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = "delete",
+                                    contentDescription = stringResource(R.string.delete),
                                 )
                             }
                         },
@@ -204,19 +205,19 @@ fun EmptySearchScreen(
         labels.map { Pair(it, Icons.Outlined.Label) }
     }
     LabelBox(
-        title = "Types",
+        title = stringResource(R.string.types),
         labelIcon = listOf(
-            Pair("Reminders", Icons.Outlined.Notifications),
-            Pair("Lists", Icons.Outlined.CheckBox),
-            Pair("Images", Icons.Outlined.Image),
-            Pair("Voice", Icons.Outlined.KeyboardVoice),
-            Pair("Drawings", Icons.Outlined.Brush),
+            Pair(stringResource(R.string.reminders), Icons.Outlined.Notifications),
+            Pair(stringResource(R.string.lists), Icons.Outlined.CheckBox),
+            Pair(stringResource(R.string.images), Icons.Outlined.Image),
+            Pair(stringResource(R.string.voice), Icons.Outlined.KeyboardVoice),
+            Pair(stringResource(R.string.drawings), Icons.Outlined.Brush),
 
             ),
         onItemClick = onItemTypeClick,
     )
     LabelBox(
-        title = "Labels",
+        title = stringResource(R.string.labels),
         labelIcon = labelPair,
         onItemClick = onItemLabelClick,
     )
@@ -262,7 +263,7 @@ fun LabelBox(
                 Text(modifier = Modifier.weight(1f), text = title)
                 if (labelIcon.size > number) {
                     TextButton(onClick = { h = if (h == number) labelIcon.size else number }) {
-                        Text(text = if (h == number) "More" else "Less")
+                        Text(text = if (h == number) stringResource(id = R.string.more) else stringResource(id = R.string.less))
                     }
                 }
             }

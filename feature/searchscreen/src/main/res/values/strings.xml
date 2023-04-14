@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete">delete</string>
+    <string name="reminders">Reminders</string>
+    <string name="lists">Lists</string>
+    <string name="types">Types</string>
+    <string name="images">Images</string>
+    <string name="voice">Voice</string>
+    <string name="drawings">Drawings</string>
+    <string name="labels">Labels</string>
+    <string name="more">More</string>
+    <string name="less">Less</string>
+</resources>
