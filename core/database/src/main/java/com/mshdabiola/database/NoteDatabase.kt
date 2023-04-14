@@ -1,5 +1,6 @@
 package com.mshdabiola.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.mshdabiola.database.dao.LabelDao
@@ -28,7 +29,10 @@ import com.mshdabiola.database.model.NoteVoiceEntity
         LabelEntity::class,
         DrawPathEntity::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [ AutoMigration(1,2)]
+
+
 )
 abstract class NoteDatabase : RoomDatabase() {
 

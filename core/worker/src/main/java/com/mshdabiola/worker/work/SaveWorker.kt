@@ -72,7 +72,7 @@ class SaveWorker @AssistedInject constructor(
         noteImageRepository.delete(imageId)
         File(contentManager.getImagePath(imageId)).deleteOnExit()
     } else {
-        noteImageRepository.upsert(NoteImage(imageId, noteId,path, true))
+        noteImageRepository.upsert(NoteImage(imageId, noteId,path, isDrawing = true, timestamp = System.currentTimeMillis()))
         drawingPathRepository.delete(imageId)
         drawingPathRepository.insert(drawPathList)
     }

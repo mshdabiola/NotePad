@@ -437,7 +437,7 @@ fun EditScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 if (notepad.images.isNotEmpty()) {
-                    item {
+                    item(images) {
                         images.forEach { imageList ->
                             Row(
                                 modifier = Modifier

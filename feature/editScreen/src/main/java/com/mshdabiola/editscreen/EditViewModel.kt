@@ -194,6 +194,7 @@ class EditViewModel @Inject constructor(
                 .map { it.images to it.labels }
                 .distinctUntilChanged()
                 .collectLatest { pair ->
+                    Log.e("editviewmodel",pair.first.joinToString())
                     val labels = labelRepository.getAllLabels().first()
                     val strLabel = pair.second.map { s ->
                         labels.singleOrNull { it.id == s.labelId }?.label ?: ""

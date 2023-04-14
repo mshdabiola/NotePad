@@ -7,8 +7,9 @@ data class NoteImageUiState(
     val noteId: Long,
     val imageName: String,
     val isDrawing: Boolean,
+    val timestamp: Long=0
 )
 
-fun NoteImage.toNoteImageUiState() = NoteImageUiState(id, noteId, imageName, isDrawing)
+fun NoteImage.toNoteImageUiState() = NoteImageUiState(id, noteId, imageName, isDrawing,timestamp)
 
-fun NoteImageUiState.toNoteImage() = NoteImage(id, noteId, imageName, isDrawing)
+fun NoteImageUiState.toNoteImage() = NoteImage(id, noteId, imageName, isDrawing,timestamp)
