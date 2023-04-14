@@ -12,10 +12,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.editscreen.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +43,6 @@ fun NoteOptionBottomSheet(
 
     if (show) {
         ModalBottomSheet(
-            sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,
             containerColor = background
         ) {
@@ -55,7 +55,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Delete") },
+                label = { Text(text = stringResource(R.string.delete)) },
                 selected = false,
                 onClick = {
                     onDelete()
@@ -71,7 +71,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Make a copy") },
+                label = { Text(text = stringResource(R.string.make_a_copy)) },
                 selected = false,
                 onClick = {
                     onCopy()
@@ -86,7 +86,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Send") },
+                label = { Text(text = stringResource(R.string.send)) },
                 selected = false,
                 onClick = {
                     onSendNote()
@@ -101,7 +101,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = "Labels") },
+                label = { Text(text = stringResource(R.string.labels)) },
                 selected = false,
                 onClick = {
                     onLabel()

@@ -86,6 +86,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -437,7 +438,7 @@ fun EditScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 if (notepad.images.isNotEmpty()) {
-                    item {
+                    item(images) {
                         images.forEach { imageList ->
                             Row(
                                 modifier = Modifier
@@ -473,12 +474,14 @@ fun EditScreen(
                         TextField(
                             value = notepad.note.title,
                             onValueChange = onTitleChange,
-                            placeholder = { Text(text = "Title") },
+                            placeholder = { Text(text = stringResource(R.string.title)) },
                             textStyle = MaterialTheme.typography.titleLarge,
-                            colors = TextFieldDefaults.textFieldColors(
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
-                                containerColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 autoCorrect = true,
@@ -503,7 +506,7 @@ fun EditScreen(
                                     onDismissRequest = { expandCheck = false },
                                 ) {
                                     DropdownMenuItem(
-                                        text = { Text(text = "Hide checkboxes") },
+                                        text = { Text(text = stringResource(R.string.hide_checkboxes)) },
                                         onClick = {
                                             hideCheckBoxes()
                                             expandCheck = false
@@ -511,14 +514,14 @@ fun EditScreen(
                                     )
                                     if (checkNote.isNotEmpty()) {
                                         DropdownMenuItem(
-                                            text = { Text(text = "UnCheck all items") },
+                                            text = { Text(text = stringResource(R.string.uncheck_all_items)) },
                                             onClick = {
                                                 unCheckAllItems()
                                                 expandCheck = false
                                             },
                                         )
                                         DropdownMenuItem(
-                                            text = { Text(text = "Delete checked items") },
+                                            text = { Text(text = stringResource(R.string.delete_checked_items)) },
                                             onClick = {
                                                 deleteCheckItems()
                                                 expandCheck = false
@@ -536,7 +539,7 @@ fun EditScreen(
                             value = notepad.note.detail,
                             onValueChange = onSubjectChange,
                             textStyle = MaterialTheme.typography.bodyMedium,
-                            placeholder = { Text(text = "Subject") },
+                            placeholder = { Text(text = stringResource(R.string.subject)) },
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
@@ -572,7 +575,7 @@ fun EditScreen(
                         TextButton(onClick = addItem) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
-                            Text(text = "Add list item")
+                            Text(text = stringResource(R.string.add_list_item))
                         }
                     }
 
@@ -584,7 +587,7 @@ fun EditScreen(
                                     contentDescription = "",
                                 )
                                 Text(
-                                    text = "${checkNote.size} Checked Items",
+                                    text = "${checkNote.size} ${stringResource(R.string.checked_items)}",
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                             }
@@ -683,7 +686,7 @@ fun EditScreen(
                         .padding(end = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = "Edited ${notepad.note.lastEdit}")
+                    Text(text = "${stringResource(R.string.edited)} ${notepad.note.lastEdit}")
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:option"),
@@ -909,8 +912,8 @@ fun NoteUri(
                 contentDescription = "icon"
             )
         },
-        headlineText = { Text(text = uriState.path) },
-        supportingText = { Text(text = uriState.uri, maxLines = 2) },
+        headlineContent = { Text(text = uriState.path) },
+        supportingContent = { Text(text = uriState.uri, maxLines = 2) },
         shadowElevation = 8.dp,
         tonalElevation = 8.dp,
     )

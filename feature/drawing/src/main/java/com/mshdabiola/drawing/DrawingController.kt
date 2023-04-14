@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
@@ -18,9 +17,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.mshdabiola.model.Coordinate
+import com.mshdabiola.model.DRAW_MODE
+import com.mshdabiola.model.MODE
+import com.mshdabiola.model.PathData
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
-typealias ImmutablePath = ImmutableMap<PathData, List<Offset>>
+
+typealias ImmutablePath = ImmutableMap<PathData, List<Coordinate>>
 
 @SuppressLint("MutableCollectionMutableState")
 class DrawingController {
@@ -51,13 +55,13 @@ class DrawingController {
     var draw_mode = DRAW_MODE.PEN
     var colorAlpha = 1f
 
-    private var _unCompletePathData = mutableStateOf(emptyMap<PathData, List<Offset>>().toImmutableMap())
+    private var _unCompletePathData = mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
     val unCompletePathData: State<ImmutablePath> = _unCompletePathData
 
-    private var _completePathData = mutableStateOf(emptyMap<PathData, List<Offset>>().toImmutableMap())
+    private var _completePathData = mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
     val completePathData: State<ImmutablePath> = _completePathData
 
-    private val redoPaths = HashMap<PathData, List<Offset>>()
+    private val redoPaths = HashMap<PathData, List<Coordinate>>()
     private val _canUndo = mutableStateOf(false)
     val canUndo: State<Boolean> = _canUndo
 
@@ -88,7 +92,7 @@ class DrawingController {
                                 redoPaths[p.key] = p.value
                             }
                             //rearrange id
-                            val newPaths= HashMap<PathData,List<Offset>>()
+                            val newPaths= HashMap<PathData,List<Coordinate>>()
                            paths
                                 .toList()
                                 .forEachIndexed { index, pair ->
@@ -105,22 +109,6 @@ class DrawingController {
                         setCompleteList()
                     }
                 }
-//                if (mode == MODE.DOWN) {
-//                    xx = x
-//                    yy = y
-//                }
-//                if (mode == MODE.MOVE) {
-//                    val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
-//                    val paths = _listOfPathData.value.toMutableMap()
-//                    val path =
-//                        paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
-//                    path.forEach { p ->
-//                        paths.remove(p.key)
-//                        redoPaths[p.key] = p.value
-//                    }
-//                    _listOfPathData.value=paths.toImmutableMap()
-//                }
-                //finish move, delete data
             }
 
             else -> {
@@ -137,9 +125,9 @@ class DrawingController {
                         )
                         //  id++
                         val paths2 = _unCompletePathData.value.toMutableMap()
-                        val list = emptyList<Offset>().toMutableList()
+                        val list = emptyList<Coordinate>().toMutableList()
 
-                        list.add(Offset(x, y))
+                        list.add(Coordinate(x, y))
                         paths2[pathData] = list
                        _unCompletePathData.value= paths2.toImmutableMap()
                     }
@@ -148,7 +136,7 @@ class DrawingController {
                         val paths2 = _unCompletePathData.value.toMutableMap()
                         val list = paths2[pathData]!!.toMutableList()
 
-                        list.add(Offset(x, y))
+                        list.add(Coordinate(x, y))
                         paths2[pathData] = list
                        _unCompletePathData.value = paths2.toImmutableMap()
                     }
@@ -163,11 +151,7 @@ class DrawingController {
         setDoUnDo()
     }
 
-//    fun setListData(listOfPathDa: ListOfPathData) {
-//        _listOfPathData.value = listOfPathDa
-//    }
-
-    fun setPathData(pathDatas: Map<PathData, List<Offset>>) {
+    fun setPathData(pathDatas: Map<PathData, List<Coordinate>>) {
         val paths = _unCompletePathData.value.toMutableMap()
         paths.putAll(pathDatas)
         //  id = pathDatas.size
@@ -205,15 +189,8 @@ class DrawingController {
         }
     }
 
-//    fun toggleEraseMode() = run {
-//
-//        // isEraseMode = !isEraseMode
-//
-//
-//    }
-
     fun getPathAndData(): List<Pair<Path, PathData>> {
-        var prevOff = Offset.Zero
+        var prevOff = Coordinate.Zero
 
         val p = _unCompletePathData
             .value
@@ -252,31 +229,6 @@ class DrawingController {
 
     }
 
-    fun getBitMap(width: Int, heigth: Int, density: Float): Bitmap {
-        val he = heigth - (50 * density)
-        val bitmap2 = Bitmap.createBitmap(width, he.toInt(), Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap2.asImageBitmap())
-
-        val paint = Paint()
-        canvas.drawRect(
-            Rect(0f, 0f, width.toFloat(), he),
-            paint.apply { this.color = Color.White },
-        )
-        getPathAndData().forEach {
-            paint.color = colors[it.second.color]
-            paint.alpha = it.second.colorAlpha
-            paint.strokeWidth = it.second.lineWidth * density
-            // (it.second.lineWidth.dp).roundToPx().toFloat()
-            paint.strokeCap = lineCaps[it.second.lineCap]
-            paint.strokeJoin = lineJoins[it.second.lineJoin]
-            paint.blendMode = DrawScope.DefaultBlendMode
-            paint.style = PaintingStyle.Stroke
-
-            canvas.drawPath(it.first, paint)
-        }
-
-        return bitmap2
-    }
 }
 
 @Composable

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="grab_image_text">Grab image text</string>
+    <string name="copy">Copy</string>
+    <string name="send">Send</string>
+    <string name="delete">Delete</string>
+</resources>

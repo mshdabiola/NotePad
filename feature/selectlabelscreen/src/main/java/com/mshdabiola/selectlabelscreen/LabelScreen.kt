@@ -23,6 +23,7 @@ import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,7 @@ fun LabelScreen(
                     NoteTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = labelScreenUiState.editText,
-                        placeholder = { Text(text = "Enter text") },
+                        placeholder = { Text(text = stringResource(R.string.enter_text)) },
                         onValueChange = onSearchText,
                     )
                 },
@@ -76,7 +77,7 @@ fun LabelScreen(
                 TextButton(onClick = { onCreateLabel() }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Create \"${labelScreenUiState.editText}\"")
+                    Text(text = "${stringResource(id = R.string.create)} \"${labelScreenUiState.editText}\"")
                 }
             }
             LazyColumn {

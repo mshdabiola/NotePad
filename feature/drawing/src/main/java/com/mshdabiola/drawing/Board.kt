@@ -14,6 +14,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.model.Coordinate
+import com.mshdabiola.model.MODE
+import com.mshdabiola.model.PathData
 
 @Composable
 fun Board(
@@ -65,7 +68,7 @@ fun Board(
 fun CanvasPreview() {
     val controller = rememberDrawingController()
 
-    controller.setPathData(mapOf(PathData() to listOf(Offset(0f, 0f), Offset(500f, 500f))))
+    controller.setPathData(mapOf(PathData() to listOf(Coordinate.Zero, Coordinate(500f, 500f))))
     controller.color = 1
 
     Column {

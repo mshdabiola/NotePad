@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
@@ -178,28 +179,28 @@ fun GalleryTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = "Grab Image Text") },
+                        text = { Text(text = stringResource(R.string.grab_image_text)) },
                         onClick = {
                             showDropDown = false
                             onGrabText()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Copy") },
+                        text = { Text(text = stringResource(R.string.copy)) },
                         onClick = {
                             showDropDown = false
                             onCopy()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Send") },
+                        text = { Text(text = stringResource(R.string.send)) },
                         onClick = {
                             showDropDown = false
                             onSend()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Delete") },
+                        text = { Text(text = stringResource(R.string.delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()

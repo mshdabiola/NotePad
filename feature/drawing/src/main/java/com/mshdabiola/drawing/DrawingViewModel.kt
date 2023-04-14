@@ -1,28 +1,28 @@
 package com.mshdabiola.drawing
 
-import android.content.Context
-import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.DrawingPathRepository
 import com.mshdabiola.database.repository.NoteImageRepository
+import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
-import com.mshdabiola.model.NoteImage
+import com.mshdabiola.model.DrawingUtil
+import com.mshdabiola.model.PathData
+import com.mshdabiola.worker.Saver
+import com.mshdabiola.worker.util.Converter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,18 +51,23 @@ class DrawingViewModel @Inject constructor(
             if (imageI != (-1L)) {
                 val drawPaths = drawingPathRepository.getAll(imageID).firstOrNull()
                 drawPaths?.let {
-                    val map = toPathMap(it)
+                    val map = DrawingUtil. toPathMap(it)
                     controller.setPathData(map)
                 }
             }
         }
     }
 
-    fun saveImage(bitmap: Bitmap) {
-        val path = contentManager.getImagePath(imageID)
-        contentManager.saveBitmap(path, bitmap)
+    fun saveData(){
+        Saver.saveGame(imageId = imageID, noteId = noteId)
     }
 
+    suspend fun keepDataInFile(da :Map<PathData,List<Coordinate>>){
+        val data = changeToDrawPath(da)
+        val dataInText=Converter.pathToString(data)
+        Log.e("drawing",dataInText)
+        contentManager.dataFile().writeText(dataInText)
+    }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -72,21 +77,7 @@ class DrawingViewModel @Inject constructor(
         }
     }
 
-    //  private var job: Job? = null
-    suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
-        val data = changeToDrawPath(map)
-        if (map.isEmpty()) {
-            drawingPathRepository.delete(imageID)
-            noteImageRepository.delete(imageID)
-            File(contentManager.getImagePath(imageID)).deleteOnExit()
-        } else {
-            noteImageRepository.upsert(NoteImage(imageID, noteId, drawingUiState.filePath, true))
-            drawingPathRepository.delete(imageID)
-            drawingPathRepository.insert(data)
-        }
-    }
-
-    private fun changeToDrawPath(map: Map<PathData, List<Offset>>): List<DrawPath> {
+    private fun changeToDrawPath(map: Map<PathData, List<Coordinate>>): List<DrawPath> {
         return map.map { entry ->
             DrawPath(
                 imageID,
@@ -99,26 +90,5 @@ class DrawingViewModel @Inject constructor(
                 entry.value.joinToString { "${it.x}, ${it.y}" },
             )
         }
-    }
-
-    private fun toPathMap(list: List<DrawPath>): Map<PathData, List<Offset>> {
-        val map = HashMap<PathData, List<Offset>>()
-        list.forEach { drawPath ->
-            val path = PathData(
-                drawPath.color,
-                drawPath.width,
-                drawPath.cap,
-                drawPath.join,
-                drawPath.alpha,
-                drawPath.pathId,
-            )
-            val offsetList = drawPath.paths
-                .split(",")
-                .map { it.trim().toFloat() }
-                .chunked(2)
-                .map { Offset(it[0], it[1]) }
-            map[path] = offsetList
-        }
-        return map
     }
 }

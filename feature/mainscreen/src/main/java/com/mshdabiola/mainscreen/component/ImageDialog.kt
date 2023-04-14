@@ -17,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.mainscreen.R
 
 @Composable
 fun ImageDialog(
@@ -31,7 +33,7 @@ fun ImageDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Add Image") },
+            title = { Text(text = stringResource(R.string.add_image)) },
             text = {
                 Column {
                     Row(
@@ -47,7 +49,7 @@ fun ImageDialog(
                             contentDescription = "take image",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Take Image")
+                        Text(text = stringResource(R.string.take_image))
                     }
                     Row(
                         modifier = Modifier
@@ -62,7 +64,7 @@ fun ImageDialog(
                             contentDescription = "take phone",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Choose Image")
+                        Text(text = stringResource(R.string.choose_image))
                     }
                 }
             },

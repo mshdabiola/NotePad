@@ -1,4 +1,4 @@
-package com.mshdabiola.drawing
+package com.mshdabiola.model
 
 data class PathData(
     val color: Int = 0,

@@ -8,10 +8,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.datetime.Clock
@@ -80,7 +78,6 @@ fun NotificationBottomSheet(
     // Tomorrow morning 10am/Tomorrow evening 7pm 19
     if (show) {
         ModalBottomSheet(
-            sheetState = rememberSheetState(),
             onDismissRequest = onDismissRequest,
             containerColor = background
         ) {

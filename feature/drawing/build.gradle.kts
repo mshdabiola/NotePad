@@ -5,4 +5,7 @@ plugins {
 android {
     namespace = "com.mshdabiola.drawing"
 }
+dependencies {
+    implementation(project(":core:worker"))
+}
 

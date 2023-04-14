@@ -1,6 +1,7 @@
 package com.mshdabiola.drawing
 
 import androidx.compose.ui.geometry.Offset
+import com.mshdabiola.model.PathData
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 

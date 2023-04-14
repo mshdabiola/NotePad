@@ -75,7 +75,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.kts)
     implementation(libs.firebase.analytics.kts)
 
-
+    implementation(project(":core:worker"))
     //testImplementation (libs.junit4)
     //androidTestImplementation (libs.bundles.android.test.bundle)
     //debugImplementation (libs.bundles.compose.debug.bundle)
