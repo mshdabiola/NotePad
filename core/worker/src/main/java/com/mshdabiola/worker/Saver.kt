@@ -16,18 +16,18 @@ object Saver {
         workManager = saver.workManager
     }
 
-    private fun save(workName: String,paths: String, imageId:Long,noteId: Long) {
+    private fun save(workName: String,imageId:Long,noteId: Long) {
         workManager
             .enqueueUniqueWork(
                 workName,
                 ExistingWorkPolicy.REPLACE,
-                SaveWorker.startUpSaveWork(paths, imageId,noteId)
+                SaveWorker.startUpSaveWork( imageId,noteId)
             )
 
     }
 
-    fun saveGame(paths : List<DrawPath>, imageId:Long,noteId:Long) {
+    fun saveGame( imageId:Long,noteId:Long) {
 
-        save("saver", Converter.pathToString(paths),imageId,noteId)
+        save("saver",imageId,noteId)
     }
 }

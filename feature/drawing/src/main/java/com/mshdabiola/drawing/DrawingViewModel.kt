@@ -1,10 +1,10 @@
 package com.mshdabiola.drawing
 
-import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,11 +14,12 @@ import com.mshdabiola.database.repository.NoteImageRepository
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.DrawingUtil
-import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.PathData
 import com.mshdabiola.worker.Saver
+import com.mshdabiola.worker.util.Converter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.File
@@ -58,15 +59,15 @@ class DrawingViewModel @Inject constructor(
     }
 
     fun saveData(){
-        val data = changeToDrawPath(controller.completePathData.value)
-        Saver.saveGame(paths = data, imageId = imageID, noteId = noteId)
+        Saver.saveGame(imageId = imageID, noteId = noteId)
     }
 
-//    fun saveImage(bitmap: Bitmap) {
-//        val path = contentManager.getImagePath(imageID)
-//        contentManager.saveBitmap(path, bitmap)
-//    }
-
+    suspend fun keepDataInFile(da :Map<PathData,List<Coordinate>>){
+        val data = changeToDrawPath(da)
+        val dataInText=Converter.pathToString(data)
+        Log.e("drawing",dataInText)
+        contentManager.dataFile().writeText(dataInText)
+    }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -75,20 +76,6 @@ class DrawingViewModel @Inject constructor(
             File(contentManager.getImagePath(imageID)).deleteOnExit()
         }
     }
-
-    //  private var job: Job? = null
-//    suspend fun saveDrawing(map: Map<PathData, List<Offset>>) {
-//        val data = changeToDrawPath(map)
-//        if (map.isEmpty()) {
-//            drawingPathRepository.delete(imageID)
-//            noteImageRepository.delete(imageID)
-//            File(contentManager.getImagePath(imageID)).deleteOnExit()
-//        } else {
-//            noteImageRepository.upsert(NoteImage(imageID, noteId, drawingUiState.filePath, true))
-//            drawingPathRepository.delete(imageID)
-//            drawingPathRepository.insert(data)
-//        }
-//    }
 
     private fun changeToDrawPath(map: Map<PathData, List<Coordinate>>): List<DrawPath> {
         return map.map { entry ->
@@ -104,25 +91,4 @@ class DrawingViewModel @Inject constructor(
             )
         }
     }
-//
-//    private fun toPathMap(list: List<DrawPath>): Map<PathData, List<Offset>> {
-//        val map = HashMap<PathData, List<Offset>>()
-//        list.forEach { drawPath ->
-//            val path = PathData(
-//                drawPath.color,
-//                drawPath.width,
-//                drawPath.cap,
-//                drawPath.join,
-//                drawPath.alpha,
-//                drawPath.pathId,
-//            )
-//            val offsetList = drawPath.paths
-//                .split(",")
-//                .map { it.trim().toFloat() }
-//                .chunked(2)
-//                .map { Offset(it[0], it[1]) }
-//            map[path] = offsetList
-//        }
-//        return map
-//    }
 }

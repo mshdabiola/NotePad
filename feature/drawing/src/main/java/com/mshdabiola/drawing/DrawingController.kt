@@ -109,22 +109,6 @@ class DrawingController {
                         setCompleteList()
                     }
                 }
-//                if (mode == MODE.DOWN) {
-//                    xx = x
-//                    yy = y
-//                }
-//                if (mode == MODE.MOVE) {
-//                    val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
-//                    val paths = _listOfPathData.value.toMutableMap()
-//                    val path =
-//                        paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
-//                    path.forEach { p ->
-//                        paths.remove(p.key)
-//                        redoPaths[p.key] = p.value
-//                    }
-//                    _listOfPathData.value=paths.toImmutableMap()
-//                }
-                //finish move, delete data
             }
 
             else -> {
@@ -167,10 +151,6 @@ class DrawingController {
         setDoUnDo()
     }
 
-//    fun setListData(listOfPathDa: ListOfPathData) {
-//        _listOfPathData.value = listOfPathDa
-//    }
-
     fun setPathData(pathDatas: Map<PathData, List<Coordinate>>) {
         val paths = _unCompletePathData.value.toMutableMap()
         paths.putAll(pathDatas)
@@ -208,13 +188,6 @@ class DrawingController {
             // listOfPathData.value.add(redoPaths.removeLast())
         }
     }
-
-//    fun toggleEraseMode() = run {
-//
-//        // isEraseMode = !isEraseMode
-//
-//
-//    }
 
     fun getPathAndData(): List<Pair<Path, PathData>> {
         var prevOff = Coordinate.Zero
@@ -256,31 +229,6 @@ class DrawingController {
 
     }
 
-//    fun getBitMap(width: Int, heigth: Int, density: Float): Bitmap {
-//        val he = heigth - (50 * density)
-//        val bitmap2 = Bitmap.createBitmap(width, he.toInt(), Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap2.asImageBitmap())
-//
-//        val paint = Paint()
-//        canvas.drawRect(
-//            Rect(0f, 0f, width.toFloat(), he),
-//            paint.apply { this.color = Color.White },
-//        )
-//        getPathAndData().forEach {
-//            paint.color = colors[it.second.color]
-//            paint.alpha = it.second.colorAlpha
-//            paint.strokeWidth = it.second.lineWidth * density
-//            // (it.second.lineWidth.dp).roundToPx().toFloat()
-//            paint.strokeCap = lineCaps[it.second.lineCap]
-//            paint.strokeJoin = lineJoins[it.second.lineJoin]
-//            paint.blendMode = DrawScope.DefaultBlendMode
-//            paint.style = PaintingStyle.Stroke
-//
-//            canvas.drawPath(it.first, paint)
-//        }
-//
-//        return bitmap2
-//    }
 }
 
 @Composable

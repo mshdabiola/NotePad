@@ -181,11 +181,15 @@ class EditViewModel @Inject constructor(
 
                 }
             }
-            computeUri(notePadUiState.note)
-            viewModelScope.launch(Dispatchers.IO) {
 
+            //init Link in text
+            computeUri(notePadUiState.note)
+
+            //init bottom date
+            launch(Dispatchers.IO) {
                 initDate(notePadUiState.note)
             }
+            //on notepad image and labels change
             notePadRepository.getOneNotePad(notePadUiState.note.id)
                 .map { it.images to it.labels }
                 .distinctUntilChanged()
@@ -203,6 +207,7 @@ class EditViewModel @Inject constructor(
                 }
         }
 
+        //save note
         viewModelScope.launch {
             snapshotFlow {
                 notePadUiState
@@ -214,8 +219,7 @@ class EditViewModel @Inject constructor(
                     //   computeUri(it.note)
                 }
         }
-        viewModelScope.launch {
-        }
+
     }
 
     private suspend fun insertNotePad(notePad: NotePadUiState) {

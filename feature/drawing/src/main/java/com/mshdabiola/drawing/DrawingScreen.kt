@@ -48,7 +48,6 @@ fun DrawingScreen(
     onBack: () -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
-    val context = LocalContext.current
     val lifecycleObserver= LocalLifecycleOwner.current
     val defaultLifecycleObserver= object : DefaultLifecycleObserver {
         override fun onPause(owner: LifecycleOwner) {
@@ -56,29 +55,17 @@ fun DrawingScreen(
             viewModel.saveData()
         }
     }
+    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
+        withContext(Dispatchers.IO){
+            viewModel.keepDataInFile(viewModel.controller.completePathData.value)
+        }
+    })
 
     DisposableEffect(key1 = Unit){
         lifecycleObserver.lifecycle.addObserver(defaultLifecycleObserver)
         onDispose {  lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver)}
     }
 
-//    LaunchedEffect(key1=viewModel.controller.completePathData.value, block = {
-//        withContext(Dispatchers.IO){
-//            viewModel.saveDrawing(viewModel.controller.completePathData.value)
-//        }
-//    })
-    val res = context.resources.displayMetrics
-//    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
-//       withContext(Dispatchers.IO){
-//           viewModel.saveImage(
-//               viewModel.controller.getBitMap(
-//                   res.widthPixels,
-//                   res.heightPixels,
-//                   res.density,
-//               ),
-//           )
-//       }
-//    })
     DrawingScreen(
         onBackk = onBack,
         filePath = viewModel.drawingUiState.filePath,

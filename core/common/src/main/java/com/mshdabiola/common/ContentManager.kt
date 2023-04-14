@@ -74,4 +74,13 @@ class ContentManager
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
     }
+
+    fun dataFile(): File {
+        val dir = File(context.filesDir.absolutePath + "/drawingfile")
+        if (dir.exists().not()) {
+            dir.mkdir()
+        }
+
+        return File(dir, "data.json")
+    }
 }
