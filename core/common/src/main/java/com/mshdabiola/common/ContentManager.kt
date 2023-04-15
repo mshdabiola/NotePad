@@ -75,12 +75,12 @@ class ContentManager
         }
     }
 
-    fun dataFile(): File {
+    fun dataFile(drawingId:Long): File {
         val dir = File(context.filesDir.absolutePath + "/drawingfile")
         if (dir.exists().not()) {
             dir.mkdir()
         }
 
-        return File(dir, "data.json")
+        return File(dir, "data_$drawingId.json")
     }
 }
