@@ -81,7 +81,7 @@ class ShareViewModel @Inject constructor(
                     val time = System.currentTimeMillis()
                     contentManager.saveImage(it, time)
                     val path = contentManager.getImagePath(time)
-                    NoteImage(time, noteId, path, isDrawing = false)
+                    NoteImage(time, noteId,  isDrawing = false)
                 }
             val labels = selectLabels
                 .map { NoteLabel(noteId, it.id) }

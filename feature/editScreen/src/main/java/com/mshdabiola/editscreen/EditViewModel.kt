@@ -35,6 +35,7 @@ import com.mshdabiola.designsystem.component.state.NoteTypeUi
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteUriState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -44,6 +45,7 @@ import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -67,6 +69,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
@@ -87,8 +90,10 @@ class EditViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
-    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke))
+    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath))
     var navigateToDrawing by mutableStateOf(false)
+    private val _messages = MutableStateFlow(emptyList<Notify>().toImmutableList())
+    val message = _messages.asStateFlow()
 
 
     private var photoId: Long = 0
@@ -129,7 +134,7 @@ class EditViewModel @Inject constructor(
                             NoteImageUiState(
                                 id = getNewId(),
                                 noteId = notePad.note.id,
-                                imageName = contentManager.getImagePath(editArg.data),
+                                path = contentManager.getImagePath(editArg.data),
                                 isDrawing = false,
                             ),
                         )
@@ -167,13 +172,13 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository
                         .getOneNotePad(editArg.id)
                         .first()
-                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke)
+                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke,contentManager::getImagePath)
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
                     val notePadUiState=notePad.copy(voices = voices.toImmutableList())
                     if (data == "extract") {
-                        onImage(editArg.data.toInt(),notePadUiState)
+                        onImage(contentManager.getImagePath(editArg.data),notePadUiState)
                         notePadUiState
                     }else{
                         notePadUiState
@@ -199,7 +204,7 @@ class EditViewModel @Inject constructor(
                     val strLabel = pair.second.map { s ->
                         labels.singleOrNull { it.id == s.labelId }?.label ?: ""
                     }
-                    val image = pair.first.map { it.toNoteImageUiState() }
+                    val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
 
                     notePadUiState = notePadUiState.copy(
                         labels = strLabel.toImmutableList(),
@@ -350,9 +355,9 @@ class EditViewModel @Inject constructor(
         contentManager.saveImage(uri, id)
 
         val noteImage =
-            NoteImage(id, notePadUiState.note.id, contentManager.getImagePath(id), false)
+            NoteImage(id, notePadUiState.note.id, false)
         val listImage = notePadUiState.images.toMutableList()
-        listImage.add(noteImage.toNoteImageUiState())
+        listImage.add(noteImage.toNoteImageUiState(contentManager::getImagePath))
 
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
     }
@@ -377,11 +382,10 @@ class EditViewModel @Inject constructor(
             NoteImage(
                 photoId,
                 notePadUiState.note.id,
-                contentManager.getImagePath(photoId),
                 false,
             )
         val listImage = notePadUiState.images.toMutableList()
-        listImage.add(noteImage.toNoteImageUiState())
+        listImage.add(noteImage.toNoteImageUiState(contentManager::getImagePath))
 
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
     }
@@ -438,6 +442,13 @@ class EditViewModel @Inject constructor(
     fun pinNote() {
         notePadUiState =
             notePadUiState.copy(note = notePadUiState.note.copy(isPin = !notePadUiState.note.isPin))
+
+        if (notePadUiState.note.isPin){
+            addNotify("Note is pinned")
+        }else{
+            addNotify("Note is not pinned")
+        }
+
     }
 
     fun onColorChange(index: Int) {
@@ -474,15 +485,18 @@ class EditViewModel @Inject constructor(
             val id = note.id
 
             alarmManager.deleteAlarm(id.toInt())
+            addNotify("Alarm deleted")
         }
     }
 
     fun onArchive() {
         notePadUiState = if (notePadUiState.note.noteType.type == NoteType.ARCHIVE) {
             val note = notePadUiState.note.copy(noteType = NoteTypeUi())
+            addNotify("Note archived")
             notePadUiState.copy(note = note)
         } else {
             val note = notePadUiState.note.copy(noteType = NoteTypeUi(NoteType.ARCHIVE))
+            addNotify("Note already archived")
             notePadUiState.copy(note = note)
         }
     }
@@ -509,6 +523,7 @@ class EditViewModel @Inject constructor(
             )
 
             notePadRepository.insertNotepad(copy)
+            addNotify("Note copied")
         }
     }
 
@@ -530,18 +545,27 @@ class EditViewModel @Inject constructor(
             notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
 
             noteVoiceRepository.delete(voice.id)
+
+            addNotify("Voice note deleted")
         }
     }
 
-    private fun onImage(index: Int,notePad: NotePadUiState) {
+    private fun onImage(path: String,notePad: NotePadUiState) {
         viewModelScope.launch {
             try {
-                val image = notePad.images[index]
-                val text = imageToText.toText(image.imageName)
+               // val image = notePad.images[index]
+                val text = try {
+                    imageToText.toText(path)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    ""
+                }
                 val note = notePad.note
                 notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
+                addNotify("Image text extracted")
             }catch (e:Exception){
                 e.printStackTrace()
+                addNotify("Error occur during extract of image")
             }
 
         }
@@ -808,9 +832,11 @@ class EditViewModel @Inject constructor(
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
-            Log.e("editv","Set Alarm")
+            //Timber.tag("editv").e("Set Alarm")
+            addNotify("Alarm is set")
         }else{
-            Log.e("editv","Alarm not set $now $setime")
+            //Timber.tag("editv").e("Alarm not set " + now + " " + setime)
+            addNotify("Alarm not set, time as past")
         }
 
     }
@@ -863,7 +889,7 @@ class EditViewModel @Inject constructor(
         }
         val datetime=LocalDateTime(date,time)
 
-        Log.e("onSettime","current $today date $datetime")
+        Timber.tag("onSettime").e("current " + today + " date " + datetime)
 
 
         _dateTimeState.update {
@@ -876,6 +902,26 @@ class EditViewModel @Inject constructor(
             )
         }
     }
+
+    private fun addNotify(text: String) {
+        val notifies = _messages.value.toMutableList()
+
+        notifies.add(Notify(message = text, callback = ::onNotifyDelive))
+        _messages.update {
+            notifies.toImmutableList()
+        }
+    }
+
+    private fun onNotifyDelive() {
+
+        val notifies = _messages.value.toMutableList()
+
+        notifies.removeFirst()
+        _messages.update {
+            notifies.toImmutableList()
+        }
+    }
+
 
 
 }

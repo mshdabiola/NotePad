@@ -50,8 +50,10 @@ class SaveWorker @AssistedInject constructor(
         val imageId = workerParams.inputData.getLong(IMAGE_Id, 7)
         val noteId = workerParams.inputData.getLong(NOTE_ID, 7)
 
-        val file=contentManager.dataFile()
-
+        val file=contentManager.dataFile(imageId)
+        if (!file.exists()){
+            return@withContext Result.failure()
+        }
         val pathList =  Json.decodeFromStream<List<DrawPathPojo>>(file.inputStream())
 
         val drawPathList = pathList.map { it.toDrawPath() }
@@ -72,11 +74,12 @@ class SaveWorker @AssistedInject constructor(
         noteImageRepository.delete(imageId)
         File(contentManager.getImagePath(imageId)).deleteOnExit()
     } else {
-        noteImageRepository.upsert(NoteImage(imageId, noteId,path, isDrawing = true, timestamp = System.currentTimeMillis()))
+        noteImageRepository.upsert(NoteImage(imageId, noteId, isDrawing = true, timestamp = System.currentTimeMillis()))
         drawingPathRepository.delete(imageId)
         drawingPathRepository.insert(drawPathList)
     }
 
+        file.delete()
         Result.success()
     }
 

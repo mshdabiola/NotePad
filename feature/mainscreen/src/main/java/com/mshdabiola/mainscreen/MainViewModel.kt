@@ -50,6 +50,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
@@ -92,7 +93,7 @@ class MainViewModel
                         NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
-                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
+                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -110,7 +111,7 @@ class MainViewModel
 
                         NoteType.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke) }
+                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.filter { it.note.reminder > 0 }.map {
                                     val labels = it.labels
@@ -128,7 +129,7 @@ class MainViewModel
 
                         else -> {
                             notepadRepository.getNotePads(pair.second.type).map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
+                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -341,32 +342,20 @@ class MainViewModel
         }
     }
 
-    private fun addMessage(msg: String) {
-        val msgs = mainState.value.messages.toMutableList()
 
-        msgs.add(Notify(message = msg, callback = ::onMessageDeliver))
-        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
-    }
-
-    private fun onMessageDeliver() {
-        val msgs = mainState.value.messages.toMutableList()
-
-        msgs.removeFirst()
-        _mainState.value = mainState.value.copy(messages = msgs.toImmutableList())
-    }
 
     fun deleteEmptyNote() {
         viewModelScope.launch(Dispatchers.IO) {
             val emptyList = notepadRepository
                 .getNotePads()
                 .first()
-                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke) }
+                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                 .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {
                 notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
 
-                addMessage("Remove empty note")
+                addNotify("Remove empty note")
             }
         }
     }
@@ -699,6 +688,23 @@ class MainViewModel
                 timeError = datetime<today
             )
         }
+    }
+
+    private fun addNotify(text: String) {
+        val notifies = mainState.value.messages.toMutableList()
+
+        notifies.add(Notify(message = text, callback = ::onNotifyDelive))
+        _mainState.update {
+            it.copy(messages = notifies.toImmutableList())
+        }
+    }
+
+    private fun onNotifyDelive() {
+        Timber.d("Remove")
+        val notifies = mainState.value.messages.toMutableList()
+
+        notifies.removeFirst()
+        _mainState.value = mainState.value.copy(messages = notifies.toImmutableList())
     }
 
 

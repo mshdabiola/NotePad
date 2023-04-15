@@ -79,5 +79,8 @@ dependencies {
     //testImplementation (libs.junit4)
     //androidTestImplementation (libs.bundles.android.test.bundle)
     //debugImplementation (libs.bundles.compose.debug.bundle)
+    implementation(libs.timber)
+    implementation(libs.play.update)
+    implementation(libs.play.update.kts)
 
 }

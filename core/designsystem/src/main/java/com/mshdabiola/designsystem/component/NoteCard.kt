@@ -134,7 +134,7 @@ fun NoteCard(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(100.dp),
-                                    model = it.imageName,
+                                    model = it.path,
                                     contentDescription = "",
                                     contentScale = ContentScale.Crop,
                                 )

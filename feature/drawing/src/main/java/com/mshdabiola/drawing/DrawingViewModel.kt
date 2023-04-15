@@ -62,11 +62,11 @@ class DrawingViewModel @Inject constructor(
         Saver.saveGame(imageId = imageID, noteId = noteId)
     }
 
-    suspend fun keepDataInFile(da :Map<PathData,List<Coordinate>>){
+    fun keepDataInFile(da :Map<PathData,List<Coordinate>>){
         val data = changeToDrawPath(da)
         val dataInText=Converter.pathToString(data)
         Log.e("drawing",dataInText)
-        contentManager.dataFile().writeText(dataInText)
+        contentManager.dataFile(imageID).writeText(dataInText)
     }
 
     fun deleteImage() {
