@@ -56,7 +56,7 @@ fun GalleryScreen(
         onDelete = viewModel::deleteImage,
         onToText = {
             val id = galleryUiState.value.images[0].noteId
-            navigateToEditScreen(id, "extract", it.toLong())
+            navigateToEditScreen(id, "extract", it)
         },
     )
 }
@@ -67,7 +67,7 @@ fun GalleryScreen(
     galleryUiState: GalleryUiState,
     onBack: () -> Unit = {},
     onDelete: (Long) -> Unit = {},
-    onToText: (Int) -> Unit = {},
+    onToText: (Long) -> Unit = {},
 ) {
     val pagerState = rememberPagerState()
 //    var currIndex = remember(pagerState.currentPage) {
@@ -84,7 +84,7 @@ fun GalleryScreen(
         val index = pagerState.currentPage
         val image = galleryUiState.images[index]
 
-        val file = File(image.imageName)
+        val file = File(image.path)
         val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
         val intent = ShareCompat.IntentBuilder(context)
             .setType("image/*")
@@ -97,7 +97,7 @@ fun GalleryScreen(
     val onCopy = {
         val index = pagerState.currentPage
         val image = galleryUiState.images[index]
-        val file = File(image.imageName)
+        val file = File(image.path)
         val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
 
         val content = context.contentResolver
@@ -116,7 +116,7 @@ fun GalleryScreen(
             GalleryTopAppBar(
                 onBack = onBack,
                 onDelete = delete,
-                onGrabText = { onToText(pagerState.currentPage) },
+                onGrabText = { onToText(galleryUiState.images[pagerState.currentPage].id) },
                 name = "${pagerState.currentPage + 1} of ${galleryUiState.images.size}",
                 onSend = onSend,
                 onCopy = onCopy,
@@ -134,7 +134,7 @@ fun GalleryScreen(
                 // / currIndex=it
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
-                    model = image.imageName,
+                    model = image.path,
                     contentDescription = "",
                     alignment = Alignment.Center,
 

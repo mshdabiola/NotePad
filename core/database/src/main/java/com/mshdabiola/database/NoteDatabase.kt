@@ -2,7 +2,10 @@ package com.mshdabiola.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import com.mshdabiola.database.dao.LabelDao
 import com.mshdabiola.database.dao.NoteCheckDao
 import com.mshdabiola.database.dao.NoteDao
@@ -29,10 +32,11 @@ import com.mshdabiola.database.model.NoteVoiceEntity
         LabelEntity::class,
         DrawPathEntity::class,
     ],
-    version = 2,
-    autoMigrations = [ AutoMigration(1,2)]
-
-
+    version = 3,
+    autoMigrations = [
+        AutoMigration(1,2),
+        AutoMigration(2 ,3,NoteDatabase.Migrate2to3::class)
+    ]
 )
 abstract class NoteDatabase : RoomDatabase() {
 
@@ -51,4 +55,6 @@ abstract class NoteDatabase : RoomDatabase() {
     abstract fun getNotePadDao(): NotepadDao
 
     abstract fun getPath(): PathDao
+    @DeleteColumn(tableName = "note_image_table", columnName = "imageName")
+    class Migrate2to3 : AutoMigrationSpec
 }

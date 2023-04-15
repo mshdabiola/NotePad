@@ -12,11 +12,10 @@ import java.sql.Timestamp
 data class NoteImageEntity(
     val id: Long,
     val noteId: Long,
-    val imageName: String,
     val isDrawing: Boolean,
     @ColumnInfo(defaultValue = "0")
     val timestamp: Long
 )
 
-fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, imageName, isDrawing,timestamp)
-fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, imageName, isDrawing,timestamp)
+fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing,timestamp)
+fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId,isDrawing,timestamp)

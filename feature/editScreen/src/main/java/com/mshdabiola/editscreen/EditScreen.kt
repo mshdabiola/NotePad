@@ -457,7 +457,7 @@ fun EditScreen(
                                             }
                                             .weight(1f)
                                             .height(200.dp),
-                                        model = it.imageName,
+                                        model = it.path,
                                         contentDescription = "note image",
                                         contentScale = ContentScale.Crop,
                                     )
@@ -727,13 +727,13 @@ fun EditScreenPreview() {
                 NoteImageUiState(
                     id = 7898L,
                     noteId = 9313L,
-                    imageName = "",
+                    path = "",
                     isDrawing = false,
                 ),
                 NoteImageUiState(
                     id = 34L,
                     noteId = 9513L,
-                    imageName = "",
+                    path = "",
                     isDrawing = false,
                 ),
             ).toImmutableList(),

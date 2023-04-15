@@ -87,7 +87,7 @@ class EditViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
-    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke))
+    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath))
     var navigateToDrawing by mutableStateOf(false)
 
 
@@ -129,7 +129,7 @@ class EditViewModel @Inject constructor(
                             NoteImageUiState(
                                 id = getNewId(),
                                 noteId = notePad.note.id,
-                                imageName = contentManager.getImagePath(editArg.data),
+                                path = contentManager.getImagePath(editArg.data),
                                 isDrawing = false,
                             ),
                         )
@@ -167,13 +167,13 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository
                         .getOneNotePad(editArg.id)
                         .first()
-                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke)
+                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke,contentManager::getImagePath)
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
                     val notePadUiState=notePad.copy(voices = voices.toImmutableList())
                     if (data == "extract") {
-                        onImage(editArg.data.toInt(),notePadUiState)
+                        onImage(contentManager.getImagePath(editArg.data),notePadUiState)
                         notePadUiState
                     }else{
                         notePadUiState
@@ -199,7 +199,7 @@ class EditViewModel @Inject constructor(
                     val strLabel = pair.second.map { s ->
                         labels.singleOrNull { it.id == s.labelId }?.label ?: ""
                     }
-                    val image = pair.first.map { it.toNoteImageUiState() }
+                    val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
 
                     notePadUiState = notePadUiState.copy(
                         labels = strLabel.toImmutableList(),
@@ -350,9 +350,9 @@ class EditViewModel @Inject constructor(
         contentManager.saveImage(uri, id)
 
         val noteImage =
-            NoteImage(id, notePadUiState.note.id, contentManager.getImagePath(id), false)
+            NoteImage(id, notePadUiState.note.id, false)
         val listImage = notePadUiState.images.toMutableList()
-        listImage.add(noteImage.toNoteImageUiState())
+        listImage.add(noteImage.toNoteImageUiState(contentManager::getImagePath))
 
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
     }
@@ -377,11 +377,10 @@ class EditViewModel @Inject constructor(
             NoteImage(
                 photoId,
                 notePadUiState.note.id,
-                contentManager.getImagePath(photoId),
                 false,
             )
         val listImage = notePadUiState.images.toMutableList()
-        listImage.add(noteImage.toNoteImageUiState())
+        listImage.add(noteImage.toNoteImageUiState(contentManager::getImagePath))
 
         notePadUiState = notePadUiState.copy(images = listImage.toImmutableList())
     }
@@ -533,11 +532,16 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private fun onImage(index: Int,notePad: NotePadUiState) {
+    private fun onImage(path: String,notePad: NotePadUiState) {
         viewModelScope.launch {
             try {
-                val image = notePad.images[index]
-                val text = imageToText.toText(image.imageName)
+               // val image = notePad.images[index]
+                val text = try {
+                    imageToText.toText(path)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    ""
+                }
                 val note = notePad.note
                 notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
             }catch (e:Exception){

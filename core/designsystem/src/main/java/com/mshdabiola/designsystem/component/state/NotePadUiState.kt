@@ -51,9 +51,12 @@ data class NotePadUiState(
     }
 }
 
-fun NotePad.toNotePadUiState(list: List<Label> = emptyList(),getTime:(Long)->String) = NotePadUiState(
+fun NotePad.toNotePadUiState(list: List<Label> = emptyList(),
+                             getTime:(Long)->String,
+                             toPath:(Long)->String
+                             ) = NotePadUiState(
     note = note.toNoteUiState(getDate=getTime),
-    images = images.map { it.toNoteImageUiState() }.toImmutableList(),
+    images = images.map { it.toNoteImageUiState(toPath) }.toImmutableList(),
     voices = voices.map { it.toNoteVoiceUiState() }.toImmutableList(),
     checks = checks.map { it.toNoteCheckUiState() }.toImmutableList(),
     labels = labels.map { s -> list.singleOrNull { it.id == s.labelId }?.label ?: "" }

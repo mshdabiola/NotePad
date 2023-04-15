@@ -92,7 +92,7 @@ class MainViewModel
                         NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
-                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
+                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -110,7 +110,7 @@ class MainViewModel
 
                         NoteType.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke) }
+                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.filter { it.note.reminder > 0 }.map {
                                     val labels = it.labels
@@ -128,7 +128,7 @@ class MainViewModel
 
                         else -> {
                             notepadRepository.getNotePads(pair.second.type).map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke) }
+                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -360,7 +360,7 @@ class MainViewModel
             val emptyList = notepadRepository
                 .getNotePads()
                 .first()
-                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke) }
+                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
                 .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {

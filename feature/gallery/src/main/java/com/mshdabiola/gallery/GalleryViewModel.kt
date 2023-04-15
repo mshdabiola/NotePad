@@ -3,6 +3,7 @@ package com.mshdabiola.gallery
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.NoteImageRepository
 import com.mshdabiola.designsystem.component.state.toNoteImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +11,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +19,7 @@ import javax.inject.Inject
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val noteImageRepository: NoteImageRepository,
+    private val contentManager: ContentManager
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Long>(noteIdStr)!!
@@ -39,7 +40,7 @@ class GalleryViewModel @Inject constructor(
                         .copy(
                             images =
                             reverseImages.map {
-                                it.toNoteImageUiState()
+                                it.toNoteImageUiState(contentManager::getImagePath)
                             }.toImmutableList(),
                             currentIndex = index,
                         )
