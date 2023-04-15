@@ -194,6 +194,7 @@ class DrawingController {
 
         val p = _unCompletePathData
             .value
+            .toSortedMap(comparator = compareBy { it.id })
             .map {
                 val yPath = Path()
                 it.value.forEachIndexed { index, offset ->

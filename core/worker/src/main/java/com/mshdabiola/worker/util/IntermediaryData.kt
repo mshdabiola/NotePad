@@ -62,6 +62,7 @@ fun changeToPathAndData(map : Map<PathData,List<Coordinate>>): List<Pair<Path, P
     var prevOff = Coordinate.Zero
 
     val p = map
+        .toSortedMap(comparator = compareBy { it.id })
         .map {
             val yPath = Path()
             it.value.forEachIndexed { index, offset ->
