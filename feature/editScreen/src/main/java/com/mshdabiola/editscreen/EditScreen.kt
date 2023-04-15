@@ -59,6 +59,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -103,6 +105,7 @@ import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.DateDialog
 import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.designsystem.component.NotificationDialogNew
+import com.mshdabiola.designsystem.component.NotifySnacker
 import com.mshdabiola.designsystem.component.ReminderCard
 import com.mshdabiola.designsystem.component.TimeDialog
 import com.mshdabiola.designsystem.component.state.NoteCheckUiState
@@ -111,6 +114,7 @@ import com.mshdabiola.designsystem.component.state.NotePadUiState
 import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.NoteUriState
 import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
+import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet2
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
@@ -119,6 +123,7 @@ import com.mshdabiola.editscreen.component.NotificationBottomSheet
 import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.searchscreen.FlowLayout2
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -136,6 +141,7 @@ fun EditScreen(
     navigateToDrawing: (Long, Long?) -> Unit,
 ) {
 
+    val messages=editViewModel.message.collectAsStateWithLifecycle()
     var showModalState by remember {
         mutableStateOf(false)
     }
@@ -173,6 +179,7 @@ fun EditScreen(
     FirebaseScreenLog(screen = "edit_screen")
     EditScreen(
         notepad = editViewModel.notePadUiState,
+        messages = messages.value,
         onTitleChange = editViewModel::onTitleChange,
         onSubjectChange = editViewModel::onDetailChange,
         onBackClick = onBack,
@@ -305,6 +312,7 @@ fun EditScreen(
 @Composable
 fun EditScreen(
     notepad: NotePadUiState,
+    messages : ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
     onTitleChange: (String) -> Unit = {},
     onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
@@ -373,6 +381,11 @@ fun EditScreen(
     val images = remember(notepad.images) {
         notepad.images.reversed().chunked(3)
     }
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
+    NotifySnacker(snackHostState = snackbarHostState, notifys = messages)
 
     LaunchedEffect(key1 = notepad, block = {
         if (notepad.note.focus) {
@@ -424,6 +437,7 @@ fun EditScreen(
                 },
             )
         },
+        snackbarHost ={ SnackbarHost (snackbarHostState)}
 
         ) { paddingValues ->
         Column(

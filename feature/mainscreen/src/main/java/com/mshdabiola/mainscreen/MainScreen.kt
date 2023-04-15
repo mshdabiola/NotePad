@@ -56,10 +56,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -89,7 +87,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.loader.content.Loader
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -97,6 +94,7 @@ import com.mshdabiola.designsystem.component.ColorDialog
 import com.mshdabiola.designsystem.component.DateDialog
 import com.mshdabiola.designsystem.component.NoteCard
 import com.mshdabiola.designsystem.component.NotificationDialogNew
+import com.mshdabiola.designsystem.component.NotifySnacker
 import com.mshdabiola.designsystem.component.TimeDialog
 import com.mshdabiola.designsystem.component.state.LabelUiState
 import com.mshdabiola.designsystem.component.state.NotePadUiState
@@ -383,29 +381,11 @@ fun MainScreen(
         notePads.filter { it.note.selected }
             .all { it.note.isPin }
     }
-    val snackHostState = remember {
+    val snackbarHostState = remember {
         SnackbarHostState()
     }
-    LaunchedEffect(key1 = messages, block = {
-        if (messages.isNotEmpty()) {
-            val first = messages.first()
-            when (
-                snackHostState.showSnackbar(
-                    message = first.message,
-                    withDismissAction = first.withDismissAction,
-                    actionLabel = first.label,
-                    duration = if (first.isShort) SnackbarDuration.Short else SnackbarDuration.Long,
-                )
-            ) {
-                SnackbarResult.ActionPerformed -> {
-                }
 
-                SnackbarResult.Dismissed -> {
-                    first.callback()
-                }
-            }
-        }
-    })
+    NotifySnacker(snackHostState = snackbarHostState, notifys = messages)
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -500,7 +480,7 @@ fun MainScreen(
                     }
                 }
             },
-            snackbarHost = { SnackbarHost(hostState = snackHostState) },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             bottomBar = {
                 BottomAppBar(
                     actions = {
