@@ -56,11 +56,13 @@ maneVersion = "0.44.0"
 okhttp = "4.10.0"
 protobuf = "3.21.12"
 protobufPlugin = "0.9.1"
+playReview = "2.0.1"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationJson = "0.8.0"
 room = "2.5.1"
 secrets = "2.0.1"
 turbine = "0.8.0"
+timber = "5.0.1"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
@@ -134,13 +136,17 @@ lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = "com.google.protobuf:protoc:21.0-rc-1"
+play-review= {module = "com.google.android.play:review", version.ref="playReview"}
+play-review-kts= {module = "com.google.android.play:review-ktx", version.ref="playReview"}
+play-update= {module = "com.google.android.play:app-update", version.ref="playReview"}
+play-update-kts= {module = "com.google.android.play:app-update-ktx", version.ref="playReview"}
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 [bundles]
 android-test-bundle = [
     "androidx-compose-ui-test",
