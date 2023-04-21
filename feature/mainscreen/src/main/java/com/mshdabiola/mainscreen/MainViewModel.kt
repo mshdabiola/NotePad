@@ -21,7 +21,6 @@ import com.mshdabiola.database.repository.NoteRepository
 import com.mshdabiola.designsystem.component.state.DateDialogUiData
 import com.mshdabiola.designsystem.component.state.DateListUiState
 import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.component.state.NoteUiState
 import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.component.state.toLabelUiState
 import com.mshdabiola.designsystem.component.state.toNotePad
@@ -370,7 +369,7 @@ class MainViewModel
     val dateTimeState = _dateTimeState.asStateFlow()
     private lateinit var currentDateTime: LocalDateTime
     private lateinit var today: LocalDateTime
-    private val timeList = mutableListOf(
+    private val timeListDefault = mutableListOf(
         LocalTime(7, 0, 0),
         LocalTime(13, 0, 0),
         LocalTime(19, 0, 0),
@@ -437,16 +436,16 @@ class MainViewModel
 
         )
             .mapIndexed { index, dateListUiState ->
-                if (index != timeList.lastIndex) {
+                if (index != timeListDefault.lastIndex) {
 
-                    val greater = timeList[index] > today.time
+                    val greater = timeListDefault[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
-                        value = time12UserCase(timeList[index]),
-                        trail = time12UserCase(timeList[index])
+                        value = time12UserCase(timeListDefault[index]),
+                        trail = time12UserCase(timeListDefault[index])
                     )
                 } else {
-                    timeList[timeList.lastIndex]=currentDateTime.time
+                    timeListDefault[timeListDefault.lastIndex]=currentDateTime.time
                     dateListUiState.copy( value = time12UserCase(currentDateTime.time))
 
                 }
@@ -538,7 +537,7 @@ class MainViewModel
             }
         } else {
             val date2=if (index==0)today.date else today.date.plus(1,DateTimeUnit.DAY)
-            val time=timeList[dateTimeState.value.currentTime]
+            val time=timeListDefault[dateTimeState.value.currentTime]
             val localtimedate=LocalDateTime(date2,time)
             _dateTimeState.update {
 
@@ -582,8 +581,8 @@ class MainViewModel
                 )
             }
             setTimePicker(
-                timeList[index].hour,
-                timeList[index].minute
+                timeListDefault[index].hour,
+                timeListDefault[index].minute
             )
         }
     }
@@ -599,7 +598,7 @@ class MainViewModel
     }
 
     fun setAlarm() {
-        val time = timeList[dateTimeState.value.currentTime]
+        val time = timeListDefault[dateTimeState.value.currentTime]
         val date = when (dateTimeState.value.currentDate) {
             0 -> today.date
             1 -> today.date.plus(1, DateTimeUnit.DAY)
@@ -647,7 +646,7 @@ class MainViewModel
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             currentLocalDate = date.date
-            val time=timeList[dateTimeState.value.currentTime]
+            val time=timeListDefault[dateTimeState.value.currentTime]
             val localtimedate=LocalDateTime(currentLocalDate,time)
 
             _dateTimeState.update {
@@ -668,7 +667,7 @@ class MainViewModel
     fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 
-        timeList[timeList.lastIndex] = time
+        timeListDefault[timeListDefault.lastIndex] = time
         val date = when (dateTimeState.value.currentDate) {
             0 -> today.date
             1 -> today.date.plus(1, DateTimeUnit.DAY)
