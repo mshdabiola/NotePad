@@ -45,17 +45,16 @@ import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -176,12 +175,12 @@ class EditViewModel @Inject constructor(
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
-                    val notePadUiState=notePad.copy(voices = voices.toImmutableList())
+                    val padUiState=notePad.copy(voices = voices.toImmutableList())
                     if (data == "extract") {
-                        onImage(contentManager.getImagePath(editArg.data),notePadUiState)
-                        notePadUiState
+                        onImage(contentManager.getImagePath(editArg.data),padUiState)
+                        padUiState
                     }else{
-                        notePadUiState
+                        padUiState
                     }
 
                 }
@@ -194,22 +193,30 @@ class EditViewModel @Inject constructor(
             launch(Dispatchers.IO) {
                 initDate(notePadUiState.note)
             }
+
+        }
+        viewModelScope.launch(Dispatchers.IO){
             //on notepad image and labels change
-            notePadRepository.getOneNotePad(notePadUiState.note.id)
-                .map { it.images to it.labels }
+            notePadRepository.getOneNotePad(editArg.id)
+                .mapNotNull { it.images to it.labels }
                 .distinctUntilChanged()
                 .collectLatest { pair ->
-                    Log.e("editviewmodel",pair.first.joinToString())
-                    val labels = labelRepository.getAllLabels().first()
-                    val strLabel = pair.second.map { s ->
-                        labels.singleOrNull { it.id == s.labelId }?.label ?: ""
-                    }
-                    val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
+                    try {
+                        Log.e("editviewmodel",pair.first.joinToString())
+                        val labels = labelRepository.getAllLabels().first()
+                        val strLabel = pair.second.map { s ->
+                            labels.singleOrNull { it.id == s.labelId }?.label ?: ""
+                        }
+                        val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
 
-                    notePadUiState = notePadUiState.copy(
-                        labels = strLabel.toImmutableList(),
-                        images = image.toImmutableList(),
-                    )
+                        notePadUiState = notePadUiState.copy(
+                            labels = strLabel.toImmutableList(),
+                            images = image.toImmutableList(),
+                        )
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
+
                 }
         }
 
