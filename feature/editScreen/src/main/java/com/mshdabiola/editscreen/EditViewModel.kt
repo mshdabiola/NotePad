@@ -195,29 +195,40 @@ class EditViewModel @Inject constructor(
             }
 
         }
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch{
             //on notepad image and labels change
-            notePadRepository.getOneNotePad(editArg.id)
-                .mapNotNull { it.images to it.labels }
-                .distinctUntilChanged()
-                .collectLatest { pair ->
-                    try {
-                        Log.e("editviewmodel",pair.first.joinToString())
-                        val labels = labelRepository.getAllLabels().first()
-                        val strLabel = pair.second.map { s ->
-                            labels.singleOrNull { it.id == s.labelId }?.label ?: ""
-                        }
-                        val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
+            snapshotFlow {
+                notePadUiState
+            }
+                .map { it.note.id }
+                .distinctUntilChanged { old, new -> old == new }
+                .collectLatest {
+                    if (it>-1){
 
-                        notePadUiState = notePadUiState.copy(
-                            labels = strLabel.toImmutableList(),
-                            images = image.toImmutableList(),
-                        )
-                    }catch (e:Exception){
-                        e.printStackTrace()
+                        notePadRepository.getOneNotePad(it)
+                            .mapNotNull { it.images to it.labels }
+                            .distinctUntilChanged()
+                            .collectLatest { pair ->
+
+                                Timber.tag("editviewmodel").e(pair.first.joinToString())
+                                val labels = labelRepository.getAllLabels().first()
+                                val strLabel = pair.second.map { s ->
+                                    labels.singleOrNull { it.id == s.labelId }?.label ?: ""
+                                }
+                                val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
+
+                                notePadUiState = notePadUiState.copy(
+                                    labels = strLabel.toImmutableList(),
+                                    images = image.toImmutableList(),
+                                )
+
+
+                            }
+
                     }
 
                 }
+
         }
 
         //save note
