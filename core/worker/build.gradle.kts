@@ -23,6 +23,6 @@ dependencies {
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
     implementation(libs.kotlinx.serialization.json)
-    kapt(libs.hilt.ext.compiler)
+    //kapt(libs.hilt.ext.compiler)
 
 }
