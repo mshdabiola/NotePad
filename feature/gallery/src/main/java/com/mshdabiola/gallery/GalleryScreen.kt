@@ -69,7 +69,9 @@ fun GalleryScreen(
     onDelete: (Long) -> Unit = {},
     onToText: (Long) -> Unit = {},
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(){
+       galleryUiState.images.size
+    }
 //    var currIndex = remember(pagerState.currentPage) {
 //        pa
 //    }
@@ -126,7 +128,6 @@ fun GalleryScreen(
 
         HorizontalPager(
             modifier = Modifier.padding(paddingValues),
-            pageCount = galleryUiState.images.size,
             state = pagerState,
         ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {

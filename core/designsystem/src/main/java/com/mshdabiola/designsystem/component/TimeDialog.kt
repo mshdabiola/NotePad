@@ -50,6 +50,7 @@ fun TimeDialog(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun TimeDialogPreview() {

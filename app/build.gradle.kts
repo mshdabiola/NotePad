@@ -72,8 +72,6 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.firebase.crashlytics.kts)
-    implementation(libs.firebase.analytics.kts)
 
     implementation(project(":core:worker"))
     //testImplementation (libs.junit4)

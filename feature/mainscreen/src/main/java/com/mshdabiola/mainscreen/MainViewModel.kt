@@ -384,6 +384,7 @@ class MainViewModel
         DatePickerDefaults.YearRange,
         DisplayMode.Picker
     )
+    @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private lateinit var currentLocalDate :LocalDate
 
@@ -587,6 +588,7 @@ class MainViewModel
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun setTimePicker(hour: Int, minute: Int) {
         timePicker = TimePickerState(hour, minute, false)
     }
@@ -664,6 +666,7 @@ class MainViewModel
 
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 

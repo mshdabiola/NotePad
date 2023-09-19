@@ -608,6 +608,7 @@ class EditViewModel @Inject constructor(
         DatePickerDefaults.YearRange,
         DisplayMode.Picker
     )
+    @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private var currentLocalDate = LocalDate(1, 2, 3)
 
@@ -819,6 +820,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun setTimePicker(hour: Int, minute: Int) {
         timePicker = TimePickerState(hour, minute, false)
     }
@@ -896,6 +898,7 @@ class EditViewModel @Inject constructor(
 
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 
