@@ -131,15 +131,18 @@ fun GalleryScreen(
             state = pagerState,
         ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                val image = galleryUiState.images[it]
+                val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = image.path,
-                    contentDescription = "",
-                    alignment = Alignment.Center,
+                if (image!=null){
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = image.path,
+                        contentDescription = "",
+                        alignment = Alignment.Center,
 
-                    )
+                        )
+                }
+
             }
         }
     }
