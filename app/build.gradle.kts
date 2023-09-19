@@ -3,9 +3,7 @@ plugins {
     id("mshdabiola.android.application")
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.hilt")
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
-    alias(libs.plugins.android.application)
+    id("mshdabiola.android.application.firebase")
     alias(libs.plugins.androidx.baselineprofile)
 
 }
@@ -80,8 +78,8 @@ dependencies {
     //androidTestImplementation (libs.bundles.android.test.bundle)
     //debugImplementation (libs.bundles.compose.debug.bundle)
     implementation(libs.timber)
-    implementation(libs.play.update)
-    implementation(libs.play.update.kts)
+//    implementation(libs.play.update)
+//    implementation(libs.play.update.kts)
     "baselineProfile"(project(":app:baselineprofile"))
 
 }

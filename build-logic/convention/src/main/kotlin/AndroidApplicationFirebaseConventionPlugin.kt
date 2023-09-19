@@ -39,6 +39,20 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("firebase.analytics").get())
                 "implementation"(libs.findLibrary("firebase.performance").get())
                 "implementation"(libs.findLibrary("firebase.crashlytics").get())
+
+                "implementation"(libs.findLibrary("firebase.cloud.messaging").get())
+                "implementation"(libs.findLibrary("firebase.remoteconfig").get())
+                "implementation"(libs.findLibrary("firebase.message").get())
+                "implementation"(libs.findLibrary("firebase.auth").get())
+
+                "implementation"(libs.findLibrary("play.game").get())
+                "implementation"(libs.findLibrary("play.update").get())
+                "implementation"(libs.findLibrary("play.update.kts").get())
+            //    "implementation"(libs.findLibrary("admob.service").get())
+                "implementation"(libs.findLibrary("play.review").get())
+                "implementation"(libs.findLibrary("play.review.kts").get())
+                //"implementation"(libs.findLibrary("play.billing.kts").get())
+                // "implementation"(libs.findLibrary("play.coroutine").get())
             }
 
             extensions.configure<ApplicationAndroidComponentsExtension> {
@@ -48,7 +62,7 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
                         // enabled if a Firebase backend is available and configured in
                         // google-services.json.
                         buildType.configure<CrashlyticsExtension> {
-                            mappingFileUploadEnabled = false
+                            mappingFileUploadEnabled = !buildType.isDebuggable
                         }
                     }
                 }
