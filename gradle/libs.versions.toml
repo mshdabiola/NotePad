@@ -73,6 +73,8 @@ gmsPlugin = "4.3.15"
 
 playReview = "2.1.0"
 
+androidx-baselineprofile = "1.2.0-beta03"
+
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
@@ -197,3 +199,4 @@ manes = { id = "com.github.ben-manes.versions", version.ref = "maneVersion" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }

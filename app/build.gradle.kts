@@ -5,6 +5,8 @@ plugins {
     id("mshdabiola.android.hilt")
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.androidx.baselineprofile)
 
 }
 
@@ -80,5 +82,6 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.play.update)
     implementation(libs.play.update.kts)
+    "baselineProfile"(project(":app:baselineprofile"))
 
 }

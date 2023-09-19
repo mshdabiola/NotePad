@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.manes)
     alias(libs.plugins.little)
+    alias(libs.plugins.androidx.baselineprofile) apply false
 
 
 }

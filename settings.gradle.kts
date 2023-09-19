@@ -15,7 +15,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "NotePad"
 include(":app")
-include(":benchmark")
+//include(":benchmark")
 include(":core:database")
 include(":core:designsystem")
 include(":core:model")
@@ -29,3 +29,4 @@ include(":feature:selectlabelscreen")
 include(":feature:gallery")
 include(":feature:drawing")
 include(":feature:about")
+include(":app:baselineprofile")
