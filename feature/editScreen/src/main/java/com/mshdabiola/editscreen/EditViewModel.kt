@@ -131,7 +131,7 @@ class EditViewModel @Inject constructor(
                     notePad.copy(
                         images = listOf(
                             NoteImageUiState(
-                                id = getNewId(),
+                                id = editArg.data,
                                 noteId = notePad.note.id,
                                 path = contentManager.getImagePath(editArg.data),
                                 isDrawing = false,
