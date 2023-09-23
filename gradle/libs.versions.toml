@@ -2,7 +2,7 @@
 accompanist = "0.28.0"
 admob = "22.4.0"
 androidDesugarJdkLibs = "2.0.3"
-androidGradlePlugin = "8.2.0-alpha15"
+androidGradlePlugin = "8.2.0-alpha15" #"8.3.0-alpha04"
 androidx-compose-foundation = "1.5.1"
 androidxActivity = "1.7.2"
 androidxAppCompat = "1.6.1"
@@ -75,7 +75,9 @@ playGame = "17.0.0"
 playReview = "2.0.1"
 playCoroutine = "1.7.3"
 
-androidx-baselineprofile = "1.2.0-beta03"
+androidx-baselineprofile = "1.2.0-beta05"
+
+telephoto = "0.6.1"
 
 
 [libraries]
@@ -193,6 +195,7 @@ ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref 
 ktor-client-logging = { module = "io.ktor:ktor-client-logging-jvm", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+telephoto-zoomable-image ={ module = "me.saket.telephoto:zoomable-image-coil", version.ref="telephoto" }
 
 # Dependencies of the included build-logic
 

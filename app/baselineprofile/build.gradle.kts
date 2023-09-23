@@ -29,10 +29,10 @@ android {
     targetProjectPath = ":app"
 
     flavorDimensions += listOf("contentType")
-    productFlavors {
-        create("demo") { dimension = "contentType" }
-        create("prod") { dimension = "contentType" }
-    }
+//    productFlavors {
+//        create("demo") { dimension = "contentType" }
+//        create("prod") { dimension = "contentType" }
+//    }
 
     testOptions.managedDevices.devices {
         create<ManagedVirtualDevice>("pixel6Api34") {

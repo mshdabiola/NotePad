@@ -3,6 +3,8 @@ package com.mshdabiola.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,6 +45,23 @@ class BaselineProfileGenerator {
             // Start default activity for your app
             pressHome()
             startActivityAndWait()
+            pressHome()
+        startActivityAndWait()
+
+//        device.waitForIdle()
+//        val lazy = device.findObject(By.res("main:lazy"))
+//
+//        lazy.fling(Direction.DOWN)
+//        lazy.fling(Direction.UP)
+//        device.waitForIdle()
+//        lazy.children[0].click()
+//        device.waitForIdle()
+
+//        device.findObject(By.res("note image")).click()
+//        device.waitForIdle()
+//        device.findObject(By.descContains("back")).click()
+//        device.waitForIdle()
+//        device.findObject(By.descContains("back")).click()
 
             // TODO Write more interactions to optimize advanced journeys of your app.
             // For example:
