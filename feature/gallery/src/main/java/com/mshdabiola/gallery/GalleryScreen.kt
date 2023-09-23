@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.coroutines.delay
+import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
 
 @Composable
@@ -134,7 +135,7 @@ fun GalleryScreen(
                 val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
                 if (image!=null){
-                    AsyncImage(
+                    ZoomableAsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = image.path,
                         contentDescription = "",
