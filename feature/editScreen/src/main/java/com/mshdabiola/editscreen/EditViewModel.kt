@@ -146,6 +146,7 @@ class EditViewModel @Inject constructor(
                     val length = getAudioLength(voicePath)
                     val notePad = getNewNotepad()
                     notePad.copy(
+                        note = notePad.note.copy(detail = editArg.content),
                         voices = listOf(
                             NoteVoiceUiState(
                                 id = getNewId(),
