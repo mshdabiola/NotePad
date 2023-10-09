@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.firebase.FirebaseScreenLog
 import kotlinx.coroutines.delay
+import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
 
 @Composable
@@ -69,7 +70,9 @@ fun GalleryScreen(
     onDelete: (Long) -> Unit = {},
     onToText: (Long) -> Unit = {},
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(){
+       galleryUiState.images.size
+    }
 //    var currIndex = remember(pagerState.currentPage) {
 //        pa
 //    }
@@ -126,19 +129,21 @@ fun GalleryScreen(
 
         HorizontalPager(
             modifier = Modifier.padding(paddingValues),
-            pageCount = galleryUiState.images.size,
             state = pagerState,
         ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                val image = galleryUiState.images[it]
+                val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = image.path,
-                    contentDescription = "",
-                    alignment = Alignment.Center,
+                if (image!=null){
+                    ZoomableAsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = image.path,
+                        contentDescription = "",
+                        alignment = Alignment.Center,
 
-                    )
+                        )
+                }
+
             }
         }
     }

@@ -131,7 +131,7 @@ class EditViewModel @Inject constructor(
                     notePad.copy(
                         images = listOf(
                             NoteImageUiState(
-                                id = getNewId(),
+                                id = editArg.data,
                                 noteId = notePad.note.id,
                                 path = contentManager.getImagePath(editArg.data),
                                 isDrawing = false,
@@ -146,6 +146,7 @@ class EditViewModel @Inject constructor(
                     val length = getAudioLength(voicePath)
                     val notePad = getNewNotepad()
                     notePad.copy(
+                        note = notePad.note.copy(detail = editArg.content),
                         voices = listOf(
                             NoteVoiceUiState(
                                 id = getNewId(),
@@ -608,6 +609,7 @@ class EditViewModel @Inject constructor(
         DatePickerDefaults.YearRange,
         DisplayMode.Picker
     )
+    @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private var currentLocalDate = LocalDate(1, 2, 3)
 
@@ -819,6 +821,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun setTimePicker(hour: Int, minute: Int) {
         timePicker = TimePickerState(hour, minute, false)
     }
@@ -896,6 +899,7 @@ class EditViewModel @Inject constructor(
 
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onSetTime() {
         val time = LocalTime(timePicker.hour, timePicker.minute)
 

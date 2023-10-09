@@ -27,22 +27,23 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *,*>,
+    commonExtension: CommonExtension<*, *, *, *, *>,
 ) {
     commonExtension.apply {
-
+        compileSdk = 34
 
         defaultConfig {
+            minSdk = 21 //24
 
         }
 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
+//            isCoreLibraryDesugaringEnabled = true
         }
 
         kotlinOptions {
-            // Set JVM target to 1.8
             jvmTarget = JavaVersion.VERSION_17.toString()
 
         }
@@ -51,11 +52,11 @@ internal fun Project.configureKotlinAndroid(
 //    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     dependencies {
-        //  add("coreLibraryDesugaring", libs.findLibrary("android.desugarJdkLibs").get())
+//        add("coreLibraryDesugaring", libs.findLibrary("android.desugarJdkLibs").get())
 
     }
 }
 
-fun CommonExtension<*, *, *, *,*>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+fun CommonExtension<*, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }

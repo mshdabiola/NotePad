@@ -3,8 +3,8 @@ plugins {
     id("mshdabiola.android.application")
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.hilt")
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
+    id("mshdabiola.android.application.firebase")
+    alias(libs.plugins.androidx.baselineprofile)
 
 }
 
@@ -49,9 +49,10 @@ android {
     }
 
 
-    packagingOptions {
-        excludes += "/META-INF/AL2.0"
-        excludes += "/META-INF/LGPL2.1"
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -60,6 +61,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     //implementation(libs.bundles.compose.bundle)
+    implementation(project(":core:database"))
+    implementation(project(":core:model"))
+
+    implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:mainscreen"))
     implementation(project(":feature:editScreen"))
@@ -72,15 +77,15 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.firebase.crashlytics.kts)
-    implementation(libs.firebase.analytics.kts)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":core:worker"))
     //testImplementation (libs.junit4)
     //androidTestImplementation (libs.bundles.android.test.bundle)
     //debugImplementation (libs.bundles.compose.debug.bundle)
     implementation(libs.timber)
-    implementation(libs.play.update)
-    implementation(libs.play.update.kts)
+//    implementation(libs.play.update)
+//    implementation(libs.play.update.kts)
+    "baselineProfile"(project(":app:baselineprofile"))
 
 }

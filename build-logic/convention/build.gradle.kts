@@ -28,6 +28,11 @@ java {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.firebase.crashlytics.gradle)
+    compileOnly(libs.firebase.performance.gradle)
+    compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -36,6 +41,14 @@ gradlePlugin {
         register("androidApplicationCompose") {
             id = "mshdabiola.android.application.compose"
             implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
+        register("androidApplicationFlavor") {
+            id = "mshdabiola.android.application.flavor"
+            implementationClass = "AndroidApplicationFlavorsConventionPlugin"
+        }
+        register("androidApplicationFirebase") {
+            id = "mshdabiola.android.application.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
         }
         register("androidApplication") {
             id = "mshdabiola.android.application"
@@ -63,9 +76,10 @@ gradlePlugin {
             id = "mshdabiola.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
-        register("firebase-perf") {
-            id = "mshdabiola.firebase-perf"
-            implementationClass = "FirebasePerfConventionPlugin"
+
+        register("androidRoom") {
+            id = "mshdabiola.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
         }
     }
 }

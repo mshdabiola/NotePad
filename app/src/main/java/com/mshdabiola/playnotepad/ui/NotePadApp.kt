@@ -9,6 +9,7 @@ import com.mshdabiola.playnotepad.navigation.NotePadAppNavHost
 fun NotePadApp(
     windowSizeClass: WindowSizeClass,
     noteAppState: NotePadAppState = rememberNotePadAppState(windowSizeClass = windowSizeClass),
+    saveImage : (Long,Long)->Unit
 ) {
     NotePadAppTheme {
         NotePadAppNavHost(
@@ -18,6 +19,7 @@ fun NotePadApp(
             navigateToSearch = noteAppState::navigateToSearch,
             onBack = noteAppState::onBack,
             navigateToSelectLevel = noteAppState::navigateToSelectLevel,
+            saveImage = saveImage
         )
     }
 }

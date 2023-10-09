@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<defaults>
+    <entry>
+        <key>show_ad</key>
+        <value>false</value>
+    </entry>
+    <entry>
+        <key>difficulty</key>
+        <value>3</value>
+    </entry>
+    <entry>
+        <key>multiplayer_feature</key>
+        <value>true</value>
+    </entry>
+</defaults>

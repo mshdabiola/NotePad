@@ -25,11 +25,12 @@ class ImageToText @Inject constructor(
 
         recognizer.process(image)
             .addOnSuccessListener {
-                cont.resume(it.text)
+
+                cont.resume(it?.text ?: "")
             }
             .addOnFailureListener {
                 it.printStackTrace()
-                cont.resumeWithException(it)
+                cont.resume("")
             }
     }
 }

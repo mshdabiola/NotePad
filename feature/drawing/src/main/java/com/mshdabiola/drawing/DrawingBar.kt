@@ -79,7 +79,9 @@ fun DrawingBar(
         }
     })
 
-    val pagerState = rememberPagerState(initialPage = 1)
+    val pagerState = rememberPagerState {
+        4
+    }
     val coroutineScope = rememberCoroutineScope()
     Surface(modifier) {
         Column {
@@ -213,7 +215,6 @@ fun DrawingBar(
 //        }
 
             HorizontalPager(
-                pageCount = 4,
                 state = pagerState,
                 modifier = Modifier
                     .navigationBarsPadding()

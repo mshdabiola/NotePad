@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.mshdabiola.gallery"
 }
+dependencies {
+    implementation(libs.telephoto.zoomable.image)
+
+}
