@@ -12,6 +12,7 @@ const val imageIdArg = "image_id_arg"
 
 fun NavGraphBuilder.drawingScreen(
     onBack: () -> Unit,
+    saveImage : (Long,Long)->Unit
 
     ) {
     composable(
@@ -25,7 +26,7 @@ fun NavGraphBuilder.drawingScreen(
             },
         ),
     ) {
-        DrawingScreen(onBack = onBack)
+        DrawingScreen(onBack = onBack, saveImage = saveImage)
     }
 }
 

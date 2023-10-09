@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     //implementation(libs.bundles.compose.bundle)
+    implementation(project(":core:database"))
+    implementation(project(":core:model"))
+
+    implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:mainscreen"))
     implementation(project(":feature:editScreen"))
@@ -73,6 +77,7 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     //implementation(libs.kotlinx.collection.immutable)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":core:worker"))
     //testImplementation (libs.junit4)

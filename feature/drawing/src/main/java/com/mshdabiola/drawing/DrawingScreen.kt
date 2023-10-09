@@ -47,13 +47,16 @@ import java.io.File
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
+    saveImage : (Long,Long)->Unit
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
     val lifecycleObserver= LocalLifecycleOwner.current
     val defaultLifecycleObserver= object : DefaultLifecycleObserver {
         override fun onPause(owner: LifecycleOwner) {
             super.onPause(owner)
-            viewModel.saveData()
+          //  viewModel.saveData()
+            saveImage(viewModel.imageID,viewModel.noteId)
+
         }
     }
     LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {

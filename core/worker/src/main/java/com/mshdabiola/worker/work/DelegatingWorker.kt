@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters
 import com.mshdabiola.worker.di.HiltWorkerFactoryEntryPoint
 import com.mshdabiola.worker.util.WORKER_CLASS_NAME
 import dagger.hilt.android.EntryPointAccessors
+import timber.log.Timber
 
 class DelegatingWorker(
     appContext: Context,
@@ -15,6 +16,9 @@ class DelegatingWorker(
 
     private val workerClassName =
         workerParams.inputData.getString(WORKER_CLASS_NAME) ?: ""
+    init {
+        Timber.e("worker name $workerParams")
+    }
 
     private val delegateWorker =
         EntryPointAccessors.fromApplication<HiltWorkerFactoryEntryPoint>(appContext)
