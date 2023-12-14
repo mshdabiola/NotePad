@@ -166,7 +166,12 @@ class MainViewModel
                 }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            initDate()
+            try {
+                initDate()
+
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 
@@ -423,7 +428,7 @@ class MainViewModel
             now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
         currentDateTime = today2
         currentLocalDate = currentDateTime.date
-        Log.e("current date", currentLocalDate.toString())
+        Timber.tag("current date").e(currentLocalDate.toString())
 
 
         val timeList = mutableListOf(
