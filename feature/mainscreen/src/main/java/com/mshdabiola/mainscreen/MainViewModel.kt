@@ -92,7 +92,13 @@ class MainViewModel
                         NoteType.LABEL -> {
                             notepadRepository.getNotePads().map { notes ->
                                 notes.filter { it -> it.labels.any { it.labelId == (pair.second).id } }
-                                    .map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
+                                    .map {
+                                        it.toNotePadUiState(
+                                            pair.first,
+                                            getTime = dateShortStringUsercase::invoke,
+                                            toPath = contentManager::getImagePath
+                                        )
+                                    }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -110,7 +116,13 @@ class MainViewModel
 
                         NoteType.REMAINDER -> {
                             notepadRepository.getNotePads().map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first,getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
+                                notes.map {
+                                    it.toNotePadUiState(
+                                        pair.first,
+                                        getTime = dateShortStringUsercase::invoke,
+                                        toPath = contentManager::getImagePath
+                                    )
+                                }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.filter { it.note.reminder > 0 }.map {
                                     val labels = it.labels
@@ -128,7 +140,13 @@ class MainViewModel
 
                         else -> {
                             notepadRepository.getNotePads(pair.second.type).map { notes ->
-                                notes.map { it.toNotePadUiState(pair.first, getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
+                                notes.map {
+                                    it.toNotePadUiState(
+                                        pair.first,
+                                        getTime = dateShortStringUsercase::invoke,
+                                        toPath = contentManager::getImagePath
+                                    )
+                                }
                             }.collect { padUiStateList ->
                                 val list = padUiStateList.map {
                                     val labels = it.labels
@@ -300,19 +318,22 @@ class MainViewModel
             val id = mainState.value.notePads.single { it.note.selected }.note.id
             val notepads = notepadRepository.getOneNotePad(id).first()
 
-            var copy = notepads.copy(note = notepads.note.copy(id = null))
+            if (notepads != null) {
+                var copy = notepads.copy(note = notepads.note.copy(id = null))
 
-            val newId = notepadRepository.insertNotepad(copy)
+                val newId = notepadRepository.insertNotepad(copy)
 
-            copy = copy.copy(
-                note = copy.note.copy(id = newId),
-                images = copy.images.map { it.copy(noteId = newId) },
-                voices = copy.voices.map { it.copy(noteId = newId) },
-                labels = copy.labels.map { it.copy(noteId = newId) },
-                checks = copy.checks.map { it.copy(noteId = newId) },
-            )
+                copy = copy.copy(
+                    note = copy.note.copy(id = newId),
+                    images = copy.images.map { it.copy(noteId = newId) },
+                    voices = copy.voices.map { it.copy(noteId = newId) },
+                    labels = copy.labels.map { it.copy(noteId = newId) },
+                    checks = copy.checks.map { it.copy(noteId = newId) },
+                )
 
-            notepadRepository.insertNotepad(copy)
+                notepadRepository.insertNotepad(copy)
+            }
+
         }
     }
 
@@ -342,13 +363,17 @@ class MainViewModel
     }
 
 
-
     fun deleteEmptyNote() {
         viewModelScope.launch(Dispatchers.IO) {
             val emptyList = notepadRepository
                 .getNotePads()
                 .first()
-                .map { it.toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath) }
+                .map {
+                    it.toNotePadUiState(
+                        getTime = dateShortStringUsercase::invoke,
+                        toPath = contentManager::getImagePath
+                    )
+                }
                 .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {
@@ -384,19 +409,21 @@ class MainViewModel
         DatePickerDefaults.YearRange,
         DisplayMode.Picker
     )
+
     @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
-    private lateinit var currentLocalDate :LocalDate
+    private lateinit var currentLocalDate: LocalDate
 
     //date and time dialog logic
 
     private fun initDate() {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        val today2=now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
+        val today2 =
+            now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
         currentDateTime = today2
-        currentLocalDate=currentDateTime.date
-        Log.e("current date",currentLocalDate.toString())
+        currentLocalDate = currentDateTime.date
+        Log.e("current date", currentLocalDate.toString())
 
 
         val timeList = mutableListOf(
@@ -446,13 +473,13 @@ class MainViewModel
                         trail = time12UserCase(timeListDefault[index])
                     )
                 } else {
-                    timeListDefault[timeListDefault.lastIndex]=currentDateTime.time
-                    dateListUiState.copy( value = time12UserCase(currentDateTime.time))
+                    timeListDefault[timeListDefault.lastIndex] = currentDateTime.time
+                    dateListUiState.copy(value = time12UserCase(currentDateTime.time))
 
                 }
             }
             .toImmutableList()
-        val datelist=listOf(
+        val datelist = listOf(
             DateListUiState(
                 title = "Today",
                 value = "Today",
@@ -480,10 +507,10 @@ class MainViewModel
         _dateTimeState.update {
             it.copy(
                 isEdit = false,
-                currentTime = timeList.lastIndex ,
+                currentTime = timeList.lastIndex,
                 timeData = timeList,
-                timeError = today>currentDateTime,
-                currentDate =  0,
+                timeError = today > currentDateTime,
+                currentDate = 0,
                 dateData = datelist,
                 currentInterval = interval,
                 interval = listOf(
@@ -537,14 +564,14 @@ class MainViewModel
                 )
             }
         } else {
-            val date2=if (index==0)today.date else today.date.plus(1,DateTimeUnit.DAY)
-            val time=timeListDefault[dateTimeState.value.currentTime]
-            val localtimedate=LocalDateTime(date2,time)
+            val date2 = if (index == 0) today.date else today.date.plus(1, DateTimeUnit.DAY)
+            val time = timeListDefault[dateTimeState.value.currentTime]
+            val localtimedate = LocalDateTime(date2, time)
             _dateTimeState.update {
 
                 it.copy(
                     currentDate = index,
-                    timeError = today>localtimedate
+                    timeError = today > localtimedate
                 )
             }
             val date = if (index == 0)
@@ -555,7 +582,6 @@ class MainViewModel
         }
 
     }
-
 
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -619,12 +645,14 @@ class MainViewModel
 
         val setime = LocalDateTime(date, time)
         if (setime > today) {
-            setAlarm(setime
-                .toInstant(TimeZone.currentSystemDefault())
-                .toEpochMilliseconds(), interval)
-            Log.e("editv","Set Alarm")
-        }else{
-            Log.e("editv","Alarm not set $today time $time date$date")
+            setAlarm(
+                setime
+                    .toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds(), interval
+            )
+            Log.e("editv", "Set Alarm")
+        } else {
+            Log.e("editv", "Alarm not set $today time $time date$date")
         }
 
     }
@@ -648,8 +676,8 @@ class MainViewModel
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             currentLocalDate = date.date
-            val time=timeListDefault[dateTimeState.value.currentTime]
-            val localtimedate=LocalDateTime(currentLocalDate,time)
+            val time = timeListDefault[dateTimeState.value.currentTime]
+            val localtimedate = LocalDateTime(currentLocalDate, time)
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
@@ -658,7 +686,7 @@ class MainViewModel
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
-                    timeError = today>localtimedate
+                    timeError = today > localtimedate
                 )
             }
 
@@ -676,9 +704,9 @@ class MainViewModel
             1 -> today.date.plus(1, DateTimeUnit.DAY)
             else -> currentLocalDate
         }
-        val datetime=LocalDateTime(date,time)
+        val datetime = LocalDateTime(date, time)
 
-        Log.e("onSettime","current $today date $datetime")
+        Log.e("onSettime", "current $today date $datetime")
 
 
         _dateTimeState.update {
@@ -687,7 +715,7 @@ class MainViewModel
             it.copy(
                 timeData = im.toImmutableList(),
                 currentTime = im.lastIndex,
-                timeError = datetime<today
+                timeError = datetime < today
             )
         }
     }

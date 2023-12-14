@@ -72,8 +72,8 @@ class NotePadRepository
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
-    fun getOneNotePad(id: Long): Flow<NotePad> {
-        return notePadDao.getOneNotePad(id).map { it.toNotePad() }
+    fun getOneNotePad(id: Long): Flow<NotePad?> {
+        return notePadDao.getOneNotePad(id).map { it?.toNotePad() }
     }
 
     suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
