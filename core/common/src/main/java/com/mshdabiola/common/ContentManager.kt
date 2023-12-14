@@ -18,13 +18,18 @@ class ContentManager
     private val voiceDir = context.filesDir.absolutePath + "/voice"
 
     fun saveImage(uri: Uri, currentTime: Long) {
-        createImageDir()
-        val outputStream = FileOutputStream(File(photoDir, "Image_$currentTime.jpg"))
+        try {
+            createImageDir()
+            val outputStream = FileOutputStream(File(photoDir, "Image_$currentTime.jpg"))
 
-        context.contentResolver.openInputStream(uri).use {
-            it?.copyTo(outputStream)
-            outputStream.close()
+            context.contentResolver.openInputStream(uri).use {
+                it?.copyTo(outputStream)
+                outputStream.close()
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
         }
+
     }
 
     fun saveVoice(uri: Uri, currentTime: Long) {
