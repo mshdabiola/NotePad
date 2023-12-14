@@ -36,6 +36,9 @@ class NotePadRepository
     suspend fun insertNote(note: Note) = noteDao.upsert(note.toNoteEntity())
 
     suspend fun insertNotepad(notePad: NotePad): Long {
+
+
+
         val id = noteDao.upsert(notePad.note.toNoteEntity())
         if (notePad.checks.isNotEmpty()) {
             noteCheckDao.upsert(notePad.checks.map { it.toNoteCheckEntity() })
@@ -69,8 +72,8 @@ class NotePadRepository
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
-    fun getOneNotePad(id: Long): Flow<NotePad> {
-        return notePadDao.getOneNotePad(id).map { it.toNotePad() }
+    fun getOneNotePad(id: Long): Flow<NotePad?> {
+        return notePadDao.getOneNotePad(id).map { it?.toNotePad() }
     }
 
     suspend fun deleteTrashType() = withContext(Dispatchers.IO) {

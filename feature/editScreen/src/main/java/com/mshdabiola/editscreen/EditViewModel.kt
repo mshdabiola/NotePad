@@ -172,7 +172,8 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository
                         .getOneNotePad(editArg.id)
                         .first()
-                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke,contentManager::getImagePath)
+                        ?.toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke,contentManager::getImagePath)
+                        ?:getNewNotepad()
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
@@ -203,11 +204,15 @@ class EditViewModel @Inject constructor(
             }
                 .map { it.note.id }
                 .distinctUntilChanged { old, new -> old == new }
-                .collectLatest {
-                    if (it>-1){
+                .collectLatest { id ->
+                    if (id>-1){
 
-                        notePadRepository.getOneNotePad(it)
-                            .mapNotNull { it.images to it.labels }
+                        notePadRepository.getOneNotePad(id)
+                            .mapNotNull {
+                                if (it!=null)
+                                it.images to it.labels
+                                else null
+                            }
                             .distinctUntilChanged()
                             .collectLatest { pair ->
 
