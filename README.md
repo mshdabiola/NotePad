@@ -16,12 +16,17 @@ your notes and stay organized.
 Play NotePad is available on the Google Play Store:
 
 <p align="left">
-<a href="https://play.google.com/store/apps/">
+<a href="https://play.google.com/store/apps/details?id=com.mshdabiola.playnotepad">
     <img alt="Get it on Google Play"
         height="70"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>  
 
+<a href="https://github.com/mshdabiola/NotePad/releases">
+    <img alt="Get it on Google Play"
+        height="70"
+        src="https://assets.stickpng.com/images/629b7adc7c5cd817694c3231.png" />
+</a>  
 
 
 
