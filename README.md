@@ -4,12 +4,12 @@
 [![Issues](https://img.shields.io/github/issues/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/Wladefant/mshdabiola/Play_NotePad/issues)
 [![License](https://img.shields.io/github/license/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/master/LICENSE)
 
-# Play NotePad
+# NotePad
 
 [<img src="/images/ic_launcher-playstore.png" align="left"
 width="200" hspace="10" vspace="10">](/images/ic_launcher-playstore.png)
 
-Play Notepad is a versatile note-taking app that allows you to easily capture and organize your
+Notepad is a versatile note-taking app that allows you to easily capture and organize your
 thoughts, ideas, and tasks. With a variety of features, Play Notepad makes it easy to stay on top of
 your notes and stay organized.
 
