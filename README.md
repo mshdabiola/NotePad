@@ -25,7 +25,7 @@ Play NotePad is available on the Google Play Store:
 <a href="https://github.com/mshdabiola/NotePad/releases">
     <img alt="Get it on Google Play"
         height="70"
-        src="https://assets.stickpng.com/images/629b7adc7c5cd817694c3231.png" />
+        src="images/github_image.png" />
 </a>  
 
 
