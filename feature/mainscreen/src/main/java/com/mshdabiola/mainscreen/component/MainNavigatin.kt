@@ -39,10 +39,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.common.R
-import com.mshdabiola.designsystem.component.state.LabelUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.R
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.ui.state.LabelUiState
+import com.mshdabiola.ui.state.NoteTypeUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -119,7 +119,10 @@ fun MainNavigation(
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(modifier = Modifier.weight(1f), text = stringResource(com.mshdabiola.mainscreen.R.string.labels))
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(com.mshdabiola.mainscreen.R.string.labels)
+                )
                 TextButton(onClick = { navigateToLevel(false) }) {
                     Text(text = stringResource(com.mshdabiola.mainscreen.R.string.edit))
                 }

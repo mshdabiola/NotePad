@@ -50,8 +50,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.editscreen.component.ShareViewModel
+import com.mshdabiola.ui.LabelCard
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

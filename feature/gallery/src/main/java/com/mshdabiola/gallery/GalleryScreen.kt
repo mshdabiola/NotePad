@@ -37,8 +37,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
@@ -70,8 +69,8 @@ fun GalleryScreen(
     onDelete: (Long) -> Unit = {},
     onToText: (Long) -> Unit = {},
 ) {
-    val pagerState = rememberPagerState(){
-       galleryUiState.images.size
+    val pagerState = rememberPagerState() {
+        galleryUiState.images.size
     }
 //    var currIndex = remember(pagerState.currentPage) {
 //        pa
@@ -134,7 +133,7 @@ fun GalleryScreen(
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
-                if (image!=null){
+                if (image != null) {
                     ZoomableAsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = image.path,

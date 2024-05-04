@@ -44,7 +44,7 @@ class MessageService : FirebaseMessagingService() {
 
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
-            sendNotification(it,this)
+            sendNotification(it, this)
 
         }
 
@@ -62,13 +62,14 @@ class MessageService : FirebaseMessagingService() {
      * FCM registration token is initially generated so this is where you would retrieve the token.
      */
     override fun onNewToken(token: String) {
-        Timber.tag(TAG).d("Refreshed token: $token" )
+        Timber.tag(TAG).d("Refreshed token: $token")
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // FCM registration token to your app server.
         sendRegistrationToServer(token)
     }
+
     private fun sendRegistrationToServer(token: String?) {
         //  Implement this method to send token to your app server.
         Timber.tag(TAG).d("sendRegistrationTokenToServer $token")
@@ -86,9 +87,7 @@ class MessageService : FirebaseMessagingService() {
     }
 
 
-
-
-    private fun sendNotification(notification: Notification,context: Context) {
+    private fun sendNotification(notification: Notification, context: Context) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val requestCode = 0
@@ -98,7 +97,7 @@ class MessageService : FirebaseMessagingService() {
             intent,
             PendingIntent.FLAG_IMMUTABLE,
         )
-       Timber.e("notification image ${notification.imageUrl}")
+        Timber.e("notification image ${notification.imageUrl}")
 
         val channelId = "fcm_default_channel"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -111,13 +110,14 @@ class MessageService : FirebaseMessagingService() {
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
         notification.imageUrl?.let {
-            val bitmap=getBitmap(it.toString())
+            val bitmap = getBitmap(it.toString())
             notificationBuilder
                 .setLargeIcon(bitmap)
-                .setStyle(NotificationCompat
-                    .BigPictureStyle()
-                    .bigPicture(bitmap)
-                    .bigLargeIcon(null as Bitmap?)
+                .setStyle(
+                    NotificationCompat
+                        .BigPictureStyle()
+                        .bigPicture(bitmap)
+                        .bigLargeIcon(null as Bitmap?)
                 )
         }
 
@@ -151,7 +151,7 @@ class MessageService : FirebaseMessagingService() {
 //    }
 }
 
-fun getBitmap(uri: String) :Bitmap? {
+fun getBitmap(uri: String): Bitmap? {
     return try {
 
         val input = URL(uri).openStream()

@@ -31,7 +31,7 @@ fun NotePadAppNavHost(
     onBack: () -> Unit,
     startDestination: String = mainNavigationRoute,
     navigateToSelectLevel: (IntArray) -> Unit,
-    saveImage : (Long,Long)->Unit
+    saveImage: (Long, Long) -> Unit
 ) {
     NavHost(
         modifier = Modifier.semantics { testTagsAsResourceId = true },
@@ -61,7 +61,7 @@ fun NotePadAppNavHost(
                 l2,
             )
         }
-        drawingScreen(onBack,saveImage)
+        drawingScreen(onBack, saveImage)
         aboutScreen(onBack)
     }
 }

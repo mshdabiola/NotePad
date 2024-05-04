@@ -9,8 +9,8 @@ android {
 dependencies {
     implementation(libs.kotlinx.datetime)
 }
-dependencies{
+dependencies {
 
-    implementation("com.airbnb.android:lottie-compose:6.0.0")
+    implementation(libs.lottie.compose)
 
 }

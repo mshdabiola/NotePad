@@ -12,9 +12,9 @@ const val imageIdArg = "image_id_arg"
 
 fun NavGraphBuilder.drawingScreen(
     onBack: () -> Unit,
-    saveImage : (Long,Long)->Unit
+    saveImage: (Long, Long) -> Unit
 
-    ) {
+) {
     composable(
         route = "$drawingRoute?$noteIdArg={$noteIdArg}?$imageIdArg={$imageIdArg}",
         arguments = listOf(

@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+
+option java_package = "com.mshdabiola.datastore";
+option java_multiple_files = true;
+
+enum ThemeContrastProto {
+  THEME_CONTRAST_UNSPECIFIED = 0;
+  THEME_CONTRAST_NORMAL = 1;
+  THEME_CONTRAST_MEDIUM = 2;
+  THEME_CONTRAST_HIGH=3;
+}

@@ -90,22 +90,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.mshdabiola.designsystem.component.ColorDialog
-import com.mshdabiola.designsystem.component.DateDialog
-import com.mshdabiola.designsystem.component.NoteCard
-import com.mshdabiola.designsystem.component.NotificationDialogNew
-import com.mshdabiola.designsystem.component.NotifySnacker
-import com.mshdabiola.designsystem.component.TimeDialog
-import com.mshdabiola.designsystem.component.state.LabelUiState
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.component.state.Notify
-import com.mshdabiola.designsystem.theme.NotePadAppTheme
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.mainscreen.component.ImageDialog
 import com.mshdabiola.mainscreen.component.MainNavigation
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.ui.ColorDialog
+import com.mshdabiola.ui.DateDialog
+import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.NotificationDialogNew
+import com.mshdabiola.ui.NotifySnacker
+import com.mshdabiola.ui.TimeDialog
+import com.mshdabiola.ui.state.LabelUiState
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteTypeUi
+import com.mshdabiola.ui.state.NoteUiState
+import com.mshdabiola.ui.state.Notify
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -578,7 +578,7 @@ fun MainScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Loader(Modifier.size(300.dp))
-                        if (currentNoteType.type==NoteType.NOTE){
+                        if (currentNoteType.type == NoteType.NOTE) {
                             Button(onClick = {
                                 navigateToEdit(-1, "", 0)
                             }) {
@@ -587,8 +587,7 @@ fun MainScreen(
                         }
 
                     }
-                }
-                else {
+                } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.testTag("main:lazy"),
                         columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
@@ -598,7 +597,10 @@ fun MainScreen(
                         ) {
                         if (pinNotePad.first.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
-                                Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.pin))
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.pin)
+                                )
                             }
                         }
                         items(pinNotePad.first) { notePadUiState ->
@@ -617,7 +619,10 @@ fun MainScreen(
 
                         if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
-                                Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.other))
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.other)
+                                )
                             }
                         }
                         items(pinNotePad.second) { notePadUiState ->
@@ -656,7 +661,7 @@ fun MainScreen(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    NotePadAppTheme {
+    SkTheme {
         MainScreen(
             notePads =
             listOf(
@@ -763,14 +768,18 @@ fun SelectTopBar(
                         },
                     )
                     if (selectNumber == 1) {
-                        DropdownMenuItem(text = { Text(text = stringResource(R.string.make_a_copy)) }, onClick = {
-                            showDropDown = false
-                            onCopy()
-                        })
-                        DropdownMenuItem(text = { Text(text = stringResource(R.string.send)) }, onClick = {
-                            showDropDown = false
-                            onSend()
-                        })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.make_a_copy)) },
+                            onClick = {
+                                showDropDown = false
+                                onCopy()
+                            })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.send)) },
+                            onClick = {
+                                showDropDown = false
+                                onSend()
+                            })
                     }
                 }
             }
@@ -1079,12 +1088,12 @@ fun DeleteLabelPreview() {
 }
 
 @Composable
-fun Loader(modifier: Modifier=Modifier) {
+fun Loader(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.note_taking))
     LottieAnimation(
-        modifier=modifier,
+        modifier = modifier,
         composition = composition,
         restartOnPlay = true,
         iterations = 200
-        )
+    )
 }

@@ -36,8 +36,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mshdabiola.designsystem.component.NoteTextField
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable

@@ -66,7 +66,10 @@ fun ColorAndImageBottomSheet(
             ) {
 
             Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
-                Text(text = stringResource(R.string.color), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.color),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -120,7 +123,10 @@ fun ColorAndImageBottomSheet(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = stringResource(R.string.background), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.background),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {

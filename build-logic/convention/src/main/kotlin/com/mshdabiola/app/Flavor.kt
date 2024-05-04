@@ -25,7 +25,7 @@ enum class Flavor(
 }
 
 fun Project.configureFlavors(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
     flavorConfigurationBlock: ProductFlavor.(flavor: Flavor) -> Unit = {}
 ) {
     commonExtension.apply {

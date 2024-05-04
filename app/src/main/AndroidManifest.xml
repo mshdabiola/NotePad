@@ -29,6 +29,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_path" />
         </provider>
+
         <meta-data
             android:name="google_analytics_automatics_screen_reporting_enabled"
             android:value="false" />
@@ -77,6 +78,7 @@
                 <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".MessageService"
             android:exported="false">

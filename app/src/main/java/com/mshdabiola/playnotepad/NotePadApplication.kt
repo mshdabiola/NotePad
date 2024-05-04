@@ -5,7 +5,7 @@ import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class NotePadApplication : Application(){
+class NotePadApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         //Saver.initialize(applicationContext)

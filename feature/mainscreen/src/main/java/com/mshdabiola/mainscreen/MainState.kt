@@ -1,9 +1,9 @@
 package com.mshdabiola.mainscreen
 
-import com.mshdabiola.designsystem.component.state.LabelUiState
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.component.state.Notify
+import com.mshdabiola.ui.state.LabelUiState
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteTypeUi
+import com.mshdabiola.ui.state.Notify
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

@@ -52,12 +52,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mshdabiola.designsystem.component.NoteCard
-import com.mshdabiola.designsystem.component.NoteTextField
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.theme.NotePadAppTheme
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.NoteTextField
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -163,7 +163,7 @@ fun SearchScreen(
 @Preview
 @Composable
 fun SearchScreenPreview() {
-    NotePadAppTheme {
+    SkTheme {
         SearchScreen(
             onBack = {},
             searchUiState = SearchUiState(
@@ -263,7 +263,11 @@ fun LabelBox(
                 Text(modifier = Modifier.weight(1f), text = title)
                 if (labelIcon.size > number) {
                     TextButton(onClick = { h = if (h == number) labelIcon.size else number }) {
-                        Text(text = if (h == number) stringResource(id = R.string.more) else stringResource(id = R.string.less))
+                        Text(
+                            text = if (h == number) stringResource(id = R.string.more) else stringResource(
+                                id = R.string.less
+                            )
+                        )
                     }
                 }
             }

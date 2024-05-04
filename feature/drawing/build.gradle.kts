@@ -6,6 +6,6 @@ android {
     namespace = "com.mshdabiola.drawing"
 }
 dependencies {
-    implementation(project(":core:worker"))
+    implementation(project(":modules:worker"))
 }
 

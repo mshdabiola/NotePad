@@ -18,15 +18,15 @@ import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
-import com.mshdabiola.designsystem.component.state.DateDialogUiData
-import com.mshdabiola.designsystem.component.state.DateListUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.component.state.Notify
-import com.mshdabiola.designsystem.component.state.toLabelUiState
-import com.mshdabiola.designsystem.component.state.toNotePad
-import com.mshdabiola.designsystem.component.state.toNotePadUiState
+import com.mshdabiola.ui.state.DateDialogUiData
+import com.mshdabiola.ui.state.DateListUiState
+import com.mshdabiola.ui.state.Notify
+import com.mshdabiola.ui.state.toLabelUiState
+import com.mshdabiola.ui.state.toNotePad
+import com.mshdabiola.ui.state.toNotePadUiState
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.ui.state.NoteTypeUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +50,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
@@ -169,7 +170,7 @@ class MainViewModel
             try {
                 initDate()
 
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -410,9 +411,8 @@ class MainViewModel
 
     @OptIn(ExperimentalMaterial3Api::class)
     var datePicker: DatePickerState = DatePickerState(
-        System.currentTimeMillis(), System.currentTimeMillis(),
-        DatePickerDefaults.YearRange,
-        DisplayMode.Picker
+       initialSelectedDateMillis =  System.currentTimeMillis(),
+        locale = Locale.getDefault()
     )
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -592,9 +592,8 @@ class MainViewModel
     @OptIn(ExperimentalMaterial3Api::class)
     fun setDatePicker(date: Long) {
         datePicker = DatePickerState(
-            date, date,
-            DatePickerDefaults.YearRange,
-            DisplayMode.Picker
+           initialSelectedDateMillis =  date,
+            locale = Locale.getDefault()
         )
     }
 

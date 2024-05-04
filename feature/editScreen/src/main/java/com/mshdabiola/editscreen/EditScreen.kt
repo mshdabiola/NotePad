@@ -102,34 +102,34 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.DateDialog
-import com.mshdabiola.designsystem.component.LabelCard
-import com.mshdabiola.designsystem.component.NotificationDialogNew
-import com.mshdabiola.designsystem.component.NotifySnacker
-import com.mshdabiola.designsystem.component.ReminderCard
-import com.mshdabiola.designsystem.component.TimeDialog
-import com.mshdabiola.designsystem.component.state.NoteCheckUiState
-import com.mshdabiola.designsystem.component.state.NoteImageUiState
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.component.state.NoteUriState
-import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
-import com.mshdabiola.designsystem.component.state.Notify
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.editscreen.component.AddBottomSheet2
 import com.mshdabiola.editscreen.component.ColorAndImageBottomSheet
 import com.mshdabiola.editscreen.component.NoteOptionBottomSheet
 import com.mshdabiola.editscreen.component.NotificationBottomSheet
-import com.mshdabiola.firebase.FirebaseScreenLog
 import com.mshdabiola.model.NoteType
-import com.mshdabiola.searchscreen.FlowLayout2
+import com.mshdabiola.ui.DateDialog
+import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.FlowLayout2
+import com.mshdabiola.ui.LabelCard
+import com.mshdabiola.ui.NotificationDialogNew
+import com.mshdabiola.ui.NotifySnacker
+import com.mshdabiola.ui.ReminderCard
+import com.mshdabiola.ui.TimeDialog
+import com.mshdabiola.ui.state.NoteCheckUiState
+import com.mshdabiola.ui.state.NoteImageUiState
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteUiState
+import com.mshdabiola.ui.state.NoteUriState
+import com.mshdabiola.ui.state.NoteVoiceUiState
+import com.mshdabiola.ui.state.Notify
+import com.mshdabiola.ui.toTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import toTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,7 +141,7 @@ fun EditScreen(
     navigateToDrawing: (Long, Long?) -> Unit,
 ) {
 
-    val messages=editViewModel.message.collectAsStateWithLifecycle()
+    val messages = editViewModel.message.collectAsStateWithLifecycle()
     var showModalState by remember {
         mutableStateOf(false)
     }
@@ -312,7 +312,7 @@ fun EditScreen(
 @Composable
 fun EditScreen(
     notepad: NotePadUiState,
-    messages : ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
+    messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
     onTitleChange: (String) -> Unit = {},
     onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
@@ -437,9 +437,9 @@ fun EditScreen(
                 },
             )
         },
-        snackbarHost ={ SnackbarHost (snackbarHostState)}
+        snackbarHost = { SnackbarHost(snackbarHostState) }
 
-        ) { paddingValues ->
+    ) { paddingValues ->
         Column(
             Modifier
                 .padding(paddingValues)

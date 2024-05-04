@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.database.repository.NoteImageRepository
-import com.mshdabiola.designsystem.component.state.toNoteImageUiState
+import com.mshdabiola.ui.state.toNoteImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow

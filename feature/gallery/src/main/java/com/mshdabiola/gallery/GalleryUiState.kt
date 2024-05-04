@@ -1,6 +1,6 @@
 package com.mshdabiola.gallery
 
-import com.mshdabiola.designsystem.component.state.NoteImageUiState
+import com.mshdabiola.ui.state.NoteImageUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
