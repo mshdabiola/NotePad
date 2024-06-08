@@ -5,10 +5,10 @@ plugins {
     id("mshdabiola.android.application")
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.application.jacoco")
-    //id("mshdabiola.android.application.flavor")
+    id("mshdabiola.android.application.flavor")
     id("mshdabiola.android.hilt")
     id("jacoco")
-    id("mshdabiola.android.application.firebase")
+//    id("mshdabiola.android.application.firebase")
     alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.roborazzi)
@@ -98,6 +98,8 @@ dependencies {
     implementation(libs.androidx.compose.material3.windowSizeClass)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.profileinstaller)
+    implementation (libs.guava)
+
 //    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.coil.kt)
 
@@ -121,6 +123,23 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     debugImplementation (libs.androidx.monitor)
     baselineProfile(project(":benchmarks"))
+
+
+    googlePlayImplementation(platform(libs.firebase.bom))
+    googlePlayImplementation(libs.firebase.analytics)
+    googlePlayImplementation(libs.firebase.performance)
+    googlePlayImplementation(libs.firebase.crashlytics)
+
+    googlePlayImplementation(libs.firebase.cloud.messaging)
+    googlePlayImplementation(libs.firebase.remoteconfig)
+    googlePlayImplementation(libs.firebase.message)
+    googlePlayImplementation(libs.firebase.auth)
+
+    googlePlayImplementation(libs.play.game)
+    googlePlayImplementation(libs.play.update)
+    googlePlayImplementation(libs.play.update.kts)
+    googlePlayImplementation(libs.play.review)
+    googlePlayImplementation(libs.play.review.kts)
 }
 
 baselineProfile {

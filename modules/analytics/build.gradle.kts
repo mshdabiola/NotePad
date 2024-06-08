@@ -17,7 +17,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
 
     //  prodImplementation(platform(libs.firebase.bom))
-    implementation(platform(libs.firebase.bom))
+    googlePlayImplementation(platform(libs.firebase.bom))
 
-    implementation(libs.firebase.analytics)
+    googlePlayImplementation(libs.firebase.analytics)
 }

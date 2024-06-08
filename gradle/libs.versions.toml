@@ -16,6 +16,7 @@ androidxLifecycle = "2.8.1"
 
 lottieCompose = "6.4.0"
 monitor = "1.6.1"
+playServicesMlkitTextRecognition = "19.0.0"
 turbine = "1.1.0"
 timber = "5.0.1"
 
@@ -133,6 +134,7 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 
 androidx-dataStore-core = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
+play-services-mlkit-text-recognition = { module = "com.google.android.gms:play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
