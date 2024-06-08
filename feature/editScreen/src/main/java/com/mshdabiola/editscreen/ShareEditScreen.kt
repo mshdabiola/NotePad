@@ -180,7 +180,7 @@ fun ActionEditScreen(
                         containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
+                        autoCorrectEnabled = true,
                         imeAction = ImeAction.Next,
                     ),
                     modifier = Modifier
@@ -201,7 +201,7 @@ fun ActionEditScreen(
                         containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
+                        autoCorrectEnabled = true,
                         keyboardType = KeyboardType.Text,
                         // imeAction = ImeAction.Done
                     ),

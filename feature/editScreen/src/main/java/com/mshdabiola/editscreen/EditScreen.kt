@@ -498,7 +498,7 @@ fun EditScreen(
                                 unfocusedIndicatorColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                autoCorrect = true,
+                                autoCorrectEnabled = true,
                                 imeAction = ImeAction.Next,
                             ),
                             modifier = Modifier
@@ -560,7 +560,7 @@ fun EditScreen(
                                 containerColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                autoCorrect = true,
+                                autoCorrectEnabled = true,
                                 keyboardType = KeyboardType.Text,
                                 // imeAction = ImeAction.Done
                             ),
@@ -846,7 +846,7 @@ fun NoteCheck(
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = true,
+                autoCorrectEnabled = true,
                 imeAction = ImeAction.Next,
             ),
             keyboardActions = KeyboardActions { onNextCheck() },
