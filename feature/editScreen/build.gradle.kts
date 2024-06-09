@@ -8,6 +8,6 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.datetime)
-    implementation(libs.play.services.mlkit.text.recognition)
+    googlePlayImplementation(libs.play.services.mlkit.text.recognition)
 }
 
