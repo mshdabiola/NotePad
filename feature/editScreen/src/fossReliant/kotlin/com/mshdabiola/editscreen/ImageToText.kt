@@ -8,7 +8,7 @@ class ImageToText @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
 
-    fun toText(string: String) :String{
+    fun toText(string: String): String {
         return ""
     }
 }

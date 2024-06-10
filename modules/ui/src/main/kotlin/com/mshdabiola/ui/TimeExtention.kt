@@ -1,17 +1,17 @@
 package com.mshdabiola.ui
 
-//package com.mshdabiola.designsystem.component
+// package com.mshdabiola.designsystem.component
 //
-//import kotlinx.datetime.Clock
-//import kotlinx.datetime.DateTimeUnit
-//import kotlinx.datetime.Instant
-//import kotlinx.datetime.TimeZone
-//import kotlinx.datetime.minus
-//import kotlinx.datetime.plus
-//import kotlinx.datetime.toLocalDateTime
-//import kotlinx.datetime.todayIn
+// import kotlinx.datetime.Clock
+// import kotlinx.datetime.DateTimeUnit
+// import kotlinx.datetime.Instant
+// import kotlinx.datetime.TimeZone
+// import kotlinx.datetime.minus
+// import kotlinx.datetime.plus
+// import kotlinx.datetime.toLocalDateTime
+// import kotlinx.datetime.todayIn
 //
-//fun Long.toTimeString(isCurr: Boolean = false): String {
+// fun Long.toTimeString(isCurr: Boolean = false): String {
 //    val instant =
 //        Instant.fromEpochMilliseconds(this)
 //
@@ -21,7 +21,7 @@ package com.mshdabiola.ui
 //    val hour = dateTime.hour % 12L
 //    val a = if (dateTime.hour > 11) "PM" else "AM"
 //    return "%02d : %02d %s".format(hour, dateTime.minute, a)
-//}
+// }
 //
 fun Long.toTime(): String {
     val hour = this / 60000
@@ -29,7 +29,7 @@ fun Long.toTime(): String {
     return "%02d : %02d".format(hour, minute)
 }
 //
-//fun Long.toDateString(): String {
+// fun Long.toDateString(): String {
 //    val instant =
 //        Instant.fromEpochMilliseconds(this)
 //    val today = Clock.System.todayIn(TimeZone.UTC)
@@ -49,9 +49,9 @@ fun Long.toTime(): String {
 //    }
 //
 //    return datestring
-//}
+// }
 //
-//fun Long.toTimeAndDate(): String {
+// fun Long.toTimeAndDate(): String {
 //    val instant =
 //        Instant.fromEpochMilliseconds(this)
 //    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -77,4 +77,4 @@ fun Long.toTime(): String {
 //            } ${dateTime.dayOfMonth}"
 //        }
 //    }
-//}
+// }

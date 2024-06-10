@@ -18,7 +18,7 @@ data class NoteUiState(
     val noteType: NoteTypeUi = NoteTypeUi(),
     val focus: Boolean = false,
     val date: String = "feb 1",
-    val lastEdit: String = "feb 1"
+    val lastEdit: String = "feb 1",
 )
 
 fun Note.toNoteUiState(getDate: (Long) -> String) =
@@ -36,7 +36,7 @@ fun Note.toNoteUiState(getDate: (Long) -> String) =
         false,
         NoteTypeUi(noteType, 0),
         date = getDate(reminder),
-        lastEdit = getDate(this.editDate)
+        lastEdit = getDate(this.editDate),
 
     )
 

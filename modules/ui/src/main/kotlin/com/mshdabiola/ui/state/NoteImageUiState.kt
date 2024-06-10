@@ -7,7 +7,7 @@ data class NoteImageUiState(
     val noteId: Long,
     val path: String,
     val isDrawing: Boolean,
-    val timestamp: Long = 0
+    val timestamp: Long = 0,
 )
 
 fun NoteImage.toNoteImageUiState(toPath: (Long) -> String) =

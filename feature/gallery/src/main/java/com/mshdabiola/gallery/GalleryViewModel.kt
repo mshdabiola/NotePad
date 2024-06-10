@@ -19,7 +19,7 @@ import javax.inject.Inject
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val noteImageRepository: NoteImageRepository,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Long>(noteIdStr)!!

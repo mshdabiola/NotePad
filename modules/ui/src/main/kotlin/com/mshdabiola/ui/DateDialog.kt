@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateDialog(
@@ -23,13 +22,15 @@ fun DateDialog(
         initialDisplayedMonthMillis = System.currentTimeMillis(),
         yearRange = DatePickerDefaults.YearRange,
         initialDisplayMode = DisplayMode.Picker,
-        locale = Locale.getDefault()
-    ), showDialog: Boolean = true, onDismissRequest: () -> Unit = {}, onSetDate: () -> Unit = {}
+        locale = Locale.getDefault(),
+    ),
+    showDialog: Boolean = true,
+    onDismissRequest: () -> Unit = {},
+    onSetDate: () -> Unit = {},
 ) {
-
-
     AnimatedVisibility(visible = showDialog) {
-        DatePickerDialog(onDismissRequest = onDismissRequest,
+        DatePickerDialog(
+            onDismissRequest = onDismissRequest,
             confirmButton = {
                 Button(onClick = {
                     onSetDate()
@@ -42,7 +43,7 @@ fun DateDialog(
                 TextButton(onClick = onDismissRequest) {
                     Text(text = "Cancel")
                 }
-            }
+            },
         ) {
             DatePicker(
                 state = state,
@@ -50,7 +51,6 @@ fun DateDialog(
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -2,9 +2,7 @@ package com.mshdabiola.mainscreen
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import androidx.lifecycle.ViewModel
@@ -13,20 +11,20 @@ import com.mshdabiola.common.AlarmManager
 import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.DateStringUsercase
-import com.mshdabiola.common.Time12UserCase
+import com.mshdabiola.common.TimeUsercase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NoteLabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteRepository
+import com.mshdabiola.model.Label
+import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
+import com.mshdabiola.ui.state.NoteTypeUi
 import com.mshdabiola.ui.state.Notify
 import com.mshdabiola.ui.state.toLabelUiState
 import com.mshdabiola.ui.state.toNotePad
 import com.mshdabiola.ui.state.toNotePadUiState
-import com.mshdabiola.model.Label
-import com.mshdabiola.model.NoteType
-import com.mshdabiola.ui.state.NoteTypeUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -63,9 +61,9 @@ class MainViewModel
     private val noteLabelRepository: NoteLabelRepository,
     private val noteRepository: NoteRepository,
     private val alarmManager: AlarmManager,
-    private val time12UserCase: Time12UserCase,
+    private val time12UserCase: TimeUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
-    private val dateStringUsercase: DateStringUsercase
+    private val dateStringUsercase: DateStringUsercase,
 ) : ViewModel() {
 
     private val _mainState = MutableStateFlow(MainState())
@@ -97,7 +95,7 @@ class MainViewModel
                                         it.toNotePadUiState(
                                             pair.first,
                                             getTime = dateShortStringUsercase::invoke,
-                                            toPath = contentManager::getImagePath
+                                            toPath = contentManager::getImagePath,
                                         )
                                     }
                             }.collect { padUiStateList ->
@@ -121,7 +119,7 @@ class MainViewModel
                                     it.toNotePadUiState(
                                         pair.first,
                                         getTime = dateShortStringUsercase::invoke,
-                                        toPath = contentManager::getImagePath
+                                        toPath = contentManager::getImagePath,
                                     )
                                 }
                             }.collect { padUiStateList ->
@@ -145,7 +143,7 @@ class MainViewModel
                                     it.toNotePadUiState(
                                         pair.first,
                                         getTime = dateShortStringUsercase::invoke,
-                                        toPath = contentManager::getImagePath
+                                        toPath = contentManager::getImagePath,
                                     )
                                 }
                             }.collect { padUiStateList ->
@@ -169,7 +167,6 @@ class MainViewModel
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 initDate()
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -339,7 +336,6 @@ class MainViewModel
 
                 notepadRepository.insertNotepad(copy)
             }
-
         }
     }
 
@@ -368,7 +364,6 @@ class MainViewModel
         }
     }
 
-
     fun deleteEmptyNote() {
         viewModelScope.launch(Dispatchers.IO) {
             val emptyList = notepadRepository
@@ -377,7 +372,7 @@ class MainViewModel
                 .map {
                     it.toNotePadUiState(
                         getTime = dateShortStringUsercase::invoke,
-                        toPath = contentManager::getImagePath
+                        toPath = contentManager::getImagePath,
                     )
                 }
                 .filter { it.isEmpty() }
@@ -405,21 +400,20 @@ class MainViewModel
         LocalTime(13, 0, 0),
         LocalTime(19, 0, 0),
         LocalTime(20, 0, 0),
-        LocalTime(20, 0, 0)
+        LocalTime(20, 0, 0),
     )
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     var datePicker: DatePickerState = DatePickerState(
-       initialSelectedDateMillis =  System.currentTimeMillis(),
-        locale = Locale.getDefault()
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        locale = Locale.getDefault(),
     )
 
     @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private lateinit var currentLocalDate: LocalDate
 
-    //date and time dialog logic
+    // date and time dialog logic
 
     private fun initDate() {
         val now = Clock.System.now()
@@ -430,57 +424,54 @@ class MainViewModel
         currentLocalDate = currentDateTime.date
         Timber.tag("current date").e(currentLocalDate.toString())
 
-
         val timeList = mutableListOf(
             DateListUiState(
                 title = "Morning",
                 value = "7:00 AM",
                 trail = "7:00 AM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Afternoon",
                 value = "1:00 PM",
                 trail = "1:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Evening",
                 value = "7:00 PM",
                 trail = "7:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Night",
                 value = "8:00 PM",
                 trail = "8:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick time",
                 value = "1:00 PM",
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
 
         )
             .mapIndexed { index, dateListUiState ->
                 if (index != timeListDefault.lastIndex) {
-
                     val greater = timeListDefault[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
                         value = time12UserCase(timeListDefault[index]),
-                        trail = time12UserCase(timeListDefault[index])
+                        trail = time12UserCase(timeListDefault[index]),
                     )
                 } else {
                     timeListDefault[timeListDefault.lastIndex] = currentDateTime.time
                     dateListUiState.copy(value = time12UserCase(currentDateTime.time))
-
                 }
             }
             .toImmutableList()
@@ -489,25 +480,22 @@ class MainViewModel
                 title = "Today",
                 value = "Today",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Tomorrow",
                 value = "Tomorrow",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick date",
                 value = dateStringUsercase(currentDateTime.date),
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
         ).toImmutableList()
         val interval = 0
-
-
-
 
         _dateTimeState.update {
             it.copy(
@@ -523,41 +511,41 @@ class MainViewModel
                         title = "Does not repeat",
                         value = "Does not repeat",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Daily",
                         value = "Daily",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Weekly",
                         value = "Weekly",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Monthly",
                         value = "Monthly",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Yearly",
                         value = "Yearly",
                         isOpenDialog = false,
-                        enable = true
-                    )
-                ).toImmutableList()
+                        enable = true,
+                    ),
+                ).toImmutableList(),
             )
         }
         setDatePicker(
-            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
         )
         setTimePicker(
             hour = currentDateTime.hour,
-            minute = currentDateTime.minute
+            minute = currentDateTime.minute,
         )
     }
 
@@ -565,7 +553,7 @@ class MainViewModel
         if (index == dateTimeState.value.dateData.lastIndex) {
             _dateTimeState.update {
                 it.copy(
-                    showDateDialog = true
+                    showDateDialog = true,
                 )
             }
         } else {
@@ -573,27 +561,25 @@ class MainViewModel
             val time = timeListDefault[dateTimeState.value.currentTime]
             val localtimedate = LocalDateTime(date2, time)
             _dateTimeState.update {
-
                 it.copy(
                     currentDate = index,
-                    timeError = today > localtimedate
+                    timeError = today > localtimedate,
                 )
             }
-            val date = if (index == 0)
+            val date = if (index == 0) {
                 System.currentTimeMillis()
-            else
+            } else {
                 System.currentTimeMillis() + 24 * 60 * 60 * 1000
+            }
             setDatePicker(date)
         }
-
     }
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun setDatePicker(date: Long) {
         datePicker = DatePickerState(
-           initialSelectedDateMillis =  date,
-            locale = Locale.getDefault()
+            initialSelectedDateMillis = date,
+            locale = Locale.getDefault(),
         )
     }
 
@@ -601,19 +587,19 @@ class MainViewModel
         if (index == dateTimeState.value.timeData.lastIndex) {
             _dateTimeState.update {
                 it.copy(
-                    showTimeDialog = true
+                    showTimeDialog = true,
                 )
             }
         } else {
             _dateTimeState.update {
                 it.copy(
                     currentTime = index,
-                    timeError = false
+                    timeError = false,
                 )
             }
             setTimePicker(
                 timeListDefault[index].hour,
-                timeListDefault[index].minute
+                timeListDefault[index].minute,
             )
         }
     }
@@ -652,13 +638,13 @@ class MainViewModel
             setAlarm(
                 setime
                     .toInstant(TimeZone.currentSystemDefault())
-                    .toEpochMilliseconds(), interval
+                    .toEpochMilliseconds(),
+                interval,
             )
             Log.e("editv", "Set Alarm")
         } else {
             Log.e("editv", "Alarm not set $today time $time date$date")
         }
-
     }
 
     fun hideTime() {
@@ -672,7 +658,6 @@ class MainViewModel
             it.copy(showDateDialog = false)
         }
     }
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun onSetDate() {
@@ -690,12 +675,10 @@ class MainViewModel
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
-                    timeError = today > localtimedate
+                    timeError = today > localtimedate,
                 )
             }
-
         }
-
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -712,14 +695,13 @@ class MainViewModel
 
         Log.e("onSettime", "current $today date $datetime")
 
-
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
             im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
             it.copy(
                 timeData = im.toImmutableList(),
                 currentTime = im.lastIndex,
-                timeError = datetime < today
+                timeError = datetime < today,
             )
         }
     }
@@ -740,6 +722,4 @@ class MainViewModel
         notifies.removeFirst()
         _mainState.value = mainState.value.copy(messages = notifies.toImmutableList())
     }
-
-
 }

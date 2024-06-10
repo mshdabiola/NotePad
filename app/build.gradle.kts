@@ -20,6 +20,14 @@ android {
 
     defaultConfig {
         applicationId = "com.mshdabiola.playnotepad"
+        versionCode = 1
+        versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
+
+        // Custom test runner to set up Hilt dependency graph
+        testInstrumentationRunner = "com.mshdabiola.testing.TestRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
@@ -39,7 +47,7 @@ android {
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             // signingConfig = signingConfigs.getByName("debug")
             // Ensure Baseline Profile is fresh for release builds.
-            baselineProfile.automaticGenerationDuringBuild = true
+            baselineProfile.automaticGenerationDuringBuild = false
         }
         create("benchmark") {
             // Enable all the optimizations from release build through initWith(release).
@@ -145,9 +153,10 @@ dependencies {
 baselineProfile {
     // Don't build on every iteration of a full assemble.
     // Instead enable generation directly for the release build variant.
-    automaticGenerationDuringBuild = true
+    automaticGenerationDuringBuild = false
 }
 
 dependencyGuard {
-    configuration("releaseRuntimeClasspath")
+    configuration("fossReliantReleaseRuntimeClasspath")
+    configuration("googlePlayReleaseRuntimeClasspath")
 }

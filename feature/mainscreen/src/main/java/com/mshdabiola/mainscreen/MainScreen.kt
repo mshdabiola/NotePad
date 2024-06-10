@@ -233,13 +233,13 @@ fun MainScreen(
         state = mainViewModel.timePicker,
         showDialog = dateDialogUiData.value.showTimeDialog,
         onDismissRequest = mainViewModel::hideTime,
-        onSetTime = mainViewModel::onSetTime
+        onSetTime = mainViewModel::onSetTime,
     )
     DateDialog(
         state = mainViewModel.datePicker,
         showDialog = dateDialogUiData.value.showDateDialog,
         onDismissRequest = mainViewModel::hideDate,
-        onSetDate = mainViewModel::onSetDate
+        onSetDate = mainViewModel::onSetDate,
     )
 
     ColorDialog(
@@ -405,7 +405,7 @@ fun MainScreen(
                     coroutineScope.launch { drawerState.close() }
                 },
 
-                )
+            )
         },
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -467,7 +467,7 @@ fun MainScreen(
                                 onNavigate = { coroutineScope.launch { drawerState.open() } },
                                 scrollBehavior = scrollBehavior,
 
-                                )
+                            )
                         }
 
                         NoteType.ARCHIVE -> {
@@ -571,21 +571,19 @@ fun MainScreen(
                     .padding(8.dp),
             ) {
                 if (notePads.isEmpty()) {
-
                     Column(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Loader(Modifier.size(300.dp))
                         if (currentNoteType.type == NoteType.NOTE) {
                             Button(onClick = {
                                 navigateToEdit(-1, "", 0)
                             }) {
-                                Text(text = stringResource(R.string.add_note))
+                                Text(text = stringResource(R.string.feature_mainscreen_add_note))
                             }
                         }
-
                     }
                 } else {
                     LazyVerticalStaggeredGrid(
@@ -594,12 +592,12 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalItemSpacing = 8.dp,
 
-                        ) {
+                    ) {
                         if (pinNotePad.first.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(R.string.pin)
+                                    text = stringResource(R.string.feature_mainscreen_pin),
                                 )
                             }
                         }
@@ -621,7 +619,7 @@ fun MainScreen(
                             item(span = StaggeredGridItemSpan.FullLine) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(R.string.other)
+                                    text = stringResource(R.string.feature_mainscreen_other),
                                 )
                             }
                         }
@@ -638,7 +636,6 @@ fun MainScreen(
                                 onLongClick = onSelectedCard,
                             )
                         }
-
                     }
                 }
             }
@@ -675,7 +672,7 @@ fun MainScreenPreview() {
                     note = NoteUiState(title = "hammed", detail = "adiola"),
                 ),
 
-                )
+            )
                 .toImmutableList(),
             labels = emptyList<LabelUiState>().toImmutableList(),
         )
@@ -698,7 +695,7 @@ fun SelectTopBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -754,14 +751,14 @@ fun SelectTopBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.archive)) },
+                        text = { Text(text = stringResource(R.string.feature_mainscreen_archive)) },
                         onClick = {
                             showDropDown = false
                             onArchive()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.delete)) },
+                        text = { Text(text = stringResource(R.string.feature_mainscreen_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
@@ -769,24 +766,26 @@ fun SelectTopBar(
                     )
                     if (selectNumber == 1) {
                         DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.make_a_copy)) },
+                            text = { Text(text = stringResource(R.string.feature_mainscreen_make_a_copy)) },
                             onClick = {
                                 showDropDown = false
                                 onCopy()
-                            })
+                            },
+                        )
                         DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.send)) },
+                            text = { Text(text = stringResource(R.string.feature_mainscreen_send)) },
                             onClick = {
                                 showDropDown = false
                                 onSend()
-                            })
+                            },
+                        )
                     }
                 }
             }
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -831,14 +830,14 @@ fun LabelTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.rename_label)) },
+                        text = { Text(text = stringResource(R.string.feature_mainscreen_rename_label)) },
                         onClick = {
                             showDropDown = false
                             onRenameLabel()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.delete_label)) },
+                        text = { Text(text = stringResource(R.string.feature_mainscreen_delete_label)) },
                         onClick = {
                             showDropDown = false
                             onDeleteLabel()
@@ -849,7 +848,7 @@ fun LabelTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -888,7 +887,7 @@ fun ArchiveTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -923,7 +922,7 @@ fun TrashTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.empty_trash)) },
+                        text = { Text(text = stringResource(R.string.feature_mainscreen_empty_trash)) },
                         onClick = {
                             showDropDown = false
                             onEmptyTrash()
@@ -934,7 +933,7 @@ fun TrashTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -981,7 +980,7 @@ fun MainTopAppBar(
                 }
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.search_note),
+                    text = stringResource(R.string.feature_mainscreen_search_note),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -1024,7 +1023,7 @@ fun RenameLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(id = R.string.rename_label)) },
+            title = { Text(text = stringResource(id = R.string.feature_mainscreen_rename_label)) },
             text = {
                 TextField(value = name, onValueChange = { name = it })
             },
@@ -1033,12 +1032,12 @@ fun RenameLabelAlertDialog(
                     onDismissRequest()
                     onChangeName(name)
                 }) {
-                    Text(text = stringResource(R.string.rename))
+                    Text(text = stringResource(R.string.feature_mainscreen_rename))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(R.string.cancel))
+                    Text(text = stringResource(R.string.feature_mainscreen_cancel))
                 }
             },
         )
@@ -1089,11 +1088,11 @@ fun DeleteLabelPreview() {
 
 @Composable
 fun Loader(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.note_taking))
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.feature_mainscreen_note_taking))
     LottieAnimation(
         modifier = modifier,
         composition = composition,
         restartOnPlay = true,
-        iterations = 200
+        iterations = 200,
     )
 }

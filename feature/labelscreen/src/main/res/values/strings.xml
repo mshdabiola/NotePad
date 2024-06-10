@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="edit_label">Edit label</string>
-    <string name="create_new_label">Create new label</string>
-    <string name="label_already_exists">\"Label already exists\"</string>
+    <string name="feature_labelscreen_edit_label">Edit label</string>
+    <string name="feature_labelscreen_create_new_label">Create new label</string>
+    <string name="feature_labelscreen_label_already_exists">\"Label already exists\"</string>
 </resources>

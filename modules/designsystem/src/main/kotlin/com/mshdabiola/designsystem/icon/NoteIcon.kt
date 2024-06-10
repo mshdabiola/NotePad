@@ -5,20 +5,20 @@ import com.mshdabiola.designsystem.R
 
 object NoteIcon {
 
-    val Image = R.drawable.outline_image_24
-    val Label = R.drawable.outline_label_24
+    val Image = R.drawable.modules_designsystem_outline_image_24
+    val Label = R.drawable.modules_designsystem_outline_label_24
 
     val background = listOf(
-        NoteBg(Color(0xFF737D55), R.drawable.asset_1),
-        NoteBg(Color(0xFFDB69A3), R.drawable.asset_2),
-        NoteBg(Color(0xFFB80D57), R.drawable.asset_3),
-        NoteBg(Color(0xFFC26744), R.drawable.asset_4),
-        NoteBg(Color(0xFFA3F7B7), R.drawable.asset_5),
-        NoteBg(Color(0xFFE660B7), R.drawable.asset_6),
-        NoteBg(Color(0xFFEE7D62), R.drawable.asset_7),
-        NoteBg(Color(0xFFCACA5E), R.drawable.asset_8),
-        NoteBg(Color(0xFF8D59B6), R.drawable.asset_9),
-        NoteBg(Color(0xFFCF1879), R.drawable.asset_10),
+        NoteBg(Color(0xFF737D55), R.drawable.modules_designsystem_asset_1),
+        NoteBg(Color(0xFFDB69A3), R.drawable.modules_designsystem_asset_2),
+        NoteBg(Color(0xFFB80D57), R.drawable.modules_designsystem_asset_3),
+        NoteBg(Color(0xFFC26744), R.drawable.modules_designsystem_asset_4),
+        NoteBg(Color(0xFFA3F7B7), R.drawable.modules_designsystem_asset_5),
+        NoteBg(Color(0xFFE660B7), R.drawable.modules_designsystem_asset_6),
+        NoteBg(Color(0xFFEE7D62), R.drawable.modules_designsystem_asset_7),
+        NoteBg(Color(0xFFCACA5E), R.drawable.modules_designsystem_asset_8),
+        NoteBg(Color(0xFF8D59B6), R.drawable.modules_designsystem_asset_9),
+        NoteBg(Color(0xFFCF1879), R.drawable.modules_designsystem_asset_10),
     )
     val noteColors = listOf(
         Color(0xFFB590CA),

@@ -5,5 +5,5 @@ data class DateListUiState(
     val value: String = "",
     val trail: String? = null,
     val isOpenDialog: Boolean,
-    val enable: Boolean
+    val enable: Boolean,
 )

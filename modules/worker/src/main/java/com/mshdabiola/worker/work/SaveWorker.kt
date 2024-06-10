@@ -36,17 +36,14 @@ class SaveWorker @AssistedInject constructor(
     @Assisted val workerParams: WorkerParameters,
     private val contentManager: ContentManager,
     private val noteImageRepository: NoteImageRepository,
-    private val drawingPathRepository: DrawingPathRepository
+    private val drawingPathRepository: DrawingPathRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
         appContext.syncForegroundInfo()
 
-
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-
-
         val imageId = workerParams.inputData.getLong(IMAGE_Id, 7)
         val noteId = workerParams.inputData.getLong(NOTE_ID, 7)
 
@@ -64,7 +61,7 @@ class SaveWorker @AssistedInject constructor(
             changeToPathAndData(pathsMap),
             re.widthPixels,
             re.heightPixels,
-            re.density
+            re.density,
         )
         val path = contentManager.getImagePath(imageId)
         contentManager.saveBitmap(path, bitmap)
@@ -79,8 +76,8 @@ class SaveWorker @AssistedInject constructor(
                     imageId,
                     noteId,
                     isDrawing = true,
-                    timestamp = System.currentTimeMillis()
-                )
+                    timestamp = System.currentTimeMillis(),
+                ),
             )
             drawingPathRepository.delete(imageId)
             drawingPathRepository.insert(drawPathList)
@@ -89,7 +86,6 @@ class SaveWorker @AssistedInject constructor(
         file.delete()
         Result.success()
     }
-
 
     companion object {
         fun startUpSaveWork(imageId: Long, noteId: Long) =
@@ -100,4 +96,3 @@ class SaveWorker @AssistedInject constructor(
                 .build()
     }
 }
-

@@ -74,7 +74,7 @@ fun LabelScreen(
                     }
                 },
                 title = {
-                    Text(text = stringResource(R.string.edit_label))
+                    Text(text = stringResource(R.string.feature_labelscreen_edit_label))
                 },
             )
         },
@@ -134,11 +134,11 @@ fun EditLabelTextField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = stringResource(R.string.create_new_label),
+                text = stringResource(R.string.feature_labelscreen_create_new_label),
                 color = TextStyle.Default.color.copy(alpha = 0.5f),
             )
         },
-        supportingText = { Text(text = if (errorOccur) stringResource(R.string.label_already_exists) else "") },
+        supportingText = { Text(text = if (errorOccur) stringResource(R.string.feature_labelscreen_label_already_exists) else "") },
         isError = errorOccur,
         leadingIcon = {
             if (isFocus) {

@@ -13,5 +13,5 @@ data class DateDialogUiData constructor(
     val currentInterval: Int = 0,
     val interval: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
     val showTimeDialog: Boolean = false,
-    val showDateDialog: Boolean = false
+    val showDateDialog: Boolean = false,
 )

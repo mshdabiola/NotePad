@@ -29,7 +29,6 @@ class ContentManager
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     fun saveVoice(uri: Uri, currentTime: Long) {

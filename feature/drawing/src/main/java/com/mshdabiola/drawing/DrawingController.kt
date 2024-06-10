@@ -36,7 +36,7 @@ class DrawingController {
         Color(0xFFF50057),
         Color(0xFFFF3D00),
 
-        )
+    )
 
     val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Round)
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
@@ -87,7 +87,7 @@ class DrawingController {
                                 paths.remove(p.key)
                                 redoPaths[p.key] = p.value
                             }
-                            //rearrange id
+                            // rearrange id
                             val newPaths = HashMap<PathData, List<Coordinate>>()
                             paths
                                 .toList()
@@ -96,10 +96,8 @@ class DrawingController {
                                     newPaths[newdata] = pair.second
                                 }
 
-
                             _unCompletePathData.value = newPaths.toImmutableMap()
                         }
-
                     }
 
                     MODE.UP -> {
@@ -139,7 +137,7 @@ class DrawingController {
                     }
 
                     MODE.UP -> {
-                        //save data
+                        // save data
                         setCompleteList()
                     }
                 }
@@ -170,7 +168,7 @@ class DrawingController {
         _canUndo.value = _unCompletePathData.value.isNotEmpty()
         _canRedo.value = redoPaths.isNotEmpty()
 
-        //save data
+        // save data
         setCompleteList()
     }
 
@@ -219,14 +217,12 @@ class DrawingController {
         redoPaths.clear()
         _unCompletePathData.value = paths.toImmutableMap()
         setDoUnDo()
-        //save data
+        // save data
     }
 
     private fun setCompleteList() {
         _completePathData.value = unCompletePathData.value
-
     }
-
 }
 
 @Composable

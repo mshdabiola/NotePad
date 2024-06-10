@@ -53,7 +53,10 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
                 add("debugImplementation", libs.findLibrary("androidx.monitor").get())
 
+                add("testImplementation", project(":modules:testing"))
+                add("androidTestImplementation", project(":modules:testing"))
 
+                add("testImplementation", libs.findLibrary("robolectric").get())
             }
         }
     }

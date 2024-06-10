@@ -1,12 +1,9 @@
 package com.mshdabiola.ui
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 
-//import com.google.firebase.analytics.FirebaseAnalytics
+// import com.google.firebase.analytics.FirebaseAnalytics
 
 @SuppressLint("MissingPermission")
 @Composable

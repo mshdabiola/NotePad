@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziOptions.CompareOptions
 import com.github.takahirom.roborazzi.RoborazziOptions.RecordOptions
@@ -24,6 +25,7 @@ import com.google.accompanist.testharness.TestHarness
 import com.mshdabiola.designsystem.theme.SkTheme
 import org.robolectric.RuntimeEnvironment
 
+@OptIn(ExperimentalRoborazziApi::class)
 val DefaultRoborazziOptions =
     RoborazziOptions(
         // Pixel-perfect matching
@@ -141,11 +143,11 @@ fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.c
                 this.onRoot()
                     .captureRoboImage(
                         "src/test/screenshots/" +
-                                "$name/$filename" +
-                                "_$darkModeDesc" +
-                                "_$androidThemeDesc" +
-                                "_$dynamicThemingDesc" +
-                                ".png",
+                            "$name/$filename" +
+                            "_$darkModeDesc" +
+                            "_$androidThemeDesc" +
+                            "_$dynamicThemingDesc" +
+                            ".png",
                         roborazziOptions = DefaultRoborazziOptions,
                     )
             }
@@ -163,21 +165,21 @@ private fun generateDescription(
     dynamicTheming: Boolean,
 ): String {
     val description = "" +
-            if (shouldCompareDarkMode) {
-                if (darkMode) "Dark" else "Light"
-            } else {
-                ""
-            } +
-            if (shouldCompareAndroidTheme) {
-                if (androidTheme) " Android" else " Default"
-            } else {
-                ""
-            } +
-            if (shouldCompareDynamicColor) {
-                if (dynamicTheming) " Dynamic" else ""
-            } else {
-                ""
-            }
+        if (shouldCompareDarkMode) {
+            if (darkMode) "Dark" else "Light"
+        } else {
+            ""
+        } +
+        if (shouldCompareAndroidTheme) {
+            if (androidTheme) " Android" else " Default"
+        } else {
+            ""
+        } +
+        if (shouldCompareDynamicColor) {
+            if (dynamicTheming) " Dynamic" else ""
+        } else {
+            ""
+        }
 
     return description.trim()
 }

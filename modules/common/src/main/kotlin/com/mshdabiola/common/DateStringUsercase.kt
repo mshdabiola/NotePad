@@ -8,9 +8,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
-class DateStringUsercase @Inject constructor(
-
-) {
+class DateStringUsercase @Inject constructor() {
 
     operator fun invoke(date: LocalDate): String {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -22,6 +20,5 @@ class DateStringUsercase @Inject constructor(
             date.year != now.year -> "$month ${date.dayOfMonth}, ${date.year}"
             else -> "$month ${date.dayOfMonth}"
         }
-
     }
 }

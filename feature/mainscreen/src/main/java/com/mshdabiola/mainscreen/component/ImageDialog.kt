@@ -29,11 +29,11 @@ fun ImageDialog(
     onChooseImage: () -> Unit = {},
     onSnapImage: () -> Unit = {},
 
-    ) {
+) {
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(R.string.add_image)) },
+            title = { Text(text = stringResource(R.string.feature_mainscreen_add_image)) },
             text = {
                 Column {
                     Row(
@@ -49,7 +49,7 @@ fun ImageDialog(
                             contentDescription = "take image",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.take_image))
+                        Text(text = stringResource(R.string.feature_mainscreen_take_image))
                     }
                     Row(
                         modifier = Modifier
@@ -64,7 +64,7 @@ fun ImageDialog(
                             contentDescription = "take phone",
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.choose_image))
+                        Text(text = stringResource(R.string.feature_mainscreen_choose_image))
                     }
                 }
             },

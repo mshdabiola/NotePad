@@ -27,7 +27,7 @@ class SearchViewModel @Inject constructor(
     private val notePadRepository: NotePadRepository,
     private val labelRepository: LabelRepository,
     private val dateShortStringUsercase: DateShortStringUsercase,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
@@ -44,7 +44,7 @@ class SearchViewModel @Inject constructor(
                             it.labels.map { notelab -> lab.single { it.id == notelab.labelId }.label }
                         it.toNotePadUiState(
                             getTime = dateShortStringUsercase::invoke,
-                            toPath = contentManager::getImagePath
+                            toPath = contentManager::getImagePath,
                         ).copy(labels = labels.toImmutableList())
                     }
 

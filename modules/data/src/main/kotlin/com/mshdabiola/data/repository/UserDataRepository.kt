@@ -21,7 +21,6 @@ interface UserDataRepository {
 
     suspend fun setThemeContrast(contrast: Contrast)
 
-
     /**
      * Sets the desired dark theme config.
      */

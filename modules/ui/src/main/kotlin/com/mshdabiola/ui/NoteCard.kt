@@ -166,7 +166,7 @@ fun NoteCard(
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 10,
 
-                                        )
+                                    )
                                 }
                             }
                         } else {
@@ -274,7 +274,7 @@ fun NoteCardPreview() {
                     currentProgress = .179f,
                     isPlaying = false,
 
-                    ),
+                ),
             ).toImmutableList(),
         ),
     )

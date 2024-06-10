@@ -140,9 +140,8 @@ fun GalleryScreen(
                         contentDescription = "",
                         alignment = Alignment.Center,
 
-                        )
+                    )
                 }
-
             }
         }
     }
@@ -164,7 +163,7 @@ fun GalleryTopAppBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -183,28 +182,28 @@ fun GalleryTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.grab_image_text)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_grab_image_text)) },
                         onClick = {
                             showDropDown = false
                             onGrabText()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.copy)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_copy)) },
                         onClick = {
                             showDropDown = false
                             onCopy()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.send)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_send)) },
                         onClick = {
                             showDropDown = false
                             onSend()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.delete)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
@@ -214,5 +213,5 @@ fun GalleryTopAppBar(
             }
         },
 
-        )
+    )
 }

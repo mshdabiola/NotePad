@@ -1,50 +1,50 @@
-package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
+package com.mshdabiola.ui // package com.mshdabiola.designsystem.component
 //
-//import androidx.compose.animation.AnimatedVisibility
-//import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.Row
-//import androidx.compose.foundation.layout.Spacer
-//import androidx.compose.foundation.layout.width
-//import androidx.compose.material3.AlertDialog
-//import androidx.compose.material3.Button
-//import androidx.compose.material3.DropdownMenuItem
-//import androidx.compose.material3.ExperimentalMaterial3Api
-//import androidx.compose.material3.ExposedDropdownMenuBox
-//import androidx.compose.material3.ExposedDropdownMenuDefaults
-//import androidx.compose.material3.Text
-//import androidx.compose.material3.TextButton
-//import androidx.compose.material3.TextField
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.runtime.setValue
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.platform.LocalContext
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.compose.ui.unit.dp
-//import kotlinx.datetime.Clock
-//import kotlinx.datetime.DateTimeUnit
-//import kotlinx.datetime.Instant
-//import kotlinx.datetime.LocalDate
-//import kotlinx.datetime.LocalDateTime
-//import kotlinx.datetime.LocalTime
-//import kotlinx.datetime.TimeZone
-//import kotlinx.datetime.plus
-//import kotlinx.datetime.toInstant
-//import kotlinx.datetime.toLocalDateTime
-//import kotlinx.datetime.todayIn
-//import kotlin.time.DurationUnit
+// import androidx.compose.animation.AnimatedVisibility
+// import androidx.compose.foundation.layout.Column
+// import androidx.compose.foundation.layout.Row
+// import androidx.compose.foundation.layout.Spacer
+// import androidx.compose.foundation.layout.width
+// import androidx.compose.material3.AlertDialog
+// import androidx.compose.material3.Button
+// import androidx.compose.material3.DropdownMenuItem
+// import androidx.compose.material3.ExperimentalMaterial3Api
+// import androidx.compose.material3.ExposedDropdownMenuBox
+// import androidx.compose.material3.ExposedDropdownMenuDefaults
+// import androidx.compose.material3.Text
+// import androidx.compose.material3.TextButton
+// import androidx.compose.material3.TextField
+// import androidx.compose.runtime.Composable
+// import androidx.compose.runtime.getValue
+// import androidx.compose.runtime.mutableStateOf
+// import androidx.compose.runtime.remember
+// import androidx.compose.runtime.setValue
+// import androidx.compose.ui.Modifier
+// import androidx.compose.ui.platform.LocalContext
+// import androidx.compose.ui.tooling.preview.Preview
+// import androidx.compose.ui.unit.dp
+// import kotlinx.datetime.Clock
+// import kotlinx.datetime.DateTimeUnit
+// import kotlinx.datetime.Instant
+// import kotlinx.datetime.LocalDate
+// import kotlinx.datetime.LocalDateTime
+// import kotlinx.datetime.LocalTime
+// import kotlinx.datetime.TimeZone
+// import kotlinx.datetime.plus
+// import kotlinx.datetime.toInstant
+// import kotlinx.datetime.toLocalDateTime
+// import kotlinx.datetime.todayIn
+// import kotlin.time.DurationUnit
 //
-//@Composable
-//fun NotificationDialog(
+// @Composable
+// fun NotificationDialog(
 //    showDialog: Boolean = true,
 //    onDismissRequest: () -> Unit = {},
 //    remainder: Long = -1,
 //    interval: Long? = null,
 //    onSetAlarm: (Long, Long?) -> Unit = { _, _ -> },
 //    onDeleteAlarm: () -> Unit = {},
-//) {
+// ) {
 //    val now = remember {
 //        Clock.System.now()
 //    }
@@ -128,39 +128,39 @@ package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
 //        )
 //    }
 //
-////    TimeDialog(
-////        showDialog=showTime,
-////        hour = dateTime.hour,
-////        minute = dateTime.minute,
-////        onDismissRequest = {showTime=false},
-////        onSetTime = {dateTime= LocalDateTime(dateTime.date,it) }
-////    )
-////    DateDialog(
-////        showDialog=showDate,
-////       currentDate = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-////        onDismissRequest = {showDate=false},
-////        onSetDate = {
-////
-////            dateTime=LocalDateTime(it,dateTime.time)}
-////    )
-//}
+// //    TimeDialog(
+// //        showDialog=showTime,
+// //        hour = dateTime.hour,
+// //        minute = dateTime.minute,
+// //        onDismissRequest = {showTime=false},
+// //        onSetTime = {dateTime= LocalDateTime(dateTime.date,it) }
+// //    )
+// //    DateDialog(
+// //        showDialog=showDate,
+// //       currentDate = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+// //        onDismissRequest = {showDate=false},
+// //        onSetDate = {
+// //
+// //            dateTime=LocalDateTime(it,dateTime.time)}
+// //    )
+// }
 //
-//@Preview
-//@Composable
-//fun NotificationDialogPreview() {
+// @Preview
+// @Composable
+// fun NotificationDialogPreview() {
 //    NotificationDialog(
 //        remainder = LocalDateTime(2023, 2, 14, 12, 30).toInstant(TimeZone.currentSystemDefault())
 //            .toEpochMilliseconds()
 //    )
-//}
+// }
 //
-//@Composable
-//fun TimeContent(
+// @Composable
+// fun TimeContent(
 //    interval: Long? = null,
 //    dateTime: LocalDateTime,
 //    onDateChange: (LocalDateTime) -> Unit = {},
 //    onIntervalChange: (Long?) -> Unit = {},
-//) {
+// ) {
 //    val instant = dateTime.toInstant(TimeZone.UTC)
 //
 //    Column {
@@ -181,11 +181,11 @@ package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
 //            onValueChange = onIntervalChange,
 //        )
 //    }
-//}
+// }
 //
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
+// @OptIn(ExperimentalMaterial3Api::class)
+// @Composable
+// fun TimeDropbox(value: Long, onValueChange: (LocalTime) -> Unit = {}) {
 //    var expanded by remember {
 //        mutableStateOf(false)
 //    }
@@ -249,11 +249,11 @@ package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
+// @OptIn(ExperimentalMaterial3Api::class)
+// @Composable
+// fun DateDropbox(value: Long, onValueChange: (LocalDate) -> Unit = {}) {
 //    var expanded by remember {
 //        mutableStateOf(false)
 //    }
@@ -297,11 +297,11 @@ package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
+// @OptIn(ExperimentalMaterial3Api::class)
+// @Composable
+// fun RepeatDropbox(value: Long?, onValueChange: (Long?) -> Unit = {}) {
 //    var expanded by remember {
 //        mutableStateOf(false)
 //    }
@@ -364,13 +364,13 @@ package com.mshdabiola.ui//package com.mshdabiola.designsystem.component
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@Preview
-//@Composable
-//fun TimeColumnPreview() {
+// @Preview
+// @Composable
+// fun TimeColumnPreview() {
 //    TimeContent(
 //        dateTime = LocalDateTime(2021, 4, 5, 0, 0, 0),
 //    )
-//}
+// }
 //

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="enter_text">Enter text</string>
-    <string name="create">Create</string>
+    <string name="feature_selectlabelscreen_enter_text">Enter text</string>
+    <string name="feature_selectlabelscreen_create">Create</string>
 </resources>

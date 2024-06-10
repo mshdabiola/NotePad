@@ -16,7 +16,6 @@ internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
     override suspend fun migrate(currentData: UserPreferences): UserPreferences =
         currentData.copy {
             // Migrate topic ids
-
         }
 
     override suspend fun shouldMigrate(currentData: UserPreferences): Boolean =

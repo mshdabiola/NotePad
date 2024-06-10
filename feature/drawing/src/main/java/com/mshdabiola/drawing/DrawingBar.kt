@@ -49,7 +49,7 @@ fun DrawingBar(
     modifier: Modifier = Modifier,
     controller: DrawingController = rememberDrawingController(),
 
-    ) {
+) {
     var isUp by remember {
         mutableStateOf(false)
     }
@@ -103,12 +103,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.eraser),
+                            painter = painterResource(id = R.drawable.feature_drawing_eraser),
                             contentDescription = "eraser",
                             tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = R.drawable.eraser_tiny),
+                            painter = painterResource(id = R.drawable.feature_drawing_eraser_tiny),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray,
                         )
@@ -132,12 +132,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.pen),
+                            painter = painterResource(id = R.drawable.feature_drawing_pen),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = R.drawable.pen_cap),
+                            painter = painterResource(id = R.drawable.feature_drawing_pen_cap),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray,
                         )
@@ -163,12 +163,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.markerr),
+                            painter = painterResource(id = R.drawable.feature_drawing_markerr),
                             contentDescription = "marker",
                             tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = R.drawable.marker_cap),
+                            painter = painterResource(id = R.drawable.feature_drawing_marker_cap),
                             contentDescription = "marker",
                             tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray,
                         )
@@ -193,12 +193,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.crayon),
+                            painter = painterResource(id = R.drawable.feature_drawing_crayon),
                             contentDescription = "crayon",
                             tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = R.drawable.crayon_cap),
+                            painter = painterResource(id = R.drawable.feature_drawing_crayon_cap),
                             contentDescription = "crayon",
                             tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray,
                         )
@@ -309,7 +309,7 @@ fun ColorAndWidth(
                         .background(color)
                         .size(if (index == currentColor) 34.dp else 30.dp),
 
-                    )
+                )
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
@@ -321,7 +321,7 @@ fun ColorAndWidth(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
 
-            ) {
+        ) {
             repeat(10) {
                 Box(
                     modifier = Modifier
@@ -336,7 +336,7 @@ fun ColorAndWidth(
                         )
                         .size(30.dp),
 
-                    ) {
+                ) {
                     Box(
                         modifier =
                         Modifier
@@ -346,7 +346,7 @@ fun ColorAndWidth(
                             .padding(2.dp)
                             .size(((it + 1) * 2).dp),
 
-                        )
+                    )
                 }
             }
         }

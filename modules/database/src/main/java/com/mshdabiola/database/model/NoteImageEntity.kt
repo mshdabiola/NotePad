@@ -13,7 +13,7 @@ data class NoteImageEntity(
     val noteId: Long,
     val isDrawing: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val timestamp: Long
+    val timestamp: Long,
 )
 
 fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing, timestamp)

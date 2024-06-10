@@ -65,7 +65,7 @@ fun LabelScreen(
                     NoteTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = labelScreenUiState.editText,
-                        placeholder = { Text(text = stringResource(R.string.enter_text)) },
+                        placeholder = { Text(text = stringResource(R.string.feature_selectlabelscreen_enter_text)) },
                         onValueChange = onSearchText,
                     )
                 },
@@ -77,7 +77,7 @@ fun LabelScreen(
                 TextButton(onClick = { onCreateLabel() }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "${stringResource(id = R.string.create)} \"${labelScreenUiState.editText}\"")
+                    Text(text = "${stringResource(id = R.string.feature_selectlabelscreen_create)} \"${labelScreenUiState.editText}\"")
                 }
             }
             LazyColumn {
@@ -105,7 +105,7 @@ fun LabelText(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
 
-        ) {
+    ) {
         Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
@@ -152,7 +152,7 @@ fun LabelScreenPreview() {
                 ),
                 LabelUiState(id = 8983L, label = "Nakeshia", toggleableState = ToggleableState.On),
 
-                ).toImmutableList(),
+            ).toImmutableList(),
         ),
     )
 }

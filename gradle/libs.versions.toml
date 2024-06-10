@@ -88,7 +88,7 @@ androidxUiAutomator = "2.3.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-jacoco = "0.8.7"
+jacoco = "0.8.12"
 truth = "1.4.2"
 dependencyGuard = "0.5.0"
 

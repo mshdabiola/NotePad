@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import com.mshdabiola.ui.state.Notify
 import kotlinx.collections.immutable.ImmutableList
 
-
 @Composable
 fun NotifySnacker(snackHostState: SnackbarHostState, notifys: ImmutableList<Notify>) {
     LaunchedEffect(key1 = notifys, block = {

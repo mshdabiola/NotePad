@@ -6,9 +6,7 @@ import kotlinx.serialization.json.Json
 
 object Converter {
     fun pathToString(paths: List<DrawPath>): String {
-
         val drawPathPojoList = paths.map { it.toDrawPathPojo() }
         return Json.encodeToString(drawPathPojoList)
-
     }
 }

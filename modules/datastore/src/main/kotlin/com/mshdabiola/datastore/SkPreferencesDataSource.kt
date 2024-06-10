@@ -56,7 +56,6 @@ class SkPreferencesDataSource @Inject constructor(
             )
         }
 
-
     suspend fun setThemeBrand(themeBrand: com.mshdabiola.model.ThemeBrand) {
         userPreferences.updateData {
             it.copy {
@@ -99,7 +98,6 @@ class SkPreferencesDataSource @Inject constructor(
             }
         }
     }
-
 
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
         userPreferences.updateData {

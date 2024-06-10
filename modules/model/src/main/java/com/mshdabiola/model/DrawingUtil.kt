@@ -22,10 +22,9 @@ object DrawingUtil {
         return map
     }
 
-
     private fun changeToDrawPath(
         imageID: Long,
-        map: Map<PathData, List<Coordinate>>
+        map: Map<PathData, List<Coordinate>>,
     ): List<DrawPath> {
         return map.map { entry ->
             DrawPath(
@@ -40,5 +39,4 @@ object DrawingUtil {
             )
         }
     }
-
 }

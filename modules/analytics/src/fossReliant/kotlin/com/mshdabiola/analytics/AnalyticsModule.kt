@@ -14,5 +14,4 @@ import dagger.hilt.components.SingletonComponent
 internal abstract class AnalyticsModule {
     @Binds
     abstract fun bindsAnalyticsHelper(analyticsHelperImpl: FirebaseAnalyticsHelper): AnalyticsHelper
-
 }

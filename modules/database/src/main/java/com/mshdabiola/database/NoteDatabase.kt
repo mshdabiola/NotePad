@@ -34,8 +34,8 @@ import com.mshdabiola.database.model.NoteVoiceEntity
     version = 3,
     autoMigrations = [
         AutoMigration(1, 2),
-        AutoMigration(2, 3, NoteDatabase.Migrate2to3::class)
-    ]
+        AutoMigration(2, 3, NoteDatabase.Migrate2to3::class),
+    ],
 )
 abstract class NoteDatabase : RoomDatabase() {
 

@@ -39,8 +39,7 @@ fun ReminderCard(
 ) {
     Surface(
         modifier = Modifier
-            .clickable(enabled = onClick != null)
-            { onClick?.invoke() },
+            .clickable(enabled = onClick != null) { onClick?.invoke() },
         shape = RoundedCornerShape(8.dp),
         color = color,
         border = BorderStroke(1.dp, Color.Gray),
@@ -70,8 +69,7 @@ fun ReminderCard(
                 style = style,
                 maxLines = 1,
 
-
-                )
+            )
         }
     }
 }

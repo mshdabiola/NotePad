@@ -27,7 +27,6 @@ import com.mshdabiola.ui.state.DateListUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-
 @Composable
 fun NotificationDialogNew(
     dateDialogUiData: DateDialogUiData,
@@ -37,11 +36,9 @@ fun NotificationDialogNew(
     onDeleteAlarm: () -> Unit = {},
     onTimeChange: (Int) -> Unit = {},
     onDateChange: (Int) -> Unit = {},
-    onIntervalChange: (Int) -> Unit = {}
-
+    onIntervalChange: (Int) -> Unit = {},
 
 ) {
-
     AnimatedVisibility(visible = showDialog) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
@@ -52,22 +49,21 @@ fun NotificationDialogNew(
                         currentIndex = dateDialogUiData.currentTime,
                         showError = dateDialogUiData.timeError,
                         onValueChange = onTimeChange,
-                        times = dateDialogUiData.timeData
+                        times = dateDialogUiData.timeData,
                     )
                     TextDropbox(
                         currentIndex = dateDialogUiData.currentDate,
                         showError = false,
                         onValueChange = onDateChange,
-                        times = dateDialogUiData.dateData
+                        times = dateDialogUiData.dateData,
                     )
                     TextDropbox(
                         currentIndex = dateDialogUiData.currentInterval,
                         showError = false,
                         onValueChange = onIntervalChange,
-                        times = dateDialogUiData.interval
+                        times = dateDialogUiData.interval,
                     )
                 }
-
             },
             confirmButton = {
                 Button(
@@ -75,7 +71,7 @@ fun NotificationDialogNew(
                         onSetAlarm()
                         onDismissRequest()
                     },
-                    enabled = !dateDialogUiData.timeError
+                    enabled = !dateDialogUiData.timeError,
                 ) {
                     Text(text = "Save")
                 }
@@ -98,9 +94,7 @@ fun NotificationDialogNew(
             },
         )
     }
-
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +102,7 @@ fun TextDropbox(
     currentIndex: Int,
     onValueChange: (Int) -> Unit = {},
     times: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
-    showError: Boolean
+    showError: Boolean,
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -130,7 +124,7 @@ fun TextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             singleLine = true,
 
-            )
+        )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
@@ -155,7 +149,6 @@ fun TextDropbox(
     }
 }
 
-
 @Preview
 @Composable
 fun NewDialogPreview() {
@@ -168,35 +161,35 @@ fun NewDialogPreview() {
                 value = "8:00PM",
                 trail = "8:00PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Afternoon",
                 value = "8:00PM",
                 trail = "8:00PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Evening",
                 value = "8:00PM",
                 trail = "8:00PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Night",
                 value = "8:00PM",
                 trail = "8:00PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick time",
                 value = "8:00PM",
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
 
         ).toImmutableList(),
         timeError = false,
@@ -206,20 +199,20 @@ fun NewDialogPreview() {
                 title = "Today",
                 value = "Today",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Tomorrow",
                 value = "Tomorrow",
                 isOpenDialog = true,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick date",
                 value = "Jan 1",
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
         ).toImmutableList(),
         currentInterval = 0,
         interval = listOf(
@@ -227,40 +220,38 @@ fun NewDialogPreview() {
                 title = "Does not repeat",
                 value = "Does not repeat",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Daily",
                 value = "Daily",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Weekly",
                 value = "Weekly",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Monthly",
                 value = "Monthly",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Yearly",
                 value = "Yearly",
                 isOpenDialog = false,
-                enable = true
-            )
-        ).toImmutableList()
+                enable = true,
+            ),
+        ).toImmutableList(),
 
     )
 
     NotificationDialogNew(
         showDialog = true,
-        dateDialogUiData = dateDialog
+        dateDialogUiData = dateDialog,
     )
 }
-
-

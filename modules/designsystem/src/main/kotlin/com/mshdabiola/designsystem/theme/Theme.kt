@@ -6,6 +6,7 @@ package com.mshdabiola.designsystem.theme
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.ThemeBrand
-
 
 @Immutable
 data class ColorFamily(
@@ -101,6 +101,7 @@ fun SkTheme(
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun getDynamicColor(darkTheme: Boolean): ColorScheme {
     val context = LocalContext.current

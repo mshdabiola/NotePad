@@ -41,7 +41,7 @@ fun AddBottomSheet2(
     changeToCheckBoxes: () -> Unit = {},
     onDrawing: () -> Unit = {},
     onDismiss: () -> Unit = {},
-    show: Boolean
+    show: Boolean,
 ) {
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -107,15 +107,13 @@ fun AddBottomSheet2(
             },
         )
 
-
     val context = LocalContext.current
 
     if (show) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
-            containerColor = background
+            containerColor = background,
         ) {
-
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -123,7 +121,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.take_photo)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_take_photo)) },
                 selected = false,
                 onClick = {
                     snapPictureLauncher.launch(getPhotoUri())
@@ -132,7 +130,6 @@ fun AddBottomSheet2(
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
             )
 
-
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -140,7 +137,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.add_image)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_add_image)) },
                 selected = false,
                 onClick = {
                     imageLauncher.launch(
@@ -159,7 +156,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.drawing)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_drawing)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -167,7 +164,7 @@ fun AddBottomSheet2(
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
 
-                )
+            )
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -175,7 +172,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.recording)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_recording)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -210,7 +207,7 @@ fun AddBottomSheet2(
                             contentDescription = "",
                         )
                     },
-                    label = { Text(text = stringResource(R.string.checkboxes)) },
+                    label = { Text(text = stringResource(R.string.feature_editscreen_checkboxes)) },
                     selected = false,
                     onClick = {
                         onDismiss()
@@ -219,8 +216,6 @@ fun AddBottomSheet2(
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
                 )
             }
-
-
         }
     }
 }
@@ -229,14 +224,12 @@ fun AddBottomSheet2(
 @Preview
 @Composable
 fun AddBottomSheet2Preview() {
-    //val coroutineScope= rememberCoroutineScope()
-
+    // val coroutineScope= rememberCoroutineScope()
 
     AddBottomSheet2(
         currentColor = 2,
         currentImage = 2,
         isNoteCheck = true,
-        show = true
+        show = true,
     )
 }
-

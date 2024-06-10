@@ -47,7 +47,7 @@ import java.io.File
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    saveImage: (Long, Long) -> Unit
+    saveImage: (Long, Long) -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
     val lifecycleObserver = LocalLifecycleOwner.current
@@ -56,7 +56,6 @@ fun DrawingScreen(
             super.onPause(owner)
             //  viewModel.saveData()
             saveImage(viewModel.imageID, viewModel.noteId)
-
         }
     }
     LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
@@ -152,28 +151,28 @@ fun DrawingScreen(
                             onDismissRequest = { showDropDown = false },
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.grab_image_text)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_grab_image_text)) },
                                 onClick = {
                                     showDropDown = false
                                     //  onGrabText()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.copy)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_copy)) },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.send)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_send)) },
                                 onClick = {
                                     showDropDown = false
                                     onSend()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.delete)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_delete)) },
                                 onClick = {
                                     showDropDown = false
                                     onDeleteImage()

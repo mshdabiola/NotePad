@@ -31,8 +31,6 @@ fun NotificationBottomSheet(
     currentImage: Int,
     onDismissRequest: () -> Unit,
 ) {
-
-
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
     } else {
@@ -79,10 +77,8 @@ fun NotificationBottomSheet(
     if (show) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            containerColor = background
+            containerColor = background,
         ) {
-
-
             NotificationItem(
                 title = if (pastToday) "Tomorrow morning" else "Later today",
                 time = if (pastToday) morning.toTimeString() else evening.toTimeString(),
@@ -116,7 +112,7 @@ fun NotificationBottomSheet(
                     onAlarm(time, null)
                 },
 
-                )
+            )
             NotificationItem(
                 title = "$dayOfWeek morning",
                 time = "${dayOfWeek.subSequence(0..2)} ${nextWk.toTimeString()}",
@@ -137,7 +133,6 @@ fun NotificationBottomSheet(
                 },
             )
         }
-
     }
 }
 
@@ -154,7 +149,7 @@ fun NotificationItem(
         },
         text = { Text(text = title) },
         onClick = onClick,
-        trailingIcon = { Text(text = time) }
+        trailingIcon = { Text(text = time) },
     )
 }
 

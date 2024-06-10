@@ -78,8 +78,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var contentManager: ContentManager
+
     @Inject
     lateinit var noteImageRepository: NoteImageRepository
+
     @Inject
     lateinit var drawingPathRepository: DrawingPathRepository
 
@@ -88,12 +90,10 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
 
         remoteConfig = Firebase.remoteConfig
         analytics = FirebaseAnalytics.getInstance(this@MainActivity)
@@ -125,7 +125,6 @@ class MainActivity : ComponentActivity() {
 //            }
 //
 //        })
-
 
 //        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
 //            if (!task.isSuccessful) {
@@ -170,12 +169,10 @@ class MainActivity : ComponentActivity() {
                     useAndroidTheme = shouldUseAndroidTheme(uiState),
                 ) {
                     Box {
-
-
                         // A surface container using the 'background' color from the theme
                         NotePadApp(
                             windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity),
-                            saveImage = this@MainActivity::saveImage
+                            saveImage = this@MainActivity::saveImage,
                         )
 
                         if (show) {
@@ -191,16 +188,14 @@ class MainActivity : ComponentActivity() {
                                     }) {
                                         Text(text = "Reload")
                                     }
-                                }
+                                },
                             ) {
                                 Text(text = "Play note just download an update")
                             }
                         }
-
                     }
                 }
             }
-
         }
     }
 
@@ -227,7 +222,6 @@ class MainActivity : ComponentActivity() {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
                 appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
             ) {
-
                 listener = InstallStateUpdatedListener { state ->
 
 //                    if (state.installStatus() == InstallStatus.DOWNLOADING) {
@@ -246,9 +240,8 @@ class MainActivity : ComponentActivity() {
                     appUpdateInfo,
                     AppUpdateType.FLEXIBLE,
                     this,
-                    343
+                    343,
                 )
-
             }
             //  log("update ${appUpdateInfo.packageName()} ${appUpdateInfo.availableVersionCode()}",)
         }.addOnFailureListener {
@@ -260,13 +253,10 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun saveImage(imageId: Long, noteId: Long) {
-
         job?.cancel()
 
         Timber.e("save image function")
         job = lifecycleScope.launch(Dispatchers.IO) {
-
-
             val file = contentManager.dataFile(imageId)
             if (!file.exists()) {
                 return@launch
@@ -281,7 +271,7 @@ class MainActivity : ComponentActivity() {
                 changeToPathAndData(pathsMap),
                 re.widthPixels,
                 re.heightPixels,
-                re.density
+                re.density,
             )
             val path = contentManager.getImagePath(imageId)
             contentManager.saveBitmap(path, bitmap)
@@ -296,8 +286,8 @@ class MainActivity : ComponentActivity() {
                         imageId,
                         noteId,
                         isDrawing = true,
-                        timestamp = System.currentTimeMillis()
-                    )
+                        timestamp = System.currentTimeMillis(),
+                    ),
                 )
                 drawingPathRepository.delete(imageId)
                 drawingPathRepository.insert(drawPathList)
@@ -315,6 +305,7 @@ private fun chooseTheme(
     MainActivityUiState.Loading -> ThemeBrand.DEFAULT
     is MainActivityUiState.Success -> uiState.userData.themeBrand
 }
+
 @Composable
 private fun shouldUseAndroidTheme(
     uiState: MainActivityUiState,

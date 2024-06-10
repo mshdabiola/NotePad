@@ -10,8 +10,6 @@ import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.model.Note
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -21,7 +19,6 @@ class DefaultNoteRepository @Inject constructor(
 ) : NoteRepository {
     override suspend fun upsert(note: Note): Long {
         return TODO()
-
     }
 
     override fun getAll(): Flow<List<Note>> {
@@ -29,8 +26,7 @@ class DefaultNoteRepository @Inject constructor(
     }
 
     override fun getOne(id: Long): Flow<Note?> {
-               return TODO()
-
+        return TODO()
     }
 
     override suspend fun delete(id: Long) {

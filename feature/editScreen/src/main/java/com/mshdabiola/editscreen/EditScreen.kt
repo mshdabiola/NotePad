@@ -140,7 +140,6 @@ fun EditScreen(
     navigateToGallery: (Long, Long) -> Unit,
     navigateToDrawing: (Long, Long?) -> Unit,
 ) {
-
     val messages = editViewModel.message.collectAsStateWithLifecycle()
     var showModalState by remember {
         mutableStateOf(false)
@@ -223,7 +222,7 @@ fun EditScreen(
         navigateToGallery = navigateToGallery,
         navigateToDrawing = navigateToDrawing,
 
-        )
+    )
     AddBottomSheet2(
         show = showModalState,
         currentColor = editViewModel.notePadUiState.note.color,
@@ -235,7 +234,7 @@ fun EditScreen(
         savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
         onDrawing = { navigateToDrawing(editViewModel.notePadUiState.note.id, null) },
-        onDismiss = { showModalState = false }
+        onDismiss = { showModalState = false },
     )
 
     val send = {
@@ -261,7 +260,7 @@ fun EditScreen(
         onDelete = editViewModel::onDelete,
         onCopy = editViewModel::copyNote,
         onSendNote = send,
-        onDismissRequest = { noteModalState = false }
+        onDismissRequest = { noteModalState = false },
     )
     ColorAndImageBottomSheet(
         show = colorModalState,
@@ -269,7 +268,7 @@ fun EditScreen(
         currentImage = editViewModel.notePadUiState.note.background,
         onColorClick = editViewModel::onColorChange,
         onImageClick = editViewModel::onImageChange,
-        onDismissRequest = { colorModalState = false }
+        onDismissRequest = { colorModalState = false },
     )
 
     NotificationBottomSheet(
@@ -277,7 +276,7 @@ fun EditScreen(
         onAlarm = editViewModel::setAlarm,
         showDialog = { showDialog = true },
         currentColor = editViewModel.notePadUiState.note.color,
-        currentImage = editViewModel.notePadUiState.note.background
+        currentImage = editViewModel.notePadUiState.note.background,
 
     ) { noteficationModalState = false }
     val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
@@ -297,16 +296,15 @@ fun EditScreen(
         state = editViewModel.timePicker,
         showDialog = dateDialogUiData.value.showTimeDialog,
         onDismissRequest = editViewModel::hideTime,
-        onSetTime = editViewModel::onSetTime
+        onSetTime = editViewModel::onSetTime,
     )
     DateDialog(
         state = editViewModel.datePicker,
         showDialog = dateDialogUiData.value.showDateDialog,
         onDismissRequest = editViewModel::hideDate,
-        onSetDate = editViewModel::onSetDate
+        onSetDate = editViewModel::onSetDate,
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -437,7 +435,7 @@ fun EditScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
     ) { paddingValues ->
         Column(
@@ -488,7 +486,7 @@ fun EditScreen(
                         TextField(
                             value = notepad.note.title,
                             onValueChange = onTitleChange,
-                            placeholder = { Text(text = stringResource(R.string.title)) },
+                            placeholder = { Text(text = stringResource(R.string.feature_editscreen_title)) },
                             textStyle = MaterialTheme.typography.titleLarge,
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = Color.Transparent,
@@ -506,7 +504,7 @@ fun EditScreen(
                                 .weight(1f)
                                 .testTag("title"),
 
-                            )
+                        )
                         if (notepad.note.isCheck) {
                             Box {
                                 IconButton(onClick = { expandCheck = true }) {
@@ -520,7 +518,7 @@ fun EditScreen(
                                     onDismissRequest = { expandCheck = false },
                                 ) {
                                     DropdownMenuItem(
-                                        text = { Text(text = stringResource(R.string.hide_checkboxes)) },
+                                        text = { Text(text = stringResource(R.string.feature_editscreen_hide_checkboxes)) },
                                         onClick = {
                                             hideCheckBoxes()
                                             expandCheck = false
@@ -528,14 +526,14 @@ fun EditScreen(
                                     )
                                     if (checkNote.isNotEmpty()) {
                                         DropdownMenuItem(
-                                            text = { Text(text = stringResource(R.string.uncheck_all_items)) },
+                                            text = { Text(text = stringResource(R.string.feature_editscreen_uncheck_all_items)) },
                                             onClick = {
                                                 unCheckAllItems()
                                                 expandCheck = false
                                             },
                                         )
                                         DropdownMenuItem(
-                                            text = { Text(text = stringResource(R.string.delete_checked_items)) },
+                                            text = { Text(text = stringResource(R.string.feature_editscreen_delete_checked_items)) },
                                             onClick = {
                                                 deleteCheckItems()
                                                 expandCheck = false
@@ -553,7 +551,7 @@ fun EditScreen(
                             value = notepad.note.detail,
                             onValueChange = onSubjectChange,
                             textStyle = MaterialTheme.typography.bodyMedium,
-                            placeholder = { Text(text = stringResource(R.string.subject)) },
+                            placeholder = { Text(text = stringResource(R.string.feature_editscreen_subject)) },
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
@@ -571,7 +569,7 @@ fun EditScreen(
                                 .focusRequester(subjectFocus)
                                 .testTag("detail"),
 
-                            )
+                        )
                     }
                 }
                 if (notepad.note.isCheck) {
@@ -589,7 +587,7 @@ fun EditScreen(
                         TextButton(onClick = addItem) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
-                            Text(text = stringResource(R.string.add_list_item))
+                            Text(text = stringResource(R.string.feature_editscreen_add_list_item))
                         }
                     }
 
@@ -597,11 +595,11 @@ fun EditScreen(
                         item {
                             TextButton(onClick = { showCheckNote = !showCheckNote }) {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.baseline_expand_more_24 else R.drawable.baseline_expand_less_24),
+                                    imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.feature_editscreen_baseline_expand_more_24 else R.drawable.feature_editscreen_baseline_expand_less_24),
                                     contentDescription = "",
                                 )
                                 Text(
-                                    text = "${checkNote.size} ${stringResource(R.string.checked_items)}",
+                                    text = "${checkNote.size} ${stringResource(R.string.feature_editscreen_checked_items)}",
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                             }
@@ -666,7 +664,7 @@ fun EditScreen(
                                     .border(1.dp, Color.Gray, CircleShape)
                                     .size(30.dp),
 
-                                )
+                            )
                         }
                     }
                 }
@@ -700,7 +698,7 @@ fun EditScreen(
                         .padding(end = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = "${stringResource(R.string.edited)} ${notepad.note.lastEdit}")
+                    Text(text = "${stringResource(R.string.feature_editscreen_edited)} ${notepad.note.lastEdit}")
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:option"),
@@ -760,7 +758,7 @@ fun EditScreenPreview() {
                     currentProgress = 500f,
                     isPlaying = false,
 
-                    ),
+                ),
             ).toImmutableList(),
             checks = listOf(
                 NoteCheckUiState(
@@ -770,7 +768,7 @@ fun EditScreenPreview() {
                     isCheck = false,
                     focus = false,
 
-                    ),
+                ),
                 NoteCheckUiState(
                     id = 7481L,
                     noteId = 5389L,
@@ -778,12 +776,12 @@ fun EditScreenPreview() {
                     isCheck = true,
                     focus = false,
 
-                    ),
+                ),
             ).toImmutableList(),
 
-            ),
+        ),
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -851,7 +849,7 @@ fun NoteCheck(
             ),
             keyboardActions = KeyboardActions { onNextCheck() },
 
-            )
+        )
     }
 }
 
@@ -898,7 +896,7 @@ fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
         NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -923,7 +921,7 @@ fun NoteUri(
             AsyncImage(
                 modifier = Modifier.size(64.dp),
                 model = uriState.icon,
-                contentDescription = "icon"
+                contentDescription = "icon",
             )
         },
         headlineContent = { Text(text = uriState.path) },

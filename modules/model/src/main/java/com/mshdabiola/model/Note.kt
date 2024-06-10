@@ -13,4 +13,4 @@ data class Note(
     val interval: Long = 0,
     val noteType: NoteType = NoteType.NOTE,
 
-    )
+)

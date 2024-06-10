@@ -11,8 +11,6 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-//import androidx.work.Worker
-//import androidx.work.WorkerParameters
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.RemoteMessage.Notification
@@ -41,11 +39,9 @@ class MessageService : FirebaseMessagingService() {
 //            }
 //        }
 
-
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
             sendNotification(it, this)
-
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -86,7 +82,6 @@ class MessageService : FirebaseMessagingService() {
         // [END dispatch_job]
     }
 
-
     private fun sendNotification(notification: Notification, context: Context) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -117,7 +112,7 @@ class MessageService : FirebaseMessagingService() {
                     NotificationCompat
                         .BigPictureStyle()
                         .bigPicture(bitmap)
-                        .bigLargeIcon(null as Bitmap?)
+                        .bigLargeIcon(null as Bitmap?),
                 )
         }
 
@@ -153,7 +148,6 @@ class MessageService : FirebaseMessagingService() {
 
 fun getBitmap(uri: String): Bitmap? {
     return try {
-
         val input = URL(uri).openStream()
 
         val bitmap = BitmapFactory.decodeStream(input)

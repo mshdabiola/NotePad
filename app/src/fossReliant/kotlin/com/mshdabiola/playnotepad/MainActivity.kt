@@ -56,8 +56,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var contentManager: ContentManager
+
     @Inject
     lateinit var noteImageRepository: NoteImageRepository
+
     @Inject
     lateinit var drawingPathRepository: DrawingPathRepository
 
@@ -66,12 +68,10 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 
@@ -108,34 +108,23 @@ class MainActivity : ComponentActivity() {
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                     useAndroidTheme = shouldUseAndroidTheme(uiState),
                 ) {
-
-                        NotePadApp(
-                            windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity),
-                            saveImage = this@MainActivity::saveImage
-                        )
-
-
-
-
+                    NotePadApp(
+                        windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity),
+                        saveImage = this@MainActivity::saveImage,
+                    )
                 }
             }
-
         }
     }
-
-
 
     var job: Job? = null
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun saveImage(imageId: Long, noteId: Long) {
-
         job?.cancel()
 
         Timber.e("save image function")
         job = lifecycleScope.launch(Dispatchers.IO) {
-
-
             val file = contentManager.dataFile(imageId)
             if (!file.exists()) {
                 return@launch
@@ -150,7 +139,7 @@ class MainActivity : ComponentActivity() {
                 changeToPathAndData(pathsMap),
                 re.widthPixels,
                 re.heightPixels,
-                re.density
+                re.density,
             )
             val path = contentManager.getImagePath(imageId)
             contentManager.saveBitmap(path, bitmap)
@@ -165,8 +154,8 @@ class MainActivity : ComponentActivity() {
                         imageId,
                         noteId,
                         isDrawing = true,
-                        timestamp = System.currentTimeMillis()
-                    )
+                        timestamp = System.currentTimeMillis(),
+                    ),
                 )
                 drawingPathRepository.delete(imageId)
                 drawingPathRepository.insert(drawPathList)
@@ -184,6 +173,7 @@ private fun chooseTheme(
     MainActivityUiState.Loading -> ThemeBrand.DEFAULT
     is MainActivityUiState.Success -> uiState.userData.themeBrand
 }
+
 @Composable
 private fun shouldUseAndroidTheme(
     uiState: MainActivityUiState,

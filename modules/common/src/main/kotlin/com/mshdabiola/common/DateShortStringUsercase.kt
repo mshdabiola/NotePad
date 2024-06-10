@@ -9,7 +9,7 @@ import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 class DateShortStringUsercase @Inject constructor(
-    private val time12UserCase: Time12UserCase
+    private val time12UserCase: TimeUsercase,
 ) {
 
     operator fun invoke(long: Long): String {
@@ -22,20 +22,21 @@ class DateShortStringUsercase @Inject constructor(
 
         return when {
             now.date == date.date -> "Today ${time12UserCase.invoke(date.time)} "
-            date.date == now.date.plus(1, DateTimeUnit.DAY) -> "Tomorrow ${
-                time12UserCase.invoke(
-                    date.time
-                )
-            }"
+            date.date == now.date.plus(1, DateTimeUnit.DAY) ->
+                "Tomorrow ${
+                    time12UserCase.invoke(
+                        date.time,
+                    )
+                }"
 
-            date.year != now.year -> "$month ${date.dayOfMonth}, ${date.year} ${
-                time12UserCase.invoke(
-                    date.time
-                )
-            }"
+            date.year != now.year ->
+                "$month ${date.dayOfMonth}, ${date.year} ${
+                    time12UserCase.invoke(
+                        date.time,
+                    )
+                }"
 
             else -> "$month ${date.dayOfMonth} ${time12UserCase.invoke(date.time)}"
         }
-
     }
 }
