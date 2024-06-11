@@ -30,19 +30,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 1
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: release_bundle
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: mapping
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: distribution
       - name: Display structure of downloaded files
@@ -71,13 +71,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 2
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: release_bundle
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: distribution
       - name: 'Echo download path'
