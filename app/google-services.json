@@ -154,7 +154,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:716745036463:android:996f8c3403f19aed773a5a",
         "android_client_info": {
-          "package_name": "com.mshdabiola.playnotepad.benchmark.foss"
+          "package_name": "com.mshdabiola.playnotepad.foss.benchmark"
         }
       },
       "oauth_client": [
