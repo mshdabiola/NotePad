@@ -4,7 +4,7 @@ androidTools = "31.3.2"
 
 accompanist = "0.34.0"
 
-guava = "33.0.0-android"
+guava = "33.2.1-android"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 leakcanaryAndroid = "3.0-alpha-1"
