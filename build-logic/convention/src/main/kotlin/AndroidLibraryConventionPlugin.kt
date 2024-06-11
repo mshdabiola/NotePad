@@ -14,14 +14,18 @@
  *   limitations under the License.
  */
 
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
+import com.mshdabiola.app.configureFlavors
+import com.mshdabiola.app.configureGradleManagedDevices
 import com.mshdabiola.app.configureKotlinAndroid
+import com.mshdabiola.app.configurePrintApksTask
+import com.mshdabiola.app.disableUnnecessaryAndroidTests
+import com.mshdabiola.app.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.kotlin
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -30,33 +34,30 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("com.android.library")
                 apply("org.jetbrains.kotlin.android")
+                apply("mshdabiola.android.lint")
+
             }
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                compileSdk = 33
-              //  compileSdkPreview = "UpsideDownCake"
-                defaultConfig.minSdk = 24
-                defaultConfig.targetSdk = 33
-                defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                //  configureFlavors(this)
-
+                defaultConfig.targetSdk = 34
+                configureFlavors(this)
+                configureGradleManagedDevices(this)
+                // The resource prefix is derived from the module name,
+                // so resources inside ":core:module1" must be prefixed with "core_module1_"
+                resourcePrefix =
+                    path.split("""\W""".toRegex()).drop(1).distinct().joinToString(separator = "_")
+                        .lowercase() + "_"
             }
-
-//            val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-//            configurations.configureEach {
-//                resolutionStrategy {
-//                    force(libs.findLibrary("junit4").get())
-//                    // Temporary workaround for https://issuetracker.google.com/174733673
-//                    force("org.objenesis:objenesis:2.6")
-//                }
-//            }
-            val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+            extensions.configure<LibraryAndroidComponentsExtension> {
+                configurePrintApksTask(this)
+                disableUnnecessaryAndroidTests(target)
+            }
             dependencies {
-                add("androidTestImplementation", kotlin("test"))
                 add("testImplementation", kotlin("test"))
                 add("implementation", libs.findLibrary("timber").get())
             }
         }
+
     }
 }

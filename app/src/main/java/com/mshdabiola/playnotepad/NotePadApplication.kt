@@ -5,15 +5,14 @@ import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class NotePadApplication : Application(){
+class NotePadApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        //Saver.initialize(applicationContext)
+        // Saver.initialize(applicationContext)
 
         if (packageName.contains("debug")) {
             Timber.plant(Timber.DebugTree())
             Timber.e("log on app create")
         }
     }
-
 }

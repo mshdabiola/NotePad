@@ -27,12 +27,14 @@ java {
 
 dependencies {
     compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.android.tools.common)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.firebase.crashlytics.gradle)
     compileOnly(libs.firebase.performance.gradle)
-    compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    implementation(libs.truth)
+
 }
 
 gradlePlugin {
@@ -50,9 +52,17 @@ gradlePlugin {
             id = "mshdabiola.android.application.firebase"
             implementationClass = "AndroidApplicationFirebaseConventionPlugin"
         }
+        register("androidApplicationJacoco") {
+            id = "mshdabiola.android.application.jacoco"
+            implementationClass = "AndroidApplicationJacocoConventionPlugin"
+        }
         register("androidApplication") {
             id = "mshdabiola.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        register("androidLibraryJacoco") {
+            id = "mshdabiola.android.library.jacoco"
+            implementationClass = "AndroidLibraryJacocoConventionPlugin"
         }
 
         register("androidLibraryCompose") {
@@ -81,8 +91,19 @@ gradlePlugin {
             id = "mshdabiola.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+
+        register("androidLint") {
+            id = "mshdabiola.android.lint"
+            implementationClass = "AndroidLintConventionPlugin"
+        }
+
+        register("jvmLibrary") {
+            id = "mshdabiola.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
         jvmTarget = "17"

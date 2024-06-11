@@ -1,5 +1,7 @@
 *.iml
 .gradle
+.kotlin
+.idea
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -35,3 +37,4 @@ local.properties
 /feature/build/spotless/spotlessKotlin/editScreen/src/main/java/com/mshdabiola/editscreen/VoiceRecorder.kt
 /feature/build/
 /.idea/runConfigurations/Generate_Baseline_Profile.xml
+/modules/build

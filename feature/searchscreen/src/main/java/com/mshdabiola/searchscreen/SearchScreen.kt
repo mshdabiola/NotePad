@@ -52,12 +52,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mshdabiola.designsystem.component.NoteCard
-import com.mshdabiola.designsystem.component.NoteTextField
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.theme.NotePadAppTheme
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.NoteTextField
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -90,7 +90,7 @@ fun SearchScreen(
     onItemLabelClick: (Int) -> Unit = {},
     onItemTypeClick: (Int) -> Unit = {},
 
-    ) {
+) {
     val focusRequester = remember {
         FocusRequester()
     }
@@ -120,7 +120,7 @@ fun SearchScreen(
                             IconButton(onClick = { onClearSearchText() }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = stringResource(R.string.delete),
+                                    contentDescription = stringResource(R.string.feature_searchscreen_delete),
                                 )
                             }
                         },
@@ -141,7 +141,7 @@ fun SearchScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalItemSpacing = 8.dp,
 
-                    ) {
+                ) {
                     items(searchUiState.notes) { notePadUiState ->
                         NoteCard(
                             notePad = notePadUiState,
@@ -163,7 +163,7 @@ fun SearchScreen(
 @Preview
 @Composable
 fun SearchScreenPreview() {
-    NotePadAppTheme {
+    SkTheme {
         SearchScreen(
             onBack = {},
             searchUiState = SearchUiState(
@@ -205,19 +205,19 @@ fun EmptySearchScreen(
         labels.map { Pair(it, Icons.Outlined.Label) }
     }
     LabelBox(
-        title = stringResource(R.string.types),
+        title = stringResource(R.string.feature_searchscreen_types),
         labelIcon = listOf(
-            Pair(stringResource(R.string.reminders), Icons.Outlined.Notifications),
-            Pair(stringResource(R.string.lists), Icons.Outlined.CheckBox),
-            Pair(stringResource(R.string.images), Icons.Outlined.Image),
-            Pair(stringResource(R.string.voice), Icons.Outlined.KeyboardVoice),
-            Pair(stringResource(R.string.drawings), Icons.Outlined.Brush),
+            Pair(stringResource(R.string.feature_searchscreen_reminders), Icons.Outlined.Notifications),
+            Pair(stringResource(R.string.feature_searchscreen_lists), Icons.Outlined.CheckBox),
+            Pair(stringResource(R.string.feature_searchscreen_images), Icons.Outlined.Image),
+            Pair(stringResource(R.string.feature_searchscreen_voice), Icons.Outlined.KeyboardVoice),
+            Pair(stringResource(R.string.feature_searchscreen_drawings), Icons.Outlined.Brush),
 
-            ),
+        ),
         onItemClick = onItemTypeClick,
     )
     LabelBox(
-        title = stringResource(R.string.labels),
+        title = stringResource(R.string.feature_searchscreen_labels),
         labelIcon = labelPair,
         onItemClick = onItemLabelClick,
     )
@@ -263,7 +263,15 @@ fun LabelBox(
                 Text(modifier = Modifier.weight(1f), text = title)
                 if (labelIcon.size > number) {
                     TextButton(onClick = { h = if (h == number) labelIcon.size else number }) {
-                        Text(text = if (h == number) stringResource(id = R.string.more) else stringResource(id = R.string.less))
+                        Text(
+                            text = if (h == number) {
+                                stringResource(id = R.string.feature_searchscreen_more)
+                            } else {
+                                stringResource(
+                                    id = R.string.feature_searchscreen_less,
+                                )
+                            },
+                        )
                     }
                 }
             }
@@ -302,7 +310,7 @@ fun LabelBoxPreview() {
             Pair("Voice", Icons.Default.KeyboardVoice),
             Pair("Voice", Icons.Default.KeyboardVoice),
 
-            ),
+        ),
     )
 }
 

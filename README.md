@@ -4,24 +4,29 @@
 [![Issues](https://img.shields.io/github/issues/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/Wladefant/mshdabiola/Play_NotePad/issues)
 [![License](https://img.shields.io/github/license/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/master/LICENSE)
 
-# Play NotePad
+# NotePad
 
 [<img src="/images/ic_launcher-playstore.png" align="left"
 width="200" hspace="10" vspace="10">](/images/ic_launcher-playstore.png)
 
-Play Notepad is a versatile note-taking app that allows you to easily capture and organize your
+Notepad is a versatile note-taking app that allows you to easily capture and organize your
 thoughts, ideas, and tasks. With a variety of features, Play Notepad makes it easy to stay on top of
 your notes and stay organized.
 
 Play NotePad is available on the Google Play Store:
 
 <p align="left">
-<a href="https://play.google.com/store/apps/">
+<a href="https://play.google.com/store/apps/details?id=com.mshdabiola.playnotepad">
     <img alt="Get it on Google Play"
         height="70"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>  
 
+<a href="https://github.com/mshdabiola/NotePad/releases">
+    <img alt="Get it on Google Play"
+        height="70"
+        src="images/github_image.png" />
+</a>  
 
 
 

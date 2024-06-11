@@ -1,12 +1,14 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.gradle.BaseExtension
+import com.mshdabiola.app.configureBadgingTasks
 import com.mshdabiola.app.configureGradleManagedDevices
 import com.mshdabiola.app.configureKotlinAndroid
 import com.mshdabiola.app.configurePrintApksTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.getByType
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -14,34 +16,18 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("com.android.application")
                 apply("org.jetbrains.kotlin.android")
+                apply("mshdabiola.android.lint")
+                apply("com.dropbox.dependency-guard")
             }
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
-//                compileSdk=33
-//                defaultConfig.targetSdk = 33
-//                compileSdkPreview = "UpsideDownCake"
-                defaultConfig.minSdk = 24
-                defaultConfig.versionName = "1.1.8"
-                defaultConfig.versionCode = 16
-
-                defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                defaultConfig.vectorDrawables {
-                    useSupportLibrary = true
-                }
-                // defaultConfig.resourceConfigurations+= listOf("en")
-                // configureFlavors(this)
+                defaultConfig.targetSdk = 34
                 configureGradleManagedDevices(this)
-
             }
             extensions.configure<ApplicationAndroidComponentsExtension> {
                 configurePrintApksTask(this)
-            }
-
-            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-                kotlinOptions {
-                    jvmTarget = "17"
-                }
+                configureBadgingTasks(extensions.getByType<BaseExtension>(), this)
             }
 
         }

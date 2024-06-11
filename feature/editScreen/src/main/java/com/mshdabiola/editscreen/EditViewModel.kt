@@ -3,10 +3,7 @@ package com.mshdabiola.editscreen
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.getValue
@@ -22,28 +19,28 @@ import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.NotePlayer
-import com.mshdabiola.common.Time12UserCase
+import com.mshdabiola.common.TimeUsercase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
 import com.mshdabiola.database.repository.NoteVoiceRepository
-import com.mshdabiola.designsystem.component.state.DateDialogUiData
-import com.mshdabiola.designsystem.component.state.DateListUiState
-import com.mshdabiola.designsystem.component.state.NoteCheckUiState
-import com.mshdabiola.designsystem.component.state.NoteImageUiState
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
-import com.mshdabiola.designsystem.component.state.NoteUiState
-import com.mshdabiola.designsystem.component.state.NoteUriState
-import com.mshdabiola.designsystem.component.state.NoteVoiceUiState
-import com.mshdabiola.designsystem.component.state.Notify
-import com.mshdabiola.designsystem.component.state.toNoteCheckUiState
-import com.mshdabiola.designsystem.component.state.toNoteImageUiState
-import com.mshdabiola.designsystem.component.state.toNotePad
-import com.mshdabiola.designsystem.component.state.toNotePadUiState
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.ui.state.DateDialogUiData
+import com.mshdabiola.ui.state.DateListUiState
+import com.mshdabiola.ui.state.NoteCheckUiState
+import com.mshdabiola.ui.state.NoteImageUiState
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.NoteTypeUi
+import com.mshdabiola.ui.state.NoteUiState
+import com.mshdabiola.ui.state.NoteUriState
+import com.mshdabiola.ui.state.NoteVoiceUiState
+import com.mshdabiola.ui.state.Notify
+import com.mshdabiola.ui.state.toNoteCheckUiState
+import com.mshdabiola.ui.state.toNoteImageUiState
+import com.mshdabiola.ui.state.toNotePad
+import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +66,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
@@ -82,18 +80,22 @@ class EditViewModel @Inject constructor(
     private val alarmManager: AlarmManager,
     private val noteVoiceRepository: NoteVoiceRepository,
     private val imageToText: ImageToText,
-    private val time12UserCase: Time12UserCase,
+    private val time12UserCase: TimeUsercase,
     private val dateStringUsercase: DateStringUsercase,
-    private val dateShortStringUsercase: DateShortStringUsercase
+    private val dateShortStringUsercase: DateShortStringUsercase,
 
 ) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
-    var notePadUiState by mutableStateOf(NotePad().toNotePadUiState(getTime = dateShortStringUsercase::invoke, toPath = contentManager::getImagePath))
+    var notePadUiState by mutableStateOf(
+        NotePad().toNotePadUiState(
+            getTime = dateShortStringUsercase::invoke,
+            toPath = contentManager::getImagePath,
+        ),
+    )
     var navigateToDrawing by mutableStateOf(false)
     private val _messages = MutableStateFlow(emptyList<Notify>().toImmutableList())
     val message = _messages.asStateFlow()
-
 
     private var photoId: Long = 0
     private var index = 0
@@ -172,42 +174,51 @@ class EditViewModel @Inject constructor(
                     val notePad = notePadRepository
                         .getOneNotePad(editArg.id)
                         .first()
-                        .toNotePadUiState(labels, getTime = dateShortStringUsercase::invoke,contentManager::getImagePath)
+                        ?.toNotePadUiState(
+                            labels,
+                            getTime = dateShortStringUsercase::invoke,
+                            contentManager::getImagePath,
+                        )
+                        ?: getNewNotepad()
                     val voices =
                         notePad.voices.map { it.copy(length = getAudioLength(it.voiceName)) }
                     val data = editArg.content
-                    val padUiState=notePad.copy(voices = voices.toImmutableList())
+                    val padUiState = notePad.copy(voices = voices.toImmutableList())
                     if (data == "extract") {
-                        onImage(contentManager.getImagePath(editArg.data),padUiState)
+                        onImage(contentManager.getImagePath(editArg.data), padUiState)
                         padUiState
-                    }else{
+                    } else {
                         padUiState
                     }
-
                 }
             }
 
-            //init Link in text
+            // init Link in text
             computeUri(notePadUiState.note)
 
-            //init bottom date
+            // init bottom date
             launch(Dispatchers.IO) {
                 initDate(notePadUiState.note)
             }
-
         }
-        viewModelScope.launch{
-            //on notepad image and labels change
+        viewModelScope.launch {
+            // on notepad image and labels change
             snapshotFlow {
                 notePadUiState
             }
                 .map { it.note.id }
                 .distinctUntilChanged { old, new -> old == new }
-                .collectLatest {
-                    if (it>-1){
+                .collectLatest { id ->
+                    if (id > -1) {
 
-                        notePadRepository.getOneNotePad(it)
-                            .mapNotNull { it.images to it.labels }
+                        notePadRepository.getOneNotePad(id)
+                            .mapNotNull {
+                                if (it != null) {
+                                    it.images to it.labels
+                                } else {
+                                    null
+                                }
+                            }
                             .distinctUntilChanged()
                             .collectLatest { pair ->
 
@@ -216,23 +227,19 @@ class EditViewModel @Inject constructor(
                                 val strLabel = pair.second.map { s ->
                                     labels.singleOrNull { it.id == s.labelId }?.label ?: ""
                                 }
-                                val image = pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
+                                val image =
+                                    pair.first.map { it.toNoteImageUiState(contentManager::getImagePath) }
 
                                 notePadUiState = notePadUiState.copy(
                                     labels = strLabel.toImmutableList(),
                                     images = image.toImmutableList(),
                                 )
-
-
                             }
-
                     }
-
                 }
-
         }
 
-        //save note
+        // save note
         viewModelScope.launch {
             snapshotFlow {
                 notePadUiState
@@ -244,7 +251,6 @@ class EditViewModel @Inject constructor(
                     //   computeUri(it.note)
                 }
         }
-
     }
 
     private suspend fun insertNotePad(notePad: NotePadUiState) {
@@ -462,12 +468,11 @@ class EditViewModel @Inject constructor(
         notePadUiState =
             notePadUiState.copy(note = notePadUiState.note.copy(isPin = !notePadUiState.note.isPin))
 
-        if (notePadUiState.note.isPin){
+        if (notePadUiState.note.isPin) {
             addNotify("Note is pinned")
-        }else{
+        } else {
             addNotify("Note is not pinned")
         }
-
     }
 
     fun onColorChange(index: Int) {
@@ -481,7 +486,11 @@ class EditViewModel @Inject constructor(
     }
 
     fun setAlarm(time: Long, interval: Long?) {
-        val note = notePadUiState.note.copy(reminder = time, interval = interval ?: -1, date = dateShortStringUsercase(time))
+        val note = notePadUiState.note.copy(
+            reminder = time,
+            interval = interval ?: -1,
+            date = dateShortStringUsercase(time),
+        )
         notePadUiState = notePadUiState.copy(note = note)
 
         viewModelScope.launch {
@@ -569,24 +578,24 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    private fun onImage(path: String,notePad: NotePadUiState) {
+    private fun onImage(path: String, notePad: NotePadUiState) {
         viewModelScope.launch {
             try {
-               // val image = notePad.images[index]
+                // val image = notePad.images[index]
                 val text = try {
                     imageToText.toText(path)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     ""
                 }
                 val note = notePad.note
-                notePadUiState = notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
+                notePadUiState =
+                    notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
                 addNotify("Image text extracted")
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 addNotify("Error occur during extract of image")
             }
-
         }
     }
 
@@ -599,31 +608,33 @@ class EditViewModel @Inject constructor(
         LocalTime(13, 0, 0),
         LocalTime(19, 0, 0),
         LocalTime(20, 0, 0),
-        LocalTime(20, 0, 0)
+        LocalTime(20, 0, 0),
     )
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     var datePicker: DatePickerState = DatePickerState(
-        System.currentTimeMillis(), System.currentTimeMillis(),
-        DatePickerDefaults.YearRange,
-        DisplayMode.Picker
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        locale = Locale.getDefault(),
     )
+
     @OptIn(ExperimentalMaterial3Api::class)
     var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
     private var currentLocalDate = LocalDate(1, 2, 3)
 
-    //date and time dialog logic
+    // date and time dialog logic
 
     private fun initDate(note: NoteUiState) {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
         currentDateTime =
-            if (note.reminder > 0) Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
-                TimeZone.currentSystemDefault()
-            ) else today
-        currentLocalDate=currentDateTime.date
-
+            if (note.reminder > 0) {
+                Instant.fromEpochMilliseconds(note.reminder).toLocalDateTime(
+                    TimeZone.currentSystemDefault(),
+                )
+            } else {
+                today
+            }
+        currentLocalDate = currentDateTime.date
 
         val timeList = listOf(
             DateListUiState(
@@ -631,92 +642,88 @@ class EditViewModel @Inject constructor(
                 value = "7:00 AM",
                 trail = "7:00 AM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Afternoon",
                 value = "1:00 PM",
                 trail = "1:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Evening",
                 value = "7:00 PM",
                 trail = "7:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Night",
                 value = "8:00 PM",
                 trail = "8:00 PM",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick time",
                 value = "1:00 PM",
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
 
         )
             .mapIndexed { index, dateListUiState ->
                 if (index != timeList.lastIndex) {
-
                     val greater = timeList[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
                         value = time12UserCase(timeList[index]),
-                        trail = time12UserCase(timeList[index])
+                        trail = time12UserCase(timeList[index]),
                     )
                 } else {
-                    dateListUiState.copy( value = time12UserCase(currentDateTime.time))
+                    dateListUiState.copy(value = time12UserCase(currentDateTime.time))
                 }
             }
             .toImmutableList()
-        val datelist=listOf(
+        val datelist = listOf(
             DateListUiState(
                 title = "Today",
                 value = "Today",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Tomorrow",
                 value = "Tomorrow",
                 isOpenDialog = false,
-                enable = true
+                enable = true,
             ),
             DateListUiState(
                 title = "Pick date",
                 value = dateStringUsercase(currentDateTime.date),
                 isOpenDialog = true,
-                enable = true
-            )
+                enable = true,
+            ),
         ).toImmutableList()
         val interval = when (note.interval) {
-           DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)->1
+            DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS) -> 1
 
-            DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)->2
+            DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS) -> 2
 
-            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)->3
+            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS) -> 3
 
-            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)->4
-            else->0
+            DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS) -> 4
+            else -> 0
         }
-
-
-
 
         _dateTimeState.update {
             it.copy(
                 isEdit = note.reminder > 0,
-                currentTime = if (note.reminder>0) timeList.lastIndex else 0,
+                currentTime = if (note.reminder > 0) timeList.lastIndex else 0,
                 timeData = timeList,
-                timeError = today>currentDateTime,
-                currentDate = if (note.reminder>0) datelist.lastIndex else 0,
+                timeError = today > currentDateTime,
+                currentDate = if (note.reminder > 0) datelist.lastIndex else 0,
                 dateData = datelist,
                 currentInterval = interval,
                 interval = listOf(
@@ -724,41 +731,41 @@ class EditViewModel @Inject constructor(
                         title = "Does not repeat",
                         value = "Does not repeat",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Daily",
                         value = "Daily",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Weekly",
                         value = "Weekly",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Monthly",
                         value = "Monthly",
                         isOpenDialog = false,
-                        enable = true
+                        enable = true,
                     ),
                     DateListUiState(
                         title = "Yearly",
                         value = "Yearly",
                         isOpenDialog = false,
-                        enable = true
-                    )
-                ).toImmutableList()
+                        enable = true,
+                    ),
+                ).toImmutableList(),
             )
         }
         setDatePicker(
-            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
         )
         setTimePicker(
             hour = currentDateTime.hour,
-            minute = currentDateTime.minute
+            minute = currentDateTime.minute,
         )
     }
 
@@ -766,37 +773,33 @@ class EditViewModel @Inject constructor(
         if (index == dateTimeState.value.dateData.lastIndex) {
             _dateTimeState.update {
                 it.copy(
-                    showDateDialog = true
+                    showDateDialog = true,
                 )
             }
         } else {
-            val date2=if (index==0)today.date else today.date.plus(1,DateTimeUnit.DAY)
-            val time=timeList[dateTimeState.value.currentTime]
-            val localtimedate=LocalDateTime(date2,time)
+            val date2 = if (index == 0) today.date else today.date.plus(1, DateTimeUnit.DAY)
+            val time = timeList[dateTimeState.value.currentTime]
+            val localtimedate = LocalDateTime(date2, time)
             _dateTimeState.update {
-
                 it.copy(
                     currentDate = index,
-                    timeError = today>localtimedate
-                    )
+                    timeError = today > localtimedate,
+                )
             }
-            val date = if (index == 0)
+            val date = if (index == 0) {
                 System.currentTimeMillis()
-            else
+            } else {
                 System.currentTimeMillis() + 24 * 60 * 60 * 1000
+            }
             setDatePicker(date)
         }
-
     }
-
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun setDatePicker(date: Long) {
         datePicker = DatePickerState(
-            date, date,
-            DatePickerDefaults.YearRange,
-            DisplayMode.Picker
+            initialSelectedDateMillis = date,
+            locale = Locale.getDefault(),
         )
     }
 
@@ -804,19 +807,19 @@ class EditViewModel @Inject constructor(
         if (index == dateTimeState.value.timeData.lastIndex) {
             _dateTimeState.update {
                 it.copy(
-                    showTimeDialog = true
+                    showTimeDialog = true,
                 )
             }
         } else {
             _dateTimeState.update {
                 it.copy(
                     currentTime = index,
-                    timeError = false
+                    timeError = false,
                 )
             }
             setTimePicker(
                 timeList[index].hour,
-                timeList[index].minute
+                timeList[index].minute,
             )
         }
     }
@@ -853,13 +856,12 @@ class EditViewModel @Inject constructor(
         val setime = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
         if (setime.toEpochMilliseconds() > now.toEpochMilliseconds()) {
             setAlarm(setime.toEpochMilliseconds(), interval)
-            //Timber.tag("editv").e("Set Alarm")
+            // Timber.tag("editv").e("Set Alarm")
             addNotify("Alarm is set")
-        }else{
-            //Timber.tag("editv").e("Alarm not set " + now + " " + setime)
+        } else {
+            // Timber.tag("editv").e("Alarm not set " + now + " " + setime)
             addNotify("Alarm not set, time as past")
         }
-
     }
 
     fun hideTime() {
@@ -874,15 +876,14 @@ class EditViewModel @Inject constructor(
         }
     }
 
-
     @OptIn(ExperimentalMaterial3Api::class)
     fun onSetDate() {
         datePicker.selectedDateMillis?.let { timee ->
             val date = Instant.fromEpochMilliseconds(timee)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             currentLocalDate = date.date
-            val time=timeList[dateTimeState.value.currentTime]
-            val localtimedate=LocalDateTime(currentLocalDate,time)
+            val time = timeList[dateTimeState.value.currentTime]
+            val localtimedate = LocalDateTime(currentLocalDate, time)
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
@@ -891,12 +892,10 @@ class EditViewModel @Inject constructor(
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
-                    timeError = today>localtimedate
+                    timeError = today > localtimedate,
                 )
             }
-
         }
-
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -909,10 +908,9 @@ class EditViewModel @Inject constructor(
             1 -> today.date.plus(1, DateTimeUnit.DAY)
             else -> currentLocalDate
         }
-        val datetime=LocalDateTime(date,time)
+        val datetime = LocalDateTime(date, time)
 
         Timber.tag("onSettime").e("current " + today + " date " + datetime)
-
 
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
@@ -920,7 +918,7 @@ class EditViewModel @Inject constructor(
             it.copy(
                 timeData = im.toImmutableList(),
                 currentTime = im.lastIndex,
-                timeError = datetime<today
+                timeError = datetime < today,
             )
         }
     }
@@ -935,7 +933,6 @@ class EditViewModel @Inject constructor(
     }
 
     private fun onNotifyDelive() {
-
         val notifies = _messages.value.toMutableList()
 
         notifies.removeFirst()
@@ -943,7 +940,4 @@ class EditViewModel @Inject constructor(
             notifies.toImmutableList()
         }
     }
-
-
-
 }

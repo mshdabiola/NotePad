@@ -50,8 +50,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.LabelCard
 import com.mshdabiola.editscreen.component.ShareViewModel
+import com.mshdabiola.ui.LabelCard
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -180,13 +180,13 @@ fun ActionEditScreen(
                         containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
+                        autoCorrectEnabled = true,
                         imeAction = ImeAction.Next,
                     ),
                     modifier = Modifier
                         .fillMaxWidth(),
 
-                    )
+                )
             }
 
             item {
@@ -201,7 +201,7 @@ fun ActionEditScreen(
                         containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        autoCorrect = true,
+                        autoCorrectEnabled = true,
                         keyboardType = KeyboardType.Text,
                         // imeAction = ImeAction.Done
                     ),
@@ -212,7 +212,7 @@ fun ActionEditScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
 
-                    )
+                )
             }
             if (labels.isNotEmpty()) {
                 item {
@@ -263,7 +263,7 @@ fun EditLabels(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
 
-                            ) {
+                        ) {
                             Text(text = label.label, modifier = Modifier.weight(1f))
                             Checkbox(
                                 checked = label.isCheck,
@@ -328,7 +328,7 @@ fun ActionEditScreenPreview() {
                 isCheck = false,
             ),
 
-            ).toImmutableList(),
+        ).toImmutableList(),
     )
 }
 
@@ -364,6 +364,6 @@ fun DialogPreview() {
                 isCheck = false,
             ),
 
-            ).toImmutableList(),
+        ).toImmutableList(),
     )
 }

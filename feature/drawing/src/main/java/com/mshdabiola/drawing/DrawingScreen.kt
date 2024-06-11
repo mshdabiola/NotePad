@@ -38,7 +38,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -47,27 +47,26 @@ import java.io.File
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    saveImage : (Long,Long)->Unit
+    saveImage: (Long, Long) -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
-    val lifecycleObserver= LocalLifecycleOwner.current
-    val defaultLifecycleObserver= object : DefaultLifecycleObserver {
+    val lifecycleObserver = LocalLifecycleOwner.current
+    val defaultLifecycleObserver = object : DefaultLifecycleObserver {
         override fun onPause(owner: LifecycleOwner) {
             super.onPause(owner)
-          //  viewModel.saveData()
-            saveImage(viewModel.imageID,viewModel.noteId)
-
+            //  viewModel.saveData()
+            saveImage(viewModel.imageID, viewModel.noteId)
         }
     }
     LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             viewModel.keepDataInFile(viewModel.controller.completePathData.value)
         }
     })
 
-    DisposableEffect(key1 = Unit){
+    DisposableEffect(key1 = Unit) {
         lifecycleObserver.lifecycle.addObserver(defaultLifecycleObserver)
-        onDispose {  lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver)}
+        onDispose { lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver) }
     }
 
     DrawingScreen(
@@ -152,28 +151,28 @@ fun DrawingScreen(
                             onDismissRequest = { showDropDown = false },
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.grab_image_text)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_grab_image_text)) },
                                 onClick = {
                                     showDropDown = false
                                     //  onGrabText()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.copy)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_copy)) },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.send)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_send)) },
                                 onClick = {
                                     showDropDown = false
                                     onSend()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.delete)) },
+                                text = { Text(text = stringResource(R.string.feature_drawing_delete)) },
                                 onClick = {
                                     showDropDown = false
                                     onDeleteImage()

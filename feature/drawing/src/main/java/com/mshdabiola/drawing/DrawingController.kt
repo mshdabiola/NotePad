@@ -1,22 +1,15 @@
 package com.mshdabiola.drawing
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.RectF
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DRAW_MODE
 import com.mshdabiola.model.MODE
@@ -43,7 +36,7 @@ class DrawingController {
         Color(0xFFF50057),
         Color(0xFFFF3D00),
 
-        )
+    )
 
     val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Round)
     val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
@@ -55,10 +48,12 @@ class DrawingController {
     var draw_mode = DRAW_MODE.PEN
     var colorAlpha = 1f
 
-    private var _unCompletePathData = mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
+    private var _unCompletePathData =
+        mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
     val unCompletePathData: State<ImmutablePath> = _unCompletePathData
 
-    private var _completePathData = mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
+    private var _completePathData =
+        mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
     val completePathData: State<ImmutablePath> = _completePathData
 
     private val redoPaths = HashMap<PathData, List<Coordinate>>()
@@ -76,36 +71,36 @@ class DrawingController {
     fun setPathData(x: Float, y: Float, mode: MODE) {
         when (draw_mode) {
             DRAW_MODE.ERASE -> {
-                when(mode){
-                    MODE.DOWN->{
+                when (mode) {
+                    MODE.DOWN -> {
                         xx = x
                         yy = y
                     }
-                    MODE.MOVE->{
+
+                    MODE.MOVE -> {
                         val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
                         val paths = _unCompletePathData.value.toMutableMap()
                         val path =
                             paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
-                        if (path.isNotEmpty()){
+                        if (path.isNotEmpty()) {
                             path.forEach { p ->
                                 paths.remove(p.key)
                                 redoPaths[p.key] = p.value
                             }
-                            //rearrange id
-                            val newPaths= HashMap<PathData,List<Coordinate>>()
-                           paths
+                            // rearrange id
+                            val newPaths = HashMap<PathData, List<Coordinate>>()
+                            paths
                                 .toList()
                                 .forEachIndexed { index, pair ->
-                                    val newdata=pair.first.copy(id=index)
+                                    val newdata = pair.first.copy(id = index)
                                     newPaths[newdata] = pair.second
                                 }
 
-
-                                _unCompletePathData.value=newPaths.toImmutableMap()
+                            _unCompletePathData.value = newPaths.toImmutableMap()
                         }
-
                     }
-                    MODE.UP->{
+
+                    MODE.UP -> {
                         setCompleteList()
                     }
                 }
@@ -129,7 +124,7 @@ class DrawingController {
 
                         list.add(Coordinate(x, y))
                         paths2[pathData] = list
-                       _unCompletePathData.value= paths2.toImmutableMap()
+                        _unCompletePathData.value = paths2.toImmutableMap()
                     }
 
                     MODE.MOVE -> {
@@ -138,11 +133,11 @@ class DrawingController {
 
                         list.add(Coordinate(x, y))
                         paths2[pathData] = list
-                       _unCompletePathData.value = paths2.toImmutableMap()
+                        _unCompletePathData.value = paths2.toImmutableMap()
                     }
 
                     MODE.UP -> {
-                        //save data
+                        // save data
                         setCompleteList()
                     }
                 }
@@ -155,8 +150,8 @@ class DrawingController {
         val paths = _unCompletePathData.value.toMutableMap()
         paths.putAll(pathDatas)
         //  id = pathDatas.size
-        _unCompletePathData.value= paths.toImmutableMap()
-        _completePathData.value=paths.toImmutableMap()
+        _unCompletePathData.value = paths.toImmutableMap()
+        _completePathData.value = paths.toImmutableMap()
     }
 
     fun undo() {
@@ -164,7 +159,7 @@ class DrawingController {
             val paths = _unCompletePathData.value.toMutableMap()
             val lastKey = paths.keys.last()
             redoPaths[lastKey] = paths.remove(lastKey)!!
-            _unCompletePathData.value= paths.toImmutableMap()
+            _unCompletePathData.value = paths.toImmutableMap()
             setDoUnDo()
         }
     }
@@ -173,7 +168,7 @@ class DrawingController {
         _canUndo.value = _unCompletePathData.value.isNotEmpty()
         _canRedo.value = redoPaths.isNotEmpty()
 
-        //save data
+        // save data
         setCompleteList()
     }
 
@@ -182,7 +177,7 @@ class DrawingController {
             val paths = _unCompletePathData.value.toMutableMap()
             val lastKey = redoPaths.keys.last()
             paths[lastKey] = redoPaths.remove(lastKey)!!
-            _unCompletePathData.value= paths.toImmutableMap()
+            _unCompletePathData.value = paths.toImmutableMap()
 
             setDoUnDo()
             // listOfPathData.value.add(redoPaths.removeLast())
@@ -222,14 +217,12 @@ class DrawingController {
         redoPaths.clear()
         _unCompletePathData.value = paths.toImmutableMap()
         setDoUnDo()
-        //save data
+        // save data
     }
 
-    private fun setCompleteList(){
-        _completePathData.value=unCompletePathData.value
-
+    private fun setCompleteList() {
+        _completePathData.value = unCompletePathData.value
     }
-
 }
 
 @Composable

@@ -11,8 +11,8 @@ import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.database.repository.LabelRepository
 import com.mshdabiola.database.repository.NotePadRepository
-import com.mshdabiola.designsystem.component.state.NotePadUiState
-import com.mshdabiola.designsystem.component.state.toNotePadUiState
+import com.mshdabiola.ui.state.NotePadUiState
+import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -27,7 +27,7 @@ class SearchViewModel @Inject constructor(
     private val notePadRepository: NotePadRepository,
     private val labelRepository: LabelRepository,
     private val dateShortStringUsercase: DateShortStringUsercase,
-    private val contentManager: ContentManager
+    private val contentManager: ContentManager,
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
@@ -42,7 +42,10 @@ class SearchViewModel @Inject constructor(
                     notePads = pads.map { it ->
                         val labels =
                             it.labels.map { notelab -> lab.single { it.id == notelab.labelId }.label }
-                        it.toNotePadUiState(getTime=dateShortStringUsercase::invoke, toPath = contentManager::getImagePath).copy(labels = labels.toImmutableList())
+                        it.toNotePadUiState(
+                            getTime = dateShortStringUsercase::invoke,
+                            toPath = contentManager::getImagePath,
+                        ).copy(labels = labels.toImmutableList())
                     }
 
                     val labels = notePads

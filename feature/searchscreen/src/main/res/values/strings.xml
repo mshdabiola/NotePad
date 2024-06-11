@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="delete">delete</string>
-    <string name="reminders">Reminders</string>
-    <string name="lists">Lists</string>
-    <string name="types">Types</string>
-    <string name="images">Images</string>
-    <string name="voice">Voice</string>
-    <string name="drawings">Drawings</string>
-    <string name="labels">Labels</string>
-    <string name="more">More</string>
-    <string name="less">Less</string>
+    <string name="feature_searchscreen_delete">delete</string>
+    <string name="feature_searchscreen_reminders">Reminders</string>
+    <string name="feature_searchscreen_lists">Lists</string>
+    <string name="feature_searchscreen_types">Types</string>
+    <string name="feature_searchscreen_images">Images</string>
+    <string name="feature_searchscreen_voice">Voice</string>
+    <string name="feature_searchscreen_drawings">Drawings</string>
+    <string name="feature_searchscreen_labels">Labels</string>
+    <string name="feature_searchscreen_more">More</string>
+    <string name="feature_searchscreen_less">Less</string>
 </resources>

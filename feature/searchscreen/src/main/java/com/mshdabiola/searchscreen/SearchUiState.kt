@@ -1,6 +1,6 @@
 package com.mshdabiola.searchscreen
 
-import com.mshdabiola.designsystem.component.state.NotePadUiState
+import com.mshdabiola.ui.state.NotePadUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

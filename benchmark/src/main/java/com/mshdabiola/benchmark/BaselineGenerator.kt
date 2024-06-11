@@ -14,7 +14,7 @@ class BaselineGenerator {
     val baselineProfileRule = BaselineProfileRule()
 
     @Test
-    fun startUp() = baselineProfileRule.collectBaselineProfile(
+    fun startUp(): Unit = baselineProfileRule.collectBaselineProfile(
         packageName = "com.mshdabiola.playnotepad",
     ) {
         pressHome()

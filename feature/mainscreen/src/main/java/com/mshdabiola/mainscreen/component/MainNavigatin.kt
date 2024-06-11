@@ -39,10 +39,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.common.R
-import com.mshdabiola.designsystem.component.state.LabelUiState
-import com.mshdabiola.designsystem.component.state.NoteTypeUi
+import com.mshdabiola.designsystem.R
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.ui.state.LabelUiState
+import com.mshdabiola.ui.state.NoteTypeUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -56,7 +56,7 @@ fun MainNavigation(
     labels: ImmutableList<LabelUiState>,
     navigateToAbout: () -> Unit = {},
 
-    ) {
+) {
     Surface(
         modifier = Modifier
             .fillMaxHeight()
@@ -83,19 +83,19 @@ fun MainNavigation(
                         ),
                     ),
 
-                )
+            )
             Spacer(
                 modifier = Modifier.height(16.dp),
 
-                )
+            )
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.app_icon),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.modules_designsystem_app_icon),
                         contentDescription = "note",
                     )
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.notes)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_notes)) },
                 selected = currentType.type == NoteType.NOTE,
                 onClick = { onNavigation(NoteTypeUi()) },
             )
@@ -103,7 +103,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.reminders)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_reminders)) },
                 selected = currentType.type == NoteType.REMAINDER,
                 onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) },
             )
@@ -119,9 +119,12 @@ fun MainNavigation(
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(modifier = Modifier.weight(1f), text = stringResource(com.mshdabiola.mainscreen.R.string.labels))
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_labels),
+                )
                 TextButton(onClick = { navigateToLevel(false) }) {
-                    Text(text = stringResource(com.mshdabiola.mainscreen.R.string.edit))
+                    Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_edit))
                 }
             }
 
@@ -142,7 +145,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.create_new_label)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_create_new_label)) },
                 selected = false,
                 onClick = { navigateToLevel(true) },
             )
@@ -156,7 +159,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.archive)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_archive)) },
                 selected = currentType.type == NoteType.ARCHIVE,
                 onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) },
             )
@@ -165,7 +168,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.trash)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_trash)) },
                 selected = currentType.type == NoteType.TRASH,
                 onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) },
             )
@@ -180,7 +183,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Info, contentDescription = "")
                 },
-                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.about)) },
+                label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_about)) },
                 selected = false,
                 onClick = {
                     navigateToAbout()

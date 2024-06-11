@@ -37,8 +37,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import com.mshdabiola.firebase.FirebaseScreenLog
+import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
@@ -70,8 +69,8 @@ fun GalleryScreen(
     onDelete: (Long) -> Unit = {},
     onToText: (Long) -> Unit = {},
 ) {
-    val pagerState = rememberPagerState(){
-       galleryUiState.images.size
+    val pagerState = rememberPagerState() {
+        galleryUiState.images.size
     }
 //    var currIndex = remember(pagerState.currentPage) {
 //        pa
@@ -134,16 +133,15 @@ fun GalleryScreen(
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
-                if (image!=null){
+                if (image != null) {
                     ZoomableAsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = image.path,
                         contentDescription = "",
                         alignment = Alignment.Center,
 
-                        )
+                    )
                 }
-
             }
         }
     }
@@ -165,7 +163,7 @@ fun GalleryTopAppBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -184,28 +182,28 @@ fun GalleryTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.grab_image_text)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_grab_image_text)) },
                         onClick = {
                             showDropDown = false
                             onGrabText()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.copy)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_copy)) },
                         onClick = {
                             showDropDown = false
                             onCopy()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.send)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_send)) },
                         onClick = {
                             showDropDown = false
                             onSend()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.delete)) },
+                        text = { Text(text = stringResource(R.string.feature_gallery_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
@@ -215,5 +213,5 @@ fun GalleryTopAppBar(
             }
         },
 
-        )
+    )
 }

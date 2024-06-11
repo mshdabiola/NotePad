@@ -28,7 +28,7 @@ fun NoteOptionBottomSheet(
     onCopy: () -> Unit = {},
     onSendNote: () -> Unit = {},
     onLabel: () -> Unit = {},
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
     val background = if (currentImage != -1) {
@@ -44,10 +44,8 @@ fun NoteOptionBottomSheet(
     if (show) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            containerColor = background
+            containerColor = background,
         ) {
-
-
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -55,7 +53,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.delete)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_delete)) },
                 selected = false,
                 onClick = {
                     onDelete()
@@ -71,7 +69,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.make_a_copy)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_make_a_copy)) },
                 selected = false,
                 onClick = {
                     onCopy()
@@ -86,7 +84,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.send)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_send)) },
                 selected = false,
                 onClick = {
                     onSendNote()
@@ -101,7 +99,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.labels)) },
+                label = { Text(text = stringResource(R.string.feature_editscreen_labels)) },
                 selected = false,
                 onClick = {
                     onLabel()
@@ -123,6 +121,4 @@ fun NoteOptionBottomSheet(
 //                    })
         }
     }
-
-
 }

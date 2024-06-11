@@ -1,14 +1,10 @@
 package com.mshdabiola.baselineprofile
 
 // import androidx.benchmark.macro.ExperimentalBaselineProfilesApi
-import androidx.benchmark.macro.junit4.BaselineProfileRule
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.Direction
-import org.junit.Rule
-import org.junit.Test
+
 //
-//// @OptIn(ExperimentalBaselineProfilesApi::class)
-//class BaselineGenerator {
+// // @OptIn(ExperimentalBaselineProfilesApi::class)
+// class BaselineGenerator {
 //
 //    @get:Rule
 //    val baselineProfileRule = BaselineProfileRule()
@@ -29,36 +25,36 @@ import org.junit.Test
 //        lazy.children[0].click()
 //        device.waitForIdle()
 //
-////        device.findObject(By.res("note image")).click()
-////        device.waitForIdle()
-////        device.findObject(By.descContains("back")).click()
+// //        device.findObject(By.res("note image")).click()
+// //        device.waitForIdle()
+// //        device.findObject(By.descContains("back")).click()
 //        device.waitForIdle()
 //        device.findObject(By.descContains("back")).click()
-////
-////        device.waitForIdle()
-////        device.findObject(UiSelector().text("Cancel")).click()
-////
-////        device.waitForIdle()
-////        device.findObject(UiSelector().text("Play")).click()
-////
-////        device.waitForIdle()
-////        device.findObject(UiSelector().descriptionContains("menu")).click()
-////        device.findObject(UiSelector().text("Home")).click()
-////
-////        device.waitForIdle()
-////        device.findObject(UiSelector().descriptionContains("Setting")).click()
-////
-////        device.waitForIdle()
-////        device.findObject(UiSelector().text("Player name")).swipeDown(2)
-////        device.findObject(UiSelector().text("Player name")).swipeUp(2)
-////
-////        device.findObject(UiSelector().descriptionContains("close")).click()
-////        device.waitForIdle()
-////        device.findObject(UiSelector().descriptionContains("close")).click()
-////         while(!device.hasObject(By.text("6"))){
-////            device.findObject(UiSelector().descriptionContains("dice")).click()
-////            device.waitForIdle()
-////         }
-////        device.findObject(UiSelector().text("6")).click()
+// //
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().text("Cancel")).click()
+// //
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().text("Play")).click()
+// //
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().descriptionContains("menu")).click()
+// //        device.findObject(UiSelector().text("Home")).click()
+// //
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().descriptionContains("Setting")).click()
+// //
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().text("Player name")).swipeDown(2)
+// //        device.findObject(UiSelector().text("Player name")).swipeUp(2)
+// //
+// //        device.findObject(UiSelector().descriptionContains("close")).click()
+// //        device.waitForIdle()
+// //        device.findObject(UiSelector().descriptionContains("close")).click()
+// //         while(!device.hasObject(By.text("6"))){
+// //            device.findObject(UiSelector().descriptionContains("dice")).click()
+// //            device.waitForIdle()
+// //         }
+// //        device.findObject(UiSelector().text("6")).click()
 //    }
-//}
+// }

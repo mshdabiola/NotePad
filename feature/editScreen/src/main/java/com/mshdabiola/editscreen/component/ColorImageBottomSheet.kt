@@ -46,7 +46,7 @@ fun ColorAndImageBottomSheet(
     onColorClick: (Int) -> Unit = {},
     onImageClick: (Int) -> Unit = {},
     show: Boolean,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
 ) {
     rememberCoroutineScope()
     val background = if (currentImage != -1) {
@@ -63,10 +63,12 @@ fun ColorAndImageBottomSheet(
             onDismissRequest = onDismissRequest,
             containerColor = background,
 
-            ) {
-
+        ) {
             Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
-                Text(text = stringResource(R.string.color), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.feature_editscreen_color),
+                    style = MaterialTheme.typography.titleSmall,
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -120,7 +122,10 @@ fun ColorAndImageBottomSheet(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = stringResource(R.string.background), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.feature_editscreen_background),
+                    style = MaterialTheme.typography.titleSmall,
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
@@ -149,7 +154,7 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                    )
+                                )
                             }
                         }
                     }
@@ -180,14 +185,12 @@ fun ColorAndImageBottomSheet(
                                     contentDescription = "",
                                     tint = Color.White,
 
-                                    )
+                                )
                             }
                         }
                     }
                 }
-
             }
-
         }
     }
 }

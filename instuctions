@@ -1,0 +1,12 @@
+ ./gradlew :modules:designsystem:jacocoTestReport
+
+   ./gradlew lintFossReliantDebug; ./gradlew updateFossReliantReleaseBadging; ./gradlew dependencyGuardBaseline; ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew recordRoborazziFossReliantDebug
+
+        ./gradlew lintGooglePlayDebug; ./gradlew updateGooglePlayReleaseBadging; ./gradlew dependencyGuardBaseline; ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew recordRoborazziGooglePlayDebug
+
+        ./gradlew dependencyGuard; ./gradlew checkReleaseBadging; ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew verifyRoborazziDebug
+
+    ./gradlew assembleDebug -PenableComposeCompilerMetrics=true -PenableComposeCompilerReports=true
+
+    ./gradlew :app:generateReleaseBaselineProfile
+

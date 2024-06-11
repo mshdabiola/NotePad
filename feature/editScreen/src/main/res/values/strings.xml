@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title">Title</string>
-    <string name="hide_checkboxes">Hide checkboxes</string>
-    <string name="delete_checked_items">Delete checked items</string>
-    <string name="uncheck_all_items">UnCheck all items</string>
-    <string name="subject">Subject</string>
-    <string name="add_list_item">Add list item</string>
-    <string name="checked_items">Checked Items</string>
-    <string name="edited">Edited</string>
-    <string name="take_photo">Take photo</string>
-    <string name="add_image">Add image</string>
-    <string name="drawing">Drawing</string>
-    <string name="recording">Recording</string>
-    <string name="checkboxes">Checkboxes</string>
-    <string name="color">Color</string>
-    <string name="background">Background</string>
-    <string name="delete">Delete</string>
-    <string name="make_a_copy">Make a copy</string>
-    <string name="send">Send</string>
-    <string name="labels">Labels</string>
+    <string name="feature_editscreen_title">Title</string>
+    <string name="feature_editscreen_hide_checkboxes">Hide checkboxes</string>
+    <string name="feature_editscreen_delete_checked_items">Delete checked items</string>
+    <string name="feature_editscreen_uncheck_all_items">UnCheck all items</string>
+    <string name="feature_editscreen_subject">Subject</string>
+    <string name="feature_editscreen_add_list_item">Add list item</string>
+    <string name="feature_editscreen_checked_items">Checked Items</string>
+    <string name="feature_editscreen_edited">Edited</string>
+    <string name="feature_editscreen_take_photo">Take photo</string>
+    <string name="feature_editscreen_add_image">Add image</string>
+    <string name="feature_editscreen_drawing">Drawing</string>
+    <string name="feature_editscreen_recording">Recording</string>
+    <string name="feature_editscreen_checkboxes">Checkboxes</string>
+    <string name="feature_editscreen_color">Color</string>
+    <string name="feature_editscreen_background">Background</string>
+    <string name="feature_editscreen_delete">Delete</string>
+    <string name="feature_editscreen_make_a_copy">Make a copy</string>
+    <string name="feature_editscreen_send">Send</string>
+    <string name="feature_editscreen_labels">Labels</string>
 </resources>
