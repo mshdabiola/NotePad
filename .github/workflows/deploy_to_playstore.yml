@@ -3,7 +3,7 @@ name: Deploy to Play Store and Firebase
 on:
   push:
     tags:
-      - '*'
+      - 't[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build:

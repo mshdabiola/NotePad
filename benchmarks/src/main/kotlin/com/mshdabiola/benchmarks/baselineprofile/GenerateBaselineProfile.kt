@@ -8,8 +8,6 @@ import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
 import com.mshdabiola.benchmarks.PACKAGE_NAME
-import com.mshdabiola.benchmarks.startActivity
-import com.mshdabiola.benchmarks.waitAndFindObject
 import org.junit.Rule
 import org.junit.Test
 

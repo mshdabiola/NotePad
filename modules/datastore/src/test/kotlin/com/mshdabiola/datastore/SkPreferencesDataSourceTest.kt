@@ -48,7 +48,7 @@ class SkPreferencesDataSourceTest {
     }
 
     @Test
-    fun userShouldUseDynamicColorIsTrueWhenSet() =runTest {
+    fun userShouldUseDynamicColorIsTrueWhenSet() = runTest {
         subject.setDynamicColorPreference(true)
         assertTrue(subject.userData.first().useDynamicColor)
     }

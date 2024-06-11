@@ -4,11 +4,6 @@
 
 package com.mshdabiola.datastore
 
-import kotlinx.coroutines.test.runTest
-import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
 class ListToMapMigrationTest {
 //
 //    @Test
@@ -62,5 +57,4 @@ class ListToMapMigrationTest {
 //        // Assert that the migration has been marked complete
 //        assertTrue(postMigrationUserPreferences.hasDoneListToMapMigration)
 //    }
-
 }

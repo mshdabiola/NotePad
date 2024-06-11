@@ -4,11 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.mshdabiola.database.model.toNoteEntity
 import com.mshdabiola.model.Note
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,10 +31,10 @@ class NoteDaoTest {
     fun upsertTest() = runBlocking {
 //        val id = generalDao.addNote(noteEntity.toNoteEntity())
 //        val id2 = generalDao.addNote(noteEntity.toNoteEntity())
-////        ludoDao.upsert(ludoEntity)
-////
-////        val size = ludoDao.getAll().first().size
-////
+// //        ludoDao.upsert(ludoEntity)
+// //
+// //        val size = ludoDao.getAll().first().size
+// //
 //        Assert.assertEquals(1, id)
 //        Assert.assertEquals(3, id2)
     }
