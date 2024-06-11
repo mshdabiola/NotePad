@@ -54,7 +54,7 @@ androidxWork = "2.9.0"
 
 coil = "2.5.0"
 
-hilt = "2.50"
+hilt = "2.51.1"
 hiltExt = "1.2.0"
 
 
