@@ -689,7 +689,7 @@ fun EditScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ColorLens,
-                        contentDescription = "color and background",
+                        contentDescription = "colors",
                     )
                 }
                 Row(

@@ -33,10 +33,13 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = BuildType.DEBUG.applicationIdSuffix
+            versionNameSuffix=BuildType.DEBUG.versionNameSuffix
         }
         val release = getByName("release") {
             isMinifyEnabled = true
             applicationIdSuffix = BuildType.RELEASE.applicationIdSuffix
+            versionNameSuffix=BuildType.RELEASE.versionNameSuffix
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
