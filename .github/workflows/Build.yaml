@@ -234,7 +234,7 @@ jobs:
           min-coverage-changed-files: 60
           paths: |
             ${{ github.workspace }}/**/build/reports/jacoco/**/*Report.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Upload local coverage reports (XML + HTML) (only API 30)
         if: matrix.api-level == 30
