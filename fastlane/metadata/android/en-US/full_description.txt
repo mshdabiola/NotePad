@@ -1,0 +1,17 @@
+Play NotePad: Organize Your Life in Style
+
+Stay on top of your personal and professional life with Play NotePad, a feature-rich note-taking app designed for efficiency.
+
+MAIN FEATURES
+
+* Effortless Note Taking: Create and edit text notes, attach photos and drawings, or record audio for on-the-go capture.
+* Enhanced Organization: Categorize notes with labels, set reminders for deadlines, and prioritize tasks with pinning.
+* Visual Appeal: Personalize your note backgrounds with colors and images, and choose between list or column view for easy navigation.
+* Offline Access: Never lose your notes, even without an internet connection.
+* Seamless Collaboration: Share notes via email or messaging for effective teamwork.
+
+Play NotePad is more than just a notepad - it's your essential companion for managing and organizing your notes in style.**
+
+
+Source code:
+http://github.com/mshdabiola/notepad
