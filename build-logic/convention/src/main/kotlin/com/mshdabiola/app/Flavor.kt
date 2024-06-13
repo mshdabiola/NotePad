@@ -24,7 +24,7 @@ enum class Flavor(
 ) {
     //    demo(FlavorDimension.contentType, applicationIdSuffix = ".demo", "-demo"),
 //    prod(FlavorDimension.contentType),
-    fossReliant(FlavorDimension.store,applicationIdSuffix=".foss","-foss"),
+    fossReliant(FlavorDimension.store,applicationIdSuffix=".foss"),
     googlePlay(FlavorDimension.store, applicationIdSuffix = ".play", versionNameSuffix = "-play")
 }
 
