@@ -10,3 +10,7 @@
 
     ./gradlew :app:generateReleaseBaselineProfile
 
+            sed -i -e '/google-services/d' -e '/firebase/d' ../build.gradle.kts;
+            sed -i -e '/mlkit/,+14d' -e '/google-services/d' -e '/firebase/d' build.gradle.kts;
+            sed -i -e '/with(target) {/,/^        }/d' -e '/CrashlyticsExtension/d' build-logic/convention/src/main/kotlin/AndroidApplicationFirebaseConventionPlugin.kt
+
