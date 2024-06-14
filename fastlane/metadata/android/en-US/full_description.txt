@@ -10,7 +10,7 @@ MAIN FEATURES
 * Offline Access: Never lose your notes, even without an internet connection.
 * Seamless Collaboration: Share notes via email or messaging for effective teamwork.
 
-Play NotePad is more than just a notepad - it's your essential companion for managing and organizing your notes in style.**
+Play NotePad is more than just a notepad - it's your essential companion for managing and organizing your notes in style.
 
 
 Source code:
