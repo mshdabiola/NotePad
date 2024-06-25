@@ -22,9 +22,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.mshdabiola.analytics.AnalyticsHelper
 import com.mshdabiola.analytics.LocalAnalyticsHelper
-import com.mshdabiola.common.ContentManager
-import com.mshdabiola.database.repository.DrawingPathRepository
-import com.mshdabiola.database.repository.NoteImageRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.IDrawingPathRepository
+import com.mshdabiola.data.repository.INoteImageRepository
 import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
@@ -55,13 +55,13 @@ class MainActivity : ComponentActivity() {
     private var show by mutableStateOf(false)
 
     @Inject
-    lateinit var contentManager: ContentManager
+    lateinit var contentManager: IContentManager
 
     @Inject
-    lateinit var noteImageRepository: NoteImageRepository
+    lateinit var noteImageRepository: INoteImageRepository
 
     @Inject
-    lateinit var drawingPathRepository: DrawingPathRepository
+    lateinit var drawingPathRepository: IDrawingPathRepository
 
     val viewModel: MainActivityViewModel by viewModels()
 

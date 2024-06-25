@@ -1,17 +1,18 @@
-/*
- *abiola 2024
- */
-
 package com.mshdabiola.data.repository
 
+import com.mshdabiola.database.dao.NoteDao
+import com.mshdabiola.data.model.toNoteEntity
 import com.mshdabiola.model.Note
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-interface NoteRepository {
-    suspend fun upsert(note: Note): Long
-    fun getAll(): Flow<List<Note>>
+internal class NoteRepository
+@Inject constructor(
+    private val noteDao: NoteDao,
+) : INoteRepository {
 
-    fun getOne(id: Long): Flow<Note?>
-
-    suspend fun delete(id: Long)
+    override suspend fun upsert(notes: List<Note>) = withContext(Dispatchers.IO) {
+        noteDao.upsert(notes.map { it.toNoteEntity() })
+    }
 }

@@ -11,6 +11,3 @@ data class NoteLabelEntity(
     val noteId: Long,
     val labelId: Long,
 )
-
-fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
-fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)

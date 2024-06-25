@@ -13,6 +13,3 @@ data class NoteCheckEntity(
     val content: String,
     val isCheck: Boolean,
 )
-
-fun NoteCheckEntity.toNoteCheck() = NoteCheck(id, noteId, content, isCheck)
-fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id, noteId, content, isCheck)

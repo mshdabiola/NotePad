@@ -15,6 +15,3 @@ data class NoteImageEntity(
     @ColumnInfo(defaultValue = "0")
     val timestamp: Long,
 )
-
-fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing, timestamp)
-fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, isDrawing, timestamp)

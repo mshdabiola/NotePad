@@ -13,6 +13,3 @@ data class NoteVoiceEntity(
     val noteId: Long,
     val voiceName: String,
 )
-
-fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
-fun NoteVoiceEntity.toNoteVoice() = NoteVoice(id, noteId, voiceName)

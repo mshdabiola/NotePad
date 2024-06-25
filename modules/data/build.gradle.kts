@@ -24,6 +24,7 @@ dependencies {
     api(project(":modules:common"))
     api(project(":modules:database"))
     api(project(":modules:datastore"))
+    api(project(":modules:model"))
 
     implementation(project(":modules:analytics"))
 

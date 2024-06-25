@@ -20,32 +20,3 @@ data class NoteEntity(
     val interval: Long,
     val noteType: NoteType,
 )
-
-fun Note.toNoteEntity() =
-    NoteEntity(
-        id,
-        title,
-        detail,
-        editDate,
-        isCheck,
-        color,
-        background,
-        isPin,
-        reminder,
-        interval,
-        noteType,
-    )
-
-fun NoteEntity.toNote() = Note(
-    id,
-    title,
-    detail,
-    editDate,
-    isCheck,
-    color,
-    background,
-    isPin,
-    reminder,
-    interval,
-    noteType,
-)

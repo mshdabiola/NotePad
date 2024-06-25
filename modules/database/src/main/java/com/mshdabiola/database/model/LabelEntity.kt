@@ -10,6 +10,3 @@ data class LabelEntity(
     val id: Long,
     val name: String,
 )
-
-fun LabelEntity.toLabel() = Label(id, name)
-fun Label.toLabelEntity() = LabelEntity(id, label)

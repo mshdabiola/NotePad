@@ -17,11 +17,3 @@ data class NotePadEntity(
     @Relation(parentColumn = "id", entityColumn = "noteId")
     val labels: List<NoteLabelEntity>,
 )
-
-fun NotePadEntity.toNotePad() = NotePad(
-    note = noteEntity.toNote(),
-    images = images.map { it.toNoteImage() },
-    voices = voices.map { it.toNoteVoice() },
-    checks = checks.map { it.toNoteCheck() },
-    labels = labels.map { it.toNoteLabel() },
-)
