@@ -7,15 +7,15 @@ import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class AlarmManager
+internal class AlarmManager
 @Inject constructor(
     @ApplicationContext private val context: Context,
-) {
+) : IAlarmManager {
 
-    fun setAlarm(
+    override fun setAlarm(
         timeInMil: Long,
         interval: Long?,
-        requestCode: Int = 0,
+        requestCode: Int,
         title: String,
         noteId: Long,
         content: String,
@@ -54,7 +54,7 @@ class AlarmManager
         }
     }
 
-    fun deleteAlarm(requestCode: Int = 0) {
+    override fun deleteAlarm(requestCode: Int) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
