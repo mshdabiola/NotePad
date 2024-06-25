@@ -43,10 +43,10 @@
             <option value="$PROJECT_DIR$/modules/designsystem" />
             <option value="$PROJECT_DIR$/modules/domain" />
             <option value="$PROJECT_DIR$/modules/model" />
-            <option value="$PROJECT_DIR$/modules/network" />
+            <option value="$PROJECT_DIR$/modules/screenshot-testing" />
             <option value="$PROJECT_DIR$/modules/testing" />
             <option value="$PROJECT_DIR$/modules/ui" />
-            <option value="$PROJECT_DIR$/modules/worker" />
+            <option value="$PROJECT_DIR$/ui-test-hilt-manifest" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
