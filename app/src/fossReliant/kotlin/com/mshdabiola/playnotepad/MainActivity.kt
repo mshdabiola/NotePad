@@ -103,10 +103,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 SkTheme(
                     darkTheme = darkTheme,
-                    themeBrand = chooseTheme(uiState),
-                    themeContrast = chooseContrast(uiState),
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
-                    useAndroidTheme = shouldUseAndroidTheme(uiState),
                 ) {
                     NotePadApp(
                         windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity),
