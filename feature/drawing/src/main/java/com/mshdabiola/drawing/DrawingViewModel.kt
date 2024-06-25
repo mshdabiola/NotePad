@@ -1,7 +1,7 @@
 package com.mshdabiola.drawing
 
 // import com.mshdabiola.worker.Saver
-// import com.mshdabiola.worker.util.Converter
+// import com.mshdabiola.ui.util.Converter
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +16,7 @@ import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.DrawingUtil
 import com.mshdabiola.model.PathData
-import com.mshdabiola.worker.util.Converter
+import com.mshdabiola.ui.util.Converter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
