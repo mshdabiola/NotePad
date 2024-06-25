@@ -702,7 +702,7 @@ fun EditScreen(
                 ) {
                     Text(
                         text = "${stringResource(R.string.feature_editscreen_edited)} ${notepad.note.lastEdit}",
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
                 IconButton(

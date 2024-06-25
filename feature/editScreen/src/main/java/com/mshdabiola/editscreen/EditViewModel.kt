@@ -84,7 +84,7 @@ class EditViewModel @Inject constructor(
     private val dateStringUsercase: DateStringUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
 
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(
