@@ -4,14 +4,10 @@
 
         ./gradlew lintGooglePlayDebug; ./gradlew updateGooglePlayReleaseBadging; ./gradlew dependencyGuardBaseline; ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew recordRoborazziGooglePlayDebug
 
-        ./gradlew dependencyGuard; ./gradlew checkReleaseBadging; ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew verifyRoborazziDebug
+        ./gradlew dependencyGuard; ./gradlew checkFossReliantReleaseBadging; ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew verifyRoborazziFossReliantDebug
 
     ./gradlew assembleDebug -PenableComposeCompilerMetrics=true -PenableComposeCompilerReports=true
 
     ./gradlew :app:generateReleaseBaselineProfile
 
-                    sed -i -e '/mlkit/,+14d' -e '/google-services/d' -e '/firebase/d' build.gradle.kts;
-                    sed -i -e '/with(target) {/,/^        }/d' -e '/CrashlyticsExtension/d' build-logic/convention/src/main/kotlin/AndroidApplicationFirebaseConventionPlugin.kt;
-                    sed -i -e '/androidx.dev/d' settings.gradle.kts;
-                    sed -i -e '/mlkit/,+14d' -e '/google-services/d' -e '/libs.firebase/d' build-logic/convention/build.gradle.kts;
-
+./gradlew pixel6api33FossReliantBenchmarkBenchmarkAndroidTest

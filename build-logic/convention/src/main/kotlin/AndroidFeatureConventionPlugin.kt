@@ -36,6 +36,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                     testInstrumentationRunner =
                         "com.mshdabiola.testing.TestRunner"
                 }
+                testOptions.animationsDisabled = true
                 configureGradleManagedDevices(this)
             }
 
@@ -46,17 +47,15 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", project(":modules:database"))
                 add("implementation", project(":modules:common"))
 
-                add("implementation", libs.findLibrary("androidx.navigation.compose").get())
 
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
-                add("debugImplementation", libs.findLibrary("androidx.monitor").get())
+                add("implementation", libs.findLibrary("androidx.tracing.ktx").get())
 
-                add("testImplementation", project(":modules:testing"))
-                add("androidTestImplementation", project(":modules:testing"))
+                add("androidTestImplementation", libs.findLibrary("androidx.lifecycle.runtimeTesting").get())
 
-                add("testImplementation", libs.findLibrary("robolectric").get())
+
             }
         }
     }
