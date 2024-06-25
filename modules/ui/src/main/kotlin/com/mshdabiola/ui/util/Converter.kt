@@ -1,6 +1,7 @@
-package com.mshdabiola.worker.util
+package com.mshdabiola.ui.util
 
 import com.mshdabiola.model.DrawPath
+import com.mshdabiola.worker.util.toDrawPathPojo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

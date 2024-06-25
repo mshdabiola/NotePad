@@ -18,7 +18,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteTextField(
     value: String,
@@ -40,12 +39,12 @@ fun NoteTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = TextFieldDefaults.filledShape,
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors(
+    shape: Shape = TextFieldDefaults.shape,
+    colors: TextFieldColors = TextFieldDefaults.colors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
-        containerColor = Color.Transparent,
-    ),
+//        containerColor = Color.Transparent,
+    )
 ) {
     TextField(
         value = value,
