@@ -1,7 +1,6 @@
 package com.mshdabiola.database.model
 
 import androidx.room.Entity
-import com.mshdabiola.model.NoteCheck
 
 @Entity(
     tableName = "note_check_table",

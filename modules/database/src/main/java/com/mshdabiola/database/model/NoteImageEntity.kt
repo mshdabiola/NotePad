@@ -2,7 +2,6 @@ package com.mshdabiola.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.mshdabiola.model.NoteImage
 
 @Entity(
     tableName = "note_image_table",

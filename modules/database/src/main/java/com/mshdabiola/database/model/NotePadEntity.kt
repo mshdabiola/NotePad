@@ -2,7 +2,6 @@ package com.mshdabiola.database.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.mshdabiola.model.NotePad
 
 data class NotePadEntity(
     @Embedded

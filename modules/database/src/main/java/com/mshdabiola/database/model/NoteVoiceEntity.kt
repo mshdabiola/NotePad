@@ -1,7 +1,6 @@
 package com.mshdabiola.database.model
 
 import androidx.room.Entity
-import com.mshdabiola.model.NoteVoice
 
 @Entity(
     tableName = "note_voice_table",

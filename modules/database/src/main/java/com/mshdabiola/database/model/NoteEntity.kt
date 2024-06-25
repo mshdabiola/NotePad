@@ -2,7 +2,6 @@ package com.mshdabiola.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteType
 
 @Entity(tableName = "note_table")

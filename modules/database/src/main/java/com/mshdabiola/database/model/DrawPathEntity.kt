@@ -1,7 +1,6 @@
 package com.mshdabiola.database.model
 
 import androidx.room.Entity
-import com.mshdabiola.model.DrawPath
 
 @Entity(tableName = "path_table", primaryKeys = ["imageId", "pathId"])
 data class DrawPathEntity(
