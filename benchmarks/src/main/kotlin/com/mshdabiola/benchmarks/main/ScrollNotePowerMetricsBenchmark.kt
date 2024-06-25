@@ -2,7 +2,7 @@
  *abiola 2023
  */
 
-package com.mshdabiola.benchmarks.interests
+package com.mshdabiola.benchmarks.main
 
 import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
@@ -15,13 +15,7 @@ import androidx.benchmark.macro.PowerMetric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.uiautomator.By
 import com.mshdabiola.benchmarks.PACKAGE_NAME
-import com.mshdabiola.benchmarks.allowNotifications
-import com.mshdabiola.benchmarks.foryou.forYouScrollFeedDownUp
-import com.mshdabiola.benchmarks.foryou.forYouSelectTopics
-import com.mshdabiola.benchmarks.foryou.forYouWaitForContent
-import com.mshdabiola.benchmarks.foryou.setAppTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +23,7 @@ import org.junit.runner.RunWith
 @OptIn(ExperimentalMetricApi::class)
 @RequiresApi(VERSION_CODES.Q)
 @RunWith(AndroidJUnit4::class)
-class ScrollTopicListPowerMetricsBenchmark {
+class ScrollNotePowerMetricsBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
@@ -55,17 +49,8 @@ class ScrollTopicListPowerMetricsBenchmark {
                 // Start the app
                 pressHome()
                 startActivityAndWait()
-                allowNotifications()
-                // Navigate to Settings
-                device.findObject(By.desc("Settings")).click()
-                device.waitForIdle()
-                setAppTheme(isDark)
             },
         ) {
-            forYouWaitForContent()
-            forYouSelectTopics()
-            repeat(3) {
-                forYouScrollFeedDownUp()
-            }
+            mainScrollNoteDownUp()
         }
 }

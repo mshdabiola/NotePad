@@ -2,7 +2,7 @@
  *abiola 2022
  */
 
-package com.mshdabiola.benchmarks.foryou
+package com.mshdabiola.benchmarks.main
 
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.FrameTimingMetric
@@ -16,17 +16,17 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class ScrollForYouFeedBenchmark {
+class ScrollMainNoteBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun scrollFeedCompilationNone() = scrollFeed(CompilationMode.None())
+    fun scrollNoteCompilationNone() = scrollNote(CompilationMode.None())
 
     @Test
-    fun scrollFeedCompilationBaselineProfile() = scrollFeed(CompilationMode.Partial())
+    fun scrollNoteCompilationBaselineProfile() = scrollNote(CompilationMode.Partial())
 
-    private fun scrollFeed(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
+    private fun scrollNote(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = PACKAGE_NAME,
         metrics = listOf(FrameTimingMetric()),
         compilationMode = compilationMode,
@@ -38,8 +38,6 @@ class ScrollForYouFeedBenchmark {
             startActivityAndAllowNotifications()
         },
     ) {
-        forYouWaitForContent()
-        forYouSelectTopics()
-        forYouScrollFeedDownUp()
+        mainScrollNoteDownUp()
     }
 }
