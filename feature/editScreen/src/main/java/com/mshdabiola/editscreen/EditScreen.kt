@@ -552,10 +552,12 @@ fun EditScreen(
                             onValueChange = onSubjectChange,
                             textStyle = MaterialTheme.typography.bodyMedium,
                             placeholder = { Text(text = stringResource(R.string.feature_editscreen_subject)) },
-                            colors = TextFieldDefaults.textFieldColors(
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
-                                containerColor = Color.Transparent,
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 autoCorrectEnabled = true,
@@ -698,7 +700,10 @@ fun EditScreen(
                         .padding(end = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(text = "${stringResource(R.string.feature_editscreen_edited)} ${notepad.note.lastEdit}")
+                    Text(
+                        text = "${stringResource(R.string.feature_editscreen_edited)} ${notepad.note.lastEdit}",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
                 IconButton(
                     modifier = Modifier.testTag("edit:option"),
@@ -826,10 +831,12 @@ fun NoteCheck(
                 .weight(1f),
             value = noteCheckUiState.content,
             onValueChange = { onCheckChange(it, noteCheckUiState.id) },
-            colors = TextFieldDefaults.textFieldColors(
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.Transparent,
             ),
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
