@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.ContentManager
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NotePadRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.editscreen.LabelUiState
 import com.mshdabiola.editscreen.toLabelUiState
 import com.mshdabiola.model.Note
@@ -30,9 +30,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
-    private val labelRepository: LabelRepository,
-    private val notePadRepository: NotePadRepository,
-    private val contentManager: ContentManager,
+    private val labelRepository: ILabelRepository,
+    private val notePadRepository: INotePadRepository,
+    private val contentManager: IContentManager,
 ) : ViewModel() {
     private val c = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(c)

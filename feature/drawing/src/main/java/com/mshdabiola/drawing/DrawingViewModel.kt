@@ -9,9 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.ContentManager
-import com.mshdabiola.database.repository.DrawingPathRepository
-import com.mshdabiola.database.repository.NoteImageRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.IDrawingPathRepository
+import com.mshdabiola.data.repository.INoteImageRepository
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.DrawingUtil
@@ -27,9 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class DrawingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val contentManager: ContentManager,
-    private val noteImageRepository: NoteImageRepository,
-    private val drawingPathRepository: DrawingPathRepository,
+    private val contentManager: IContentManager,
+    private val noteImageRepository: INoteImageRepository,
+    private val drawingPathRepository: IDrawingPathRepository,
 ) : ViewModel() {
 
     val noteId = savedStateHandle.get<Long>(noteIdArg)!!

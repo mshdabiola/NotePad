@@ -7,15 +7,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.AlarmManager
-import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.DateStringUsercase
+import com.mshdabiola.common.IAlarmManager
+import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.TimeUsercase
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NoteLabelRepository
-import com.mshdabiola.database.repository.NotePadRepository
-import com.mshdabiola.database.repository.NoteRepository
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INoteLabelRepository
+import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.INoteRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
@@ -55,12 +55,12 @@ import kotlin.time.DurationUnit
 @HiltViewModel
 class MainViewModel
 @Inject constructor(
-    private val notepadRepository: NotePadRepository,
-    private val contentManager: ContentManager,
-    private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
-    private val noteRepository: NoteRepository,
-    private val alarmManager: AlarmManager,
+    private val notepadRepository: INotePadRepository,
+    private val contentManager: IContentManager,
+    private val labelRepository: ILabelRepository,
+    private val noteLabelRepository: INoteLabelRepository,
+    private val noteRepository: INoteRepository,
+    private val alarmManager: IAlarmManager,
     private val time12UserCase: TimeUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
     private val dateStringUsercase: DateStringUsercase,

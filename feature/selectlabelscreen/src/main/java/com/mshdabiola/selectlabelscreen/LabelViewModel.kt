@@ -7,8 +7,8 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NoteLabelRepository
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INoteLabelRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
+    private val labelRepository: ILabelRepository,
+    private val noteLabelRepository: INoteLabelRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
