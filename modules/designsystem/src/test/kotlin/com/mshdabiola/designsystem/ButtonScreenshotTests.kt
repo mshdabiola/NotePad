@@ -39,15 +39,6 @@ class ButtonScreenshotTests {
         }
     }
 
-//    @Test
-//    fun niaOutlineButton_multipleThemes() {
-//        composeTestRule.captureMultiTheme("Button", "OutlineButton") { description ->
-//            Surface {
-//                NiaOutlinedButton(onClick = {}, text = { Text("$description OutlineButton") })
-//            }
-//        }
-//    }
-
     @Test
     fun niaButton_leadingIcon_multipleThemes() {
         composeTestRule.captureMultiTheme(

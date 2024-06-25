@@ -7,8 +7,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NoteLabelRepository
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INoteLabelRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -19,8 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val labelRepository: LabelRepository,
-    private val noteLabelRepository: NoteLabelRepository,
+    private val labelRepository: ILabelRepository,
+    private val noteLabelRepository: INoteLabelRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())

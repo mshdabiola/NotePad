@@ -174,10 +174,12 @@ fun ActionEditScreen(
                     onValueChange = { title = it },
                     placeholder = { Text(text = "Title") },
                     textStyle = MaterialTheme.typography.titleLarge,
-                    colors = TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         autoCorrectEnabled = true,
@@ -195,10 +197,10 @@ fun ActionEditScreen(
                     onValueChange = { subject = it },
                     textStyle = MaterialTheme.typography.bodyMedium,
                     placeholder = { Text(text = "Subject") },
-                    colors = TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent,
+//        containerColor = Color.Transparent,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         autoCorrectEnabled = true,

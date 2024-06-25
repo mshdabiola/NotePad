@@ -7,7 +7,7 @@ import com.mshdabiola.app.configureFlavors
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("mshdabiola.android.test")
-    alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {

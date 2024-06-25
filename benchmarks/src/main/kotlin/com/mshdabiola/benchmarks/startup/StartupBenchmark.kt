@@ -12,7 +12,7 @@ import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.mshdabiola.benchmarks.PACKAGE_NAME
-import com.mshdabiola.benchmarks.foryou.forYouWaitForContent
+import com.mshdabiola.benchmarks.main.mainWaitForContent
 import com.mshdabiola.benchmarks.startActivity
 import org.junit.Rule
 import org.junit.Test
@@ -57,6 +57,6 @@ class StartupBenchmark {
     ) {
         startActivity()
         // Waits until the content is ready to capture Time To Full Display
-        forYouWaitForContent()
+        mainWaitForContent()
     }
 }

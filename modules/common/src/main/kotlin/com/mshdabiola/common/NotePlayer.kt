@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class NotePlayer
+internal class NotePlayer
 @Inject constructor(
     @ApplicationContext val context: Context,
-) {
+) : INotePlayer {
     private val mediaPlayer = MediaPlayer()
 
-    fun playMusic(path: String, position: Int): Flow<Int> {
+    override fun playMusic(path: String, position: Int): Flow<Int> {
         mediaPlayer.reset()
         mediaPlayer.setDataSource(path)
         mediaPlayer.prepare()
@@ -26,7 +26,7 @@ class NotePlayer
         return mediaPlayer.listerner()
     }
 
-    fun pause() {
+    override fun pause() {
         mediaPlayer.pause()
     }
 }

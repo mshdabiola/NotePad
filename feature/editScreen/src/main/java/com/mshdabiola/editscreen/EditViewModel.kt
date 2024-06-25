@@ -14,15 +14,15 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.AlarmManager
-import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.DateStringUsercase
-import com.mshdabiola.common.NotePlayer
+import com.mshdabiola.common.IAlarmManager
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.common.TimeUsercase
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NotePadRepository
-import com.mshdabiola.database.repository.NoteVoiceRepository
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.INoteVoiceRepository
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
@@ -73,12 +73,12 @@ import kotlin.time.DurationUnit
 @HiltViewModel
 class EditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val notePadRepository: NotePadRepository,
-    private val contentManager: ContentManager,
-    private val voicePlayer: NotePlayer,
-    private val labelRepository: LabelRepository,
-    private val alarmManager: AlarmManager,
-    private val noteVoiceRepository: NoteVoiceRepository,
+    private val notePadRepository: INotePadRepository,
+    private val contentManager: IContentManager,
+    private val voicePlayer: INotePlayer,
+    private val labelRepository: ILabelRepository,
+    private val alarmManager: IAlarmManager,
+    private val noteVoiceRepository: INoteVoiceRepository,
     private val imageToText: ImageToText,
     private val time12UserCase: TimeUsercase,
     private val dateStringUsercase: DateStringUsercase,

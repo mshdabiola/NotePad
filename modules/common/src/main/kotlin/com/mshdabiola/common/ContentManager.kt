@@ -9,15 +9,15 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
-class ContentManager
+internal class ContentManager
 @Inject constructor(
     @ApplicationContext val context: Context,
-) {
+) : IContentManager {
 
     private val photoDir = context.filesDir.absolutePath + "/photo"
     private val voiceDir = context.filesDir.absolutePath + "/voice"
 
-    fun saveImage(uri: Uri, currentTime: Long) {
+    override fun saveImage(uri: Uri, currentTime: Long) {
         try {
             createImageDir()
             val outputStream = FileOutputStream(File(photoDir, "Image_$currentTime.jpg"))
@@ -31,7 +31,7 @@ class ContentManager
         }
     }
 
-    fun saveVoice(uri: Uri, currentTime: Long) {
+    override fun saveVoice(uri: Uri, currentTime: Long) {
         createVoiceDir()
         val outputStream = FileOutputStream(File(voiceDir, "Voice_$currentTime.amr"))
 
@@ -41,7 +41,7 @@ class ContentManager
         }
     }
 
-    fun pictureUri(id: Long): Uri {
+    override fun pictureUri(id: Long): Uri {
         createImageDir()
         val file = File(photoDir, "Image_$id.jpg")
 
@@ -50,11 +50,11 @@ class ContentManager
         return uri
     }
 
-    fun getImagePath(data: Long): String {
+    override fun getImagePath(data: Long): String {
         return "$photoDir/Image_$data.jpg"
     }
 
-    fun getVoicePath(data: Long): String {
+    override fun getVoicePath(data: Long): String {
         return "$voiceDir/Voice_$data.amr"
     }
 
@@ -72,14 +72,14 @@ class ContentManager
         }
     }
 
-    fun saveBitmap(path: String, bitmap: Bitmap) {
+    override fun saveBitmap(path: String, bitmap: Bitmap) {
         createImageDir()
         File(path).outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
     }
 
-    fun dataFile(drawingId: Long): File {
+    override fun dataFile(drawingId: Long): File {
         val dir = File(context.filesDir.absolutePath + "/drawingfile")
         if (dir.exists().not()) {
             dir.mkdir()

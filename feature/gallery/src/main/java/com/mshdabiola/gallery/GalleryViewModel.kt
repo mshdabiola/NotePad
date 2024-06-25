@@ -3,8 +3,8 @@ package com.mshdabiola.gallery
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.ContentManager
-import com.mshdabiola.database.repository.NoteImageRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.INoteImageRepository
 import com.mshdabiola.ui.state.toNoteImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -18,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val noteImageRepository: NoteImageRepository,
-    private val contentManager: ContentManager,
+    private val noteImageRepository: INoteImageRepository,
+    private val contentManager: IContentManager,
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Long>(noteIdStr)!!

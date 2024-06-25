@@ -154,7 +154,7 @@ fun BackgroundDynamic() {
 @ThemePreviews
 @Composable
 fun BackgroundAndroid() {
-    SkTheme() {
+    SkTheme {
         SkBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -178,7 +178,7 @@ fun GradientBackgroundDynamic() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundAndroid() {
-    SkTheme() {
+    SkTheme {
         SkGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

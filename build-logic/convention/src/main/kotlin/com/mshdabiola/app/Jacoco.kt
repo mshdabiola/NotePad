@@ -1,5 +1,4 @@
 package com.mshdabiola.app
-
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
@@ -50,13 +49,9 @@ internal fun Project.configureJacoco(
         val myObjFactory = project.objects
         val buildDir = layout.buildDirectory.get().asFile
         val allJars: ListProperty<RegularFile> = myObjFactory.listProperty(RegularFile::class.java)
-        val allDirectories: ListProperty<Directory> =
-            myObjFactory.listProperty(Directory::class.java)
+        val allDirectories: ListProperty<Directory> = myObjFactory.listProperty(Directory::class.java)
         val reportTask =
-            tasks.register(
-                "create${variant.name.capitalize()}CombinedCoverageReport",
-                JacocoReport::class,
-            ) {
+            tasks.register("create${variant.name.capitalize()}CombinedCoverageReport", JacocoReport::class) {
 
                 classDirectories.setFrom(
                     allJars,
@@ -64,7 +59,7 @@ internal fun Project.configureJacoco(
                         dirs.map { dir ->
                             myObjFactory.fileTree().setDir(dir).exclude(coverageExclusions)
                         }
-                    },
+                    }
                 )
                 reports {
                     xml.required.set(true)
@@ -72,19 +67,14 @@ internal fun Project.configureJacoco(
                 }
 
                 // TODO: This is missing files in src/debug/, src/prod, src/demo, src/demoDebug...
-                sourceDirectories.setFrom(
-                    files(
-                        "$projectDir/src/main/java",
-                        "$projectDir/src/main/kotlin",
-                    ),
-                )
+                sourceDirectories.setFrom(files("$projectDir/src/main/java", "$projectDir/src/main/kotlin"))
 
                 executionData.setFrom(
                     project.fileTree("$buildDir/outputs/unit_test_code_coverage/${variant.name}UnitTest")
                         .matching { include("**/*.exec") },
 
                     project.fileTree("$buildDir/outputs/code_coverage/${variant.name}AndroidTest")
-                        .matching { include("**/*.ec") },
+                        .matching { include("**/*.ec") }
                 )
             }
 

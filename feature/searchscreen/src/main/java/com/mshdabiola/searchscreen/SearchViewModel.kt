@@ -7,10 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.ContentManager
 import com.mshdabiola.common.DateShortStringUsercase
-import com.mshdabiola.database.repository.LabelRepository
-import com.mshdabiola.database.repository.NotePadRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.ui.state.NotePadUiState
 import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +24,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val notePadRepository: NotePadRepository,
-    private val labelRepository: LabelRepository,
+    private val notePadRepository: INotePadRepository,
+    private val labelRepository: ILabelRepository,
     private val dateShortStringUsercase: DateShortStringUsercase,
-    private val contentManager: ContentManager,
+    private val contentManager: IContentManager,
 ) : ViewModel() {
 
     var searchUiState by mutableStateOf(SearchUiState())
