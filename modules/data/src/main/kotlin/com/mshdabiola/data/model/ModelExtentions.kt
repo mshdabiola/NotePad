@@ -17,22 +17,15 @@ import com.mshdabiola.model.NoteLabel
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
 
-
 fun DrawPathEntity.toDrawPath() = DrawPath(imageId, pathId, color, width, join, alpha, cap, paths)
 fun DrawPath.toDrawPathEntity() =
     DrawPathEntity(imageId, pathId, color, width, join, alpha, cap, paths)
 
-
-
 fun LabelEntity.toLabel() = Label(id, name)
 fun Label.toLabelEntity() = LabelEntity(id, label)
 
-
-
 fun NoteCheckEntity.toNoteCheck() = NoteCheck(id, noteId, content, isCheck)
 fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id, noteId, content, isCheck)
-
-
 
 fun Note.toNoteEntity() =
     NoteEntity(
@@ -63,17 +56,11 @@ fun NoteEntity.toNote() = Note(
     noteType,
 )
 
-
-
 fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing, timestamp)
 fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, isDrawing, timestamp)
 
-
-
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
-
-
 
 fun NotePadEntity.toNotePad() = NotePad(
     note = noteEntity.toNote(),
@@ -82,7 +69,6 @@ fun NotePadEntity.toNotePad() = NotePad(
     checks = checks.map { it.toNoteCheck() },
     labels = labels.map { it.toNoteLabel() },
 )
-
 
 fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
 fun NoteVoiceEntity.toNoteVoice() = NoteVoice(id, noteId, voiceName)

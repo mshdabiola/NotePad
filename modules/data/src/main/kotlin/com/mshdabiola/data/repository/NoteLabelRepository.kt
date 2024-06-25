@@ -1,8 +1,8 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.data.model.toNoteLabel
 import com.mshdabiola.data.model.toNoteLabelEntity
+import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.model.NoteLabel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map

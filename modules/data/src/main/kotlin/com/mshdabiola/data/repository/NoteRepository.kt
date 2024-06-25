@@ -1,7 +1,7 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.data.model.toNoteEntity
+import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.model.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

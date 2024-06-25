@@ -1,5 +1,11 @@
 package com.mshdabiola.data.repository
 
+import com.mshdabiola.data.model.toNoteCheckEntity
+import com.mshdabiola.data.model.toNoteEntity
+import com.mshdabiola.data.model.toNoteImageEntity
+import com.mshdabiola.data.model.toNoteLabelEntity
+import com.mshdabiola.data.model.toNotePad
+import com.mshdabiola.data.model.toNoteVoiceEntity
 import com.mshdabiola.database.dao.NoteCheckDao
 import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.database.dao.NoteImageDao
@@ -7,12 +13,6 @@ import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.dao.PathDao
-import com.mshdabiola.data.model.toNoteCheckEntity
-import com.mshdabiola.data.model.toNoteEntity
-import com.mshdabiola.data.model.toNoteImageEntity
-import com.mshdabiola.data.model.toNoteLabelEntity
-import com.mshdabiola.data.model.toNotePad
-import com.mshdabiola.data.model.toNoteVoiceEntity
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
