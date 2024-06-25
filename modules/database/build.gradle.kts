@@ -16,12 +16,20 @@ android {
 
 }
 
+android {
+    defaultConfig {
+        testInstrumentationRunner = "com.mshdabiola.testing.TestRunner"
+
+    }
+    namespace = "com.mshdabiola.database"
+
+
+}
+
 dependencies {
     implementation(project(":modules:model"))
-    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
 
     androidTestImplementation(project(":modules:testing"))
-    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 
 }
