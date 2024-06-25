@@ -10,16 +10,10 @@ import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.common.NotePlayer
-import com.mshdabiola.common.network.Dispatcher
-import com.mshdabiola.common.network.SkDispatchers.Default
-import com.mshdabiola.common.network.SkDispatchers.IO
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -38,5 +32,5 @@ abstract class CommonModule {
     @Binds
     internal abstract fun bindsNotePlayer(
         notePlayer: NotePlayer,
-    ):INotePlayer
+    ): INotePlayer
 }
