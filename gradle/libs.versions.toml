@@ -76,8 +76,8 @@ playServicesMlkitTextRecognition = "19.0.0"
 ktor = "2.3.11"
 uiTextGoogleFonts = "1.6.8"
 
-versionName = "1.2.6"
-versionCode = "126"
+versionName = "1.2.7"
+versionCode = "127"
 
 telephoto = "0.11.2"
 lottieCompose = "6.4.0"
