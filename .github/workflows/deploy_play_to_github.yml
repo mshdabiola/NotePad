@@ -20,7 +20,7 @@ jobs:
       # 2
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
       - name: Setup build tool version variable
         shell: bash
