@@ -73,7 +73,7 @@ firebaseCrashlyticsKts = "18.3.6"
 firebaseCrashylyticsPlugins = "2.9.9"
 playServicesMlkitTextRecognition = "19.0.0"
 
-ktor = "2.3.11"
+ktor = "2.3.12"
 uiTextGoogleFonts = "1.6.8"
 
 versionName = "1.3.0"
