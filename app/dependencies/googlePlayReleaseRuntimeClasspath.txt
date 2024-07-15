@@ -179,7 +179,7 @@ com.google.android.gms:play-services-basement:18.4.0
 com.google.android.gms:play-services-cloud-messaging:17.2.0
 com.google.android.gms:play-services-drive:17.0.0
 com.google.android.gms:play-services-fido:20.1.0
-com.google.android.gms:play-services-games-v2:20.1.0
+com.google.android.gms:play-services-games-v2:20.1.2
 com.google.android.gms:play-services-measurement-api:22.0.1
 com.google.android.gms:play-services-measurement-base:22.0.1
 com.google.android.gms:play-services-measurement-impl:22.0.1
