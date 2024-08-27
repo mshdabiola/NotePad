@@ -5,7 +5,6 @@
 plugins {
     id("mshdabiola.android.library")
     id("mshdabiola.android.library.compose")
-    id("mshdabiola.android.library.jacoco")
     alias(libs.plugins.kotlin.serialization)
 
 }

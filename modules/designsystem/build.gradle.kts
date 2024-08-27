@@ -5,9 +5,7 @@
 plugins {
     id("mshdabiola.android.library")
     id("mshdabiola.android.library.compose")
-    id("mshdabiola.android.library.jacoco")
 
-    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -37,11 +35,7 @@ dependencies {
     testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.androidx.compose.ui.testManifest)
 
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.roborazzi)
     testImplementation(projects.modules.testing)
-    testImplementation(projects.modules.screenshotTesting)
 
 
     androidTestImplementation(libs.androidx.compose.ui.test)
