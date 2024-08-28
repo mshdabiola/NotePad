@@ -52,7 +52,7 @@ fun AboutScreen(
         lastUpdate = "${datetime.dayOfMonth} ${
             datetime.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
         } ${datetime.year}"
-        version = pInfo.versionName
+        version = pInfo?.versionName ?: "0.0.0"
     })
 
     Scaffold(
