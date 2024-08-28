@@ -933,11 +933,5 @@ class EditViewModel @Inject constructor(
     }
 
     private fun onNotifyDelive() {
-        val notifies = _messages.value.toMutableList()
-
-        notifies.removeFirst()
-        _messages.update {
-            notifies.toImmutableList()
-        }
     }
 }
