@@ -64,7 +64,7 @@ turbine = "1.1.0"
 timber = "5.0.1"
 
 
-playGame = "20.1.0"
+playGame = "20.1.2"
 playReview = "2.0.1"
 playUpdate = "2.1.0"
 playCoroutine = "1.8.0"
