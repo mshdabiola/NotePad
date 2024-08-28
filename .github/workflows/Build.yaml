@@ -33,19 +33,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/wrapper-validation-action@v3
 
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
@@ -56,13 +56,6 @@ jobs:
 
       - name: Check spotless
         run: ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
-
-      - name: Remove Firebase References
-        run: |
-          sed -i -e '/mlkit/,+14d' -e '/google-services/d' -e '/firebase/d' build.gradle.kts
-          sed -i -e '/with(target) {/,/^        }/d' -e '/CrashlyticsExtension/d' build-logic/convention/src/main/kotlin/AndroidApplicationFirebaseConventionPlugin.kt
-          sed -i -e '/androidx.dev/d' settings.gradle.kts
-          sed -i -e '/mlkit/,+14d' -e '/google-services/d' -e '/libs.firebase/d' build-logic/convention/build.gradle.kts
 
       - name: Check Dependency Guard
         id: dependencyguard_verify
@@ -91,10 +84,10 @@ jobs:
           disable_globbing: true
           commit_message: "🤖 Updates baselines for Dependency Guard"
 
-      - name: Run all local screenshot tests (Roborazzi)
+      - name: Run all local screenshot tests
         id: screenshotsverify
         continue-on-error: true
-        run: ./gradlew verifyRoborazziFossReliantDebug
+        run: ./gradlew validateFossReliantDebugScreenshotTest
 
       - name: Prevent pushing new screenshots if this is a fork
         id: checkfork_screenshots
@@ -108,7 +101,7 @@ jobs:
         id: screenshotsrecord
         if: steps.screenshotsverify.outcome == 'failure' && github.event_name == 'pull_request'
         run: |
-          ./gradlew recordRoborazziFossReliantDebug
+          ./gradlew updateFossReliantDebugScreenshotTest
 
       - name: Push new screenshots if available
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -121,13 +114,13 @@ jobs:
       # Run local tests after screenshot tests to avoid wrong UP-TO-DATE. TODO: Ignore screenshots.
       - name: Run local tests and create report
         if: always()
-        run: ./gradlew testFossReliantDebug
+        run: ./gradlew testFossReliantDebugUnitTest
       # Replace task exclusions with `-Pandroidx.baselineprofile.skipgeneration` when
       # https://android-review.googlesource.com/c/platform/frameworks/support/+/2602790 landed in a
       # release build
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew :app:assembleFossReliant :benchmarks:assembleFossReliant
+        run: ./gradlew assembleFossReliant :benchmarks:assembleFossReliant
           -x pixel6Api33FossReliantNonMinifiedReleaseAndroidTest
           -x pixel6Api33FossReliantNonMinifiedBenchmarkAndroidTest
           -x collectFossReliantNonMinifiedReleaseBaselineProfile
@@ -147,7 +140,7 @@ jobs:
           path: '**/build/test-results/test*UnitTest/**.xml'
 
       - name: Check lint
-        run: ./gradlew :app:lintFossReliantRelease
+        run: ./gradlew lintFossReliantRelease
 
       - name: Upload lint reports (HTML)
         if: always()
@@ -158,6 +151,31 @@ jobs:
 
       - name: Check badging
         run: ./gradlew checkFossReliantReleaseBadging
+
+      - name: Generate coverage reports for Jvm
+        run: ./gradlew koverXmlReportFossReliantDebug; ./gradlew koverHtmlReportFossReliantDebug   #koverHtmlReportJvm
+
+      #      - name: Add coverage report to PR
+      #        id: kover
+      #        uses: mi-kas/kover-report@v1
+      #        with:
+      #          path: |
+      #            ${{ github.workspace }}/modules/analytics/build/reports/kover/reportJvm.xml
+      #
+      #          title: Code Coverage
+      #          update-comment: true
+      #          min-coverage-overall: 40
+      #          min-coverage-changed-files: 60
+      #          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload local coverage reports (XML + HTML) (only API 30)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          if-no-files-found: error
+          compression-level: 1
+          overwrite: false
+          path: '**/build/reports/kover/'
 
   androidTest:
     runs-on: ubuntu-latest
@@ -191,14 +209,14 @@ jobs:
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
@@ -214,42 +232,9 @@ jobs:
           heap-size: 600M
           script: ./gradlew connectedFossReliantDebugAndroidTest --daemon
 
-      - name: Run local tests (including Roborazzi) for the combined coverage report (only API 30)
-        if: matrix.api-level == 30
-        # There is no need to verify Roborazzi tests to generate coverage.
-        run: ./gradlew testFossReliantDebugUnitTest -Proborazzi.test.verify=false # Add Prod if we ever add JVM tests for prod
-
-      # Add `createProdDebugUnitTestCoverageReport` if we ever add JVM tests for prod
-      - name: Generate coverage reports for Debug variants (only API 30)
-        if: matrix.api-level == 30
-        run: ./gradlew createFossReliantDebugCombinedCoverageReport
-
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.api-level }}
           path: '**/build/reports/androidTests'
-
-      - name: Display local test coverage (only API 30)
-        if: matrix.api-level == 30
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          title: Combined test coverage report
-          min-coverage-overall: 40
-          min-coverage-changed-files: 60
-          paths: |
-            ${{ github.workspace }}/**/build/reports/jacoco/**/*Report.xml
-          token: ${{ secrets.TOKEN }}
-
-      - name: Upload local coverage reports (XML + HTML) (only API 30)
-        if: matrix.api-level == 30
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          if-no-files-found: error
-          compression-level: 1
-          overwrite: false
-          path: '**/build/reports/jacoco/'
-
