@@ -10,7 +10,6 @@ plugins {
     id("mshdabiola.android.application.compose")
     id("mshdabiola.android.application.flavor")
     id("mshdabiola.android.hilt")
-//    id("mshdabiola.android.application.firebase")
     alias(libs.plugins.baselineprofile)
 
 }
@@ -22,10 +21,7 @@ android {
         applicationId = "com.mshdabiola.playnotepad"
         versionCode = libs.versions.versionCode.get().toIntOrNull()
         versionName = System.getenv("VERSION_NAME") ?: libs.versions.versionName.get()
-//        versionCode = 1
-//        versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
-        // Custom test runner to set up Hilt dependency graph
         testInstrumentationRunner = "com.mshdabiola.testing.TestRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -85,10 +81,6 @@ dependencies {
     implementation(projects.modules.data)
     implementation(projects.modules.ui)
 
-
-//    implementation(projects.features.main)
-//    implementation(projects.features.detail)
-
     implementation(project(":feature:editScreen"))
     implementation(project(":feature:labelscreen"))
     implementation(project(":feature:selectlabelscreen"))
@@ -98,7 +90,6 @@ dependencies {
     implementation(project(":feature:about"))
     implementation(project(":feature:mainscreen"))
 
-//    implementation(project(":modules:worker"))
 
     implementation(libs.kotlinx.serialization.json)
 
