@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     abiola 2022
+
+-->
+<resources>
+    <string name="features_main_title">Saved</string>
+    <string name="features_main_loading">Loading saved…</string>
+    <string name="features_main_empty_error">No saved updates</string>
+    <string name="features_main_empty_description">Updates you save will be stored here\nto read later</string>
+    <string name="features_main_removed">Bookmark removed</string>
+    <string name="features_main_undo">UNDO</string>
+</resources>
