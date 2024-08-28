@@ -14,6 +14,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply {
                 apply("mshdabiola.android.library")
+                apply("mshdabiola.android.library.compose")
                 apply("mshdabiola.android.hilt")
             }
             extensions.configure<LibraryExtension> {
@@ -28,6 +29,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", project(":modules:ui"))
                 add("implementation", project(":modules:designsystem"))
+                add("implementation", project(":modules:data"))
 
 
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
