@@ -16,9 +16,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.mshdabiola.data.util.NetworkMonitor
-import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.ui.TrackDisposableJank
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,20 +29,20 @@ fun rememberNoteAppState(
     networkMonitor: NetworkMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
-    drawerState: DrawerState=rememberDrawerState(initialValue = DrawerValue.Closed),
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ): NoteAppState {
     NavigationTrackingSideEffect(navController)
     return remember(
         navController,
         coroutineScope,
         networkMonitor,
-        drawerState
+        drawerState,
     ) {
         NoteAppState(
             navController = navController,
             coroutineScope = coroutineScope,
             networkMonitor = networkMonitor,
-            drawerState = drawerState
+            drawerState = drawerState,
         )
     }
 }
@@ -52,16 +50,18 @@ fun rememberNoteAppState(
 @Stable
 class NoteAppState(
     val navController: NavHostController,
-   val coroutineScope: CoroutineScope,
+    val coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,
-    val drawerState: DrawerState
+    val drawerState: DrawerState,
 ) {
     val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
-    val mainArg: Main
-        @Composable get() = navController
-            .currentBackStackEntryAsState().value?.toRoute<Main>() ?: Main(-1L)
+    val mainArg: Long
+        @Composable get() = -1L
+//            navController
+//            .currentBackStackEntryAsState().value?.toRoute<Main>() ?:
+    // Main(-1L)
 
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)

@@ -40,9 +40,7 @@ import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.ui.state.LabelUiState
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -93,7 +91,7 @@ fun NoteApp(
                             appState.closeDrawer()
                         },
 
-                        )
+                    )
                 },
                 drawerState = appState.drawerState,
                 gesturesEnabled = true,
@@ -107,7 +105,7 @@ fun NoteApp(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
 
-                    ) { padding ->
+                ) { padding ->
                     NoteNavHost(
                         modifier = Modifier
                             .fillMaxSize()

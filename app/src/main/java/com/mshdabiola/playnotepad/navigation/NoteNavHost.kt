@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.main.navigation.mainScreen
-import com.mshdabiola.mainscreen.mainNavigationRoute
 import com.mshdabiola.playnotepad.ui.NoteAppState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -23,7 +22,6 @@ fun NoteNavHost(
 ) {
     val navController = appState.navController
     SharedTransitionLayout(modifier = modifier) {
-
         NavHost(
             navController = navController,
             startDestination = Main,

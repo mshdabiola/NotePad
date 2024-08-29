@@ -39,7 +39,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.R
-import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.LabelUiState
 import com.mshdabiola.ui.state.NoteTypeUi
@@ -50,12 +49,12 @@ import kotlinx.collections.immutable.toImmutableList
 fun MainNavigation(
 
     onNavigation: (NoteTypeUi) -> Unit = {},
-    currentMainArg: Main = Main(-1L),
+    currentMainArg: Long = -1L,
     navigateToLevel: (Boolean) -> Unit = {},
     labels: ImmutableList<LabelUiState>,
     navigateToAbout: () -> Unit = {},
 
-    ) {
+) {
     Surface(
         modifier = Modifier
             .fillMaxHeight()
@@ -82,11 +81,11 @@ fun MainNavigation(
                         ),
                     ),
 
-                )
+            )
             Spacer(
                 modifier = Modifier.height(16.dp),
 
-                )
+            )
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -95,7 +94,7 @@ fun MainNavigation(
                     )
                 },
                 label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_notes)) },
-                selected = currentMainArg.id == -1L,
+                selected = currentMainArg == -1L,
                 onClick = { onNavigation(NoteTypeUi()) },
             )
             NavigationDrawerItem(
@@ -103,7 +102,7 @@ fun MainNavigation(
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
                 label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_reminders)) },
-                selected = currentMainArg.id == -2L,
+                selected = currentMainArg == -2L,
                 onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) },
             )
             Divider(
@@ -136,7 +135,7 @@ fun MainNavigation(
                         )
                     },
                     label = { Text(text = it.label) },
-                    selected = currentMainArg.id == it.id,
+                    selected = currentMainArg == it.id,
                     onClick = { onNavigation(NoteTypeUi(NoteType.LABEL, it.id)) },
                 )
             }
@@ -159,7 +158,7 @@ fun MainNavigation(
                     Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
                 label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_archive)) },
-                selected = currentMainArg.id == -3L,
+                selected = currentMainArg == -3L,
                 onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) },
             )
 
@@ -168,7 +167,7 @@ fun MainNavigation(
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
                 label = { Text(text = stringResource(com.mshdabiola.mainscreen.R.string.feature_mainscreen_trash)) },
-                selected = currentMainArg.id == -4L,
+                selected = currentMainArg == -4L,
                 onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) },
             )
 //            NavigationDrawerItem(
