@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
@@ -38,6 +39,10 @@ import com.mshdabiola.designsystem.component.SkGradientBackground
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
+import com.mshdabiola.ui.state.LabelUiState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -46,6 +51,7 @@ fun NoteApp(
     modifier: Modifier = Modifier,
 ) {
     val shouldShowGradientBackground = true
+    val labels = emptyList<LabelUiState>().toImmutableList()
 
     SkBackground(modifier = modifier) {
         SkGradientBackground(
@@ -69,36 +75,59 @@ fun NoteApp(
                     )
                 }
             }
+            ModalNavigationDrawer(
+                drawerContent = {
+                    MainNavigation(
+                        labels = labels,
+                        currentMainArg = appState.mainArg,
+                        onNavigation = {
+                            //  onNavigationNoteType(it)
+                            appState.closeDrawer()
+                        },
+                        navigateToLevel = {
+//                            navigateToLevel(it)
+                            appState.closeDrawer()
+                        },
+                        navigateToAbout = {
+//                            navigateToAbout()
+                            appState.closeDrawer()
+                        },
 
-            Scaffold(
-                modifier = modifier.semantics {
-                    testTagsAsResourceId = true
+                        )
                 },
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-
-            ) { padding ->
-                NoteNavHost(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .consumeWindowInsets(padding)
-                        .windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Horizontal,
-                            ),
-                        ),
-                    appState = appState,
-                    onShowSnackbar = { message, action ->
-                        snackbarHostState.showSnackbar(
-                            message = message,
-                            actionLabel = action,
-                            duration = Short,
-                        ) == ActionPerformed
+                drawerState = appState.drawerState,
+                gesturesEnabled = true,
+            ) {
+                Scaffold(
+                    modifier = modifier.semantics {
+                        testTagsAsResourceId = true
                     },
-                )
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+
+                    ) { padding ->
+                    NoteNavHost(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .consumeWindowInsets(padding)
+                            .windowInsetsPadding(
+                                WindowInsets.safeDrawing.only(
+                                    WindowInsetsSides.Horizontal,
+                                ),
+                            ),
+                        appState = appState,
+                        onShowSnackbar = { message, action ->
+                            snackbarHostState.showSnackbar(
+                                message = message,
+                                actionLabel = action,
+                                duration = Short,
+                            ) == ActionPerformed
+                        },
+                    )
+                }
             }
         }
     }

@@ -90,6 +90,9 @@ dependencies {
     implementation(project(":feature:about"))
     implementation(project(":feature:mainscreen"))
 
+    implementation(projects.feature.main)
+
+
 
     implementation(libs.kotlinx.serialization.json)
 
