@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.activity.compose)
+
 
     androidTestImplementation(project(":modules:testing"))
 }
