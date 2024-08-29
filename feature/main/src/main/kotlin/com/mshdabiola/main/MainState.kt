@@ -14,6 +14,5 @@ sealed class MainState {
 
 //    data class Error(val message: String) : MainStateN()
     data object Empty : MainState()
-    data class Finish(val id:Long) : MainState()
+    data class Finish(val id: Long) : MainState()
 }
-

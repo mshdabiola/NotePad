@@ -138,7 +138,6 @@ internal fun MainRoute(
         onArchive = mainViewModel::setAllArchive,
         onSend = {
             mainViewModel.clearSelected()
-
         },
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
@@ -209,7 +208,7 @@ internal fun MainRoute(
 
     RenameLabelAlertDialog(
         show = showRenameLabel,
-        label = "Name",//(mainState.value.noteType.type).name,
+        label = "Name", // (mainState.value.noteType.type).name,
         onDismissRequest = { showRenameLabel = false },
         onChangeName = mainViewModel::renameLabel,
     )
@@ -282,7 +281,6 @@ internal fun MainScreen(
         }
 
         is MainState.Finish -> {}
-
     }
 
 //    with(sharedTransitionScope) {
@@ -294,8 +292,6 @@ internal fun MainScreen(
 //                    animatedVisibilityScope = animatedContentScope,
 //                ),
 //        )
-
-
 }
 
 @Composable
@@ -326,7 +322,6 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             text = "Empty",
             textAlign = TextAlign.Center,
         )
-
     }
 }
 
@@ -385,7 +380,6 @@ fun MainContent(
         }
     }
 
-
     Scaffold(
         modifier = Modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -409,7 +403,7 @@ fun MainContent(
                 when (success.noteType.type) {
                     NoteType.LABEL -> {
                         LabelTopAppBar(
-                            label = "Label Name",//labels.single { it.id == currentNoteType.id }.label,
+                            label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
                             onNavigate = { },
                             scrollBehavior = scrollBehavior,
                             onDeleteLabel = onDeleteLabel,
@@ -440,7 +434,7 @@ fun MainContent(
                             onNavigate = { },
                             scrollBehavior = scrollBehavior,
 
-                            )
+                        )
                     }
 
                     NoteType.ARCHIVE -> {
@@ -453,7 +447,7 @@ fun MainContent(
             }
         },
 
-        ) { paddingValues ->
+    ) { paddingValues ->
 
         LazyVerticalStaggeredGrid(
             modifier = Modifier
@@ -464,7 +458,7 @@ fun MainContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp,
 
-            ) {
+        ) {
             if (pinNotePad.first.isNotEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
@@ -511,13 +505,8 @@ fun MainContent(
                 onNoteClick = onNoteClick,
                 onSelectedCard = onSelectedCard,
             )
-
         }
     }
-
-
-
-
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -544,7 +533,6 @@ fun LazyStaggeredGridScope.noteItems(
         // }
     },
 )
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -634,4 +622,3 @@ fun Loader(modifier: Modifier = Modifier) {
         iterations = 200,
     )
 }
-

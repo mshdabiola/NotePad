@@ -102,7 +102,7 @@ fun SelectTopBar(
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
 
-    ) {
+) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
@@ -192,7 +192,7 @@ fun SelectTopBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -255,7 +255,7 @@ fun LabelTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -294,7 +294,7 @@ fun ArchiveTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -340,7 +340,7 @@ fun TrashTopAppBar(
         },
         scrollBehavior = scrollBehavior,
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -493,14 +493,13 @@ fun DeleteLabelPreview() {
     DeleteLabelAlertDialog(show = true)
 }
 
-
 @Composable
 fun NoteBottomBar(modifier: Modifier = Modifier) {
     BottomAppBar(
         actions = {
             IconButton(
                 modifier = Modifier.testTag("main:check"),
-                onClick = {  },
+                onClick = { },
             ) {
                 Icon(
                     imageVector = Icons.Outlined.CheckBox,
@@ -511,7 +510,6 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
             IconButton(
                 modifier = Modifier.testTag("main:draw"),
                 onClick = {
-
                 },
             ) {
                 Icon(
@@ -523,7 +521,6 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
             IconButton(
                 modifier = Modifier.testTag("main:voice"),
                 onClick = {
-
                 },
             ) {
                 Icon(
@@ -546,7 +543,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.testTag("main:float"),
-                onClick = {  },
+                onClick = { },
                 containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.elevation(),
             ) {
@@ -676,7 +673,7 @@ fun NoteCard(
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 10,
 
-                                        )
+                                    )
                                 }
                             }
                         } else {
@@ -784,9 +781,8 @@ fun NoteCardPreview() {
                     currentProgress = .179f,
                     isPlaying = false,
 
-                    ),
+                ),
             ).toImmutableList(),
         ),
     )
 }
-

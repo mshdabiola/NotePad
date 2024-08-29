@@ -8,7 +8,6 @@ import androidx.compose.material3.TimePickerState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.mshdabiola.common.DateShortStringUsercase
 import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.IAlarmManager
@@ -18,7 +17,6 @@ import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INoteLabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.INoteRepository
-import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
@@ -65,7 +63,7 @@ class MainViewModel
     private val dateStringUsercase: DateStringUsercase,
 ) : ViewModel() {
 
-    val id = savedStateHandle.toRoute<Main>().id
+    //  val id = savedStateHandle.toRoute<Main>().id
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
 
@@ -79,12 +77,17 @@ class MainViewModel
                         toPath = contentManager::getImagePath,
                     )
                 }
-                _mainState.value = getSuccess().copy(
-                    notePads = notes.toImmutableList(),
-                )
+                try {
+                    _mainState.value = getSuccess().copy(
+                        notePads = notes.toImmutableList(),
+                    )
+                } catch (e: Exception) {
+                    _mainState.value = MainState.Success(
+                        notePads = notes.toImmutableList(),
+                    )
+                }
             }
         }
-
     }
 
     fun onSelectCard(id: Long) {
@@ -283,11 +286,9 @@ class MainViewModel
 
             if (emptyList.isNotEmpty()) {
                 notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
-
             }
         }
     }
-
 
     private val _dateTimeState = MutableStateFlow(DateDialogUiData())
     val dateTimeState = _dateTimeState.asStateFlow()
@@ -358,7 +359,7 @@ class MainViewModel
                 enable = true,
             ),
 
-            ).mapIndexed { index, dateListUiState ->
+        ).mapIndexed { index, dateListUiState ->
             if (index != timeListDefault.lastIndex) {
                 val greater = timeListDefault[index] > today.time
                 dateListUiState.copy(
