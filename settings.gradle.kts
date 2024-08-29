@@ -44,4 +44,6 @@ include(":feature:about")
 include(":benchmarks")
 include(":ui-test-hilt-manifest")
 include(":feature:main")
+include(":feature:detail")
+
 

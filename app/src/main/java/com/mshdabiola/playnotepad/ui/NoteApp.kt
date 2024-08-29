@@ -12,6 +12,17 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -30,6 +41,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
@@ -94,7 +106,7 @@ fun NoteApp(
                     )
                 },
                 drawerState = appState.drawerState,
-                gesturesEnabled = true,
+                gesturesEnabled = appState.isMain,
             ) {
                 Scaffold(
                     modifier = modifier.semantics {
@@ -104,6 +116,11 @@ fun NoteApp(
                     contentColor = MaterialTheme.colorScheme.onBackground,
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
+                    bottomBar = {
+                        if (appState.isMain) {
+                            NoteBottomBar()
+                        }
+                    },
 
                 ) { padding ->
                     NoteNavHost(
@@ -149,3 +166,63 @@ private fun Modifier.notificationDot(): Modifier =
             )
         }
     }
+
+@Composable
+fun NoteBottomBar(modifier: Modifier = Modifier) {
+    BottomAppBar(
+        actions = {
+            IconButton(
+                modifier = Modifier.testTag("main:check"),
+                onClick = { },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CheckBox,
+                    contentDescription = "add note check",
+                )
+            }
+
+            IconButton(
+                modifier = Modifier.testTag("main:draw"),
+                onClick = {
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Brush,
+                    contentDescription = "add note drawing",
+                )
+            }
+
+            IconButton(
+                modifier = Modifier.testTag("main:voice"),
+                onClick = {
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.KeyboardVoice,
+                    contentDescription = "add note voice",
+                )
+            }
+
+            IconButton(
+                modifier = Modifier.testTag("main:image"),
+                onClick = {
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Image,
+                    contentDescription = "add note image",
+                )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.testTag("main:float"),
+                onClick = { },
+                containerColor = MaterialTheme.colorScheme.primary,
+                elevation = FloatingActionButtonDefaults.elevation(),
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
+            }
+        },
+    )
+}
