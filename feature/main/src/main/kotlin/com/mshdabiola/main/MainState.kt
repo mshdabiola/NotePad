@@ -1,16 +1,19 @@
 package com.mshdabiola.main
 
-import com.mshdabiola.ui.state.LabelUiState
 import com.mshdabiola.ui.state.NotePadUiState
 import com.mshdabiola.ui.state.NoteTypeUi
-import com.mshdabiola.ui.state.Notify
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-data class MainState(
-    val noteType: NoteTypeUi = NoteTypeUi(),
-    val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
-    val labels: ImmutableList<LabelUiState> = emptyList<LabelUiState>().toImmutableList(),
-    val messages: ImmutableList<Notify> = emptyList<Notify>().toImmutableList(),
-    val isGrid: Boolean = true,
-)
+sealed class MainState {
+    data object Loading : MainState()
+    data class Success(
+        val noteType: NoteTypeUi = NoteTypeUi(),
+        val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
+    ) : MainState()
+
+//    data class Error(val message: String) : MainStateN()
+    data object Empty : MainState()
+    data class Finish(val id:Long) : MainState()
+}
+
