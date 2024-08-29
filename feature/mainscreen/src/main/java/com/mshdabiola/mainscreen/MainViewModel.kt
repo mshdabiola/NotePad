@@ -716,14 +716,14 @@ class MainViewModel
     }
 
     private fun onNotifyDelive() {
-        try {
-            Timber.d("Remove")
-            val notifies = mainState.value.messages.toMutableList()
-
-            notifies.removeAt(0)
-            _mainState.value = mainState.value.copy(messages = notifies.toImmutableList())
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        try {
+//            Timber.d("Remove")
+//            val notifies = mainState.value.messages.toMutableList()
+//
+//            notifies.removeAt(0)
+//            _mainState.value = mainState.value.copy(messages = notifies.toImmutableList())
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 }
