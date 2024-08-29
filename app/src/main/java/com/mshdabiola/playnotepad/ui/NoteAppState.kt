@@ -12,17 +12,18 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mshdabiola.data.util.NetworkMonitor
+import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.ui.TrackDisposableJank
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 @Composable
 fun rememberNoteAppState(
@@ -54,14 +55,18 @@ class NoteAppState(
     networkMonitor: NetworkMonitor,
     val drawerState: DrawerState,
 ) {
-    val currentDestination: NavDestination?
+    val currentRoute: String
         @Composable get() = navController
-            .currentBackStackEntryAsState().value?.destination
+            .currentBackStackEntryAsState().value?.destination?.route ?: ""
+
     val mainArg: Long
         @Composable get() = -1L
-//            navController
+
+    //            navController
 //            .currentBackStackEntryAsState().value?.toRoute<Main>() ?:
     // Main(-1L)
+    val isMain: Boolean
+        @Composable get() = currentRoute.contains(Main::class.name)
 
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)
@@ -70,11 +75,13 @@ class NoteAppState(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false,
         )
+
     fun closeDrawer() {
         coroutineScope.launch {
             drawerState.close()
         }
     }
+
     fun openDrawer() {
         coroutineScope.launch {
             drawerState.open()
@@ -96,3 +103,8 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
         }
     }
 }
+
+val <T : Any> KClass<T>.name: String
+    get() {
+        return this.qualifiedName.toString()
+    }

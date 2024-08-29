@@ -91,6 +91,8 @@ dependencies {
     implementation(project(":feature:mainscreen"))
 
     implementation(projects.feature.main)
+    implementation(projects.feature.detail)
+
 
 
 
