@@ -31,9 +31,7 @@ import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.playnotepad.ui.NoteApp
 import com.mshdabiola.playnotepad.ui.rememberNoteAppState
-import com.mshdabiola.ui.state.LabelUiState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
