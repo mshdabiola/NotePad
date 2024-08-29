@@ -16,6 +16,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("mshdabiola.android.library")
                 apply("mshdabiola.android.library.compose")
                 apply("mshdabiola.android.hilt")
+                apply("org.jetbrains.kotlin.plugin.serialization")
+
             }
             extensions.configure<LibraryExtension> {
                 defaultConfig {
@@ -31,7 +33,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", project(":modules:designsystem"))
                 add("implementation", project(":modules:data"))
 
-
+                add("implementation", libs.findLibrary("androidx.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
@@ -39,6 +41,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
                 add("androidTestImplementation", libs.findLibrary("androidx.lifecycle.runtimeTesting").get())
 
+                add("implementation",libs.findLibrary("kotlinx.serialization.json").get())
 
             }
         }
