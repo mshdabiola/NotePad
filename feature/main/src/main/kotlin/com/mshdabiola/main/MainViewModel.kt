@@ -1,6 +1,5 @@
 package com.mshdabiola.main
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,9 +13,7 @@ import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.TimeUsercase
 import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INoteLabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
-import com.mshdabiola.data.repository.INoteRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
@@ -55,8 +52,6 @@ class MainViewModel
     private val notepadRepository: INotePadRepository,
     private val contentManager: IContentManager,
     private val labelRepository: ILabelRepository,
-    private val noteLabelRepository: INoteLabelRepository,
-    private val noteRepository: INoteRepository,
     private val alarmManager: IAlarmManager,
     private val time12UserCase: TimeUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
@@ -73,7 +68,7 @@ class MainViewModel
             notepadRepository.getNotePads().collectLatest {
                 val notes = it.map {
                     it.toNotePadUiState(
-                        getTime = dateShortStringUsercase::invoke,
+                        //  getTime = dateShortStringUsercase::invoke,
                         toPath = contentManager::getImagePath,
                     )
                 }
@@ -92,9 +87,9 @@ class MainViewModel
 
     fun onSelectCard(id: Long) {
         val listNOtePad = getSuccess().notePads.toMutableList()
-        val index = listNOtePad.indexOfFirst { it.note.id == id }
+        val index = listNOtePad.indexOfFirst { it.id == id }
         val notepad = listNOtePad[index]
-        val newNotepad = notepad.copy(note = notepad.note.copy(selected = !notepad.note.selected))
+        val newNotepad = notepad.copy(selected = !notepad.selected)
 
         listNOtePad[index] = newNotepad
 
@@ -103,24 +98,8 @@ class MainViewModel
 
     fun clearSelected() {
         val listNOtePad =
-            getSuccess().notePads.map { it.copy(note = it.note.copy(selected = false)) }
+            getSuccess().notePads.map { it.copy(selected = false) }
         _mainState.value = getSuccess().copy(notePads = listNOtePad.toImmutableList())
-    }
-
-    fun savePhoto(uri: Uri, id: Long) {
-        viewModelScope.launch {
-            contentManager.saveImage(uri, id)
-        }
-    }
-
-    fun saveVoice(uri: Uri, id: Long) {
-        viewModelScope.launch {
-            contentManager.saveVoice(uri, id)
-        }
-    }
-
-    fun getPhotoUri(id: Long): Uri {
-        return contentManager.pictureUri(id)
     }
 
     fun setNoteType(noteType: NoteTypeUi) {
@@ -129,34 +108,34 @@ class MainViewModel
 
     fun setPin() {
         val selectedNotepad =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
 
-        if (selectedNotepad.any { !it.note.isPin }) {
-            val pinNotepad = selectedNotepad.map { it.note.copy(isPin = true) }
+        if (selectedNotepad.any { !it.isPin }) {
+            val pinNotepad = selectedNotepad.map { it.copy(isPin = true) }
 
             viewModelScope.launch {
-                noteRepository.upsert(pinNotepad)
+                notepadRepository.upsert(pinNotepad)
             }
         } else {
-            val unPinNote = selectedNotepad.map { it.note.copy(isPin = false) }
+            val unPinNote = selectedNotepad.map { it.copy(isPin = false) }
 
             viewModelScope.launch {
-                noteRepository.upsert(unPinNote)
+                notepadRepository.upsert(unPinNote)
             }
         }
     }
 
     private fun setAlarm(time: Long, interval: Long?) {
         val selectedNotes =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad().note }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
 
         viewModelScope.launch {
-            noteRepository.upsert(notes)
+            notepadRepository.upsert(notes)
         }
 
         viewModelScope.launch {
@@ -175,13 +154,13 @@ class MainViewModel
 
     fun deleteAlarm() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad().note }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
 
         viewModelScope.launch {
-            noteRepository.upsert(notes)
+            notepadRepository.upsert(notes)
         }
 
         viewModelScope.launch {
@@ -193,59 +172,49 @@ class MainViewModel
 
     fun setAllColor(colorId: Int) {
         val selectedNotes =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad().note }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(color = colorId) }
 
         viewModelScope.launch {
-            noteRepository.upsert(notes)
+            notepadRepository.upsert(notes)
         }
     }
 
     fun setAllArchive() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad().note }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
 
         viewModelScope.launch {
-            noteRepository.upsert(notes)
+            notepadRepository.upsert(notes)
         }
     }
 
     fun setAllDelete() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.note.selected }.map { it.toNotePad().note }
+            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
 
         viewModelScope.launch {
-            noteRepository.upsert(notes)
+            notepadRepository.upsert(notes)
         }
     }
 
     fun copyNote() {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = getSuccess().notePads.single { it.note.selected }.note.id
+            val id = getSuccess().notePads.single { it.selected }.id
             val notepads = notepadRepository.getOneNotePad(id).first()
 
             if (notepads != null) {
-                var copy = notepads.copy(note = notepads.note.copy(id = null))
+                val copy = notepads.copy(id = -1)
 
-                val newId = notepadRepository.insertNotepad(copy)
-
-                copy = copy.copy(
-                    note = copy.note.copy(id = newId),
-                    images = copy.images.map { it.copy(noteId = newId) },
-                    voices = copy.voices.map { it.copy(noteId = newId) },
-                    labels = copy.labels.map { it.copy(noteId = newId) },
-                    checks = copy.checks.map { it.copy(noteId = newId) },
-                )
-
-                notepadRepository.insertNotepad(copy)
+                notepadRepository.upsert(copy)
             }
         }
     }
@@ -257,7 +226,7 @@ class MainViewModel
 
         viewModelScope.launch {
             labelRepository.delete(labelId)
-            noteLabelRepository.deleteByLabelId(labelId)
+            // noteLabelRepository.deleteByLabelId(labelId)
         }
     }
 
@@ -279,7 +248,7 @@ class MainViewModel
         viewModelScope.launch(Dispatchers.IO) {
             val emptyList = notepadRepository.getNotePads().first().map {
                 it.toNotePadUiState(
-                    getTime = dateShortStringUsercase::invoke,
+                    //  getTime = dateShortStringUsercase::invoke,
                     toPath = contentManager::getImagePath,
                 )
             }.filter { it.isEmpty() }

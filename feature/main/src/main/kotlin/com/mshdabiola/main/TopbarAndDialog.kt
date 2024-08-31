@@ -81,7 +81,6 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.state.NoteCheckUiState
 import com.mshdabiola.ui.state.NotePadUiState
-import com.mshdabiola.ui.state.NoteUiState
 import com.mshdabiola.ui.state.NoteVoiceUiState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
@@ -569,18 +568,18 @@ fun NoteCard(
     val haveVoice by remember(notePad.voices) {
         derivedStateOf { notePad.voices.isNotEmpty() }
     }
-    val bg = if (notePad.note.background != -1) {
+    val bg = if (notePad.background != -1) {
         Color.Transparent
     } else {
-        if (notePad.note.color != -1) {
-            NoteIcon.noteColors[notePad.note.color]
+        if (notePad.color != -1) {
+            NoteIcon.noteColors[notePad.color]
         } else {
             MaterialTheme.colorScheme.background
         }
     }
 
-    val sColor = if (notePad.note.background != -1) {
-        NoteIcon.background[notePad.note.background].fgColor
+    val sColor = if (notePad.background != -1) {
+        NoteIcon.background[notePad.background].fgColor
     } else {
         MaterialTheme.colorScheme.secondaryContainer
     }
@@ -596,10 +595,10 @@ fun NoteCard(
 
     OutlinedCard(
         modifier = Modifier.combinedClickable(
-            onClick = { notePad.note.id.let { onCardClick(it) } },
-            onLongClick = { notePad.note.id.let { onLongClick(it) } },
+            onClick = { notePad.id.let { onCardClick(it) } },
+            onLongClick = { notePad.id.let { onLongClick(it) } },
         ),
-        border = if (notePad.note.selected) {
+        border = if (notePad.selected) {
             BorderStroke(3.dp, Color.Blue)
         } else {
             BorderStroke(
@@ -610,9 +609,9 @@ fun NoteCard(
         colors = CardDefaults.outlinedCardColors(containerColor = bg),
     ) {
         Box {
-            if (notePad.note.background != -1) {
+            if (notePad.background != -1) {
                 Image(
-                    painter = painterResource(id = NoteIcon.background[notePad.note.background].bg),
+                    painter = painterResource(id = NoteIcon.background[notePad.background].bg),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(
@@ -656,20 +655,20 @@ fun NoteCard(
                             .padding(8.dp),
                     ) {
                         Text(
-                            text = notePad.note.title.ifEmpty { notePad.note.detail },
-                            style = if (notePad.note.title.isNotEmpty()) {
+                            text = notePad.title.ifEmpty { notePad.detail },
+                            style = if (notePad.title.isNotEmpty()) {
                                 MaterialTheme.typography.titleMedium
                             } else {
                                 MaterialTheme.typography.bodyMedium
                             },
                             maxLines = 10,
                         )
-                        if (!notePad.note.isCheck) {
-                            if (notePad.note.title.isNotEmpty()) {
-                                if (notePad.note.detail.isNotEmpty()) {
+                        if (!notePad.isCheck) {
+                            if (notePad.title.isNotEmpty()) {
+                                if (notePad.detail.isNotEmpty()) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = notePad.note.detail,
+                                        text = notePad.detail,
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 10,
 
@@ -711,10 +710,10 @@ fun NoteCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
-                            if (notePad.note.reminder > 0) {
+                            if (notePad.reminder > 0) {
                                 ReminderCard(
-                                    date = notePad.note.date,
-                                    interval = notePad.note.interval,
+                                    date = notePad.date,
+                                    interval = notePad.interval,
                                     color = sColor,
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -736,18 +735,17 @@ fun NoteCard(
 fun NoteCardPreview() {
     NoteCard(
         notePad = NotePadUiState(
-            note = NoteUiState(
-                id = 1,
-                title = "Mandy abiola",
-                detail = "Lamia moshood",
-                editDate = 314L,
-                isCheck = true,
-                reminder = Clock.System.now().toEpochMilliseconds(),
-                color = 2,
-                isPin = false,
-                background = 3,
-                selected = true,
-            ),
+            id = 1,
+            title = "Mandy abiola",
+            detail = "Lamia moshood",
+            editDate = 314L,
+            isCheck = true,
+            reminder = Clock.System.now().toEpochMilliseconds(),
+            color = 2,
+            isPin = false,
+            background = 3,
+            selected = true,
+
             labels = listOf(
                 "ade",
                 "food",

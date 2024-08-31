@@ -360,16 +360,16 @@ fun MainContent(
 
     val pinNotePad by remember(success.notePads) {
         derivedStateOf {
-            success.notePads.partition { it.note.isPin }
+            success.notePads.partition { it.isPin }
         }
     }
 
     val noOfSelected = remember(success.notePads) {
-        success.notePads.count { it.note.selected }
+        success.notePads.count { it.selected }
     }
     val isAllPin = remember(success.notePads) {
-        success.notePads.filter { it.note.selected }
-            .all { it.note.isPin }
+        success.notePads.filter { it.selected }
+            .all { it.isPin }
     }
     var isGrid by rememberSaveable { mutableStateOf(true) }
     val onNoteClick: (Long) -> Unit = {
@@ -475,19 +475,6 @@ fun MainContent(
                 onNoteClick = onNoteClick,
                 onSelectedCard = onSelectedCard,
             )
-            items(pinNotePad.first) { notePadUiState ->
-                com.mshdabiola.ui.NoteCard(
-                    notePad = notePadUiState,
-                    onCardClick = {
-                        if (noOfSelected > 0) {
-                            onSelectedCard(it)
-                        } else {
-                            navigateToEdit(it)
-                        }
-                    },
-                    onLongClick = onSelectedCard,
-                )
-            }
 
             if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -519,7 +506,7 @@ fun LazyStaggeredGridScope.noteItems(
     onSelectedCard: (Long) -> Unit,
 ) = items(
     items = items,
-    key = { 1 },
+    key = { it.id },
     itemContent = { note ->
         val analyticsHelper = LocalAnalyticsHelper.current
 
@@ -534,7 +521,6 @@ fun LazyStaggeredGridScope.noteItems(
     },
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameLabelAlertDialog(
     show: Boolean = false,
