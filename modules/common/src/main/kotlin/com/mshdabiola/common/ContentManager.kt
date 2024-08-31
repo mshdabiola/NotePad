@@ -17,8 +17,9 @@ internal class ContentManager
     private val photoDir = context.filesDir.absolutePath + "/photo"
     private val voiceDir = context.filesDir.absolutePath + "/voice"
 
-    override fun saveImage(uri: Uri, currentTime: Long) {
-        try {
+    override fun saveImage(uri: Uri): Long {
+        return try {
+            val currentTime = System.currentTimeMillis()
             createImageDir()
             val outputStream = FileOutputStream(File(photoDir, "Image_$currentTime.jpg"))
 
@@ -26,24 +27,33 @@ internal class ContentManager
                 it?.copyTo(outputStream)
                 outputStream.close()
             }
+            currentTime
         } catch (e: Exception) {
             e.printStackTrace()
+            -1
         }
     }
 
-    override fun saveVoice(uri: Uri, currentTime: Long) {
-        createVoiceDir()
-        val outputStream = FileOutputStream(File(voiceDir, "Voice_$currentTime.amr"))
+    override fun saveVoice(uri: Uri): Long {
+        return try {
+            val currentTime = System.currentTimeMillis()
+            createVoiceDir()
+            val outputStream = FileOutputStream(File(voiceDir, "Voice_$currentTime.amr"))
 
-        context.contentResolver.openInputStream(uri).use {
-            it?.copyTo(outputStream)
-            outputStream.close()
+            context.contentResolver.openInputStream(uri).use {
+                it?.copyTo(outputStream)
+                outputStream.close()
+            }
+            currentTime
+        } catch (e: Exception) {
+            e.printStackTrace()
+            -1
         }
     }
 
-    override fun pictureUri(id: Long): Uri {
+    override fun pictureUri(): Uri {
         createImageDir()
-        val file = File(photoDir, "Image_$id.jpg")
+        val file = File(photoDir, "Image_$2.jpg")
 
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
 
