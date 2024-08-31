@@ -1,14 +1,13 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
 
 interface INotePadRepository {
-    suspend fun insertNote(note: Note): Long
 
-    suspend fun insertNotepad(notePad: NotePad): Long
+    suspend fun upsert(notePad: NotePad): Long
+    suspend fun upsert(notePads: List<NotePad>)
 
     suspend fun deleteCheckNote(id: Long, noteId: Long)
 

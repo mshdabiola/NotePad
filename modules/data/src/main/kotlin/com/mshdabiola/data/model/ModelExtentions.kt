@@ -1,6 +1,7 @@
 package com.mshdabiola.data.model
 
 import com.mshdabiola.database.model.DrawPathEntity
+import com.mshdabiola.database.model.FullLabel
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteEntity
@@ -21,15 +22,15 @@ fun DrawPathEntity.toDrawPath() = DrawPath(imageId, pathId, color, width, join, 
 fun DrawPath.toDrawPathEntity() =
     DrawPathEntity(imageId, pathId, color, width, join, alpha, cap, paths)
 
-fun LabelEntity.toLabel() = Label(id, name)
-fun Label.toLabelEntity() = LabelEntity(id, label)
+fun LabelEntity.toLabel() = Label(id!!, name)
+fun Label.toLabelEntity() = LabelEntity(id.check(), label)
 
-fun NoteCheckEntity.toNoteCheck() = NoteCheck(id, noteId, content, isCheck)
-fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id, noteId, content, isCheck)
+fun NoteCheckEntity.toNoteCheck() = NoteCheck(id!!, noteId, content, isCheck)
+fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id.check(), noteId, content, isCheck)
 
-fun Note.toNoteEntity() =
+fun NotePad.toNoteEntity() =
     NoteEntity(
-        id,
+        id.check(),
         title,
         detail,
         editDate,
@@ -63,12 +64,24 @@ fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
 
 fun NotePadEntity.toNotePad() = NotePad(
-    note = noteEntity.toNote(),
+    noteEntity.id!!,
+    noteEntity.title,
+    noteEntity.detail,
+    noteEntity.editDate,
+    noteEntity.isCheck,
+    noteEntity.color,
+    noteEntity.background,
+    noteEntity.isPin,
+    noteEntity.reminder,
+    noteEntity.interval,
+    noteEntity.noteType,
     images = images.map { it.toNoteImage() },
     voices = voices.map { it.toNoteVoice() },
     checks = checks.map { it.toNoteCheck() },
-    labels = labels.map { it.toNoteLabel() },
+    labels = labels.map { it.toLabel() },
 )
-
+fun FullLabel.toLabel() = label.toLabel()
 fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
 fun NoteVoiceEntity.toNoteVoice() = NoteVoice(id, noteId, voiceName)
+
+fun Long.check() = if (this == -1L) null else this

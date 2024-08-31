@@ -3,7 +3,6 @@ package com.mshdabiola.data.repository
 import com.mshdabiola.data.model.toNoteCheckEntity
 import com.mshdabiola.data.model.toNoteEntity
 import com.mshdabiola.data.model.toNoteImageEntity
-import com.mshdabiola.data.model.toNoteLabelEntity
 import com.mshdabiola.data.model.toNotePad
 import com.mshdabiola.data.model.toNoteVoiceEntity
 import com.mshdabiola.database.dao.NoteCheckDao
@@ -13,7 +12,7 @@ import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.dao.PathDao
-import com.mshdabiola.model.Note
+import com.mshdabiola.database.model.NoteLabelEntity
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.Dispatchers
@@ -33,24 +32,27 @@ internal class NotePadRepository
     private val notePadDao: NotepadDao,
     private val pathDao: PathDao,
 ) : INotePadRepository {
-    override suspend fun insertNote(note: Note) = noteDao.upsert(note.toNoteEntity())
 
-    override suspend fun insertNotepad(notePad: NotePad): Long {
-        val id = noteDao.upsert(notePad.note.toNoteEntity())
-        if (notePad.checks.isNotEmpty()) {
-            noteCheckDao.upsert(notePad.checks.map { it.toNoteCheckEntity() })
+    override suspend fun upsert(notePad: NotePad): Long {
+        var id = noteDao.upsert(notePad.toNoteEntity())
+        if (id == -1L) {
+            id = notePad.id
         }
-        if (notePad.voices.isNotEmpty()) {
-            noteVoiceDao.addVoice(notePad.voices.map { it.toNoteVoiceEntity() })
-        }
-        if (notePad.images.isNotEmpty()) {
-            noteImageDao.upsert(notePad.images.map { it.toNoteImageEntity() })
-        }
-        if (notePad.labels.isNotEmpty()) {
-            noteLabelDao.upsert(notePad.labels.map { it.toNoteLabelEntity() })
-        }
+        noteCheckDao.upsert(notePad.checks.map { it.copy(noteId = id).toNoteCheckEntity() })
+
+        noteVoiceDao.addVoice(notePad.voices.map { it.copy(noteId = id).toNoteVoiceEntity() })
+
+        noteImageDao.upsert(notePad.images.map { it.copy(noteId = id).toNoteImageEntity() })
+
+        noteLabelDao.upsert(notePad.labels.map { NoteLabelEntity(id, it.id) })
 
         return id
+    }
+
+    override suspend fun upsert(notePads: List<NotePad>) {
+        notePads.forEach {
+            upsert(it)
+        }
     }
 
     override suspend fun deleteCheckNote(id: Long, noteId: Long) = withContext(Dispatchers.IO) {
@@ -85,7 +87,7 @@ internal class NotePadRepository
 
     override suspend fun delete(notePads: List<NotePad>) {
         notePads.forEach {
-            val id = it.note.id!!
+            val id = it.id
             noteDao.delete(id)
             if (it.images.isNotEmpty()) {
                 noteImageDao.deleteByNoteId(id)
