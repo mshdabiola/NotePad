@@ -13,6 +13,6 @@ data class NotePadEntity(
     @Relation(parentColumn = "id", entityColumn = "noteId")
     val checks: List<NoteCheckEntity>,
 
-    @Relation(parentColumn = "id", entityColumn = "noteId")
-    val labels: List<NoteLabelEntity>,
+    @Relation(entity = NoteLabelEntity::class, parentColumn = "id", entityColumn = "noteId")
+    val labels: List<FullLabel>,
 )
