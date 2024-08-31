@@ -11,7 +11,7 @@ internal class TestNotePadRepository : INotePadRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertNotepad(notePad: NotePad): Long {
+    override suspend fun upsert(notePad: NotePad): Long {
         TODO("Not yet implemented")
     }
 
