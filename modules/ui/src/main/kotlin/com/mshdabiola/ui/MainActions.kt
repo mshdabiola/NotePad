@@ -24,10 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,27 +31,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Audio(
-    modifier: Modifier = Modifier,
+fun AudioDialog(
     show: Boolean = false,
     dismiss: () -> Unit = {},
-    saveVoice: (Uri, Long) -> Unit = { _, _ -> },
+    output: (Uri, String) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             it.data?.let { intent ->
-                val strArr = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                val audiouri = intent.data
+                val text = intent
+                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    ?.joinToString() ?: ""
 
-                if (audiouri != null) {
-                    val time = System.currentTimeMillis()
-                    saveVoice(audiouri, time)
-
-                    // navigateToEdit(-4, strArr?.joinToString() ?: "", time)
-                }
+                output(intent.data!!, text)
             }
+            dismiss()
         },
     )
 
@@ -104,7 +96,6 @@ fun Audio(
                 } else {
                     audioPermission.launch(Manifest.permission.RECORD_AUDIO)
                 }
-                dismiss()
             }
         },
     )
@@ -115,21 +106,19 @@ fun ImageDialog2(
     modifier: Modifier = Modifier,
     show: Boolean = false,
     dismiss: () -> Unit = {},
-    saveImage: (Uri, Long) -> Unit = { _, _ -> },
-    photoUri: (Long) -> Uri = { Uri.EMPTY },
+    saveImage: (Uri) -> Unit = {},
+    getUri: () -> Uri = { Uri.EMPTY },
 
 ) {
-    var photoId by remember {
-        mutableStateOf(0L)
-    }
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             it?.let {
 //                showImageDialog = false
 //                val time = System.currentTimeMillis()
-//                saveImage(it, time)
+                saveImage(it)
 //                navigateToEdit(-3, "image text", time)
+                dismiss()
             }
         },
     )
@@ -138,6 +127,8 @@ fun ImageDialog2(
         contract = ActivityResultContracts.TakePicture(),
         onResult = {
             if (it) {
+                saveImage(getUri())
+                dismiss()
                 // navigateToEdit(-3, "image text", photoId)
             }
         },
@@ -150,8 +141,7 @@ fun ImageDialog2(
             imageLauncher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
         },
         onSnapImage = {
-            photoId = System.currentTimeMillis()
-            snapPictureLauncher.launch(photoUri(photoId))
+            snapPictureLauncher.launch(getUri())
         },
     )
 }
