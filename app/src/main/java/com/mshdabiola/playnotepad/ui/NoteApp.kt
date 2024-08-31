@@ -34,7 +34,9 @@ import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -50,18 +52,25 @@ import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
+import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
+import com.mshdabiola.ui.AudioDialog
+import com.mshdabiola.ui.ImageDialog2
 import com.mshdabiola.ui.state.LabelUiState
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NoteApp(
+    viewModel: MainActivityViewModel,
     appState: NoteAppState,
     modifier: Modifier = Modifier,
 ) {
     val shouldShowGradientBackground = true
     val labels = emptyList<LabelUiState>().toImmutableList()
+    var showAudio by remember { mutableStateOf(false) }
+    var showImage by remember { mutableStateOf(false) }
 
     SkBackground(modifier = modifier) {
         SkGradientBackground(
@@ -118,7 +127,33 @@ fun NoteApp(
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = {
                         if (appState.isMain) {
-                            NoteBottomBar()
+                            NoteBottomBar(
+                                onAddNewNote = {
+                                    appState.coroutineScope.launch {
+                                        val id = viewModel.insertNewNote()
+                                        println("id is $id")
+                                    }
+                                },
+                                onAddVoiceNote = {
+                                    showAudio = true
+                                },
+                                onAddCheckNote = {
+                                    appState.coroutineScope.launch {
+                                        val id = viewModel.insertNewCheckNote()
+                                        println("id is $id")
+                                    }
+                                },
+                                onAddImageNote = {
+                                    showImage = true
+                                },
+                                onAddDrawNote = {
+                                    appState.coroutineScope.launch {
+                                        val id = viewModel.insertNewNote()
+                                        println("id is $id")
+                                    }
+                                },
+
+                            )
                         }
                     },
 
@@ -144,6 +179,28 @@ fun NoteApp(
                     )
                 }
             }
+
+            AudioDialog(
+                show = showAudio,
+                dismiss = { showAudio = false },
+                output = { uri, text ->
+                    appState.coroutineScope.launch {
+                        val id = viewModel.insertNewAudioNote(uri, text)
+                        println("id is $id")
+                    }
+                },
+
+            )
+            ImageDialog2(
+                show = showImage,
+                dismiss = { showImage = false },
+                getUri = viewModel.contentManager::pictureUri,
+                saveImage = {
+                    appState.coroutineScope.launch {
+                        val id = viewModel.insertNewImageNote(it)
+                    }
+                },
+            )
         }
     }
 }
@@ -168,12 +225,19 @@ private fun Modifier.notificationDot(): Modifier =
     }
 
 @Composable
-fun NoteBottomBar(modifier: Modifier = Modifier) {
+fun NoteBottomBar(
+    modifier: Modifier = Modifier,
+    onAddNewNote: () -> Unit = {},
+    onAddCheckNote: () -> Unit = {},
+    onAddDrawNote: () -> Unit = {},
+    onAddVoiceNote: () -> Unit = {},
+    onAddImageNote: () -> Unit = {},
+) {
     BottomAppBar(
         actions = {
             IconButton(
                 modifier = Modifier.testTag("main:check"),
-                onClick = { },
+                onClick = onAddCheckNote,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.CheckBox,
@@ -183,8 +247,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 
             IconButton(
                 modifier = Modifier.testTag("main:draw"),
-                onClick = {
-                },
+                onClick = onAddDrawNote,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Brush,
@@ -194,8 +257,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 
             IconButton(
                 modifier = Modifier.testTag("main:voice"),
-                onClick = {
-                },
+                onClick = onAddVoiceNote,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.KeyboardVoice,
@@ -205,8 +267,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 
             IconButton(
                 modifier = Modifier.testTag("main:image"),
-                onClick = {
-                },
+                onClick = onAddImageNote,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Image,
@@ -216,8 +277,8 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.testTag("main:float"),
-                onClick = { },
+                modifier = Modifier.testTag("main:add"),
+                onClick = onAddNewNote,
                 containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.elevation(),
             ) {

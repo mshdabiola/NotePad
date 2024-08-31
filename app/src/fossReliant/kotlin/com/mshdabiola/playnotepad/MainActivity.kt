@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                     darkTheme = darkTheme,
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
-                    NoteApp(appState)
+                    NoteApp(appState = appState, viewModel = viewModel)
                 }
             }
         }

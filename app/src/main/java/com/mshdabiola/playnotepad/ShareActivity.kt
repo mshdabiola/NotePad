@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import com.mshdabiola.designsystem.theme.SkTheme
-import com.mshdabiola.editscreen.ActionEditScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -16,7 +15,7 @@ class ShareActivity : ComponentActivity() {
         setContent {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             SkTheme {
-                ActionEditScreen()
+//                ActionEditScreen()
             }
         }
     }

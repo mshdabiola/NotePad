@@ -2,4 +2,27 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 
     <string name="app_name">Play NotePad</string>
+    <string name="feature_mainscreen_add_note">Add note</string>
+    <string name="feature_mainscreen_pin">Pin</string>
+    <string name="feature_mainscreen_other">Other</string>
+    <string name="feature_mainscreen_archive">Archive</string>
+    <string name="feature_mainscreen_delete">Delete</string>
+    <string name="feature_mainscreen_make_a_copy">Make a copy</string>
+    <string name="feature_mainscreen_send">Send</string>
+    <string name="feature_mainscreen_rename_label">Rename label</string>
+    <string name="feature_mainscreen_delete_label">Delete label</string>
+    <string name="feature_mainscreen_empty_trash">Empty trash</string>
+    <string name="feature_mainscreen_search_note">Search note</string>
+    <string name="feature_mainscreen_rename">Rename</string>
+    <string name="feature_mainscreen_cancel">Cancel</string>
+    <string name="feature_mainscreen_add_image">Add image</string>
+    <string name="feature_mainscreen_take_image">Take image</string>
+    <string name="feature_mainscreen_choose_image">Choose image</string>
+    <string name="feature_mainscreen_notes">Notes</string>
+    <string name="feature_mainscreen_reminders">Reminders</string>
+    <string name="feature_mainscreen_labels">Labels</string>
+    <string name="feature_mainscreen_edit">Edit</string>
+    <string name="feature_mainscreen_create_new_label">Create new label</string>
+    <string name="feature_mainscreen_trash">Trash</string>
+    <string name="feature_mainscreen_about">About</string>
 </resources>
