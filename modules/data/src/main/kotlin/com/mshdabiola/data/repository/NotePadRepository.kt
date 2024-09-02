@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -129,7 +130,7 @@ internal class NotePadRepository
             }
     }
 
-    private fun timeToString(time: LocalTime): String {
+     override fun timeToString(time: LocalTime): String {
         val hour = when {
             time.hour > 12 -> time.hour - 12
             time.hour == 0 -> 12
@@ -139,8 +140,19 @@ internal class NotePadRepository
 
         return "%2d : %02d %s".format(hour, time.minute, timeset)
     }
+     override fun dateToString(date: LocalDate): String {
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val month = date.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
 
-    private fun dateToString(long: Long): String {
+        return when {
+            now.date == date -> "Today"
+            date == now.date.plus(1, DateTimeUnit.DAY) -> "Tomorrow"
+            date.year != now.year -> "$month ${date.dayOfMonth}, ${date.year}"
+            else -> "$month ${date.dayOfMonth}"
+        }
+    }
+
+     override fun dateToString(long: Long): String {
         val date = Instant.fromEpochMilliseconds(long)
             .toLocalDateTime(TimeZone.currentSystemDefault())
 
@@ -169,7 +181,7 @@ internal class NotePadRepository
     }
 
 
-    fun transform(pad: NotePad): NotePad{
+    private fun transform(pad: NotePad): NotePad{
        return pad.copy(
             reminderString = dateToString(pad.reminder),
             editDateString = dateToString(pad.editDate),

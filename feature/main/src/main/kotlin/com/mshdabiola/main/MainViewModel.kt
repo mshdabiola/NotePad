@@ -7,11 +7,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.DateShortStringUsercase
-import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.IAlarmManager
-import com.mshdabiola.common.IContentManager
-import com.mshdabiola.common.TimeUsercase
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
@@ -45,11 +41,7 @@ class MainViewModel
 @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
-    private val contentManager: IContentManager,
     private val alarmManager: IAlarmManager,
-    private val time12UserCase: TimeUsercase,
-    private val dateShortStringUsercase: DateShortStringUsercase,
-    private val dateStringUsercase: DateStringUsercase,
 ) : ViewModel() {
 
     //  val id = savedStateHandle.toRoute<Main>().id
@@ -318,12 +310,12 @@ class MainViewModel
                 val greater = timeListDefault[index] > today.time
                 dateListUiState.copy(
                     enable = greater,
-                    value = time12UserCase(timeListDefault[index]),
-                    trail = time12UserCase(timeListDefault[index]),
+                    value = notepadRepository.timeToString(timeListDefault[index]),
+                    trail = notepadRepository.timeToString(timeListDefault[index]),
                 )
             } else {
                 timeListDefault[timeListDefault.lastIndex] = currentDateTime.time
-                dateListUiState.copy(value = time12UserCase(currentDateTime.time))
+                dateListUiState.copy(value = notepadRepository.timeToString(currentDateTime.time))
             }
         }.toImmutableList()
         val datelist = listOf(
@@ -341,7 +333,7 @@ class MainViewModel
             ),
             DateListUiState(
                 title = "Pick date",
-                value = dateStringUsercase(currentDateTime.date),
+                value = notepadRepository.dateToString(currentDateTime.date),
                 isOpenDialog = true,
                 enable = true,
             ),
@@ -519,7 +511,7 @@ class MainViewModel
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
-                im[im.lastIndex] = im[im.lastIndex].copy(value = dateStringUsercase(date.date))
+                im[im.lastIndex] = im[im.lastIndex].copy(value = notepadRepository.dateToString(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
@@ -545,7 +537,7 @@ class MainViewModel
 
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
-            im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
+            im[im.lastIndex] = im[im.lastIndex].copy(value = notepadRepository.timeToString(time))
             it.copy(
                 timeData = im.toImmutableList(),
                 currentTime = im.lastIndex,

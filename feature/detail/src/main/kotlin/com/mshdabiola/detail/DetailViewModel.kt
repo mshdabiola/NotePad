@@ -16,11 +16,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.mshdabiola.common.DateStringUsercase
-import com.mshdabiola.common.IContentManager
-import com.mshdabiola.common.INotePlayer
-import com.mshdabiola.common.TimeUsercase
-import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.model.NoteCheck
@@ -60,12 +55,7 @@ import kotlin.time.DurationUnit
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val notePadRepository: INotePadRepository,
-    private val contentManager: IContentManager,
-    private val voicePlayer: INotePlayer,
-    private val labelRepository: ILabelRepository,
-    private val time12UserCase: TimeUsercase,
-    private val dateStringUsercase: DateStringUsercase,
+    private val notePadRepository: INotePadRepository
 
 ) : ViewModel() {
 
@@ -469,11 +459,11 @@ class DetailViewModel @Inject constructor(
                     val greater = timeList[index] > today.time
                     dateListUiState.copy(
                         enable = greater,
-                        value = time12UserCase(timeList[index]),
-                        trail = time12UserCase(timeList[index]),
+                        value = notePadRepository.timeToString(timeList[index]),
+                        trail = notePadRepository.timeToString(timeList[index]),
                     )
                 } else {
-                    dateListUiState.copy(value = time12UserCase(currentDateTime.time))
+                    dateListUiState.copy(value = notePadRepository.timeToString(currentDateTime.time))
                 }
             }
             .toImmutableList()
@@ -492,7 +482,7 @@ class DetailViewModel @Inject constructor(
             ),
             DateListUiState(
                 title = "Pick date",
-                value = dateStringUsercase(currentDateTime.date),
+                value = notePadRepository.dateToString(currentDateTime.date),
                 isOpenDialog = true,
                 enable = true,
             ),
@@ -679,7 +669,7 @@ class DetailViewModel @Inject constructor(
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
                 im[im.lastIndex] =
-                    im[im.lastIndex].copy(value = dateStringUsercase(date.date))
+                    im[im.lastIndex].copy(value = notePadRepository.dateToString(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
@@ -705,7 +695,7 @@ class DetailViewModel @Inject constructor(
 
         _dateTimeState.update {
             val im = it.timeData.toMutableList()
-            im[im.lastIndex] = im[im.lastIndex].copy(value = time12UserCase(time))
+            im[im.lastIndex] = im[im.lastIndex].copy(value = notePadRepository.timeToString(time))
             it.copy(
                 timeData = im.toImmutableList(),
                 currentTime = im.lastIndex,

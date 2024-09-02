@@ -3,6 +3,8 @@ package com.mshdabiola.data.repository
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 interface INotePadRepository {
 
@@ -24,4 +26,8 @@ interface INotePadRepository {
     suspend fun deleteNotePad(notePads: List<NotePad>)
 
     suspend fun delete(notePads: List<NotePad>)
+
+    fun timeToString(time: LocalTime): String
+    fun dateToString(date: LocalDate): String
+    fun dateToString(long: Long): String
 }
