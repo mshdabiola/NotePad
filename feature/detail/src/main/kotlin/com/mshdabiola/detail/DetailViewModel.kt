@@ -77,6 +77,7 @@ class DetailViewModel @Inject constructor(
 
     val title = TextFieldState()
     val content = TextFieldState()
+
     private val _state = MutableStateFlow<DetailState>(DetailState.Loading())
     val state = _state.asStateFlow()
 
@@ -97,6 +98,10 @@ class DetailViewModel @Inject constructor(
                 append(initNOte.detail)
             }
 
+            note
+                .collectLatest {
+                    saveNote()
+                }
 
         }
 
@@ -724,6 +729,19 @@ class DetailViewModel @Inject constructor(
                 timeError = datetime < today,
             )
         }
+    }
+
+    fun onCheckChange(text: String, id: Long) {
+        val noteChecks = note.value.checks.toMutableList()
+        val index = noteChecks.indexOfFirst { it.id == id }
+        val noteCheck = noteChecks[index].copy(content = text)
+        noteChecks[index] = noteCheck
+        note.update {
+            it.copy(checks = noteChecks.toImmutableList())
+        }
+
+
+
     }
 
 }

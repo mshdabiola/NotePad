@@ -100,6 +100,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.SkTextField
+import com.mshdabiola.designsystem.component.SkTextFieldCheck
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.DateDialog
@@ -168,7 +169,7 @@ internal fun DetailRoute(
 //        onTitleChange = editViewModel::onTitleChange,
 //        onSubjectChange = editViewModel::onDetailChange,
         onBackClick = onBack,
-//        onCheckChange = editViewModel::onCheckChange,
+        onCheckChange = editViewModel::onCheckChange,
         onCheckDelete = editViewModel::onCheckDelete,
         onCheck = editViewModel::onCheck,
         addItem = editViewModel::addCheck,
@@ -304,7 +305,7 @@ fun EditScreen(
 //    onTitleChange: (String) -> Unit = {},
 //    onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
-//    onCheckChange: (String, Long) -> Unit = { _, _ -> },
+    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
@@ -559,6 +560,7 @@ fun EditScreen(
                     items(notCheckNote, key = { it.id }) {
                         NoteCheck(
                             noteCheckUiState = it,
+                            onCheckChange = onCheckChange,
                             onCheckDelete = onCheckDelete,
                             onCheck = onCheck,
                             onNextCheck = addItem,
@@ -592,6 +594,7 @@ fun EditScreen(
                         items(checkNote, key = { it.id }) {
                             NoteCheck(
                                 noteCheckUiState = it,
+                                onCheckChange = onCheckChange,
                                 onCheckDelete = onCheckDelete,
                                 onCheck = onCheck,
                                 strickText = true,
@@ -708,6 +711,7 @@ private fun DetailScreenPreview() {
 @Composable
 fun NoteCheck(
     noteCheckUiState: NoteCheckUiState,
+    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     content: TextFieldState = rememberTextFieldState(),
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
@@ -746,19 +750,12 @@ fun NoteCheck(
             checked = noteCheckUiState.isCheck,
             onCheckedChange = { onCheck(it, noteCheckUiState.id) },
         )
-        SkTextField(
+        SkTextFieldCheck(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f),
-            state = content,
-            // onValueChange = { onCheckChange(it, noteCheckUiState.id) },
-//            colors = TextFieldDefaults.colors(
-//                focusedContainerColor = Color.Transparent,
-//                unfocusedContainerColor = Color.Transparent,
-//                disabledContainerColor = Color.Transparent,
-//                focusedIndicatorColor = Color.Transparent,
-//                unfocusedIndicatorColor = Color.Transparent,
-//            ),
+            text = noteCheckUiState.content,
+             onTextChange = { onCheckChange(it, noteCheckUiState.id) },
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
             trailingIcon = {
