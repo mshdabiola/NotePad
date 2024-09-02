@@ -4,7 +4,6 @@
 
 package com.mshdabiola.designsystem.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,13 +42,13 @@ fun DynamicAsyncImage(
     val iconTint = LocalTintTheme.current.iconTint
     var isLoading by remember { mutableStateOf(true) }
     var isError by remember { mutableStateOf(false) }
-    val imageLoader = rememberAsyncImagePainter(
-        model = imageUrl,
-        onState = { state ->
-            isLoading = state is Loading
-            isError = state is Error
-        },
-    )
+//    val imageLoader = rememberAsyncImagePainter(
+//        model = imageUrl,
+//        onState = { state ->
+//            isLoading = state is AsyncImagePainter.State.Loading
+//            isError = state is Error
+//        },
+//    )
     val isLocalInspection = LocalInspectionMode.current
     Box(
         modifier = modifier,
@@ -64,11 +63,11 @@ fun DynamicAsyncImage(
                 color = MaterialTheme.colorScheme.tertiary,
             )
         }
-        Image(
-            contentScale = ContentScale.Crop,
-            painter = if (isError.not() && !isLocalInspection) imageLoader else placeholder,
-            contentDescription = contentDescription,
-            colorFilter = if (iconTint != Unspecified) ColorFilter.tint(iconTint) else null,
-        )
+//        Image(
+//            contentScale = ContentScale.Crop,
+//            painter = if (isError.not() && !isLocalInspection) imageLoader else placeholder,
+//            contentDescription = contentDescription,
+//            colorFilter = if (iconTint != Unspecified) ColorFilter.tint(iconTint) else null,
+//        )
     }
 }

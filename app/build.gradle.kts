@@ -81,17 +81,17 @@ dependencies {
     implementation(projects.modules.data)
     implementation(projects.modules.ui)
 
-    implementation(project(":feature:editScreen"))
-    implementation(project(":feature:labelscreen"))
-    implementation(project(":feature:selectlabelscreen"))
-    implementation(project(":feature:searchscreen"))
-    implementation(project(":feature:gallery"))
-    implementation(project(":feature:drawing"))
-    implementation(project(":feature:about"))
-    implementation(project(":feature:mainscreen"))
+//    implementation(project(":feature:editScreen"))
+//    implementation(project(":feature:labelscreen"))
+//    implementation(project(":feature:selectlabelscreen"))
+//    implementation(project(":feature:searchscreen"))
+//    implementation(project(":feature:gallery"))
+//    implementation(project(":feature:drawing"))
+//    implementation(project(":feature:about"))
+//    implementation(project(":feature:mainscreen"))
 
     implementation(projects.feature.main)
-    implementation(projects.feature.detail)
+//    implementation(projects.feature.detail)
 
 
 

@@ -8,18 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.icon.SkIcons
-import com.mshdabiola.designsystem.theme.SkTheme
 
 @Composable
 fun SkButton(
@@ -87,39 +82,5 @@ private fun SkButtonContent(
             ),
     ) {
         text()
-    }
-}
-
-@ThemePreviews
-@Composable
-fun ButtonPreview() {
-    SkTheme {
-        SkBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            SkButton(onClick = {}, text = { Text("Test button") })
-        }
-    }
-}
-
-@ThemePreviews
-@Composable
-fun ButtonPreview2() {
-    SkTheme {
-        SkBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            SkButton(onClick = {}, text = { Text("Test button") })
-        }
-    }
-}
-
-@ThemePreviews
-@Composable
-fun ButtonLeadingIconPreview() {
-    SkTheme {
-        SkBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            SkButton(
-                onClick = {},
-                text = { Text("Test button") },
-                leadingIcon = { Icon(imageVector = SkIcons.Add, contentDescription = null) },
-            )
-        }
     }
 }
