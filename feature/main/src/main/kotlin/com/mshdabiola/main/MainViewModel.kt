@@ -12,15 +12,10 @@ import com.mshdabiola.common.DateStringUsercase
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.TimeUsercase
-import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
-import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
-import com.mshdabiola.ui.state.NoteTypeUi
-import com.mshdabiola.ui.state.toNotePad
-import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +46,6 @@ class MainViewModel
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
     private val contentManager: IContentManager,
-    private val labelRepository: ILabelRepository,
     private val alarmManager: IAlarmManager,
     private val time12UserCase: TimeUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
@@ -66,19 +60,14 @@ class MainViewModel
 
         viewModelScope.launch {
             notepadRepository.getNotePads().collectLatest {
-                val notes = it.map {
-                    it.toNotePadUiState(
-                        //  getTime = dateShortStringUsercase::invoke,
-                        toPath = contentManager::getImagePath,
-                    )
-                }
+
                 try {
                     _mainState.value = getSuccess().copy(
-                        notePads = notes.toImmutableList(),
+                        notePads = it,
                     )
                 } catch (e: Exception) {
                     _mainState.value = MainState.Success(
-                        notePads = notes.toImmutableList(),
+                        notePads = it,
                     )
                 }
             }
@@ -102,13 +91,13 @@ class MainViewModel
         _mainState.value = getSuccess().copy(notePads = listNOtePad.toImmutableList())
     }
 
-    fun setNoteType(noteType: NoteTypeUi) {
+    fun setNoteType(noteType: NoteType) {
         _mainState.value = MainState.Success(noteType = noteType)
     }
 
     fun setPin() {
         val selectedNotepad =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
 
@@ -129,7 +118,7 @@ class MainViewModel
 
     private fun setAlarm(time: Long, interval: Long?) {
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
@@ -154,7 +143,7 @@ class MainViewModel
 
     fun deleteAlarm() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
@@ -172,7 +161,7 @@ class MainViewModel
 
     fun setAllColor(colorId: Int) {
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(color = colorId) }
@@ -184,7 +173,7 @@ class MainViewModel
 
     fun setAllArchive() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
@@ -196,7 +185,7 @@ class MainViewModel
 
     fun setAllDelete() {
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }.map { it.toNotePad() }
+            getSuccess().notePads.filter { it.selected }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
@@ -220,22 +209,22 @@ class MainViewModel
     }
 
     fun deleteLabel() {
-        val labelId = (getSuccess().noteType).id
-
-        _mainState.value = getSuccess().copy(noteType = NoteTypeUi())
-
-        viewModelScope.launch {
-            labelRepository.delete(labelId)
-            // noteLabelRepository.deleteByLabelId(labelId)
-        }
+//        val labelId = (getSuccess().noteType).id
+//
+//        _mainState.value = getSuccess().copy(noteType = NoteTypeUi())
+//
+//        viewModelScope.launch {
+//            labelRepository.delete(labelId)
+//            // noteLabelRepository.deleteByLabelId(labelId)
+//        }
     }
 
     fun renameLabel(name: String) {
-        val labelId = (getSuccess().noteType).id
-
-        viewModelScope.launch {
-            labelRepository.upsert(listOf(Label(labelId, name)))
-        }
+//        val labelId = (getSuccess().noteType).id
+//
+//        viewModelScope.launch {
+//            labelRepository.upsert(listOf(Label(labelId, name)))
+//        }
     }
 
     fun emptyTrash() {
@@ -246,15 +235,11 @@ class MainViewModel
 
     fun deleteEmptyNote() {
         viewModelScope.launch(Dispatchers.IO) {
-            val emptyList = notepadRepository.getNotePads().first().map {
-                it.toNotePadUiState(
-                    //  getTime = dateShortStringUsercase::invoke,
-                    toPath = contentManager::getImagePath,
-                )
-            }.filter { it.isEmpty() }
+            val emptyList = notepadRepository.getNotePads().first()
+                .filter { it.isEmpty() }
 
             if (emptyList.isNotEmpty()) {
-                notepadRepository.deleteNotePad(emptyList.map { it.toNotePad() })
+                notepadRepository.deleteNotePad(emptyList)
             }
         }
     }

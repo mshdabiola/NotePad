@@ -76,12 +76,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.main.R
+import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
-import com.mshdabiola.ui.state.NoteCheckUiState
-import com.mshdabiola.ui.state.NotePadUiState
-import com.mshdabiola.ui.state.NoteVoiceUiState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
@@ -555,7 +555,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteCard(
-    notePad: NotePadUiState,
+    notePad: NotePad,
     onCardClick: (Long) -> Unit = {},
     onLongClick: (Long) -> Unit = {},
 ) {
@@ -712,14 +712,14 @@ fun NoteCard(
                             }
                             if (notePad.reminder > 0) {
                                 ReminderCard(
-                                    date = notePad.date,
+                                    date = notePad.reminderString,
                                     interval = notePad.interval,
                                     color = sColor,
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
                             notePad.labels.forEach {
-                                LabelCard(name = it, color = sColor)
+                                LabelCard(name = it.label, color = sColor)
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
                         }
@@ -734,7 +734,7 @@ fun NoteCard(
 @Composable
 fun NoteCardPreview() {
     NoteCard(
-        notePad = NotePadUiState(
+        notePad = NotePad(
             id = 1,
             title = "Mandy abiola",
             detail = "Lamia moshood",
@@ -746,23 +746,23 @@ fun NoteCardPreview() {
             background = 3,
             selected = true,
 
-            labels = listOf(
-                "ade",
-                "food",
-                "abiola",
-                "kdlskdflsjfslf",
-                "klslssljsl",
-                "alskfk",
-            ).toImmutableList(),
+//            labels = listOf(
+//                "ade",
+//                "food",
+//                "abiola",
+//                "kdlskdflsjfslf",
+//                "klslssljsl",
+//                "alskfk",
+//            ).toImmutableList(),
             checks = listOf(
-                NoteCheckUiState(
+                NoteCheck(
                     id = 2418L,
                     noteId = 6429L,
                     content = "Maegan",
                     isCheck = false,
                     focus = false,
                 ),
-                NoteCheckUiState(
+                NoteCheck(
                     id = 2418L,
                     noteId = 6429L,
                     content = "Book",
@@ -771,12 +771,12 @@ fun NoteCardPreview() {
                 ),
             ).toImmutableList(),
             voices = listOf(
-                NoteVoiceUiState(
+                NoteVoice(
                     id = 500L,
                     noteId = 8001L,
                     voiceName = "Danniel",
                     length = 1940L,
-                    currentProgress = .179f,
+                    currentProgress = 179,
                     isPlaying = false,
 
                 ),

@@ -7,6 +7,7 @@ package com.mshdabiola.main
 import ArchiveTopAppBar
 import LabelTopAppBar
 import MainTopAppBar
+import NoteCard
 import SelectTopBar
 import TrashTopAppBar
 import androidx.compose.animation.AnimatedVisibility
@@ -59,16 +60,14 @@ import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
 import com.mshdabiola.designsystem.component.SkLoadingWheel
 import com.mshdabiola.model.Note
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.ColorDialog
 import com.mshdabiola.ui.DateDialog
 import com.mshdabiola.ui.FirebaseScreenLog
-import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.TrackScrollJank
-import com.mshdabiola.ui.state.NotePadUiState
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 
@@ -400,7 +399,7 @@ fun MainContent(
                 )
             } else {
 //
-                when (success.noteType.type) {
+                when (success.noteType) {
                     NoteType.LABEL -> {
                         LabelTopAppBar(
                             label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
@@ -501,7 +500,7 @@ fun LazyStaggeredGridScope.noteItems(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
-    items: ImmutableList<NotePadUiState>,
+    items: List<NotePad>,
     onNoteClick: (Long) -> Unit,
     onSelectedCard: (Long) -> Unit,
 ) = items(

@@ -1,15 +1,13 @@
 package com.mshdabiola.main
 
-import com.mshdabiola.ui.state.NotePadUiState
-import com.mshdabiola.ui.state.NoteTypeUi
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteType
 
 sealed class MainState {
     data object Loading : MainState()
     data class Success(
-        val noteType: NoteTypeUi = NoteTypeUi(),
-        val notePads: ImmutableList<NotePadUiState> = emptyList<NotePadUiState>().toImmutableList(),
+        val noteType: NoteType = NoteType.NOTE,
+        val notePads: List<NotePad> = emptyList(),
     ) : MainState()
 
 //    data class Error(val message: String) : MainStateN()
