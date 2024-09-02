@@ -45,7 +45,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SkTextField(
     modifier: Modifier = Modifier,
@@ -54,7 +53,11 @@ fun SkTextField(
     imeAction: ImeAction = ImeAction.Done,
     keyboardAction: () -> Unit = {},
     maxNum: TextFieldLineLimits = TextFieldLineLimits.Default,
-) {
+    textStyle: TextStyle=TextStyle.Default,
+    interactionSource: MutableInteractionSource? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    ) {
     MyTextField(
         modifier = modifier,
 //                    .bringIntoViewRequester(focusRequester2)
@@ -82,6 +85,10 @@ fun SkTextField(
         keyboardActions = KeyboardActions { keyboardAction() },
 
         lineLimits = maxNum,
+        trailingIcon = trailingIcon,
+        leadingIcon = leadingIcon,
+        textStyle = textStyle,
+        interactionSource = interactionSource ?: remember { MutableInteractionSource() },
     )
 }
 
