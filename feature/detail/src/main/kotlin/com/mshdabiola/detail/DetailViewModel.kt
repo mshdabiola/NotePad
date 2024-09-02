@@ -23,13 +23,11 @@ import com.mshdabiola.common.TimeUsercase
 import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
+import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteUri
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
-import com.mshdabiola.ui.state.NotePadUiState
-import com.mshdabiola.ui.state.NoteUiState
-import com.mshdabiola.ui.state.NoteUriState
-import com.mshdabiola.ui.state.toNotePad
-import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +36,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -70,10 +67,10 @@ class DetailViewModel @Inject constructor(
     private val time12UserCase: TimeUsercase,
     private val dateStringUsercase: DateStringUsercase,
 
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val id = savedStateHandle.toRoute<DetailArg>().id
-    val note = MutableStateFlow(NotePadUiState())
+    val note = MutableStateFlow(NotePad())
 
     val title = TextFieldState()
     val content = TextFieldState()
@@ -85,14 +82,12 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             val initNOte = notePadRepository.getOneNotePad(id)
                 .first()!!
-            note.update { initNOte.toNotePadUiState { "" } }
-
+            note.update { initNOte }
 
             _state.update { DetailState.Success(id) }
 
             title.edit {
                 append(initNOte.title)
-
             }
             content.edit {
                 append(initNOte.detail)
@@ -102,7 +97,6 @@ class DetailViewModel @Inject constructor(
                 .collectLatest {
                     saveNote()
                 }
-
         }
 
         viewModelScope.launch {
@@ -111,7 +105,6 @@ class DetailViewModel @Inject constructor(
                 .collectLatest { text ->
                     note.update { it.copy(title = text.toString()) }
                     saveNote()
-
                 }
         }
         viewModelScope.launch {
@@ -120,29 +113,16 @@ class DetailViewModel @Inject constructor(
                 .collectLatest { text ->
                     note.update { it.copy(detail = text.toString()) }
                     saveNote()
-
                 }
         }
-//        viewModelScope.launch {
-//            combine(
-//                note.value.checks.map { snapshotFlow { it.content.text } }
-//            ) { it }
-//                .debounce(500)
-//                .collectLatest { text ->
-//                    saveNote()
-//                    // note.update { it.copy(title = text.toString()) }
-//                }
-//        }
     }
 
     private suspend fun saveNote() {
         println("save note")
-        notePadRepository.upsert(note.value.toNotePad())
-
+        notePadRepository.upsert(note.value)
     }
 
-    private suspend fun computeUri(notepad: NoteUiState) = withContext(Dispatchers.IO) {
-
+    private suspend fun computeUri(notepad: NotePad) = withContext(Dispatchers.IO) {
         val regex =
             "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
 
@@ -152,7 +132,7 @@ class DetailViewModel @Inject constructor(
                 .mapIndexed { index, s ->
                     val path = s.toUri().authority ?: ""
                     val icon = "https://icon.horse/icon/$path"
-                    NoteUriState(
+                    NoteUri(
                         id = index,
                         icon = icon,
                         path = path,
@@ -164,14 +144,18 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    fun onCheckChange(text: String, id: Long) {
+        val noteChecks = note.value.checks.toMutableList()
+        val index = noteChecks.indexOfFirst { it.id == id }
+        val noteCheck = noteChecks[index].copy(content = text)
+        noteChecks[index] = noteCheck
+        note.update {
+            it.copy(checks = noteChecks.toImmutableList())
+        }
+    }
 
     fun addCheck() {
-//        val noteId = notePadUiState.note.id
-//        val noteCheck = NoteCheckUiState(id = getNewId(), noteId = noteId, focus = true)
-//
-//        val noteChecks = notePadUiState.checks.map { it.copy(focus = false) }.toMutableList()
-//        noteChecks.add(noteCheck)
-//        notePadUiState = notePadUiState.copy(checks = noteChecks.toImmutableList())
+        val noteCheck = NoteCheck()
     }
 
     fun onCheck(check: Boolean, id: Long) {
@@ -226,7 +210,6 @@ class DetailViewModel @Inject constructor(
 //        playJob?.cancel()
 //        voicePlayer.pause()
     }
-
 
     fun changeToCheckBoxes() {
 //        val newNote = notePadUiState.note.detail.split("\n")
@@ -386,7 +369,7 @@ class DetailViewModel @Inject constructor(
 //        }
     }
 
-    private fun onImage(path: String, notePad: NotePadUiState) {
+    private fun onImage(path: String, notePad: NotePad) {
 //        viewModelScope.launch {
 //            try {
 //                // val image = notePad.images[index]
@@ -431,7 +414,7 @@ class DetailViewModel @Inject constructor(
 
     // date and time dialog logic
 
-    private fun initDate(note: NoteUiState) {
+    private fun initDate(note: NotePad) {
         val now = Clock.System.now()
         today = now.toLocalDateTime(TimeZone.currentSystemDefault())
         currentDateTime =
@@ -480,7 +463,7 @@ class DetailViewModel @Inject constructor(
                 enable = true,
             ),
 
-            )
+        )
             .mapIndexed { index, dateListUiState ->
                 if (index != timeList.lastIndex) {
                     val greater = timeList[index] > today.time
@@ -730,18 +713,4 @@ class DetailViewModel @Inject constructor(
             )
         }
     }
-
-    fun onCheckChange(text: String, id: Long) {
-        val noteChecks = note.value.checks.toMutableList()
-        val index = noteChecks.indexOfFirst { it.id == id }
-        val noteCheck = noteChecks[index].copy(content = text)
-        noteChecks[index] = noteCheck
-        note.update {
-            it.copy(checks = noteChecks.toImmutableList())
-        }
-
-
-
-    }
-
 }
