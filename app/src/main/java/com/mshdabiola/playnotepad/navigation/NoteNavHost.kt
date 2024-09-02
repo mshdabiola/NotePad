@@ -42,7 +42,6 @@ fun NoteNavHost(
                 onShowSnackbar = onShowSnackbar,
                 onBack = navController::popBackStack,
             )
-
         }
     }
 }

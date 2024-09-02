@@ -52,11 +52,11 @@ import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
+import com.mshdabiola.model.Label
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.ui.AudioDialog
 import com.mshdabiola.ui.ImageDialog2
-import com.mshdabiola.ui.state.LabelUiState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
@@ -68,7 +68,7 @@ fun NoteApp(
     modifier: Modifier = Modifier,
 ) {
     val shouldShowGradientBackground = true
-    val labels = emptyList<LabelUiState>().toImmutableList()
+    val labels = emptyList<Label>().toImmutableList()
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
 

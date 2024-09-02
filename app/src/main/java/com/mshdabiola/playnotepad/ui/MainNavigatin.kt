@@ -38,10 +38,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.playnotepad.R
-import com.mshdabiola.ui.state.LabelUiState
-import com.mshdabiola.ui.state.NoteTypeUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as dsR
@@ -49,10 +48,10 @@ import com.mshdabiola.designsystem.R as dsR
 @Composable
 fun MainNavigation(
 
-    onNavigation: (NoteTypeUi) -> Unit = {},
+    onNavigation: (NoteType) -> Unit = {},
     currentMainArg: Long = -1L,
     navigateToLevel: (Boolean) -> Unit = {},
-    labels: ImmutableList<LabelUiState>,
+    labels: ImmutableList<Label>,
     navigateToAbout: () -> Unit = {},
 
 ) {
@@ -96,7 +95,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_notes)) },
                 selected = currentMainArg == -1L,
-                onClick = { onNavigation(NoteTypeUi()) },
+                onClick = { onNavigation(NoteType.NOTE) },
             )
             NavigationDrawerItem(
                 icon = {
@@ -104,7 +103,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_reminders)) },
                 selected = currentMainArg == -2L,
-                onClick = { onNavigation(NoteTypeUi(type = NoteType.REMAINDER)) },
+                onClick = { onNavigation(NoteType.REMAINDER) },
             )
             Divider(
                 modifier = Modifier
@@ -137,7 +136,7 @@ fun MainNavigation(
                     },
                     label = { Text(text = it.label) },
                     selected = currentMainArg == it.id,
-                    onClick = { onNavigation(NoteTypeUi(NoteType.LABEL, it.id)) },
+                    onClick = { onNavigation(NoteType.LABEL) },
                 )
             }
             NavigationDrawerItem(
@@ -160,7 +159,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_archive)) },
                 selected = currentMainArg == -3L,
-                onClick = { onNavigation(NoteTypeUi(NoteType.ARCHIVE)) },
+                onClick = { onNavigation(NoteType.ARCHIVE) },
             )
 
             NavigationDrawerItem(
@@ -169,7 +168,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_trash)) },
                 selected = currentMainArg == -4L,
-                onClick = { onNavigation(NoteTypeUi(NoteType.TRASH)) },
+                onClick = { onNavigation(NoteType.TRASH) },
             )
 //            NavigationDrawerItem(
 //                icon = {
@@ -198,9 +197,9 @@ fun MainNavigationPreview() {
     Column(Modifier.fillMaxSize()) {
         MainNavigation(
             labels = listOf(
-                LabelUiState(id = 7955L, label = "Gillian"),
-                LabelUiState(id = 126L, label = "Laneisha"),
-                LabelUiState(id = 7955L, label = "Gillian"),
+                Label(id = 7955L, label = "Gillian"),
+//                LabelUiState(id = 126L, label = "Laneisha"),
+//                LabelUiState(id = 7955L, label = "Gillian"),
 //                LabelUiState(id = 126L, label = "Laneisha"),
 //                LabelUiState(id = 7955L, label = "Gillian"),
 //                LabelUiState(id = 126L, label = "Laneisha"),
