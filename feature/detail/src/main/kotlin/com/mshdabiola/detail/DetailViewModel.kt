@@ -6,6 +6,7 @@ package com.mshdabiola.detail
 
 import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
@@ -24,11 +25,15 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
+import com.mshdabiola.ui.state.NotePadUiState
 import com.mshdabiola.ui.state.NoteUiState
 import com.mshdabiola.ui.state.NoteUriState
+import com.mshdabiola.ui.state.toNotePad
+import com.mshdabiola.ui.state.toNotePadUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +59,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -69,6 +75,8 @@ class DetailViewModel @Inject constructor(
     private val id = savedStateHandle.toRoute<DetailArg>().id
     val note = MutableStateFlow(NotePadUiState())
 
+    val title = TextFieldState()
+    val content = TextFieldState()
     private val _state = MutableStateFlow<DetailState>(DetailState.Loading())
     val state = _state.asStateFlow()
 
@@ -81,37 +89,52 @@ class DetailViewModel @Inject constructor(
 
             _state.update { DetailState.Success(id) }
 
-            note
-                .collectLatest {
-                    notePadRepository.upsert(it.toNotePad())
-                }
+            title.edit {
+                append(initNOte.title)
+
+            }
+            content.edit {
+                append(initNOte.detail)
+            }
+
+
         }
 
         viewModelScope.launch {
-            snapshotFlow { note.value.title.text }
+            snapshotFlow { title.text }
                 .debounce(500)
                 .collectLatest { text ->
-                    //  note.update { it.copy(title = text.toString()) }
+                    note.update { it.copy(title = text.toString()) }
+                    saveNote()
+
                 }
         }
         viewModelScope.launch {
-            snapshotFlow { note.value.detail.text }
+            snapshotFlow { content.text }
                 .debounce(500)
                 .collectLatest { text ->
-                    // note.update { it.copy(title = text.toString()) }
+                    note.update { it.copy(detail = text.toString()) }
+                    saveNote()
+
                 }
         }
-        viewModelScope.launch {
-            combine(
-                note.value.checks.map { snapshotFlow { it.content.text } }
-            ) { it }
-                .debounce(500)
-                .collectLatest { text ->
-                    // note.update { it.copy(title = text.toString()) }
-                }
-        }
+//        viewModelScope.launch {
+//            combine(
+//                note.value.checks.map { snapshotFlow { it.content.text } }
+//            ) { it }
+//                .debounce(500)
+//                .collectLatest { text ->
+//                    saveNote()
+//                    // note.update { it.copy(title = text.toString()) }
+//                }
+//        }
     }
 
+    private suspend fun saveNote() {
+        println("save note")
+        notePadRepository.upsert(note.value.toNotePad())
+
+    }
 
     private suspend fun computeUri(notepad: NoteUiState) = withContext(Dispatchers.IO) {
 
