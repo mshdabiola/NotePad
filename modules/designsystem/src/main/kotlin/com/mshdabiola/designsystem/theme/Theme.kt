@@ -77,15 +77,14 @@ fun SkTheme(
 }
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
- fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
- fun getDynamicColor(darkTheme: Boolean): ColorScheme {
+fun getDynamicColor(darkTheme: Boolean): ColorScheme {
     val context = LocalContext.current
     return if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 }
-
 
 val defaultColor = MyColors.Default
 val lightDefaultScheme = lightColorScheme(
