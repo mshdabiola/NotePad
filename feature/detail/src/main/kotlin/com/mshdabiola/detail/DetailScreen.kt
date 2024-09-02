@@ -33,6 +33,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -107,6 +109,8 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
+import com.mshdabiola.ui.state.NoteCheckUiState
+import com.mshdabiola.ui.state.NotePadUiState
 import com.mshdabiola.ui.state.NoteUriState
 import com.mshdabiola.ui.state.NoteVoiceUiState
 import com.mshdabiola.ui.toTime
@@ -159,6 +163,8 @@ internal fun DetailRoute(
 
     EditScreen(
         notepad = editViewModel.note.value,
+        title = editViewModel.title,
+        content = editViewModel.content,
 //        onTitleChange = editViewModel::onTitleChange,
 //        onSubjectChange = editViewModel::onDetailChange,
         onBackClick = onBack,
@@ -200,9 +206,9 @@ internal fun DetailRoute(
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
         navigateToGallery = { //navigateToGallery
-                            },
+        },
         navigateToDrawing = { //navigateToDrawing
-                            },
+        },
 
         )
     AddBottomSheet2(
@@ -216,7 +222,7 @@ internal fun DetailRoute(
 //        savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
         onDrawing = { //navigateToDrawing(editViewModel.notePadUiState.note.id, null)
-                    },
+        },
         onDismiss = { showModalState = false },
     )
 //
@@ -293,6 +299,8 @@ internal fun DetailRoute(
 @Composable
 fun EditScreen(
     notepad: NotePadUiState,
+    title: TextFieldState,
+    content: TextFieldState,
 //    onTitleChange: (String) -> Unit = {},
 //    onSubjectChange: (String) -> Unit = {},
     onBackClick: () -> Unit = {},
@@ -364,11 +372,14 @@ fun EditScreen(
 
 
 
-    LaunchedEffect(key1 = notepad, block = {
-        if (notepad.focus) {
-            subjectFocus.requestFocus()
-        }
-    })
+    LaunchedEffect(
+        key1 = notepad,
+        block = {
+            if (notepad.focus) {
+                subjectFocus.requestFocus()
+            }
+        },
+    )
 
     Scaffold(
         containerColor = bg,
@@ -407,7 +418,7 @@ fun EditScreen(
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
-                            imageVector = if (notepad.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
+                            imageVector = if (notepad.noteType.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
                             contentDescription = "archive",
                         )
                     }
@@ -440,7 +451,7 @@ fun EditScreen(
                                         modifier = Modifier
                                             .clickable {
                                                 if (it.isDrawing) {
-                                                    navigateToDrawing( it.id)
+                                                    navigateToDrawing(it.id)
                                                 } else {
                                                     navigateToGallery(notepad.id)
                                                 }
@@ -462,9 +473,9 @@ fun EditScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         SkTextField(
-                            state = notepad.title,
+                            state = title,
                             placeholder = stringResource(R.string.feature_detail_title),
-                          //  textStyle = MaterialTheme.typography.titleLarge,
+                            //  textStyle = MaterialTheme.typography.titleLarge,
 //                            colors = TextFieldDefaults.colors(
 //                                focusedContainerColor = Color.Transparent,
 //                                unfocusedContainerColor = Color.Transparent,
@@ -522,7 +533,7 @@ fun EditScreen(
                 if (!notepad.isCheck) {
                     item {
                         SkTextField(
-                            state = notepad.detail,
+                            state = content,
 //                            textStyle = MaterialTheme.typography.bodyMedium,
                             placeholder = stringResource(R.string.feature_detail_subject),
 //                            colors = TextFieldDefaults.colors(
@@ -533,8 +544,8 @@ fun EditScreen(
 //                                unfocusedIndicatorColor = Color.Transparent,
 //                            ),
                             imeAction = ImeAction.Next,
-                           keyboardAction = {subjectFocus.freeFocus()},
-                          //  keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
+                            keyboardAction = { subjectFocus.freeFocus() },
+                            //  keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .imePadding()
@@ -548,8 +559,8 @@ fun EditScreen(
                     items(notCheckNote, key = { it.id }) {
                         NoteCheck(
                             noteCheckUiState = it,
-                            onCheckDelete,
-                            onCheck,
+                            onCheckDelete = onCheckDelete,
+                            onCheck = onCheck,
                             onNextCheck = addItem,
                         )
                     }
@@ -581,8 +592,8 @@ fun EditScreen(
                         items(checkNote, key = { it.id }) {
                             NoteCheck(
                                 noteCheckUiState = it,
-                                onCheckDelete,
-                                onCheck,
+                                onCheckDelete = onCheckDelete,
+                                onCheck = onCheck,
                                 strickText = true,
                                 onNextCheck = addItem,
                             )
@@ -686,6 +697,7 @@ fun EditScreen(
         }
     }
 }
+
 @Preview
 @Composable
 private fun DetailScreenPreview() {
@@ -695,7 +707,8 @@ private fun DetailScreenPreview() {
 
 @Composable
 fun NoteCheck(
-    noteCheckUiState: NoteCheckUiState2,
+    noteCheckUiState: NoteCheckUiState,
+    content: TextFieldState = rememberTextFieldState(),
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false,
@@ -704,23 +717,29 @@ fun NoteCheck(
     val mutableInteractionSource = remember {
         MutableInteractionSource()
     }
-    LaunchedEffect(key1 = Unit, block = {
-        if (noteCheckUiState.id == 1L) {
-            mutableInteractionSource.emit(FocusInteraction.Focus())
-        }
-    })
+    LaunchedEffect(
+        key1 = Unit,
+        block = {
+            if (noteCheckUiState.id == 1L) {
+                mutableInteractionSource.emit(FocusInteraction.Focus())
+            }
+        },
+    )
     val focused by mutableInteractionSource.collectIsFocusedAsState()
     val focusRequester = remember {
         FocusRequester()
     }
 
-    LaunchedEffect(key1 = noteCheckUiState, block = {
-        if (noteCheckUiState.focus) {
-            focusRequester.requestFocus()
-        } else {
-            focusRequester.freeFocus()
-        }
-    })
+    LaunchedEffect(
+        key1 = noteCheckUiState,
+        block = {
+            if (noteCheckUiState.focus) {
+                focusRequester.requestFocus()
+            } else {
+                focusRequester.freeFocus()
+            }
+        },
+    )
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
@@ -731,8 +750,8 @@ fun NoteCheck(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f),
-            state = noteCheckUiState.content,
-           // onValueChange = { onCheckChange(it, noteCheckUiState.id) },
+            state = content,
+            // onValueChange = { onCheckChange(it, noteCheckUiState.id) },
 //            colors = TextFieldDefaults.colors(
 //                focusedContainerColor = Color.Transparent,
 //                unfocusedContainerColor = Color.Transparent,
@@ -744,16 +763,18 @@ fun NoteCheck(
             interactionSource = mutableInteractionSource,
             trailingIcon = {
                 if (focused) {
-                    IconButton(onClick = {
-                        onCheckDelete(noteCheckUiState.id)
-                    }) {
+                    IconButton(
+                        onClick = {
+                            onCheckDelete(noteCheckUiState.id)
+                        },
+                    ) {
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "")
                     }
                 }
             },
             imeAction = ImeAction.Next,
             keyboardAction = { onNextCheck() },
-            )
+        )
     }
 }
 
