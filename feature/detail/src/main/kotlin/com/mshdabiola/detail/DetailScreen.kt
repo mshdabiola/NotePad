@@ -102,7 +102,11 @@ import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.SkTextField
 import com.mshdabiola.designsystem.component.SkTextFieldCheck
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.model.NoteUri
+import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.DateDialog
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.FlowLayout2
@@ -110,10 +114,6 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
-import com.mshdabiola.ui.state.NoteCheckUiState
-import com.mshdabiola.ui.state.NotePadUiState
-import com.mshdabiola.ui.state.NoteUriState
-import com.mshdabiola.ui.state.NoteVoiceUiState
 import com.mshdabiola.ui.toTime
 import kotlinx.datetime.Clock
 
@@ -125,7 +125,6 @@ internal fun DetailRoute(
     modifier: Modifier = Modifier,
     editViewModel: DetailViewModel = hiltViewModel(),
 ) {
-
     val note = editViewModel.note.collectAsStateWithLifecycle()
     var showModalState by remember {
         mutableStateOf(false)
@@ -206,12 +205,12 @@ internal fun DetailRoute(
         },
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
-        navigateToGallery = { //navigateToGallery
+        navigateToGallery = { // navigateToGallery
         },
-        navigateToDrawing = { //navigateToDrawing
+        navigateToDrawing = { // navigateToDrawing
         },
 
-        )
+    )
     AddBottomSheet2(
         show = showModalState,
         currentColor = note.value.color,
@@ -222,7 +221,7 @@ internal fun DetailRoute(
 //        getPhotoUri = editViewModel::getPhotoUri,
 //        savePhoto = editViewModel::savePhoto,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = { //navigateToDrawing(editViewModel.notePadUiState.note.id, null)
+        onDrawing = { // navigateToDrawing(editViewModel.notePadUiState.note.id, null)
         },
         onDismiss = { showModalState = false },
     )
@@ -268,7 +267,7 @@ internal fun DetailRoute(
         currentColor = note.value.color,
         currentImage = note.value.background,
 
-        ) { noteficationModalState = false }
+    ) { noteficationModalState = false }
     val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
 //
     NotificationDialogNew(
@@ -299,7 +298,7 @@ internal fun DetailRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
-    notepad: NotePadUiState,
+    notepad: NotePad,
     title: TextFieldState,
     content: TextFieldState,
 //    onTitleChange: (String) -> Unit = {},
@@ -371,8 +370,6 @@ fun EditScreen(
         notepad.images.reversed().chunked(3)
     }
 
-
-
     LaunchedEffect(
         key1 = notepad,
         block = {
@@ -419,7 +416,7 @@ fun EditScreen(
                     }
                     IconButton(onClick = { onArchive() }) {
                         Icon(
-                            imageVector = if (notepad.noteType.type == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
+                            imageVector = if (notepad.noteType == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
                             contentDescription = "archive",
                         )
                     }
@@ -427,7 +424,7 @@ fun EditScreen(
             )
         },
 
-        ) { paddingValues ->
+    ) { paddingValues ->
         Column(
             Modifier
                 .padding(paddingValues)
@@ -490,7 +487,7 @@ fun EditScreen(
                                 .weight(1f)
                                 .testTag("title"),
 
-                            )
+                        )
                         if (notepad.isCheck) {
                             Box {
                                 IconButton(onClick = { expandCheck = true }) {
@@ -553,7 +550,7 @@ fun EditScreen(
                                 .focusRequester(subjectFocus)
                                 .testTag("detail"),
 
-                            )
+                        )
                     }
                 }
                 if (notepad.isCheck) {
@@ -622,7 +619,7 @@ fun EditScreen(
                     ) {
                         if (notepad.reminder > 0) {
                             ReminderCard(
-                                date = notepad.date,
+                                date = notepad.reminderString,
                                 interval = notepad.interval,
                                 color = sColor,
                                 style = MaterialTheme.typography.bodyLarge,
@@ -632,7 +629,7 @@ fun EditScreen(
                         }
                         notepad.labels.forEach {
                             LabelCard(
-                                name = it,
+                                name = it.label,
                                 color = sColor,
                                 style = MaterialTheme.typography.bodyLarge,
                                 onClick = onLabel,
@@ -648,7 +645,7 @@ fun EditScreen(
                                     .border(1.dp, Color.Gray, CircleShape)
                                     .size(30.dp),
 
-                                )
+                            )
                         }
                     }
                 }
@@ -683,7 +680,7 @@ fun EditScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "${stringResource(R.string.feature_detail_edited)} ${notepad.lastEdit}",
+                        text = "${stringResource(R.string.feature_detail_edited)} ${notepad.editDateString}",
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
@@ -707,10 +704,9 @@ private fun DetailScreenPreview() {
 //    DetailScreen()
 }
 
-
 @Composable
 fun NoteCheck(
-    noteCheckUiState: NoteCheckUiState,
+    noteCheckUiState: NoteCheck,
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     content: TextFieldState = rememberTextFieldState(),
     onCheckDelete: (Long) -> Unit = {},
@@ -755,7 +751,7 @@ fun NoteCheck(
                 .focusRequester(focusRequester)
                 .weight(1f),
             text = noteCheckUiState.content,
-             onTextChange = { onCheckChange(it, noteCheckUiState.id) },
+            onTextChange = { onCheckChange(it, noteCheckUiState.id) },
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
             trailingIcon = {
@@ -777,7 +773,7 @@ fun NoteCheck(
 
 @Composable
 fun NoteVoicePlayer(
-    noteVoiceUiState: NoteVoiceUiState,
+    noteVoiceUiState: NoteVoice,
     playVoice: () -> Unit = {},
     pauseVoice: () -> Unit = {},
     delete: () -> Unit = {},
@@ -801,8 +797,8 @@ fun NoteVoicePlayer(
                 }
             }
             LinearProgressIndicator(
+                progress = { (noteVoiceUiState.currentProgress.toFloat() / noteVoiceUiState.length) },
                 modifier = Modifier.weight(1f),
-                progress = (noteVoiceUiState.currentProgress / noteVoiceUiState.length),
             )
             Text(text = noteVoiceUiState.length.toTime())
             IconButton(onClick = { delete() }) {
@@ -816,14 +812,14 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
-        NoteVoiceUiState(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
+        NoteVoice(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
 
-        )
+    )
 }
 
 @Composable
 fun NoteUri(
-    uriState: NoteUriState,
+    uriState: NoteUri,
     color: Color = MaterialTheme.colorScheme.primary,
 ) {
     val context = LocalContext.current
@@ -855,5 +851,5 @@ fun NoteUri(
 @Preview
 @Composable
 fun NoteUriPreview() {
-    NoteUri(uriState = NoteUriState(1, "", "Path", "akdkdk"))
+    NoteUri(uriState = NoteUri(1, "", "Path", "akdkdk"))
 }
