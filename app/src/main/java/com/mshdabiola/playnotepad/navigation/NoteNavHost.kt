@@ -9,6 +9,9 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import com.mshdabiola.detail.navigation.DetailArg
+import com.mshdabiola.detail.navigation.detailScreen
+import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
@@ -31,8 +34,15 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onShowSnack = onShowSnackbar,
-                navigateToDetail = {},
+                navigateToDetail = { navController.navigateToDetail(DetailArg(it)) },
             )
+            detailScreen(
+                //  modifier = Modifier,
+                //  sharedTransitionScope = this@SharedTransitionLayout,
+                onShowSnackbar = onShowSnackbar,
+                onBack = navController::popBackStack,
+            )
+
         }
     }
 }
