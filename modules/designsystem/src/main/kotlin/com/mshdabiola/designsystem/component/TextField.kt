@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -53,11 +54,11 @@ fun SkTextField(
     imeAction: ImeAction = ImeAction.Done,
     keyboardAction: () -> Unit = {},
     maxNum: TextFieldLineLimits = TextFieldLineLimits.Default,
-    textStyle: TextStyle=TextStyle.Default,
+    textStyle: TextStyle = TextStyle.Default,
     interactionSource: MutableInteractionSource? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
-    ) {
+) {
     MyTextField(
         modifier = modifier,
 //                    .bringIntoViewRequester(focusRequester2)
@@ -85,6 +86,55 @@ fun SkTextField(
         keyboardActions = KeyboardActions { keyboardAction() },
 
         lineLimits = maxNum,
+        trailingIcon = trailingIcon,
+        leadingIcon = leadingIcon,
+        textStyle = textStyle,
+        interactionSource = interactionSource ?: remember { MutableInteractionSource() },
+    )
+}
+
+@Composable
+fun SkTextFieldCheck(
+    modifier: Modifier = Modifier,
+    text: String,
+    onTextChange: (String) -> Unit,
+    placeholder: String? = null,
+    imeAction: ImeAction = ImeAction.Done,
+    keyboardAction: () -> Unit = {},
+    maxNum: Int = 1,
+    textStyle: TextStyle = TextStyle.Default,
+    interactionSource: MutableInteractionSource? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+
+
+    TextField(
+        modifier = modifier,
+
+        value = text,
+        onValueChange = onTextChange,
+        placeholder = {
+            if (placeholder != null) {
+                Text(text = placeholder)
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+//
+        keyboardOptions = KeyboardOptions.Default.copy(
+            capitalization = KeyboardCapitalization.Sentences,
+            autoCorrectEnabled = true,
+            imeAction = imeAction,
+        ),
+        keyboardActions = KeyboardActions { keyboardAction() },
+//
+        maxLines = maxNum,
         trailingIcon = trailingIcon,
         leadingIcon = leadingIcon,
         textStyle = textStyle,
@@ -121,7 +171,7 @@ fun MyTextField(
     // codepointTransformation: CodepointTransformation? = null,
     scrollState: ScrollState = rememberScrollState(),
 
-) {
+    ) {
     // If color is not provided via the text style, use content color as a default
     val textColor = textStyle.color.takeOrElse {
         colors.textColor(enabled, isError, interactionSource).value
@@ -173,7 +223,7 @@ fun MyTextField(
 
             scrollState = scrollState,
 
-        )
+            )
     }
 }
 
