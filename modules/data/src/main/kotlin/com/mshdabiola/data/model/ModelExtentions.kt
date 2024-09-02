@@ -58,30 +58,37 @@ fun NoteEntity.toNote() = Note(
 )
 
 fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing, timestamp)
-fun NoteImageEntity.toNoteImage() = NoteImage(id, noteId, isDrawing, timestamp)
+fun NoteImageEntity.toNoteImage() =
+    NoteImage(id = id, noteId = noteId, isDrawing = isDrawing, timestamp = timestamp)
 
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
 
 fun NotePadEntity.toNotePad() = NotePad(
-    noteEntity.id!!,
-    noteEntity.title,
-    noteEntity.detail,
-    noteEntity.editDate,
-    noteEntity.isCheck,
-    noteEntity.color,
-    noteEntity.background,
-    noteEntity.isPin,
-    noteEntity.reminder,
-    noteEntity.interval,
-    noteEntity.noteType,
+    id = noteEntity.id!!,
+    title = noteEntity.title,
+    detail = noteEntity.detail,
+    editDate = noteEntity.editDate,
+    isCheck = noteEntity.isCheck,
+    color = noteEntity.color,
+    background = noteEntity.background,
+    isPin = noteEntity.isPin,
+    reminder = noteEntity.reminder,
+    interval = noteEntity.interval,
+    noteType = noteEntity.noteType,
     images = images.map { it.toNoteImage() },
     voices = voices.map { it.toNoteVoice() },
     checks = checks.map { it.toNoteCheck() },
     labels = labels.map { it.toLabel() },
 )
+
 fun FullLabel.toLabel() = label.toLabel()
 fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
-fun NoteVoiceEntity.toNoteVoice() = NoteVoice(id, noteId, voiceName)
+fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
+    id,
+    noteId,
+    voiceName,
+    length = 89, // kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+)
 
 fun Long.check() = if (this == -1L) null else this
