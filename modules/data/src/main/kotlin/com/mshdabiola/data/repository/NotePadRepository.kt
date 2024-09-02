@@ -1,5 +1,6 @@
 package com.mshdabiola.data.repository
 
+import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.model.toNoteCheckEntity
 import com.mshdabiola.data.model.toNoteEntity
 import com.mshdabiola.data.model.toNoteImageEntity
@@ -19,7 +20,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 internal class NotePadRepository
@@ -31,10 +40,11 @@ internal class NotePadRepository
     private val noteVoiceDao: NoteVoiceDao,
     private val notePadDao: NotepadDao,
     private val pathDao: PathDao,
+    private val contentManager: IContentManager,
 ) : INotePadRepository {
 
     override suspend fun upsert(notePad: NotePad): Long {
-        var id = noteDao.upsert(notePad.toNoteEntity())
+        var id = noteDao.upsert(notePad.copy(editDate = System.currentTimeMillis()).toNoteEntity())
         if (id == -1L) {
             id = notePad.id
         }
@@ -64,15 +74,22 @@ internal class NotePadRepository
     }
 
     override fun getNotePads(noteType: NoteType) = notePadDao
-        .getListOfNotePad(noteType).map { entities -> entities.map { it.toNotePad() } }
+        .getListOfNotePad(noteType)
+        .map { entities -> entities.map { transform(it.toNotePad()) } }
 
     override fun getNotePads() = notePadDao
-        .getListOfNotePad().map { entities -> entities.map { it.toNotePad() } }
+        .getListOfNotePad().map { entities -> entities.map { transform(it.toNotePad()) } }
+
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
     override fun getOneNotePad(id: Long): Flow<NotePad?> {
         return notePadDao.getOneNotePad(id).map { it?.toNotePad() }
+            .map { pad ->
+                if (pad != null) {
+                    transform(pad)
+                } else null
+            }
     }
 
     override suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
@@ -111,4 +128,55 @@ internal class NotePadRepository
                 pathDao.delete(it.id)
             }
     }
+
+    private fun timeToString(time: LocalTime): String {
+        val hour = when {
+            time.hour > 12 -> time.hour - 12
+            time.hour == 0 -> 12
+            else -> time.hour
+        }
+        val timeset = if (time.hour > 11) "PM" else "AM"
+
+        return "%2d : %02d %s".format(hour, time.minute, timeset)
+    }
+
+    private fun dateToString(long: Long): String {
+        val date = Instant.fromEpochMilliseconds(long)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val month =
+            date.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }.substring(0..2)
+
+        return when {
+            now.date == date.date -> "Today ${timeToString(date.time)} "
+            date.date == now.date.plus(1, DateTimeUnit.DAY) ->
+                "Tomorrow ${
+                    timeToString(
+                        date.time,
+                    )
+                }"
+
+            date.year != now.year ->
+                "$month ${date.dayOfMonth}, ${date.year} ${
+                    timeToString(
+                        date.time,
+                    )
+                }"
+
+            else -> "$month ${date.dayOfMonth} ${timeToString(date.time)}"
+        }
+    }
+
+
+    fun transform(pad: NotePad): NotePad{
+       return pad.copy(
+            reminderString = dateToString(pad.reminder),
+            editDateString = dateToString(pad.editDate),
+            images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
+            voices = pad.voices.map { it.copy(voiceName = contentManager.getVoicePath(it.id)) },
+
+            )
+    }
+
 }
