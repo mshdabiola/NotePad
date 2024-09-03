@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -101,7 +100,7 @@ fun NotificationDialogNew(
 fun TextDropbox(
     currentIndex: Int,
     onValueChange: (Int) -> Unit = {},
-    times: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
+    times: List<DateListUiState> = emptyList<DateListUiState>(),
     showError: Boolean,
 ) {
     var expanded by remember {

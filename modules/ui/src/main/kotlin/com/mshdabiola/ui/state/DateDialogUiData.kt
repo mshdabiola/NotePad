@@ -1,17 +1,14 @@
 package com.mshdabiola.ui.state
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-
-data class DateDialogUiData constructor(
+data class DateDialogUiData(
     val isEdit: Boolean = false,
     val currentTime: Int = 0,
-    val timeData: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
+    val timeData: List<DateListUiState> = emptyList<DateListUiState>(),
     val timeError: Boolean = false,
     val currentDate: Int = 0,
-    val dateData: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
+    val dateData: List<DateListUiState> = emptyList<DateListUiState>(),
     val currentInterval: Int = 0,
-    val interval: ImmutableList<DateListUiState> = emptyList<DateListUiState>().toImmutableList(),
+    val interval: List<DateListUiState> = emptyList<DateListUiState>(),
     val showTimeDialog: Boolean = false,
     val showDateDialog: Boolean = false,
 )
