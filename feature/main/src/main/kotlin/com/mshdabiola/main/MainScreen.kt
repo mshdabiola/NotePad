@@ -451,7 +451,7 @@ fun MainContent(
         LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(8.dp)
+                .padding(16.dp)
                 .testTag("main:lazy"),
             columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
