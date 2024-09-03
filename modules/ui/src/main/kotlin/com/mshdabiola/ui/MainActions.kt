@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 fun AudioDialog(
     show: Boolean = false,
     dismiss: () -> Unit = {},
-    output: (Uri, String) -> Unit = { _, _ -> },
+    output: (String, String) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val voiceLauncher = rememberLauncherForActivityResult(
@@ -45,7 +45,7 @@ fun AudioDialog(
                     .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                     ?.joinToString() ?: ""
 
-                output(intent.data!!, text)
+                output(intent.data!!.toString(), text)
             }
             dismiss()
         },
@@ -106,8 +106,8 @@ fun ImageDialog2(
     modifier: Modifier = Modifier,
     show: Boolean = false,
     dismiss: () -> Unit = {},
-    saveImage: (Uri) -> Unit = {},
-    getUri: () -> Uri = { Uri.EMPTY },
+    saveImage: (String) -> Unit = {},
+    getUri: () -> String = { "" },
 
 ) {
     val imageLauncher = rememberLauncherForActivityResult(
@@ -116,7 +116,7 @@ fun ImageDialog2(
             it?.let {
 //                showImageDialog = false
 //                val time = System.currentTimeMillis()
-                saveImage(it)
+                saveImage(it.toString())
 //                navigateToEdit(-3, "image text", time)
                 dismiss()
             }
@@ -141,7 +141,7 @@ fun ImageDialog2(
             imageLauncher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
         },
         onSnapImage = {
-            snapPictureLauncher.launch(getUri())
+            snapPictureLauncher.launch(Uri.parse(getUri()))
         },
     )
 }
