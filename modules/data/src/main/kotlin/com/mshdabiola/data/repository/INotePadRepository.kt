@@ -31,4 +31,8 @@ interface INotePadRepository {
     fun dateToString(date: LocalDate): String
     fun dateToString(long: Long): String
     suspend fun deleteVoiceNote(id: Long)
+
+    fun saveImage(uri: String): Long
+    fun saveVoice(uri: String): Long
+    fun getUri(): String
 }

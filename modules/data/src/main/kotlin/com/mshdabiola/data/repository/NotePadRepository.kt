@@ -185,6 +185,18 @@ internal class NotePadRepository
         noteVoiceDao.deleteVoiceOne(id)
     }
 
+    override fun saveImage(uri: String): Long {
+        return contentManager.saveImage(uri)
+    }
+
+    override fun saveVoice(uri: String): Long {
+        return contentManager.saveVoice(uri)
+    }
+
+    override fun getUri(): String {
+        return contentManager.pictureUri()
+    }
+
     private fun transform(pad: NotePad): NotePad {
         return pad.copy(
             reminderString = dateToString(pad.reminder),
