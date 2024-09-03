@@ -35,4 +35,6 @@ interface INotePadRepository {
     fun saveImage(uri: String): Long
     fun saveVoice(uri: String): Long
     fun getUri(): String
+    fun getVoicePath(id: Long): String
+    fun getImagePath(id: Long): String
 }

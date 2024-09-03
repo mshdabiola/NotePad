@@ -197,6 +197,14 @@ internal class NotePadRepository
         return contentManager.pictureUri()
     }
 
+    override fun getVoicePath(id: Long): String {
+        return contentManager.getVoicePath(id)
+    }
+
+    override fun getImagePath(id: Long): String {
+        return contentManager.getImagePath(id)
+    }
+
     private fun transform(pad: NotePad): NotePad {
         return pad.copy(
             reminderString = dateToString(pad.reminder),
