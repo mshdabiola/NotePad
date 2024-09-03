@@ -87,6 +87,7 @@ class DetailViewModel @Inject constructor(
             content.edit {
                 append(initNOte.detail)
             }
+            initDate(initNOte)
 
             note
                 .collectLatest {

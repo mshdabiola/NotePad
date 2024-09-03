@@ -62,6 +62,7 @@ class MainViewModel
                         notePads = it,
                     )
                 }
+                initDate()
             }
         }
     }
