@@ -4,10 +4,8 @@
 
 package com.mshdabiola.playnotepad
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NoteCheck
@@ -26,7 +24,6 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
     private val notePadRepository: INotePadRepository,
-    val contentManager: IContentManager,
 
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = userDataRepository
@@ -39,11 +36,11 @@ class MainActivityViewModel @Inject constructor(
         )
 
     suspend fun insertNewNote(): Long {
-        return notePadRepository.upsert(NotePad(title = "abila", detail = "testing"))
+        return notePadRepository.upsert(NotePad())
     }
 
-    suspend fun insertNewAudioNote(uri: Uri, text: String): Long {
-        val id = contentManager.saveVoice(uri)
+    suspend fun insertNewAudioNote(uri: String, text: String): Long {
+        val id = notePadRepository.saveImage(uri)
 
         val voice = NoteVoice(
             id = id,
@@ -56,8 +53,8 @@ class MainActivityViewModel @Inject constructor(
         return notePadRepository.upsert(notePad)
     }
 
-    suspend fun insertNewImageNote(uri: Uri): Long {
-        val id = contentManager.saveImage(uri)
+    suspend fun insertNewImageNote(uri: String): Long {
+        val id = notePadRepository.saveImage(uri)
 
         val image = NoteImage(
             id = id,
@@ -74,6 +71,10 @@ class MainActivityViewModel @Inject constructor(
             checks = listOf(NoteCheck()),
         )
         return notePadRepository.upsert(notePad)
+    }
+
+    fun pictureUri(): String {
+        return notePadRepository.getUri()
     }
 }
 

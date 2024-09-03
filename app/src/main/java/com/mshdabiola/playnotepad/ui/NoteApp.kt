@@ -52,6 +52,8 @@ import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
+import com.mshdabiola.detail.navigation.DetailArg
+import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.model.Label
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
@@ -131,7 +133,7 @@ fun NoteApp(
                                 onAddNewNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewNote()
-                                        println("id is $id")
+                                        appState.navController.navigateToDetail(DetailArg(id))
                                     }
                                 },
                                 onAddVoiceNote = {
@@ -140,7 +142,7 @@ fun NoteApp(
                                 onAddCheckNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewCheckNote()
-                                        println("id is $id")
+                                        appState.navController.navigateToDetail(DetailArg(id))
                                     }
                                 },
                                 onAddImageNote = {
@@ -186,7 +188,7 @@ fun NoteApp(
                 output = { uri, text ->
                     appState.coroutineScope.launch {
                         val id = viewModel.insertNewAudioNote(uri, text)
-                        println("id is $id")
+                        appState.navController.navigateToDetail(DetailArg(id))
                     }
                 },
 
@@ -194,10 +196,11 @@ fun NoteApp(
             ImageDialog2(
                 show = showImage,
                 dismiss = { showImage = false },
-                getUri = viewModel.contentManager::pictureUri,
+                getUri = viewModel::pictureUri,
                 saveImage = {
                     appState.coroutineScope.launch {
                         val id = viewModel.insertNewImageNote(it)
+                        appState.navController.navigateToDetail(DetailArg(id))
                     }
                 },
             )
