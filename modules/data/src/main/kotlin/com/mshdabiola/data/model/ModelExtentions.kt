@@ -25,7 +25,12 @@ fun DrawPath.toDrawPathEntity() =
 fun LabelEntity.toLabel() = Label(id!!, name)
 fun Label.toLabelEntity() = LabelEntity(id.check(), label)
 
-fun NoteCheckEntity.toNoteCheck() = NoteCheck(id!!, noteId, content, isCheck)
+fun NoteCheckEntity.toNoteCheck() = NoteCheck(
+    id = id!!,
+    noteId = noteId,
+    content = content,
+    isCheck = isCheck,
+)
 fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id.check(), noteId, content, isCheck)
 
 fun NotePad.toNoteEntity() =

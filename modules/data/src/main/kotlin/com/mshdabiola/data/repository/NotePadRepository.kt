@@ -81,7 +81,6 @@ internal class NotePadRepository
     override fun getNotePads() = notePadDao
         .getListOfNotePad().map { entities -> entities.map { transform(it.toNotePad()) } }
 
-
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
     override fun getOneNotePad(id: Long): Flow<NotePad?> {
@@ -89,7 +88,9 @@ internal class NotePadRepository
             .map { pad ->
                 if (pad != null) {
                     transform(pad)
-                } else null
+                } else {
+                    null
+                }
             }
     }
 
@@ -130,7 +131,7 @@ internal class NotePadRepository
             }
     }
 
-     override fun timeToString(time: LocalTime): String {
+    override fun timeToString(time: LocalTime): String {
         val hour = when {
             time.hour > 12 -> time.hour - 12
             time.hour == 0 -> 12
@@ -140,7 +141,7 @@ internal class NotePadRepository
 
         return "%2d : %02d %s".format(hour, time.minute, timeset)
     }
-     override fun dateToString(date: LocalDate): String {
+    override fun dateToString(date: LocalDate): String {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val month = date.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
 
@@ -152,7 +153,7 @@ internal class NotePadRepository
         }
     }
 
-     override fun dateToString(long: Long): String {
+    override fun dateToString(long: Long): String {
         val date = Instant.fromEpochMilliseconds(long)
             .toLocalDateTime(TimeZone.currentSystemDefault())
 
@@ -180,15 +181,17 @@ internal class NotePadRepository
         }
     }
 
+    override suspend fun deleteVoiceNote(id: Long) {
+        noteVoiceDao.deleteVoiceOne(id)
+    }
 
-    private fun transform(pad: NotePad): NotePad{
-       return pad.copy(
+    private fun transform(pad: NotePad): NotePad {
+        return pad.copy(
             reminderString = dateToString(pad.reminder),
             editDateString = dateToString(pad.editDate),
             images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
             voices = pad.voices.map { it.copy(voiceName = contentManager.getVoicePath(it.id)) },
 
-            )
+        )
     }
-
 }
