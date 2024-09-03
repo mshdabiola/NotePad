@@ -33,10 +33,9 @@ fun AddBottomSheet2(
     currentColor: Int,
     currentImage: Int,
     isNoteCheck: Boolean,
-    saveImage: (Uri, Long) -> Unit = { _, _ -> },
-    saveVoice: (Uri, String, Long) -> Unit = { _, _, _ -> },
-    getPhotoUri: () -> Uri = { Uri.EMPTY },
-    savePhoto: () -> Unit = {},
+    saveImage: (String) -> Unit = {},
+    saveVoice: (String, String) -> Unit = { _, _ -> },
+    getPhotoUri: () -> String = { "" },
     changeToCheckBoxes: () -> Unit = {},
     onDrawing: () -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -56,8 +55,7 @@ fun AddBottomSheet2(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             it?.let {
-                val time = System.currentTimeMillis()
-                saveImage(it, time)
+                saveImage(it.toString())
             }
         },
     )
@@ -65,7 +63,7 @@ fun AddBottomSheet2(
         contract = ActivityResultContracts.TakePicture(),
         onResult = {
             if (it) {
-                savePhoto()
+                saveImage(getPhotoUri())
                 // navigateToEdit(-3, "image text", photoId)
             }
         },
@@ -79,8 +77,7 @@ fun AddBottomSheet2(
                 val audiouri = intent.data
 
                 if (audiouri != null) {
-                    val time = System.currentTimeMillis()
-                    saveVoice(audiouri, strArr?.joinToString() ?: "", time)
+                    saveVoice(audiouri.toString(), strArr?.joinToString() ?: "")
                 }
             }
         },
@@ -123,7 +120,7 @@ fun AddBottomSheet2(
                 label = { Text(text = stringResource(R.string.feature_detail_take_photo)) },
                 selected = false,
                 onClick = {
-                    snapPictureLauncher.launch(getPhotoUri())
+                    snapPictureLauncher.launch(Uri.parse(getPhotoUri()))
                     onDismiss()
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),

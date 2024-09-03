@@ -21,9 +21,11 @@ import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
+import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -725,5 +727,36 @@ class DetailViewModel @Inject constructor(
                 timeError = datetime < today,
             )
         }
+    }
+
+    fun saveImage(uri: String) {
+        val id = notePadRepository.saveImage(uri)
+
+        val image = NoteImage(
+            id = id,
+        )
+
+        note.update {
+            it.copy(images = it.images + image)
+        }
+    }
+
+    fun saveVoice(uri: String, text: String) {
+        val id = notePadRepository.saveVoice(uri)
+
+        val voice = NoteVoice(
+            id = id,
+        )
+        content.edit {
+            append(text)
+        }
+
+        note.update {
+            it.copy(voices = it.voices + voice)
+        }
+    }
+
+    fun getPhotoUri(): String {
+        return notePadRepository.getUri()
     }
 }

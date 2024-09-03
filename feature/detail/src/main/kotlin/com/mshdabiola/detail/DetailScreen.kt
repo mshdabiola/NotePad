@@ -215,10 +215,9 @@ internal fun DetailRoute(
         currentColor = note.value.color,
         currentImage = note.value.background,
         isNoteCheck = note.value.isCheck,
-//        saveImage = editViewModel::saveImage,
-//        saveVoice = editViewModel::saveVoice,
-//        getPhotoUri = editViewModel::getPhotoUri,
-//        savePhoto = editViewModel::savePhoto,
+        saveImage = editViewModel::saveImage,
+        saveVoice = editViewModel::saveVoice,
+        getPhotoUri = editViewModel::getPhotoUri,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
         onDrawing = { // navigateToDrawing(editViewModel.notePadUiState.note.id, null)
         },
