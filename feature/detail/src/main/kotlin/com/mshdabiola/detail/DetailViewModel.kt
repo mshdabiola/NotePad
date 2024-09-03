@@ -735,6 +735,7 @@ class DetailViewModel @Inject constructor(
 
         val image = NoteImage(
             id = id,
+            path = notePadRepository.getImagePath(id),
         )
 
         note.update {
@@ -747,6 +748,7 @@ class DetailViewModel @Inject constructor(
 
         val voice = NoteVoice(
             id = id,
+            voiceName = notePadRepository.getVoicePath(id),
         )
         content.edit {
             append(text)
