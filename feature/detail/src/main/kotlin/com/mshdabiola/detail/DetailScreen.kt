@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -708,7 +707,6 @@ private fun DetailScreenPreview() {
 fun NoteCheck(
     noteCheckUiState: NoteCheck,
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
-    content: TextFieldState = rememberTextFieldState(),
     onCheckDelete: (Long) -> Unit = {},
     onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     strickText: Boolean = false,
