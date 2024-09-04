@@ -205,6 +205,10 @@ internal class NotePadRepository
         return contentManager.getImagePath(id)
     }
 
+    override suspend fun deleteImageNote(id: Long) {
+        noteImageDao.deleteById(id)
+    }
+
     private fun transform(pad: NotePad): NotePad {
         return pad.copy(
             reminderString = dateToString(pad.reminder),

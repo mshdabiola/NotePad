@@ -37,4 +37,6 @@ interface INotePadRepository {
     fun getUri(): String
     fun getVoicePath(id: Long): String
     fun getImagePath(id: Long): String
+
+    suspend fun deleteImageNote(id: Long)
 }
