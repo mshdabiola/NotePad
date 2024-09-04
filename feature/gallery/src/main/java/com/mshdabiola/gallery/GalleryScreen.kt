@@ -46,7 +46,6 @@ import java.io.File
 fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    navigateToEditScreen: (Long, String, Long) -> Unit,
 ) {
     FirebaseScreenLog(screen = "gallery_screen")
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
@@ -56,7 +55,7 @@ fun GalleryScreen(
         onDelete = viewModel::deleteImage,
         onToText = {
             val id = galleryUiState.value.images[0].noteId
-            navigateToEditScreen(id, "extract", it)
+            // navigateToEditScreen(id, "extract", it)
         },
     )
 }
