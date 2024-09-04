@@ -386,27 +386,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    private fun onImage(path: String, notePad: NotePad) {
-//        viewModelScope.launch {
-//            try {
-//                // val image = notePad.images[index]
-//                val text = try {
-//                    imageToText.toText(path)
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                    ""
-//                }
-//                val note = notePad.note
-//                notePadUiState =
-//                    notePadUiState.copy(note = note.copy(detail = "${note.detail}\n$text"))
-//                addNotify("Image text extracted")
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                addNotify("Error occur during extract of image")
-//            }
-//        }
-    }
-
     private val _dateTimeState = MutableStateFlow(DateDialogUiData())
     val dateTimeState = _dateTimeState.asStateFlow()
     private lateinit var currentDateTime: LocalDateTime
