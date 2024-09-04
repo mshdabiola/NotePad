@@ -15,8 +15,15 @@ fun NavController.navigateToDetail(detailArg: DetailArg, navOptions: NavOptions 
 fun NavGraphBuilder.detailScreen(
     onShowSnackbar: suspend (String, String?) -> Boolean,
     onBack: () -> Unit,
+    navigateToGallery: (Long) -> Unit,
+    navigateToDrawing: (Long) -> Unit,
 ) {
     composable<DetailArg> {
-        DetailRoute(onShowSnackbar, onBack)
+        DetailRoute(
+            onShowSnackbar = onShowSnackbar,
+            onBack = onBack,
+            navigateToGallery = navigateToGallery,
+            navigateToDrawing = navigateToDrawing,
+        )
     }
 }

@@ -123,6 +123,8 @@ internal fun DetailRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     editViewModel: DetailViewModel = hiltViewModel(),
+    navigateToGallery: (Long) -> Unit,
+    navigateToDrawing: (Long) -> Unit,
 ) {
     val note = editViewModel.note.collectAsStateWithLifecycle()
     var showModalState by remember {
@@ -204,10 +206,8 @@ internal fun DetailRoute(
         },
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
-        navigateToGallery = { // navigateToGallery
-        },
-        navigateToDrawing = { // navigateToDrawing
-        },
+        navigateToGallery = navigateToGallery,
+        navigateToDrawing = navigateToDrawing,
 
     )
     AddBottomSheet2(
