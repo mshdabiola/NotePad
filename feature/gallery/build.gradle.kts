@@ -7,5 +7,7 @@ android {
 }
 dependencies {
     implementation(libs.telephoto.zoomable.image)
+    googlePlayImplementation(libs.play.services.mlkit.text.recognition)
+
 
 }

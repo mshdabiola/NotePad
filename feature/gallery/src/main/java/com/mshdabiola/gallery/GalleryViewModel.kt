@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
+    private val imageToText: ImageToText,
 ) : ViewModel() {
 
     private val id = savedStateHandle.toRoute<GalleryArg>().id
@@ -33,6 +35,24 @@ class GalleryViewModel @Inject constructor(
                         images = notepad.images.filter { !it.isDrawing },
                     )
                 }
+        }
+    }
+
+    suspend fun onImage(path: String) {
+        try {
+            // val image = notePad.images[index]
+            val text = try {
+                imageToText.toText(path)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ""
+            }
+            var note = notepadRepository.getOneNotePad(id).first()!!
+            note =
+                note.copy(detail = "${note.detail}\n$text")
+            notepadRepository.upsert(note)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

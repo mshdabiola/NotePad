@@ -3,7 +3,6 @@ package com.mshdabiola.gallery
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
 
@@ -47,6 +48,7 @@ fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
     FirebaseScreenLog(screen = "gallery_screen")
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
     GalleryScreen(
@@ -54,19 +56,20 @@ fun GalleryScreen(
         onBack = onBack,
         onDelete = viewModel::deleteImage,
         onToText = {
-            val id = galleryUiState.value.images[0].noteId
-            // navigateToEditScreen(id, "extract", it)
+            coroutineScope.launch {
+                viewModel.onImage(it)
+                onBack()
+            }
         },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun GalleryScreen(
     galleryUiState: GalleryUiState,
     onBack: () -> Unit = {},
     onDelete: (Long) -> Unit = {},
-    onToText: (Long) -> Unit = {},
+    onToText: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState() {
         galleryUiState.images.size
@@ -117,7 +120,7 @@ fun GalleryScreen(
             GalleryTopAppBar(
                 onBack = onBack,
                 onDelete = delete,
-                onGrabText = { onToText(galleryUiState.images[pagerState.currentPage].id) },
+                onGrabText = { onToText(galleryUiState.images[pagerState.currentPage].path) },
                 name = "${pagerState.currentPage + 1} of ${galleryUiState.images.size}",
                 onSend = onSend,
                 onCopy = onCopy,
