@@ -12,6 +12,9 @@ import androidx.navigation.compose.NavHost
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.detailScreen
 import com.mshdabiola.detail.navigation.navigateToDetail
+import com.mshdabiola.gallery.GalleryArg
+import com.mshdabiola.gallery.galleryScreen
+import com.mshdabiola.gallery.navigateToGallery
 import com.mshdabiola.main.navigation.Main
 import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
@@ -40,6 +43,11 @@ fun NoteNavHost(
                 //  modifier = Modifier,
                 //  sharedTransitionScope = this@SharedTransitionLayout,
                 onShowSnackbar = onShowSnackbar,
+                onBack = navController::popBackStack,
+                navigateToGallery = { navController.navigateToGallery(GalleryArg(it)) },
+                navigateToDrawing = {},
+            )
+            galleryScreen(
                 onBack = navController::popBackStack,
             )
         }

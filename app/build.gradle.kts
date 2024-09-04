@@ -92,6 +92,7 @@ dependencies {
 
     implementation(projects.feature.main)
     implementation(projects.feature.detail)
+    implementation(projects.feature.gallery)
 
 
 
