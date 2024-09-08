@@ -21,6 +21,8 @@ fun NavGraphBuilder.mainScreen(
     sharedTransitionScope: SharedTransitionScope,
     onShowSnack: suspend (String, String?) -> Boolean,
     navigateToDetail: (Long) -> Unit,
+    navigateToSelectLevel: (Set<Long>) -> Unit,
+    onOpenDrawer: () -> Unit,
 ) {
     composable<Main> {
         MainRoute(
@@ -29,6 +31,8 @@ fun NavGraphBuilder.mainScreen(
             animatedContentScope = this,
             onShowSnackbar = onShowSnack,
             navigateToDetail = navigateToDetail,
+            navigateToSelectLevel = navigateToSelectLevel,
+            onOpenDrawer = onOpenDrawer,
         )
     }
 }

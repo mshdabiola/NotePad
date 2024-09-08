@@ -81,16 +81,21 @@ internal fun MainRoute(
     animatedContentScope: AnimatedVisibilityScope,
     onShowSnackbar: suspend (String, String?) -> Boolean,
     navigateToDetail: (Long) -> Unit,
+    navigateToSelectLevel: (Set<Long>) -> Unit,
+    onOpenDrawer: () -> Unit,
 ) {
     val mainViewModel: MainViewModel = hiltViewModel()
 
     FirebaseScreenLog(screen = "main_screen")
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = Unit, block = {
-        delay(2000)
-        mainViewModel.deleteEmptyNote()
-    })
+    LaunchedEffect(
+        key1 = Unit,
+        block = {
+            delay(2000)
+            mainViewModel.deleteEmptyNote()
+        },
+    )
 
     var showDialog by remember {
         mutableStateOf(false)
@@ -130,7 +135,9 @@ internal fun MainRoute(
         setAllAlarm = { showDialog = true },
         setAllColor = { showColor = true },
         setAllLabel = {
-//            navigateToSelectLevel(selectId)
+            val selectId =
+                (mainState.value as MainState.Success).notePads.filter { it.selected }.map { it.id }
+            navigateToSelectLevel(selectId.toSet())
         },
         onCopy = mainViewModel::copyNote,
         onDelete = mainViewModel::setAllDelete,
@@ -141,37 +148,11 @@ internal fun MainRoute(
         onRenameLabel = { showRenameLabel = true },
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
+        onOpenDrawer = onOpenDrawer,
         //   items = timeline,
 
     )
-
-//    val note = remember(mainState.value) {
-//        val noOfSelected = mainState.value.notePads.count { it.note.selected }
-//        if (noOfSelected == 1) {
-//            mainState.value.notePads.singleOrNull { it.note.selected }?.note
-//        } else {
-//            null
-//        }
-//    }
-//
     val colorIndex by remember { mutableStateOf(0) }
-//        remember(mainState.value.notePads) {
-//        val noOfSelected = mainState.value.notePads.count { it.note.selected }
-//        if (noOfSelected == 1) {
-//            mainState.value.notePads.singleOrNull { it.note.selected }?.note?.color
-//        } else {
-//            null
-//        }
-//    }
-
-//    NotificationDialog(
-//        showDialog,
-//        onDismissRequest = { showDialog = false },
-//        remainder = note?.reminder ?: -1,
-//        interval = if (note?.interval == (-1L)) null else note?.interval,
-//        onSetAlarm = mainViewModel::setAlarm,
-//        onDeleteAlarm = mainViewModel::deleteAlarm,
-//    )
     val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
@@ -229,7 +210,7 @@ internal fun MainScreen(
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
     navigateToEdit: (Long) -> Unit = {},
-    navigateToSearch: () -> Unit = {},
+    onOpenDrawer: () -> Unit,
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
     setAllPin: () -> Unit = {},
@@ -268,6 +249,7 @@ internal fun MainScreen(
                 onRenameLabel = onRenameLabel,
                 onDeleteLabel = onDeleteLabel,
                 onEmptyTrash = onEmptyTrash,
+                onOpenDrawer = onOpenDrawer,
             )
         }
 
@@ -353,6 +335,7 @@ fun MainContent(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
+    onOpenDrawer: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -380,7 +363,7 @@ fun MainContent(
     }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
         topBar = {
             if (noOfSelected > 0) {
                 SelectTopBar(
@@ -420,7 +403,7 @@ fun MainContent(
 
                     NoteType.NOTE -> {
                         MainTopAppBar(
-                            onNavigate = { },
+                            onNavigate = onOpenDrawer,
                             scrollBehavior = scrollBehavior,
                             isGrid = isGrid,
                             onToggleGrid = { isGrid = !isGrid },
@@ -539,10 +522,12 @@ fun RenameLabelAlertDialog(
                 TextField(value = name, onValueChange = { name = it })
             },
             confirmButton = {
-                Button(onClick = {
-                    onDismissRequest()
-                    onChangeName(name)
-                }) {
+                Button(
+                    onClick = {
+                        onDismissRequest()
+                        onChangeName(name)
+                    },
+                ) {
                     Text(text = stringResource(R.string.feature_mainscreen_rename))
                 }
             },
@@ -575,10 +560,12 @@ fun DeleteLabelAlertDialog(
                 Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
             },
             confirmButton = {
-                TextButton(onClick = {
-                    onDismissRequest()
-                    onDelete()
-                }) {
+                TextButton(
+                    onClick = {
+                        onDismissRequest()
+                        onDelete()
+                    },
+                ) {
                     Text(text = "Delete")
                 }
             },
