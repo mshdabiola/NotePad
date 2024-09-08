@@ -93,6 +93,11 @@ dependencies {
     implementation(projects.feature.main)
     implementation(projects.feature.detail)
     implementation(projects.feature.gallery)
+//    implementation(projects.feature.drawing)
+    implementation(projects.feature.about)
+//    implementation(projects.feature.search)
+    implementation(projects.feature.labelscreen)
+    implementation(projects.feature.selectlabelscreen)
 
 
 

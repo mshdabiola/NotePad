@@ -48,18 +48,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.about.navigateToAbout
 import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
-import com.mshdabiola.model.Label
+import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.ui.AudioDialog
 import com.mshdabiola.ui.ImageDialog2
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -70,7 +70,7 @@ fun NoteApp(
     modifier: Modifier = Modifier,
 ) {
     val shouldShowGradientBackground = true
-    val labels = emptyList<Label>().toImmutableList()
+    val labels = viewModel.labels.collectAsStateWithLifecycle()
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
 
@@ -99,18 +99,19 @@ fun NoteApp(
             ModalNavigationDrawer(
                 drawerContent = {
                     MainNavigation(
-                        labels = labels,
+                        labels = labels.value,
                         currentMainArg = appState.mainArg,
                         onNavigation = {
                             //  onNavigationNoteType(it)
+//                            appState.navController.navigateToMain()
                             appState.closeDrawer()
                         },
                         navigateToLevel = {
-//                            navigateToLevel(it)
+                            appState.navController.navigateToLabel(it)
                             appState.closeDrawer()
                         },
                         navigateToAbout = {
-//                            navigateToAbout()
+                            appState.navController.navigateToAbout()
                             appState.closeDrawer()
                         },
 

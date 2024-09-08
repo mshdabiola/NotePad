@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.playnotepad.R
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as dsR
 
@@ -51,7 +50,7 @@ fun MainNavigation(
     onNavigation: (NoteType) -> Unit = {},
     currentMainArg: Long = -1L,
     navigateToLevel: (Boolean) -> Unit = {},
-    labels: ImmutableList<Label>,
+    labels: List<Label>,
     navigateToAbout: () -> Unit = {},
 
 ) {

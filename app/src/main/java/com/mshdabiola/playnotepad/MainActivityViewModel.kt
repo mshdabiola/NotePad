@@ -6,6 +6,7 @@ package com.mshdabiola.playnotepad
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NoteCheck
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
     private val notePadRepository: INotePadRepository,
+    private val labelRepository: ILabelRepository,
 
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = userDataRepository
@@ -32,6 +34,13 @@ class MainActivityViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             initialValue = MainActivityUiState.Loading,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val labels = labelRepository
+        .getAllLabels().stateIn(
+            scope = viewModelScope,
+            initialValue = emptyList(),
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
