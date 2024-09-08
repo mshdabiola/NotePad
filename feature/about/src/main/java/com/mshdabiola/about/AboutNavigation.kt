@@ -4,7 +4,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-
 fun NavGraphBuilder.aboutScreen(onBack: () -> Unit) {
     composable<AboutArg> {
         AboutScreen(onBack = onBack)
