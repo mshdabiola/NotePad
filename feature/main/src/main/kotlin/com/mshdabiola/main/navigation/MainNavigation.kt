@@ -7,13 +7,24 @@ package com.mshdabiola.main.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.mshdabiola.main.MainRoute
+import com.mshdabiola.model.NoteType
 
-fun NavController.navigateToMain(main: Main, navOptions: NavOptions = androidx.navigation.navOptions { }) = navigate(main, navOptions)
+fun NavController.navigateToMain(
+    type: Long,
+    navOptions: NavOptions = androidx.navigation.navOptions { },
+) = navigate(route = "$MainRoute/$type", navOptions)
+
+const val MainRoute = "main"
+const val TypeArg = "mainArg"
+const val FullMainRoute = "$MainRoute/{$TypeArg}"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.mainScreen(
@@ -24,7 +35,15 @@ fun NavGraphBuilder.mainScreen(
     navigateToSelectLevel: (Set<Long>) -> Unit,
     onOpenDrawer: () -> Unit,
 ) {
-    composable<Main> {
+    composable(
+        route = FullMainRoute,
+        arguments = listOf(
+            navArgument(TypeArg) {
+                type = NavType.LongType
+                defaultValue = -1L
+            },
+        ),
+    ) {
         MainRoute(
             modifier = modifier,
             sharedTransitionScope = sharedTransitionScope,
@@ -39,18 +58,19 @@ fun NavGraphBuilder.mainScreen(
 
 //
 //
-// internal class MainArg(val id: Long) {
-//    constructor(savedStateHandle: SavedStateHandle) :
-//            this(
-//                id = checkNotNull(savedStateHandle[noteId]),
-//                content = checkNotNull(savedStateHandle[contentId]),
-//                data = checkNotNull(savedStateHandle[dataId]),
-//            )
-//
-//    companion object {
-//        fun decode(string: String): Uri {
-//            return Uri.decode(string).toUri()
-//        }
-//    }
-// }
+internal class MainArg(val type: Long) {
+    val noteType: NoteType = when (type) {
+        NoteType.NOTE.index -> NoteType.NOTE
+        NoteType.ARCHIVE.index -> NoteType.ARCHIVE
+        NoteType.TRASH.index -> NoteType.TRASH
+        NoteType.REMAINDER.index -> NoteType.REMAINDER
+        else -> NoteType.LABEL
+    }
+
+    constructor(savedStateHandle: SavedStateHandle) :
+        this(
+            type = checkNotNull(savedStateHandle[TypeArg]),
+
+        )
+}
 //

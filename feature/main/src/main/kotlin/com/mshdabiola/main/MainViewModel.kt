@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.main.navigation.MainArg
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
@@ -37,14 +38,14 @@ import javax.inject.Inject
 import kotlin.time.DurationUnit
 
 @HiltViewModel
-class MainViewModel
+internal class MainViewModel
 @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
     private val alarmManager: IAlarmManager,
 ) : ViewModel() {
 
-    //  val id = savedStateHandle.toRoute<Main>().id
+    private val mainArg = MainArg(savedStateHandle)
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
 
@@ -52,14 +53,30 @@ class MainViewModel
 
         viewModelScope.launch {
             notepadRepository.getNotePads().collectLatest {
+                val list =
+                    when (mainArg.noteType) {
+                        NoteType.LABEL -> {
+                            it.filter { it.labels.any { it.id == mainArg.type } }
+                        }
+
+                        NoteType.REMAINDER -> {
+                            it.filter { it.reminder > 0 }
+                        }
+
+                        else -> {
+                            it.filter {
+                                it.noteType == mainArg.noteType
+                            }
+                        }
+                    }
 
                 try {
                     _mainState.value = getSuccess().copy(
-                        notePads = it,
+                        notePads = list,
                     )
                 } catch (e: Exception) {
                     _mainState.value = MainState.Success(
-                        notePads = it,
+                        notePads = list,
                     )
                 }
                 initDate()
@@ -512,7 +529,8 @@ class MainViewModel
 
             _dateTimeState.update {
                 val im = it.dateData.toMutableList()
-                im[im.lastIndex] = im[im.lastIndex].copy(value = notepadRepository.dateToString(date.date))
+                im[im.lastIndex] =
+                    im[im.lastIndex].copy(value = notepadRepository.dateToString(date.date))
                 it.copy(
                     dateData = im.toImmutableList(),
                     currentDate = im.lastIndex,
