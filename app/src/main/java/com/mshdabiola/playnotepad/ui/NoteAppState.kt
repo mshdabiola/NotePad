@@ -16,7 +16,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mshdabiola.data.util.NetworkMonitor
-import com.mshdabiola.main.navigation.Main
+import com.mshdabiola.main.navigation.MainRoute
+import com.mshdabiola.main.navigation.TypeArg
+import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.TrackDisposableJank
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,13 +62,15 @@ class NoteAppState(
             .currentBackStackEntryAsState().value?.destination?.route ?: ""
 
     val mainArg: Long
-        @Composable get() = -1L
+        @Composable get() = navController.currentBackStackEntryAsState().value?.arguments?.getLong(
+            TypeArg,
+        ) ?: NoteType.NOTE.index
 
     //            navController
 //            .currentBackStackEntryAsState().value?.toRoute<Main>() ?:
     // Main(-1L)
     val isMain: Boolean
-        @Composable get() = currentRoute.contains(Main::class.name)
+        @Composable get() = currentRoute.contains(MainRoute)
 
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)

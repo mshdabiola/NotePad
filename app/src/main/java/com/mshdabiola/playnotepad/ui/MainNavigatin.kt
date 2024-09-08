@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
@@ -47,8 +48,8 @@ import com.mshdabiola.designsystem.R as dsR
 @Composable
 fun MainNavigation(
 
-    onNavigation: (NoteType) -> Unit = {},
-    currentMainArg: Long = -1L,
+    onNavigation: (Long) -> Unit = {},
+    currentMainArg: Long = NoteType.NOTE.index,
     navigateToLevel: (Boolean) -> Unit = {},
     labels: List<Label>,
     navigateToAbout: () -> Unit = {},
@@ -93,18 +94,18 @@ fun MainNavigation(
                     )
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_notes)) },
-                selected = currentMainArg == -1L,
-                onClick = { onNavigation(NoteType.NOTE) },
+                selected = currentMainArg == NoteType.NOTE.index,
+                onClick = { onNavigation(NoteType.NOTE.index) },
             )
             NavigationDrawerItem(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_reminders)) },
-                selected = currentMainArg == -2L,
-                onClick = { onNavigation(NoteType.REMAINDER) },
+                selected = currentMainArg == NoteType.REMAINDER.index,
+                onClick = { onNavigation(NoteType.REMAINDER.index) },
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
@@ -135,7 +136,7 @@ fun MainNavigation(
                     },
                     label = { Text(text = it.label) },
                     selected = currentMainArg == it.id,
-                    onClick = { onNavigation(NoteType.LABEL) },
+                    onClick = { onNavigation(it.id) },
                 )
             }
             NavigationDrawerItem(
@@ -157,8 +158,8 @@ fun MainNavigation(
                     Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_archive)) },
-                selected = currentMainArg == -3L,
-                onClick = { onNavigation(NoteType.ARCHIVE) },
+                selected = currentMainArg == NoteType.ARCHIVE.index,
+                onClick = { onNavigation(NoteType.ARCHIVE.index) },
             )
 
             NavigationDrawerItem(
@@ -166,8 +167,8 @@ fun MainNavigation(
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
                 label = { Text(text = stringResource(R.string.feature_mainscreen_trash)) },
-                selected = currentMainArg == -4L,
-                onClick = { onNavigation(NoteType.TRASH) },
+                selected = currentMainArg == NoteType.TRASH.index,
+                onClick = { onNavigation(NoteType.TRASH.index) },
             )
 //            NavigationDrawerItem(
 //                icon = {

@@ -17,7 +17,7 @@ import com.mshdabiola.gallery.GalleryArg
 import com.mshdabiola.gallery.galleryScreen
 import com.mshdabiola.gallery.navigateToGallery
 import com.mshdabiola.labelscreen.labelScreen
-import com.mshdabiola.main.navigation.Main
+import com.mshdabiola.main.navigation.FullMainRoute
 import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
 import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
@@ -34,7 +34,7 @@ fun NoteNavHost(
     SharedTransitionLayout(modifier = modifier) {
         NavHost(
             navController = navController,
-            startDestination = Main,
+            startDestination = FullMainRoute,
             modifier = Modifier,
         ) {
             mainScreen(

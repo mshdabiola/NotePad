@@ -48,6 +48,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.navOptions
 import com.mshdabiola.about.navigateToAbout
 import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
@@ -56,6 +57,7 @@ import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.labelscreen.navigateToLabel
+import com.mshdabiola.main.navigation.navigateToMain
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.ui.AudioDialog
@@ -104,6 +106,13 @@ fun NoteApp(
                         onNavigation = {
                             //  onNavigationNoteType(it)
 //                            appState.navController.navigateToMain()
+                            appState.navController.popBackStack()
+                            appState.navController.navigateToMain(
+                                it,
+                                navOptions {
+                                    //  this.launchSingleTop=true
+                                },
+                            )
                             appState.closeDrawer()
                         },
                         navigateToLevel = {
