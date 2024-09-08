@@ -125,6 +125,8 @@ internal fun DetailRoute(
     editViewModel: DetailViewModel = hiltViewModel(),
     navigateToGallery: (Long) -> Unit,
     navigateToDrawing: (Long) -> Unit,
+    navigateToSelectLevel: (Set<Long>) -> Unit,
+
 ) {
     val note = editViewModel.note.collectAsStateWithLifecycle()
     var showModalState by remember {
@@ -185,11 +187,11 @@ internal fun DetailRoute(
         hideCheckBoxes = editViewModel::hideCheckBoxes,
         pinNote = editViewModel::pinNote,
         onLabel = {
-//            navigateToSelectLevel(
-//                intArrayOf(
-//                    editViewModel.notePadUiState.note.id.toInt(),
-//                ),
-//            )
+            navigateToSelectLevel(
+                setOf(
+                    editViewModel.note.value.id,
+                ),
+            )
         },
         onColorClick = { colorModalState = true },
         onNotification = {
@@ -238,11 +240,11 @@ internal fun DetailRoute(
         currentColor = note.value.color,
         currentImage = note.value.background,
         onLabel = {
-//            navigateToSelectLevel(
-//                intArrayOf(
-//                    editViewModel.notePadUiState.note.id.toInt(),
-//                ),
-//            )
+            navigateToSelectLevel(
+                setOf(
+                    editViewModel.note.value.id,
+                ),
+            )
         },
         onDelete = editViewModel::onDelete,
         onCopy = editViewModel::copyNote,

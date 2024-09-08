@@ -17,6 +17,7 @@ fun NavGraphBuilder.detailScreen(
     onBack: () -> Unit,
     navigateToGallery: (Long) -> Unit,
     navigateToDrawing: (Long) -> Unit,
+    navigateToSelectLevel: (Set<Long>) -> Unit,
 ) {
     composable<DetailArg> {
         DetailRoute(
@@ -24,6 +25,7 @@ fun NavGraphBuilder.detailScreen(
             onBack = onBack,
             navigateToGallery = navigateToGallery,
             navigateToDrawing = navigateToDrawing,
+            navigateToSelectLevel = navigateToSelectLevel,
         )
     }
 }
