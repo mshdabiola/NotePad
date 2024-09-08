@@ -73,12 +73,12 @@ class EditViewModel @Inject constructor(
     private val dateStringUsercase: DateStringUsercase,
     private val dateShortStringUsercase: DateShortStringUsercase,
 
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val editArg = EditArg(savedStateHandle)
     var notePadUiState by mutableStateOf(
         NotePad().toNotePadUiState(
-         //   getTime = dateShortStringUsercase::invoke,
+            //   getTime = dateShortStringUsercase::invoke,
             toPath = contentManager::getImagePath,
         ),
     )
@@ -366,7 +366,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun saveImage(uri: Uri, id: Long) {
-      val id2=  contentManager.saveImage(uri)
+        val id2 = contentManager.saveImage(uri)
 
         val noteImage =
             NoteImage(id2, notePadUiState.id, false)
@@ -377,7 +377,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun saveVoice(uri: Uri, content: String, id: Long) {
-       val id2= contentManager.saveVoice(uri)
+        val id2 = contentManager.saveVoice(uri)
 
         val voicePath = contentManager.getVoicePath(id)
         val length = getAudioLength(voicePath)
@@ -415,7 +415,8 @@ class EditViewModel @Inject constructor(
             NoteCheck(id = getNewId(), noteId = id, content = s).toNoteCheckUiState()
         }
         notePadUiState = notePadUiState.copy(
-            isCheck = true, detail = "",
+            isCheck = true,
+            detail = "",
             checks = noteChecks.toImmutableList(),
         )
     }
@@ -443,7 +444,8 @@ class EditViewModel @Inject constructor(
         val noteCheck = notePadUiState.checks.joinToString(separator = "\n") { it.content }
 
         notePadUiState = notePadUiState.copy(
-           detail = noteCheck, isCheck = false,
+            detail = noteCheck,
+            isCheck = false,
             checks = emptyList<NoteCheckUiState>().toImmutableList(),
         )
 
@@ -560,7 +562,7 @@ class EditViewModel @Inject constructor(
             val voice = voices.removeAt(index)
             notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
 
-           // noteVoiceRepository.delete(voice.id)
+            // noteVoiceRepository.delete(voice.id)
 
             addNotify("Voice note deleted")
         }
