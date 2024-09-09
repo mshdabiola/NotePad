@@ -8,6 +8,7 @@ import ArchiveTopAppBar
 import LabelTopAppBar
 import MainTopAppBar
 import NoteCard
+import SearchTopBar
 import SelectTopBar
 import TrashTopAppBar
 import androidx.compose.animation.AnimatedVisibility
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -129,6 +131,7 @@ internal fun MainRoute(
         modifier = modifier,
         mainState = mainState.value,
         navigateToEdit = navigateToDetail,
+        searchState = mainViewModel.searchState,
         onSelectedCard = mainViewModel::onSelectCard,
         onClearSelected = mainViewModel::clearSelected,
         setAllPin = mainViewModel::setPin,
@@ -149,6 +152,7 @@ internal fun MainRoute(
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
         onOpenDrawer = onOpenDrawer,
+        toggleSearch = mainViewModel::toggleSearch,
         //   items = timeline,
 
     )
@@ -209,6 +213,7 @@ internal fun MainScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
+    searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onOpenDrawer: () -> Unit,
     onSelectedCard: (Long) -> Unit = {},
@@ -224,6 +229,7 @@ internal fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
+    toggleSearch: () -> Unit,
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -235,6 +241,7 @@ internal fun MainScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
                 success = mainState,
+                searchState = searchState,
                 navigateToEdit = navigateToEdit,
                 onSelectedCard = onSelectedCard,
                 onClearSelected = onClearSelected,
@@ -250,6 +257,7 @@ internal fun MainScreen(
                 onDeleteLabel = onDeleteLabel,
                 onEmptyTrash = onEmptyTrash,
                 onOpenDrawer = onOpenDrawer,
+                toggleSearch = toggleSearch,
             )
         }
 
@@ -321,6 +329,7 @@ fun MainContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     success: MainState.Success,
+    searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
@@ -336,6 +345,7 @@ fun MainContent(
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     onOpenDrawer: () -> Unit = {},
+    toggleSearch: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -365,66 +375,68 @@ fun MainContent(
     Scaffold(
         modifier = modifier.nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
         topBar = {
-            if (noOfSelected > 0) {
-                SelectTopBar(
-                    selectNumber = noOfSelected,
-                    isAllPin = isAllPin,
-                    scrollBehavior = pinScrollBehavior,
-                    onClear = onClearSelected,
-                    onPin = setAllPin,
-                    onNoti = setAllAlarm,
-                    onColor = setAllColor,
-                    onLabel = setAllLabel,
-                    onArchive = onArchive,
-                    onDelete = onDelete,
-                    onSend = onSend,
-                    onCopy = onCopy,
-                )
-            } else {
-//
-                when (success.noteType) {
-                    NoteType.LABEL -> {
-                        LabelTopAppBar(
-                            label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
-                            onNavigate = { },
-                            scrollBehavior = scrollBehavior,
-                            onDeleteLabel = onDeleteLabel,
-                            onRenameLabel = onRenameLabel,
+            when {
+                noOfSelected > 0 -> {
+                    SelectTopBar(
+                        selectNumber = noOfSelected,
+                        isAllPin = isAllPin,
+                        scrollBehavior = pinScrollBehavior,
+                        onClear = onClearSelected,
+                        onPin = setAllPin,
+                        onNoti = setAllAlarm,
+                        onColor = setAllColor,
+                        onLabel = setAllLabel,
+                        onArchive = onArchive,
+                        onDelete = onDelete,
+                        onSend = onSend,
+                        onCopy = onCopy,
+                    )
+                }
+                success.noteType == NoteType.LABEL -> {
+                    LabelTopAppBar(
+                        label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
+                        onNavigate = { },
+                        scrollBehavior = scrollBehavior,
+                        onDeleteLabel = onDeleteLabel,
+                        onRenameLabel = onRenameLabel,
+                    )
+                }
+                success.noteType == NoteType.NOTE -> {
+                    if (success.isSearch) {
+                        SearchTopBar(
+                            state = searchState,
+                            toggleSearch = toggleSearch,
                         )
-                    }
-
-                    NoteType.TRASH -> {
-                        TrashTopAppBar(
-                            onNavigate = { },
-                            scrollBehavior = scrollBehavior,
-                            onEmptyTrash = onEmptyTrash,
-                        )
-                    }
-
-                    NoteType.NOTE -> {
+                    } else {
                         MainTopAppBar(
                             onNavigate = onOpenDrawer,
                             scrollBehavior = scrollBehavior,
                             isGrid = isGrid,
+                            navigateToSearch = toggleSearch,
                             onToggleGrid = { isGrid = !isGrid },
                         )
                     }
+                }
+                success.noteType == NoteType.TRASH -> {
+                    TrashTopAppBar(
+                        onNavigate = { },
+                        scrollBehavior = scrollBehavior,
+                        onEmptyTrash = onEmptyTrash,
+                    )
+                }
+                success.noteType == NoteType.REMAINDER -> {
+                    ArchiveTopAppBar(
+                        name = "Remainder",
+                        onNavigate = { },
+                        scrollBehavior = scrollBehavior,
 
-                    NoteType.REMAINDER -> {
-                        ArchiveTopAppBar(
-                            name = "Remainder",
-                            onNavigate = { },
-                            scrollBehavior = scrollBehavior,
-
-                        )
-                    }
-
-                    NoteType.ARCHIVE -> {
-                        ArchiveTopAppBar(
-                            onNavigate = { },
-                            scrollBehavior = scrollBehavior,
-                        )
-                    }
+                    )
+                }
+                success.noteType == NoteType.ARCHIVE -> {
+                    ArchiveTopAppBar(
+                        onNavigate = { },
+                        scrollBehavior = scrollBehavior,
+                    )
                 }
             }
         },

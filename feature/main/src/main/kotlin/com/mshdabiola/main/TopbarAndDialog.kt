@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.Clear
@@ -54,6 +58,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +67,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -74,6 +81,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mshdabiola.designsystem.component.SkTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.main.R
 import com.mshdabiola.model.NoteCheck
@@ -84,6 +92,50 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchTopBar(
+    modifier: Modifier = Modifier,
+    state: TextFieldState = rememberTextFieldState(),
+    toggleSearch: () -> Unit = {},
+) {
+    val focusRequester = remember {
+        FocusRequester()
+    }
+    LaunchedEffect(key1 = Unit) {
+        focusRequester.requestFocus()
+    }
+
+    TopAppBar(
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = toggleSearch) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
+            }
+        },
+        title = {
+            SkTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth(),
+                state = state,
+                placeholder = "Search",
+                textStyle = MaterialTheme.typography.bodyLarge,
+                trailingIcon = {
+                    if (state.text.isNotBlank()) {
+                        IconButton(onClick = { state.clearText() }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.feature_searchscreen_delete),
+                            )
+                        }
+                    }
+                },
+            )
+        },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -434,10 +486,12 @@ fun RenameLabelAlertDialog(
                 TextField(value = name, onValueChange = { name = it })
             },
             confirmButton = {
-                Button(onClick = {
-                    onDismissRequest()
-                    onChangeName(name)
-                }) {
+                Button(
+                    onClick = {
+                        onDismissRequest()
+                        onChangeName(name)
+                    },
+                ) {
                     Text(text = stringResource(R.string.feature_mainscreen_rename))
                 }
             },
@@ -470,10 +524,12 @@ fun DeleteLabelAlertDialog(
                 Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
             },
             confirmButton = {
-                TextButton(onClick = {
-                    onDismissRequest()
-                    onDelete()
-                }) {
+                TextButton(
+                    onClick = {
+                        onDismissRequest()
+                        onDelete()
+                    },
+                ) {
                     Text(text = "Delete")
                 }
             },

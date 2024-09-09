@@ -1,24 +1,30 @@
 package com.mshdabiola.main
 
 import android.util.Log
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.main.navigation.MainArg
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +43,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 internal class MainViewModel
 @Inject constructor(
@@ -45,6 +52,7 @@ internal class MainViewModel
     private val alarmManager: IAlarmManager,
 ) : ViewModel() {
 
+    val searchState = TextFieldState()
     private val mainArg = MainArg(savedStateHandle)
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
@@ -52,34 +60,59 @@ internal class MainViewModel
     init {
 
         viewModelScope.launch {
-            notepadRepository.getNotePads().collectLatest {
-                val list =
-                    when (mainArg.noteType) {
-                        NoteType.LABEL -> {
-                            it.filter { it.labels.any { it.id == mainArg.type } }
-                        }
+            combine(
+                mainState,
+                snapshotFlow { searchState.text }
+                    .debounce(500),
+                notepadRepository.getNotePads(),
+            ) { mainState, search, notepad ->
+                Triple(mainState, search, notepad)
+            }.collectLatest { triple ->
 
-                        NoteType.REMAINDER -> {
-                            it.filter { it.reminder > 0 }
-                        }
+                val (mainState, search, notepad) = triple
+                if (mainState is MainState.Success) {
+                    if (mainState.isSearch) {
+                        if (search.isNotBlank()) {
 
-                        else -> {
-                            it.filter {
-                                it.noteType == mainArg.noteType
+                            val list = notepad.filter { it.toString().contains(search, true) }
+                            _mainState.update {
+                                getSuccess().copy(notePads = list)
                             }
+                        } else {
+                            _mainState.value = getSuccess().copy(
+                                notePads = emptyList(),
+                            )
                         }
-                    }
+                    } else {
 
-                try {
-                    _mainState.value = getSuccess().copy(
-                        notePads = list,
-                    )
-                } catch (e: Exception) {
+                        val list =
+                            when (mainArg.noteType) {
+                                NoteType.LABEL -> {
+                                    notepad.filter { it.labels.any { it.id == mainArg.type } }
+                                }
+
+                                NoteType.REMAINDER -> {
+                                    notepad.filter { it.reminder > 0 }
+                                }
+
+                                else -> {
+                                    notepad.filter {
+                                        it.noteType == mainArg.noteType
+                                    }
+                                }
+                            }
+                        _mainState.value = getSuccess().copy(
+                            notePads = list,
+                        )
+                    }
+                } else {
+
                     _mainState.value = MainState.Success(
-                        notePads = list,
+                        notePads = emptyList(),
                     )
+
+                    initDate()
                 }
-                initDate()
             }
         }
     }
@@ -566,4 +599,14 @@ internal class MainViewModel
     }
 
     fun getSuccess() = mainState.value as MainState.Success
+
+    private var noteList: List<NotePad> = emptyList()
+    fun toggleSearch() {
+        val isSearch = getSuccess().isSearch
+        noteList = getSuccess().notePads
+
+        _mainState.update {
+            getSuccess().copy(isSearch = !getSuccess().isSearch)
+        }
+    }
 }

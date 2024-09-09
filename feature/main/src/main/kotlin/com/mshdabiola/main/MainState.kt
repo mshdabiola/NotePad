@@ -6,6 +6,7 @@ import com.mshdabiola.model.NoteType
 sealed class MainState {
     data object Loading : MainState()
     data class Success(
+        val isSearch: Boolean = false,
         val noteType: NoteType = NoteType.NOTE,
         val notePads: List<NotePad> = emptyList(),
     ) : MainState()
