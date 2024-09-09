@@ -23,7 +23,7 @@ data class NotePad(
     val uris: List<NoteUri> = emptyList(),
 
 ) {
-    override fun toString(): String {
+    fun toString2(): String {
         val checkString = checks.joinToString(separator = "\n") {
             if (it.isCheck) {
                 "[*] ${it.content}"
@@ -36,6 +36,14 @@ data class NotePad(
         } else {
             "$title \n $detail"
         }
+    }
+
+    override fun toString(): String {
+        return """
+            $title
+            $detail
+            ${checks.joinToString(separator = " ")}
+        """.trimIndent()
     }
 
     fun isEmpty(): Boolean {
