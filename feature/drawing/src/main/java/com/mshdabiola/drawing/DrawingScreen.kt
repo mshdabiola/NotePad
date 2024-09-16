@@ -21,53 +21,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.mshdabiola.ui.FirebaseScreenLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    saveImage: (Long, Long) -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
-    val lifecycleObserver = LocalLifecycleOwner.current
-    val defaultLifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onPause(owner: LifecycleOwner) {
-            super.onPause(owner)
-            //  viewModel.saveData()
-            saveImage(viewModel.imageID, viewModel.noteId)
-        }
-    }
-    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
-        withContext(Dispatchers.IO) {
-            viewModel.keepDataInFile(viewModel.controller.completePathData.value)
-        }
-    })
-
-    DisposableEffect(key1 = Unit) {
-        lifecycleObserver.lifecycle.addObserver(defaultLifecycleObserver)
-        onDispose { lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver) }
-    }
 
     DrawingScreen(
         onBackk = onBack,
