@@ -15,23 +15,39 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.outlined.FormatColorReset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -46,9 +62,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,6 +80,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
 import com.mshdabiola.designsystem.component.SkLoadingWheel
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
@@ -153,6 +173,7 @@ internal fun MainRoute(
         onEmptyTrash = mainViewModel::emptyTrash,
         onOpenDrawer = onOpenDrawer,
         toggleSearch = mainViewModel::toggleSearch,
+        onSetSearch = mainViewModel::onSetSearch,
         //   items = timeline,
 
     )
@@ -230,6 +251,7 @@ internal fun MainScreen(
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     toggleSearch: () -> Unit,
+    onSetSearch: (SearchSort?) -> Unit,
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -258,6 +280,7 @@ internal fun MainScreen(
                 onEmptyTrash = onEmptyTrash,
                 onOpenDrawer = onOpenDrawer,
                 toggleSearch = toggleSearch,
+                onSetSearch = onSetSearch,
             )
         }
 
@@ -346,6 +369,7 @@ fun MainContent(
     onEmptyTrash: () -> Unit = {},
     onOpenDrawer: () -> Unit = {},
     toggleSearch: () -> Unit = {},
+    onSetSearch: (SearchSort?) -> Unit, // ={}
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -392,6 +416,7 @@ fun MainContent(
                         onCopy = onCopy,
                     )
                 }
+
                 success.noteType == NoteType.LABEL -> {
                     LabelTopAppBar(
                         label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
@@ -401,6 +426,7 @@ fun MainContent(
                         onRenameLabel = onRenameLabel,
                     )
                 }
+
                 success.noteType == NoteType.NOTE -> {
                     if (success.isSearch) {
                         SearchTopBar(
@@ -417,6 +443,7 @@ fun MainContent(
                         )
                     }
                 }
+
                 success.noteType == NoteType.TRASH -> {
                     TrashTopAppBar(
                         onNavigate = { },
@@ -424,6 +451,7 @@ fun MainContent(
                         onEmptyTrash = onEmptyTrash,
                     )
                 }
+
                 success.noteType == NoteType.REMAINDER -> {
                     ArchiveTopAppBar(
                         name = "Remainder",
@@ -432,6 +460,7 @@ fun MainContent(
 
                     )
                 }
+
                 success.noteType == NoteType.ARCHIVE -> {
                     ArchiveTopAppBar(
                         onNavigate = { },
@@ -453,6 +482,59 @@ fun MainContent(
             verticalItemSpacing = 8.dp,
 
         ) {
+            if (success.isSearch && success.notePads.isEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    LabelBox(
+                        title = stringResource(R.string.feature_searchscreen_types),
+                        success.types,
+                        onItemClick = onSetSearch,
+                    )
+                }
+
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    LabelBox(
+                        title = stringResource(R.string.feature_searchscreen_labels),
+                        success.label,
+                        onItemClick = onSetSearch,
+                    )
+                }
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    Text(text = "Colors")
+                }
+                item {
+                    Surface(
+                        onClick = {
+                            onSetSearch(SearchSort.Color(-1))
+                            // onColorClick(-1)
+                        },
+                        shape = CircleShape,
+                        color = Color.White,
+                        modifier = Modifier
+                            .width(40.dp)
+                            .aspectRatio(1f),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.FormatColorReset,
+                            contentDescription = "done",
+                            tint = Color.Gray,
+                            modifier = Modifier.padding(4.dp),
+                        )
+                    }
+                }
+                items(success.color) { color ->
+                    Surface(
+                        onClick = {
+                            onSetSearch(color)
+                        },
+                        shape = CircleShape,
+                        color = Color(color.colorIndex),
+                        modifier = Modifier
+                            .width(40.dp)
+                            .aspectRatio(1f),
+
+                    ) {}
+                }
+            }
             if (pinNotePad.first.isNotEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
@@ -605,4 +687,98 @@ fun Loader(modifier: Modifier = Modifier) {
         restartOnPlay = true,
         iterations = 200,
     )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LabelBox(
+    title: String = "Label",
+    list: List<SearchSort> = emptyList(),
+    onItemClick: (SearchSort?) -> Unit, // = {},
+) {
+    var showMore by remember { mutableStateOf(false) }
+    FlowRow(
+        Modifier.animateContentSize(),
+        maxItemsInEachRow = 3,
+        maxLines = if (showMore) Int.MAX_VALUE else 2,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(modifier = Modifier.weight(1f), text = title)
+            if (list.size > 3) {
+                TextButton(onClick = { showMore = !showMore }) {
+                    Text(
+                        text = if (!showMore) {
+                            stringResource(id = R.string.feature_searchscreen_more)
+                        } else {
+                            stringResource(
+                                id = R.string.feature_searchscreen_less,
+                            )
+                        },
+                    )
+                }
+            }
+        }
+        list
+            // .take()
+            .forEach { searchSort ->
+                val item = when (searchSort) {
+                    is SearchSort.Label -> Pair(
+                        stringArrayResource(com.mshdabiola.designsystem.R.array.search_sort)[searchSort.iconIndex],
+                        NoteIcon.searchIcons[searchSort.iconIndex],
+
+                    )
+
+                    is SearchSort.Type -> Pair(
+                        stringArrayResource(com.mshdabiola.designsystem.R.array.search_sort)[searchSort.index],
+                        NoteIcon.searchIcons[searchSort.index],
+                    )
+
+                    is SearchSort.Color -> Pair(
+                        "",
+                        NoteIcon.searchIcons[0],
+                    )
+                }
+                SearchLabel(
+                    modifier = Modifier.clickable { onItemClick(searchSort) },
+                    iconId = item.second,
+                    name = item.first,
+                )
+            }
+    }
+}
+
+@Composable
+fun SearchLabel(
+    modifier: Modifier = Modifier,
+    iconId: ImageVector = Icons.AutoMirrored.Filled.Label,
+    name: String = "Label",
+) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            modifier = Modifier
+                .width(72.dp)
+                .aspectRatio(1f),
+        ) {
+            Icon(
+                imageVector = iconId,
+                contentDescription = "label icon",
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = name)
+    }
+}
+
+@Preview
+@Composable
+private fun EmptyState() {
+    // EmptySearchScreen(labels = listOf("program","home"))
 }

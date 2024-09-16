@@ -10,9 +10,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
+import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.main.navigation.MainArg
-import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
@@ -49,6 +49,7 @@ internal class MainViewModel
 @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
+    private val labelRepository: ILabelRepository,
     private val alarmManager: IAlarmManager,
 ) : ViewModel() {
 
@@ -72,16 +73,51 @@ internal class MainViewModel
                 val (mainState, search, notepad) = triple
                 if (mainState is MainState.Success) {
                     if (mainState.isSearch) {
-                        if (search.isNotBlank()) {
+                        when {
+                            mainState.searchSort != null -> {
+                                var list = when (val searchsort = mainState.searchSort) {
+                                    is SearchSort.Color -> {
+                                        notepad.filter { it.color == searchsort.colorIndex }
+                                    }
+                                    is SearchSort.Label -> {
+                                        notepad.filter { it.labels.any { it.id == searchsort.id } }
+                                    }
+                                    is SearchSort.Type -> {
+                                        when (searchsort.index) {
+                                            0 -> notepad.filter { it.reminder > 0 }
+                                            1 -> notepad.filter { it.isCheck }
+                                            2 -> notepad.filter { it.images.isNotEmpty() }
+                                            3 -> notepad.filter { it.voices.isNotEmpty() }
+                                            4 -> notepad.filter { it.images.any { it.isDrawing } }
+                                            5 -> notepad.filter { it.uris.isNotEmpty() }
+                                            else -> notepad
+                                        }
+                                    }
 
-                            val list = notepad.filter { it.toString().contains(search, true) }
-                            _mainState.update {
-                                getSuccess().copy(notePads = list)
+                                    null -> TODO()
+                                }
+
+                                if (search.isNotBlank()) {
+                                    list = list.filter { it.toString().contains(search, true) }
+                                }
+
+                                _mainState.update {
+                                    getSuccess().copy(notePads = list)
+                                }
                             }
-                        } else {
-                            _mainState.value = getSuccess().copy(
-                                notePads = emptyList(),
-                            )
+                            search.isNotBlank() -> {
+
+                                val list = notepad.filter { it.toString().contains(search, true) }
+                                _mainState.update {
+                                    getSuccess().copy(notePads = list)
+                                }
+                            }
+
+                            else -> {
+                                _mainState.value = getSuccess().copy(
+                                    notePads = emptyList(),
+                                )
+                            }
                         }
                     } else {
 
@@ -598,15 +634,76 @@ internal class MainViewModel
         }
     }
 
-    fun getSuccess() = mainState.value as MainState.Success
+    private fun getSuccess() = mainState.value as MainState.Success
 
-    private var noteList: List<NotePad> = emptyList()
     fun toggleSearch() {
-        val isSearch = getSuccess().isSearch
-        noteList = getSuccess().notePads
+        viewModelScope.launch {
+            val isSearch = getSuccess().isSearch
 
+            if (isSearch) {
+                _mainState.update {
+                    getSuccess().copy(
+                        isSearch = false,
+                        types = emptyList(),
+                        color = emptyList(),
+                        label = emptyList(),
+                        searchSort = null,
+                    )
+                }
+            } else {
+                val notes = notepadRepository.getNotePads().first()
+
+                val labels = notes.asSequence().filter { it.labels.isEmpty().not() }
+                    .map { it.labels }
+                    .flatten()
+                    .distinct()
+                    .map { SearchSort.Label(it.label, 6, it.id) }.toList()
+
+                val colors = notes.asSequence()
+                    .map { it.color }
+                    .distinct()
+                    .map { SearchSort.Color(it) }.toList()
+
+                val type = ArrayList<SearchSort.Type>(6)
+                if (notes.any { it.reminder > 0 }) {
+                    type.add(SearchSort.Type(0))
+                }
+                if (notes.any { it.isCheck }) {
+                    type.add(SearchSort.Type(1))
+                }
+                if (notes.any { it.images.isNotEmpty() }) {
+                    type.add(SearchSort.Type(2))
+                }
+                if (notes.any { it.voices.isNotEmpty() }) {
+                    type.add(SearchSort.Type(3))
+                }
+
+                if (notes.any { it.images.any { it.isDrawing } }) {
+                    type.add(SearchSort.Type(4))
+                }
+
+                if (notes.any { it.uris.isNotEmpty() }) {
+                    type.add(SearchSort.Type(5))
+                }
+
+                _mainState.update {
+                    getSuccess().copy(
+                        isSearch = true,
+                        searchSort = null,
+                        types = type,
+                        color = colors,
+                        label = labels,
+                    )
+                }
+            }
+        }
+    }
+
+    fun onSetSearch(searchSort: SearchSort?) {
         _mainState.update {
-            getSuccess().copy(isSearch = !getSuccess().isSearch)
+            getSuccess().copy(
+                searchSort = searchSort,
+            )
         }
     }
 }
