@@ -345,7 +345,11 @@ private fun noteUiStateItemsSize(
     is Result.Success -> topicUiState.data.size + 2
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalLayoutApi::class,
+)
 @Composable
 fun MainContent(
     modifier: Modifier = Modifier,
@@ -501,38 +505,36 @@ fun MainContent(
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(text = "Colors")
                 }
-                item {
-                    Surface(
-                        onClick = {
-                            onSetSearch(SearchSort.Color(-1))
-                            // onColorClick(-1)
-                        },
-                        shape = CircleShape,
-                        color = Color.White,
-                        modifier = Modifier
-                            .width(40.dp)
-                            .aspectRatio(1f),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.FormatColorReset,
-                            contentDescription = "done",
-                            tint = Color.Gray,
-                            modifier = Modifier.padding(4.dp),
-                        )
-                    }
-                }
-                items(success.color) { color ->
-                    Surface(
-                        onClick = {
-                            onSetSearch(color)
-                        },
-                        shape = CircleShape,
-                        color = Color(color.colorIndex),
-                        modifier = Modifier
-                            .width(40.dp)
-                            .aspectRatio(1f),
 
-                    ) {}
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    FlowRow(
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        success.color.forEach {
+                            Surface(
+                                onClick = {
+                                    onSetSearch(it)
+                                },
+                                shape = CircleShape,
+                                color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .aspectRatio(1f),
+
+                            ) {
+                                if (it.colorIndex == -1) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FormatColorReset,
+                                        contentDescription = "done",
+                                        tint = Color.Gray,
+                                        modifier = Modifier.padding(4.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
             if (pinNotePad.first.isNotEmpty()) {

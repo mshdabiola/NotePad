@@ -110,7 +110,10 @@ fun SearchTopBar(
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
-            IconButton(onClick = toggleSearch) {
+            IconButton(onClick = {
+                state.clearText()
+                toggleSearch()
+            }) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
             }
         },
