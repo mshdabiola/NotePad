@@ -1,5 +1,19 @@
 package com.mshdabiola.designsystem.icon
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.filled.Brush
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.KeyboardVoice
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.KeyboardVoice
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.ui.graphics.Color
 import com.mshdabiola.designsystem.R
 
@@ -36,5 +50,15 @@ object NoteIcon {
         Color(0xFFFFF59D),
         Color(0xFFFFCC80),
         Color(0xFFFFAB91),
+    )
+
+    val searchIcons = arrayOf(
+        Icons.Outlined.Notifications,
+        Icons.Outlined.CheckBox,
+        Icons.Outlined.Image,
+        Icons.Outlined.KeyboardVoice,
+        Icons.Outlined.Brush,
+        Icons.Outlined.Link,
+        Icons.AutoMirrored.Outlined.Label,
     )
 }
