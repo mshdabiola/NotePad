@@ -124,11 +124,11 @@ internal fun DetailRoute(
     modifier: Modifier = Modifier,
     editViewModel: DetailViewModel = hiltViewModel(),
     navigateToGallery: (Long) -> Unit,
-    navigateToDrawing: (Long) -> Unit,
+    navigateToDrawing: (Long, Long) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
 
 ) {
-    val note = editViewModel.note.collectAsStateWithLifecycle()
+    val note = editViewModel.note.collectAsStateWithLifecycle().value
     var showModalState by remember {
         mutableStateOf(false)
     }
@@ -165,7 +165,7 @@ internal fun DetailRoute(
     FirebaseScreenLog(screen = "edit_screen")
 
     EditScreen(
-        notepad = editViewModel.note.value,
+        notepad = note,
         title = editViewModel.title,
         content = editViewModel.content,
 //        onTitleChange = editViewModel::onTitleChange,
@@ -209,19 +209,21 @@ internal fun DetailRoute(
         onArchive = editViewModel::onArchive,
         deleteVoiceNote = editViewModel::deleteVoiceNote,
         navigateToGallery = navigateToGallery,
-        navigateToDrawing = navigateToDrawing,
+        navigateToDrawing = { navigateToDrawing(editViewModel.note.value.id, it) },
 
     )
     AddBottomSheet2(
         show = showModalState,
-        currentColor = note.value.color,
-        currentImage = note.value.background,
-        isNoteCheck = note.value.isCheck,
+        currentColor = note.color,
+        currentImage = note.background,
+        isNoteCheck = note.isCheck,
         saveImage = editViewModel::saveImage,
         saveVoice = editViewModel::saveVoice,
         getPhotoUri = editViewModel::getPhotoUri,
         changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = { // navigateToDrawing(editViewModel.notePadUiState.note.id, null)
+        onDrawing = {
+            val id = editViewModel.insertNewDrawing()
+            navigateToDrawing(editViewModel.note.value.id, id)
         },
         onDismiss = { showModalState = false },
     )
@@ -237,8 +239,8 @@ internal fun DetailRoute(
     }
     NoteOptionBottomSheet(
         show = noteModalState,
-        currentColor = note.value.color,
-        currentImage = note.value.background,
+        currentColor = note.color,
+        currentImage = note.background,
         onLabel = {
             navigateToSelectLevel(
                 setOf(
@@ -253,8 +255,8 @@ internal fun DetailRoute(
     )
     ColorAndImageBottomSheet(
         show = colorModalState,
-        currentColor = note.value.color,
-        currentImage = note.value.background,
+        currentColor = note.color,
+        currentImage = note.background,
         onColorClick = editViewModel::onColorChange,
         onImageClick = editViewModel::onImageChange,
         onDismissRequest = { colorModalState = false },
@@ -264,8 +266,8 @@ internal fun DetailRoute(
         show = noteficationModalState,
         onAlarm = editViewModel::setAlarm,
         showDialog = { showDialog = true },
-        currentColor = note.value.color,
-        currentImage = note.value.background,
+        currentColor = note.color,
+        currentImage = note.background,
 
     ) { noteficationModalState = false }
     val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()

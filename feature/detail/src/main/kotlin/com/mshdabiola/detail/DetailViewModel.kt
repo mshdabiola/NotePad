@@ -741,4 +741,18 @@ class DetailViewModel @Inject constructor(
     fun getPhotoUri(): String {
         return notePadRepository.getUri()
     }
+    fun insertNewDrawing(): Long {
+        val id = System.currentTimeMillis()
+        val drawing = NoteImage(
+            id = id,
+            isDrawing = true,
+            path = notePadRepository.getImagePath(id),
+        )
+
+        note.update {
+            it.copy(images = it.images + drawing)
+        }
+
+        return id
+    }
 }
