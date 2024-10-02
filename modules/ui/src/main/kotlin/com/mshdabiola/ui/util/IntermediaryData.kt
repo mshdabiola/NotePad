@@ -31,7 +31,7 @@ data class DrawPathPojo(
 fun DrawPath.toDrawPathPojo() =
     DrawPathPojo(imageId, pathId, color, width, join, alpha, cap, paths)
 
-fun DrawPathPojo.toDrawPath() = DrawPath(imageId, pathId, color, width, join, alpha, cap, paths)
+// fun DrawPathPojo.toDrawPath() = DrawPath(imageId, pathId, color, width, join, alpha, cap, paths)
 fun getBitMap(list: List<Pair<Path, PathData>>, width: Int, heigth: Int, density: Float): Bitmap {
     val he = heigth - (50 * density)
     val bitmap2 = Bitmap.createBitmap(width, he.toInt(), Bitmap.Config.ARGB_8888)
