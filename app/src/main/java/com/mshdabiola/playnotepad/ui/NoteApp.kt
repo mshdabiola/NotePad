@@ -56,6 +56,7 @@ import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
+import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
 import com.mshdabiola.playnotepad.MainActivityViewModel
@@ -160,8 +161,9 @@ fun NoteApp(
                                 },
                                 onAddDrawNote = {
                                     appState.coroutineScope.launch {
-                                        val id = viewModel.insertNewNote()
-                                        println("id is $id")
+                                        val id = viewModel.insertNewDrawing()
+                                        appState.navController.navigateToDetail(DetailArg(id.first))
+                                        appState.navController.navigateToDrawing(id.first, id.second)
                                     }
                                 },
 

@@ -13,6 +13,8 @@ import com.mshdabiola.about.aboutScreen
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.detailScreen
 import com.mshdabiola.detail.navigation.navigateToDetail
+import com.mshdabiola.drawing.drawingScreen
+import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.gallery.GalleryArg
 import com.mshdabiola.gallery.galleryScreen
 import com.mshdabiola.gallery.navigateToGallery
@@ -53,7 +55,7 @@ fun NoteNavHost(
                 onShowSnackbar = onShowSnackbar,
                 onBack = navController::popBackStack,
                 navigateToGallery = { navController.navigateToGallery(GalleryArg(it)) },
-                navigateToDrawing = {},
+                navigateToDrawing = navController::navigateToDrawing,
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
             )
             galleryScreen(
@@ -62,6 +64,7 @@ fun NoteNavHost(
             aboutScreen(onBack = navController::popBackStack)
             labelScreen(onBack = navController::popBackStack)
             selectLabelScreen(onBack = navController::popBackStack)
+            drawingScreen(onBack = navController::popBackStack)
         }
     }
 }
