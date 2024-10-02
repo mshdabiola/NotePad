@@ -13,9 +13,9 @@ fun NavGraphBuilder.drawingScreen(
     }
 }
 
-fun NavController.navigateToDrawing(imageId: Long) {
-    navigate(DrawingArgs(imageId))
+fun NavController.navigateToDrawing(noteId: Long, imageId: Long) {
+    navigate(DrawingArgs(noteId, imageId))
 }
 
 @Serializable
-data class DrawingArgs(val imageId: Long)
+data class DrawingArgs(val noteId: Long, val imageId: Long)

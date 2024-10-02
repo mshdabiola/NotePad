@@ -3,11 +3,13 @@ package com.mshdabiola.drawing
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Redo
@@ -21,18 +23,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.mshdabiola.ui.FirebaseScreenLog
 import java.io.File
 
@@ -42,9 +48,33 @@ fun DrawingScreen(
     onBack: () -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
+    val context = LocalContext.current
+    BackHandler {
+        viewModel.saveImage(context)
+        onBack()
+    }
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
+                super.onPause(owner)
+                println("onPause")
+                viewModel.saveImage(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     DrawingScreen(
-        onBackk = onBack,
+        onBackk = {
+            viewModel.saveImage(context)
+            onBack()
+        },
         filePath = viewModel.drawingUiState.filePath,
         controller = viewModel.controller,
         onDeleteImage = {
@@ -94,7 +124,7 @@ fun DrawingScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackk) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "back",
                         )
                     }

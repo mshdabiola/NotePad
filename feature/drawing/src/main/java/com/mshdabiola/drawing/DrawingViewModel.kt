@@ -1,7 +1,6 @@
 package com.mshdabiola.drawing
 
-// import com.mshdabiola.worker.Saver
-// import com.mshdabiola.ui.util.Converter
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,9 +10,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.IDrawingPathRepository
+import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.PathData
+import com.mshdabiola.worker.util.changeToPathAndData
+import com.mshdabiola.worker.util.getBitMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,9 +28,11 @@ class DrawingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentManager: IContentManager,
     private val drawingPathRepository: IDrawingPathRepository,
+    private val notepadRepository: INotePadRepository,
 ) : ViewModel() {
 
-    val imageID = savedStateHandle.toRoute<DrawingArgs>().imageId
+    private val drawingArgs = savedStateHandle.toRoute<DrawingArgs>()
+    private var imageID = drawingArgs.imageId
 
     var drawingUiState by mutableStateOf(
         DrawingUiState(
@@ -49,9 +53,50 @@ class DrawingViewModel @Inject constructor(
         }
     }
 
-    fun saveData() {
-        // Saver.saveGame(imageId = imageID, noteId = noteId)
+    fun saveImage(context: Context) {
+        viewModelScope.launch {
+            try {
+                val width = context.resources.displayMetrics.widthPixels
+                val height = context.resources.displayMetrics.heightPixels
+                val density = context.resources.displayMetrics.density
+
+                val pathsMap = changeToDrawPath(controller.completePathData.value)
+
+                val bitmap = getBitMap(
+                    changeToPathAndData(controller.completePathData.value),
+                    width,
+                    height,
+                    density,
+                )
+                val path = contentManager.getImagePath(imageID)
+                contentManager.saveBitmap(path, bitmap)
+
+                if (pathsMap.isEmpty()) {
+                    drawingPathRepository.delete(imageID)
+                    // noteImageRepository.delete(imageId)
+                    File(contentManager.getImagePath(imageID)).deleteOnExit()
+                } else {
+//                noteImageRepository.upsert(
+//                    NoteImage(
+//                        imageId,
+//                        noteId,
+//                        isDrawing = true,
+//                        timestamp = System.currentTimeMillis(),
+//                    ),
+//                )
+                    drawingPathRepository.delete(imageID)
+                    drawingPathRepository.insert(pathsMap)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
+
+//    suspend fun saveData() {
+//        // Saver.saveGame(imageId = imageID, noteId = noteId)
+//        drawingPathRepository.insert(changeToDrawPath(controller.completePathData.value))
+//    }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
