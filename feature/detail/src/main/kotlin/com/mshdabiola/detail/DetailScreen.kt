@@ -94,6 +94,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -115,6 +116,7 @@ import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.toTime
 import kotlinx.datetime.Clock
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -228,14 +230,24 @@ internal fun DetailRoute(
         onDismiss = { showModalState = false },
     )
 //
+    val images = note.images.map {
+        val file = File(it.path)
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+        uri
+    }
+
     val send = {
-        val notePads = noteModalState
         val intent = ShareCompat.IntentBuilder(context)
-            .setText(notePads.toString())
-            .setType("text/*")
+            .setText(note.title)
+            .setSubject(note.detail)
             .setChooserTitle("From Notepad")
-            .createChooserIntent()
-        context.startActivity(Intent(intent))
+
+        if (images.isNotEmpty()) intent.setType("image/*") else intent.setType("text/*")
+        images.forEach {
+            intent.setStream(it)
+        }
+
+        context.startActivity(Intent(intent.createChooserIntent()))
     }
     NoteOptionBottomSheet(
         show = noteModalState,
