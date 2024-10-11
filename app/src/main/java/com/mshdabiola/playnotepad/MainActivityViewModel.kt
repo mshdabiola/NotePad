@@ -99,6 +99,20 @@ class MainActivityViewModel @Inject constructor(
     fun pictureUri(): String {
         return notePadRepository.getUri()
     }
+
+    suspend fun newSharePost(title: String, subject: String, images: List<String>): Long {
+        println("images $images, title $title, subject $subject")
+        val noteImage = images
+            .map { notePadRepository.saveImage(it) }
+            .map { NoteImage(id = it) }
+
+        val notePad = NotePad(
+            title = title,
+            detail = subject,
+            images = noteImage,
+        )
+        return notePadRepository.upsert(notePad)
+    }
 }
 
 sealed interface MainActivityUiState {
