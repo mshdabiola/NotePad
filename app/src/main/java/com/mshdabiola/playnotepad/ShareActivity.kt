@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -22,9 +23,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -132,6 +137,12 @@ class ShareActivity : ComponentActivity() {
                         //  onSaveNote = shareViewModel::saveNote,
                         // showLabel = shareViewModel.showLabel,
                         showLabelDialog = { showLabel = true },
+                        onFinish = {
+                            lifecycleScope.launch {
+                                viewModel.delete()
+                                this@ShareActivity.finish()
+                            }
+                        },
                     )
 
                     EditLabels(
@@ -232,22 +243,31 @@ fun ActionEditScreen(
         ) {
             if (success.notepad.images.isNotEmpty()) {
                 item {
-                    success.notepad.images.reversed().chunked(3).forEach { imageList ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                        ) {
-                            imageList.forEach {
-                                AsyncImage(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(200.dp),
-                                    model = it.path,
-                                    contentDescription = "",
-                                    contentScale = ContentScale.Crop,
-                                )
+                    Box {
+                        success.notepad.images.reversed().chunked(3).forEach { imageList ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                            ) {
+                                imageList.forEach {
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(200.dp),
+                                        model = it.path,
+                                        contentDescription = "",
+                                        contentScale = ContentScale.Crop,
+                                    )
+                                }
                             }
+                        }
+
+                        FilledTonalIconButton(
+                            modifier = Modifier.align(Alignment.TopEnd),
+                            onClick = onFinish,
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Cancel")
                         }
                     }
                 }

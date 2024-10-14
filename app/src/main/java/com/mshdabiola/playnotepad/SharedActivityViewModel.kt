@@ -140,6 +140,11 @@ class SharedActivityViewModel @Inject constructor(
             }
         }
     }
+
+    suspend fun delete() {
+        val success = state.value as SharedActivityUiState.Success
+        notePadRepository.delete(listOf(success.notepad))
+    }
 }
 
 sealed interface SharedActivityUiState {
