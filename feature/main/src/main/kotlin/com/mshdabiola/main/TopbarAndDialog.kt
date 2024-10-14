@@ -614,6 +614,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteCard(
+    modifier: Modifier = Modifier,
     notePad: NotePad,
     onCardClick: (Long) -> Unit = {},
     onLongClick: (Long) -> Unit = {},
@@ -653,7 +654,7 @@ fun NoteCard(
     val de = LocalDensity.current
 
     OutlinedCard(
-        modifier = Modifier.combinedClickable(
+        modifier = modifier.combinedClickable(
             onClick = { notePad.id.let { onCardClick(it) } },
             onLongClick = { notePad.id.let { onLongClick(it) } },
         ),

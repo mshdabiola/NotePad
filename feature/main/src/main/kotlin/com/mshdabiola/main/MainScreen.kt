@@ -588,14 +588,18 @@ fun LazyStaggeredGridScope.noteItems(
     itemContent = { note ->
         val analyticsHelper = LocalAnalyticsHelper.current
 
-        // with(sharedTransitionScope) {
-        NoteCard(
-            notePad = note,
-            onCardClick = onNoteClick,
-            onLongClick = onSelectedCard,
-        )
+        with(sharedTransitionScope) {
+            NoteCard(
+                modifier = modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState("note${note.id}"),
+                    animatedVisibilityScope = animatedContentScope,
 
-        // }
+                ),
+                notePad = note,
+                onCardClick = onNoteClick,
+                onLongClick = onSelectedCard,
+            )
+        }
     },
 )
 

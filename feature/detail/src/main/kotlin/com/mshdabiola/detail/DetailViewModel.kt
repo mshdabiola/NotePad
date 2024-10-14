@@ -99,16 +99,21 @@ class DetailViewModel @Inject constructor(
             snapshotFlow { title.text }
                 .debounce(500)
                 .collectLatest { text ->
-                    note.update { it.copy(title = text.toString()) }
-                    saveNote()
+                    if (note.value.id != -1L) {
+
+                        note.update { it.copy(title = text.toString()) }
+                        saveNote()
+                    }
                 }
         }
         viewModelScope.launch {
             snapshotFlow { content.text }
                 .debounce(500)
                 .collectLatest { text ->
-                    note.update { it.copy(detail = text.toString()) }
-                    saveNote()
+                    if (note.value.id != -1L) {
+                        note.update { it.copy(detail = text.toString()) }
+                        saveNote()
+                    }
                 }
         }
     }
@@ -741,6 +746,7 @@ class DetailViewModel @Inject constructor(
     fun getPhotoUri(): String {
         return notePadRepository.getUri()
     }
+
     fun insertNewDrawing(): Long {
         val id = System.currentTimeMillis()
         val drawing = NoteImage(
