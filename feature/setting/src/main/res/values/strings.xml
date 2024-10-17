@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="feature_setting_theme">
+        <item>Default</item>
+        <item>Green</item>
+    </string-array>
+
+    <string-array name="feature_setting_daynight">
+        <item>Follow system</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+</resources>
