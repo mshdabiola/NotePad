@@ -61,6 +61,7 @@ import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
+import com.mshdabiola.setting.navigation.navigateToSetting
 import com.mshdabiola.ui.AudioDialog
 import com.mshdabiola.ui.ImageDialog2
 import kotlinx.coroutines.launch
@@ -122,6 +123,10 @@ fun NoteApp(
                         },
                         navigateToAbout = {
                             appState.navController.navigateToAbout()
+                            appState.closeDrawer()
+                        },
+                        navigateToSetting = {
+                            appState.navController.navigateToSetting()
                             appState.closeDrawer()
                         },
 

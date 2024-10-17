@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -53,7 +54,7 @@ fun MainNavigation(
     navigateToLevel: (Boolean) -> Unit = {},
     labels: List<Label>,
     navigateToAbout: () -> Unit = {},
-
+    navigateToSetting: () -> Unit = {},
 ) {
     Surface(
         modifier = Modifier
@@ -170,13 +171,14 @@ fun MainNavigation(
                 selected = currentMainArg == NoteType.TRASH.index,
                 onClick = { onNavigation(NoteType.TRASH.index) },
             )
-//            NavigationDrawerItem(
-//                icon = {
-//                    Icon(Icons.Outlined.Settings, contentDescription = "")
-//                },
-//                label = { Text(text = "Setting") },
-//                selected = false,
-//                onClick = { })
+            NavigationDrawerItem(
+                icon = {
+                    Icon(Icons.Outlined.Settings, contentDescription = "")
+                },
+                label = { Text(text = "Setting") },
+                selected = false,
+                onClick = navigateToSetting,
+            )
             NavigationDrawerItem(
                 icon = {
                     Icon(Icons.Outlined.Info, contentDescription = "")

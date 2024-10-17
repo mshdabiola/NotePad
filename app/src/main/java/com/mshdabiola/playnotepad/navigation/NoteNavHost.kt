@@ -24,6 +24,7 @@ import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
 import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
 import com.mshdabiola.selectlabelscreen.selectLabelScreen
+import com.mshdabiola.setting.navigation.settingScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -65,6 +66,11 @@ fun NoteNavHost(
             labelScreen(onBack = navController::popBackStack)
             selectLabelScreen(onBack = navController::popBackStack)
             drawingScreen(onBack = navController::popBackStack)
+            settingScreen(
+                modifier = Modifier,
+                onShowSnack = onShowSnackbar,
+                onBack = navController::popBackStack,
+            )
         }
     }
 }
