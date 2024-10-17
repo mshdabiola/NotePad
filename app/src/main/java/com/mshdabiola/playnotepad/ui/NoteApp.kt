@@ -12,12 +12,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Brush
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.KeyboardVoice
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -52,6 +46,7 @@ import androidx.navigation.navOptions
 import com.mshdabiola.about.navigateToAbout
 import com.mshdabiola.designsystem.component.SkBackground
 import com.mshdabiola.designsystem.component.SkGradientBackground
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
@@ -260,7 +255,7 @@ fun NoteBottomBar(
                 onClick = onAddCheckNote,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.CheckBox,
+                    imageVector = NoteIcon.CheckBox,
                     contentDescription = "add note check",
                 )
             }
@@ -270,7 +265,7 @@ fun NoteBottomBar(
                 onClick = onAddDrawNote,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Brush,
+                    imageVector = NoteIcon.Brush,
                     contentDescription = "add note drawing",
                 )
             }
@@ -280,7 +275,7 @@ fun NoteBottomBar(
                 onClick = onAddVoiceNote,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.KeyboardVoice,
+                    imageVector = NoteIcon.KeyboardVoice,
                     contentDescription = "add note voice",
                 )
             }
@@ -290,7 +285,7 @@ fun NoteBottomBar(
                 onClick = onAddImageNote,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Image,
+                    imageVector = NoteIcon.Image,
                     contentDescription = "add note image",
                 )
             }
@@ -302,7 +297,7 @@ fun NoteBottomBar(
                 containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.elevation(),
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
+                Icon(imageVector = NoteIcon.Add, contentDescription = "add note")
             }
         },
     )

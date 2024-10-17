@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +50,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.SkTextField
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
@@ -267,7 +266,7 @@ fun ActionEditScreen(
                             modifier = Modifier.align(Alignment.TopEnd),
                             onClick = onFinish,
                         ) {
-                            Icon(imageVector = Icons.Outlined.Cancel, contentDescription = "Cancel")
+                            Icon(imageVector = NoteIcon.Cancel, contentDescription = "Cancel")
                         }
                     }
                 }

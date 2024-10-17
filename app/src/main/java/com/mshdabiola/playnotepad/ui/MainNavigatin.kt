@@ -12,14 +12,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Archive
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Label
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.toImmutableList
@@ -99,7 +92,7 @@ fun MainNavigation(
             )
             NavigationDrawerItem(
                 icon = {
-                    Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
+                    Icon(imageVector = NoteIcon.Notification, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_reminders)) },
                 selected = currentMainArg == NoteType.REMAINDER.index,
@@ -130,7 +123,7 @@ fun MainNavigation(
                 NavigationDrawerItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Label,
+                            imageVector = NoteIcon.Label,
                             contentDescription = "",
                         )
                     },
@@ -141,7 +134,7 @@ fun MainNavigation(
             }
             NavigationDrawerItem(
                 icon = {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                    Icon(imageVector = NoteIcon.Add, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_create_new_label)) },
                 selected = false,
@@ -155,7 +148,7 @@ fun MainNavigation(
 
             NavigationDrawerItem(
                 icon = {
-                    Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
+                    Icon(imageVector = NoteIcon.Archive, contentDescription = "Archive")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
                 selected = currentMainArg == NoteType.ARCHIVE.index,
@@ -164,7 +157,7 @@ fun MainNavigation(
 
             NavigationDrawerItem(
                 icon = {
-                    Icon(Icons.Outlined.Delete, contentDescription = "")
+                    Icon(NoteIcon.Delete, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
                 selected = currentMainArg == NoteType.TRASH.index,
@@ -172,7 +165,7 @@ fun MainNavigation(
             )
             NavigationDrawerItem(
                 icon = {
-                    Icon(Icons.Outlined.Settings, contentDescription = "")
+                    Icon(NoteIcon.Settings, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.setting)) },
                 selected = false,
@@ -180,7 +173,7 @@ fun MainNavigation(
             )
             NavigationDrawerItem(
                 icon = {
-                    Icon(Icons.Outlined.Info, contentDescription = "")
+                    Icon(NoteIcon.Info, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_about)) },
                 selected = false,
