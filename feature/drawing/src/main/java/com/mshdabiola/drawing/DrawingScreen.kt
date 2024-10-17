@@ -8,12 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Redo
-import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +33,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import java.io.File
 import com.mshdabiola.designsystem.R as Rd
@@ -125,7 +120,7 @@ fun DrawingScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackk) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = NoteIcon.ArrowBack,
                             contentDescription = "back",
                         )
                     }
@@ -139,17 +134,17 @@ fun DrawingScreen(
                         enabled = controller.canUndo.value,
                         onClick = { controller.undo() },
                     ) {
-                        Icon(imageVector = Icons.Default.Undo, contentDescription = "redo")
+                        Icon(imageVector = NoteIcon.Undo, contentDescription = "redo")
                     }
                     IconButton(
                         enabled = controller.canRedo.value,
                         onClick = { controller.redo() },
                     ) {
-                        Icon(imageVector = Icons.Default.Redo, contentDescription = "redo")
+                        Icon(imageVector = NoteIcon.Redo, contentDescription = "redo")
                     }
                     Box {
                         IconButton(onClick = { showDropDown = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "more")
+                            Icon(NoteIcon.MoreVert, contentDescription = "more")
                         }
                         DropdownMenu(
                             expanded = showDropDown,
