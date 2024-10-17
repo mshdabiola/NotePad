@@ -42,9 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteType
-import com.mshdabiola.playnotepad.R
 import kotlinx.collections.immutable.toImmutableList
-import com.mshdabiola.designsystem.R as dsR
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun MainNavigation(
@@ -90,11 +89,11 @@ fun MainNavigation(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = dsR.drawable.modules_designsystem_app_icon),
+                        imageVector = ImageVector.vectorResource(id = Rd.drawable.modules_designsystem_app_icon),
                         contentDescription = "note",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_notes)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_notes)) },
                 selected = currentMainArg == NoteType.NOTE.index,
                 onClick = { onNavigation(NoteType.NOTE.index) },
             )
@@ -102,7 +101,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_reminders)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_reminders)) },
                 selected = currentMainArg == NoteType.REMAINDER.index,
                 onClick = { onNavigation(NoteType.REMAINDER.index) },
             )
@@ -120,10 +119,10 @@ fun MainNavigation(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.feature_mainscreen_labels),
+                    text = stringResource(Rd.string.modules_designsystem_labels),
                 )
                 TextButton(onClick = { navigateToLevel(false) }) {
-                    Text(text = stringResource(R.string.feature_mainscreen_edit))
+                    Text(text = stringResource(Rd.string.modules_designsystem_edit))
                 }
             }
 
@@ -144,7 +143,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_create_new_label)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_create_new_label)) },
                 selected = false,
                 onClick = { navigateToLevel(true) },
             )
@@ -158,7 +157,7 @@ fun MainNavigation(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Archive, contentDescription = "Archive")
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_archive)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
                 selected = currentMainArg == NoteType.ARCHIVE.index,
                 onClick = { onNavigation(NoteType.ARCHIVE.index) },
             )
@@ -167,7 +166,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Delete, contentDescription = "")
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_trash)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
                 selected = currentMainArg == NoteType.TRASH.index,
                 onClick = { onNavigation(NoteType.TRASH.index) },
             )
@@ -175,7 +174,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Settings, contentDescription = "")
                 },
-                label = { Text(text = "Setting") },
+                label = { Text(text = stringResource(Rd.string.setting)) },
                 selected = false,
                 onClick = navigateToSetting,
             )
@@ -183,7 +182,7 @@ fun MainNavigation(
                 icon = {
                     Icon(Icons.Outlined.Info, contentDescription = "")
                 },
-                label = { Text(text = stringResource(R.string.feature_mainscreen_about)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_about)) },
                 selected = false,
                 onClick = {
                     navigateToAbout()
