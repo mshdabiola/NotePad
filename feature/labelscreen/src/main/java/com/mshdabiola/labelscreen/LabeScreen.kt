@@ -6,16 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +28,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
@@ -73,7 +64,7 @@ fun LabelScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
+                        Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
@@ -149,15 +140,15 @@ fun EditLabelTextField(
                     onAddDelete()
                     focusRequester.freeFocus()
                 }) {
-                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
+                    Icon(imageVector = NoteIcon.Clear, contentDescription = "Clear")
                 }
             } else {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Add, contentDescription = "add")
             }
         },
         trailingIcon = {
             IconButton(onClick = { onAddLabelDone() }) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Done, contentDescription = "add")
             }
         },
         keyboardActions = KeyboardActions { onAddLabelDone() },
@@ -188,20 +179,20 @@ fun LabelTextField(
         leadingIcon = {
             if (isFocus) {
                 IconButton(onClick = { onDelete(labelUiState.id) }) {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Delete, contentDescription = "add")
                 }
             } else {
-                Icon(imageVector = Icons.AutoMirrored.Outlined.Label, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Label, contentDescription = "add")
             }
         },
         trailingIcon = {
             if (isFocus) {
                 IconButton(onClick = { focusManager.clearFocus() }) {
-                    Icon(imageVector = Icons.Default.Done, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Done, contentDescription = "add")
                 }
             } else {
                 IconButton(onClick = { focusRequester.requestFocus() }) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Edit, contentDescription = "add")
                 }
             }
         },
