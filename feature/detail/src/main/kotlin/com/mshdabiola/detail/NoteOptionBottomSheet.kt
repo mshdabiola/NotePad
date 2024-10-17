@@ -1,6 +1,7 @@
 package com.mshdabiola.detail
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Label
@@ -94,7 +95,7 @@ fun NoteOptionBottomSheet(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Label,
+                        imageVector = Icons.AutoMirrored.Outlined.Label,
                         contentDescription = "",
                     )
                 },

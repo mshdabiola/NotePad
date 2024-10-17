@@ -52,14 +52,14 @@ fun NotificationBottomSheet(
         LocalDateTime(dateTime.date, LocalTime(22, 0, 0))
     }
     val morningTom = remember {
-        LocalDateTime(dateTime.date.plus(DateTimeUnit.DAY), LocalTime(8, 0, 0))
+        LocalDateTime(dateTime.date.plus(1, DateTimeUnit.DAY), LocalTime(8, 0, 0))
     }
     val eveningTom = remember {
-        LocalDateTime(dateTime.date.plus(DateTimeUnit.DAY), LocalTime(22, 0, 0))
+        LocalDateTime(dateTime.date.plus(1, DateTimeUnit.DAY), LocalTime(22, 0, 0))
     }
 
     val nextWk = remember {
-        LocalDateTime(dateTime.date.plus(DateTimeUnit.WEEK), LocalTime(8, 0, 0))
+        LocalDateTime(dateTime.date.plus(1, DateTimeUnit.WEEK), LocalTime(8, 0, 0))
     }
 
     val pastToday = remember {
