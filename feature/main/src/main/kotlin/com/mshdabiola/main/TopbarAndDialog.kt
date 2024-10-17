@@ -18,26 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Brush
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.ColorLens
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.KeyboardVoice
-import androidx.compose.material.icons.outlined.Label
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -114,7 +94,7 @@ fun SearchTopBar(
                 state.clearText()
                 toggleSearch()
             }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
+                Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
         title = {
@@ -129,7 +109,7 @@ fun SearchTopBar(
                     if (state.text.isNotBlank()) {
                         IconButton(onClick = { state.clearText() }) {
                             Icon(
-                                imageVector = Icons.Default.Clear,
+                                imageVector = NoteIcon.Clear,
                                 contentDescription = stringResource(Rd.string.modules_designsystem_delete),
                             )
                         }
@@ -163,7 +143,7 @@ fun SelectTopBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onClear) {
-                Icon(imageVector = Icons.Default.Clear, contentDescription = "clear note")
+                Icon(imageVector = NoteIcon.Clear, contentDescription = "clear note")
             }
         },
         title = {
@@ -175,7 +155,7 @@ fun SelectTopBar(
                 onClick = onPin,
             ) {
                 Icon(
-                    imageVector = if (isAllPin) Icons.Outlined.PushPin else Icons.Default.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                    imageVector = if (isAllPin) NoteIcon.PushPin else NoteIcon.PushPinD, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
                     contentDescription = "pin note",
                 )
             }
@@ -184,7 +164,7 @@ fun SelectTopBar(
                 onClick = onNoti,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Notifications,
+                    imageVector = NoteIcon.Notification,
                     contentDescription = "notification",
                 )
             }
@@ -193,7 +173,7 @@ fun SelectTopBar(
                 onClick = onColor,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ColorLens,
+                    imageVector = NoteIcon.ColorLens,
                     contentDescription = "color",
                 )
             }
@@ -201,14 +181,14 @@ fun SelectTopBar(
                 modifier = Modifier.testTag("main:label"),
                 onClick = onLabel,
             ) {
-                Icon(imageVector = Icons.Outlined.Label, contentDescription = "Label")
+                Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
             }
             Box {
                 IconButton(
                     modifier = Modifier.testTag("main:more"),
                     onClick = { showDropDown = true },
                 ) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+                    Icon(NoteIcon.MoreVert, contentDescription = "more")
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -273,21 +253,21 @@ fun LabelTopAppBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onNavigate) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
         title = { Text(text = label) },
         actions = {
             IconButton(onClick = onSearch) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = NoteIcon.Search,
                     contentDescription = "search",
                 )
             }
 
             Box {
                 IconButton(onClick = { showDropDown = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+                    Icon(NoteIcon.MoreVert, contentDescription = "more")
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -334,14 +314,14 @@ fun ArchiveTopAppBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onNavigate) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
         title = { Text(text = name) },
         actions = {
             IconButton(onClick = onSearch) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = NoteIcon.Search,
                     contentDescription = "search",
                 )
             }
@@ -372,14 +352,14 @@ fun TrashTopAppBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onNavigate) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
         title = { Text(text = "Trash") },
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+                    Icon(NoteIcon.MoreVert, contentDescription = "more")
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -435,7 +415,7 @@ fun MainTopAppBar(
             ) {
                 IconButton(onClick = onNavigate) {
                     Icon(
-                        imageVector = Icons.Default.Menu,
+                        imageVector = NoteIcon.Menu,
                         contentDescription = "menu",
                     )
                 }
@@ -447,9 +427,9 @@ fun MainTopAppBar(
                 )
                 IconButton(onClick = { onToggleGrid() }) {
                     if (!isGrid) {
-                        Icon(imageVector = Icons.Filled.GridView, contentDescription = "grid")
+                        Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
                     } else {
-                        Icon(imageVector = Icons.Outlined.ViewAgenda, contentDescription = "column")
+                        Icon(imageVector = NoteIcon.ViewAgenda, contentDescription = "column")
                     }
                 }
             }
@@ -560,7 +540,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
                 onClick = { },
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.CheckBox,
+                    imageVector = NoteIcon.CheckBox,
                     contentDescription = "add note check",
                 )
             }
@@ -571,7 +551,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
                 },
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Brush,
+                    imageVector = NoteIcon.Brush,
                     contentDescription = "add note drawing",
                 )
             }
@@ -582,7 +562,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
                 },
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.KeyboardVoice,
+                    imageVector = NoteIcon.KeyboardVoice,
                     contentDescription = "add note voice",
                 )
             }
@@ -593,7 +573,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
                 },
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Image,
+                    imageVector = NoteIcon.Image,
                     contentDescription = "add note image",
                 )
             }
@@ -605,7 +585,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
                 containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.elevation(),
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "add note")
+                Icon(imageVector = NoteIcon.Add, contentDescription = "add note")
             }
         },
     )
@@ -740,7 +720,7 @@ fun NoteCard(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         modifier = Modifier.size(16.dp),
-                                        imageVector = Icons.Default.CheckBoxOutlineBlank,
+                                        imageVector = NoteIcon.CheckBoxOutlineBlank,
                                         contentDescription = "",
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -765,7 +745,7 @@ fun NoteCard(
                         ) {
                             if (haveVoice) {
                                 Icon(
-                                    imageVector = Icons.Default.PlayCircle,
+                                    imageVector = NoteIcon.PlayCircle,
                                     contentDescription = "play",
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))

@@ -38,9 +38,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Label
-import androidx.compose.material.icons.outlined.FormatColorReset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -528,7 +525,7 @@ fun MainContent(
                             ) {
                                 if (it.colorIndex == -1) {
                                     Icon(
-                                        imageVector = Icons.Outlined.FormatColorReset,
+                                        imageVector = NoteIcon.FormatColorReset,
                                         contentDescription = "done",
                                         tint = Color.Gray,
                                         modifier = Modifier.padding(4.dp),
@@ -693,7 +690,7 @@ fun DeleteLabelPreview() {
 
 @Composable
 fun Loader(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.feature_mainscreen_note_taking))
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.feature_mainscreen_note_taking))
     LottieAnimation(
         modifier = modifier,
         composition = composition,
@@ -768,7 +765,7 @@ fun LabelBox(
 @Composable
 fun SearchLabel(
     modifier: Modifier = Modifier,
-    iconId: ImageVector = Icons.AutoMirrored.Filled.Label,
+    iconId: ImageVector = NoteIcon.Label,
     name: String = "Label",
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
