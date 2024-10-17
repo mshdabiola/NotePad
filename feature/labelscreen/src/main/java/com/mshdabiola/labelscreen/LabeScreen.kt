@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
@@ -70,7 +72,7 @@ fun LabelScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
@@ -188,7 +190,7 @@ fun LabelTextField(
                     Icon(imageVector = Icons.Outlined.Delete, contentDescription = "add")
                 }
             } else {
-                Icon(imageVector = Icons.Outlined.Label, contentDescription = "add")
+                Icon(imageVector = Icons.AutoMirrored.Outlined.Label, contentDescription = "add")
             }
         },
         trailingIcon = {
