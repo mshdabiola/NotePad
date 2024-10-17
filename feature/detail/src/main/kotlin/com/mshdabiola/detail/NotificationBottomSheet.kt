@@ -1,7 +1,5 @@
 package com.mshdabiola.detail
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -138,7 +136,7 @@ fun NotificationBottomSheet(
 
 @Composable
 fun NotificationItem(
-    icon: ImageVector = Icons.Outlined.AccessTime,
+    icon: ImageVector = NoteIcon.AccessTime,
     title: String,
     time: String,
     onClick: () -> Unit = {},

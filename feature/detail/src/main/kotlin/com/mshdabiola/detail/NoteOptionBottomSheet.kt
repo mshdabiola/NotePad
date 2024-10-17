@@ -1,11 +1,5 @@
 package com.mshdabiola.detail
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Label
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +44,7 @@ fun NoteOptionBottomSheet(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Delete,
+                        imageVector = NoteIcon.Delete,
                         contentDescription = "",
                     )
                 },
@@ -66,7 +60,7 @@ fun NoteOptionBottomSheet(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.ContentCopy,
+                        imageVector = NoteIcon.ContentCopy,
                         contentDescription = "",
                     )
                 },
@@ -81,7 +75,7 @@ fun NoteOptionBottomSheet(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share,
+                        imageVector = NoteIcon.Share,
                         contentDescription = "",
                     )
                 },
@@ -96,7 +90,7 @@ fun NoteOptionBottomSheet(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Label,
+                        imageVector = NoteIcon.Label,
                         contentDescription = "",
                     )
                 },

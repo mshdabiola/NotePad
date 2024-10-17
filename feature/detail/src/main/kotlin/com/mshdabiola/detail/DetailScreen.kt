@@ -37,23 +37,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.outlined.AddBox
-import androidx.compose.material.icons.outlined.Archive
-import androidx.compose.material.icons.outlined.ColorLens
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.NotificationAdd
-import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -428,7 +411,7 @@ fun EditScreen(
                     navigationIcon = {
                         IconButton(onClick = { onBackClick() }) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = NoteIcon.ArrowBack,
                                 contentDescription = "back",
                             )
                         }
@@ -437,19 +420,19 @@ fun EditScreen(
                     actions = {
                         IconButton(onClick = { pinNote() }) {
                             Icon(
-                                imageVector = if (notepad.isPin) Icons.Default.PushPin else Icons.Outlined.PushPin,
+                                imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin",
                             )
                         }
                         IconButton(onClick = { onNotification() }) {
                             Icon(
-                                imageVector = Icons.Outlined.NotificationAdd,
+                                imageVector = NoteIcon.NotificationAdd,
                                 contentDescription = "notification",
                             )
                         }
                         IconButton(onClick = { onArchive() }) {
                             Icon(
-                                imageVector = if (notepad.noteType == NoteType.ARCHIVE) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
+                                imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                                 contentDescription = "archive",
                             )
                         }
@@ -525,7 +508,7 @@ fun EditScreen(
                                 Box {
                                     IconButton(onClick = { expandCheck = true }) {
                                         Icon(
-                                            imageVector = Icons.Default.MoreVert,
+                                            imageVector = NoteIcon.MoreVert,
                                             contentDescription = "",
                                         )
                                     }
@@ -599,7 +582,7 @@ fun EditScreen(
 
                         item {
                             TextButton(onClick = addItem) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                                Icon(imageVector = NoteIcon.Add, contentDescription = "")
 
                                 Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
                             }
@@ -609,7 +592,7 @@ fun EditScreen(
                             item {
                                 TextButton(onClick = { showCheckNote = !showCheckNote }) {
                                     Icon(
-                                        imageVector = ImageVector.vectorResource(id = if (showCheckNote) R.drawable.feature_editscreen_baseline_expand_more_24 else R.drawable.feature_editscreen_baseline_expand_less_24),
+                                        imageVector = if (showCheckNote)NoteIcon.More else NoteIcon.Less,
                                         contentDescription = "",
                                     )
                                     Text(
@@ -693,7 +676,7 @@ fun EditScreen(
                         onClick = { moreOptions() },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.AddBox,
+                            imageVector = NoteIcon.AddBox,
                             contentDescription = "more note",
                         )
                     }
@@ -702,7 +685,7 @@ fun EditScreen(
                         onClick = { onColorClick() },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.ColorLens,
+                            imageVector = NoteIcon.ColorLens,
                             contentDescription = "colors",
                         )
                     }
@@ -722,7 +705,7 @@ fun EditScreen(
                         onClick = { noteOption() },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.MoreVert,
+                            imageVector = NoteIcon.MoreVert,
                             contentDescription = "note options",
                         )
                     }
@@ -794,7 +777,7 @@ fun NoteCheck(
                             onCheckDelete(noteCheckUiState.id)
                         },
                     ) {
-                        Icon(imageVector = Icons.Default.Clear, contentDescription = "")
+                        Icon(imageVector = NoteIcon.Clear, contentDescription = "")
                     }
                 }
             },
@@ -821,11 +804,11 @@ fun NoteVoicePlayer(
             Box {
                 if (noteVoiceUiState.isPlaying) {
                     IconButton(onClick = pauseVoice) {
-                        Icon(imageVector = Icons.Outlined.PauseCircle, contentDescription = "pause")
+                        Icon(imageVector = NoteIcon.PauseCircle, contentDescription = "pause")
                     }
                 } else {
                     IconButton(onClick = playVoice) {
-                        Icon(imageVector = Icons.Outlined.PlayCircle, contentDescription = "play")
+                        Icon(imageVector = NoteIcon.PlayCircle, contentDescription = "play")
                     }
                 }
             }
@@ -835,7 +818,7 @@ fun NoteVoicePlayer(
             )
             Text(text = noteVoiceUiState.length.toTime())
             IconButton(onClick = { delete() }) {
-                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
+                Icon(imageVector = NoteIcon.Delete, contentDescription = "delete")
             }
         }
     }

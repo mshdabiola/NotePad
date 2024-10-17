@@ -8,12 +8,6 @@ import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Brush
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.KeyboardVoice
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -114,7 +108,7 @@ fun AddBottomSheet2(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.PhotoCamera,
+                        imageVector = NoteIcon.PhotoCamera,
                         contentDescription = "",
                     )
                 },
@@ -130,7 +124,7 @@ fun AddBottomSheet2(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Image,
+                        imageVector = NoteIcon.Image,
                         contentDescription = "",
                     )
                 },
@@ -149,7 +143,7 @@ fun AddBottomSheet2(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Brush,
+                        imageVector = NoteIcon.Brush,
                         contentDescription = "",
                     )
                 },
@@ -165,7 +159,7 @@ fun AddBottomSheet2(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.KeyboardVoice,
+                        imageVector = NoteIcon.KeyboardVoice,
                         contentDescription = "",
                     )
                 },
@@ -200,7 +194,7 @@ fun AddBottomSheet2(
                 NavigationDrawerItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.CheckBox,
+                            imageVector = NoteIcon.CheckBox,
                             contentDescription = "",
                         )
                     },

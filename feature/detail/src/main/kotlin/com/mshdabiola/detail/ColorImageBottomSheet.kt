@@ -15,10 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.outlined.FormatColorReset
-import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -84,14 +80,14 @@ fun ColorAndImageBottomSheet(
                         ) {
                             if (-1 == currentColor) {
                                 Icon(
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
                                     modifier = Modifier.padding(4.dp),
                                 )
                             } else {
                                 Icon(
-                                    imageVector = Icons.Outlined.FormatColorReset,
+                                    imageVector = NoteIcon.FormatColorReset,
                                     contentDescription = "done",
                                     tint = Color.Gray,
                                     modifier = Modifier.padding(4.dp),
@@ -112,7 +108,7 @@ fun ColorAndImageBottomSheet(
                         ) {
                             if (index == currentColor) {
                                 Icon(
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
                                     modifier = Modifier.padding(4.dp),
@@ -140,7 +136,7 @@ fun ColorAndImageBottomSheet(
                                     )
                                     .size(56.dp)
                                     .padding(8.dp),
-                                imageVector = Icons.Outlined.ImageNotSupported,
+                                imageVector = NoteIcon.ImageNotSupported,
                                 contentDescription = "",
                             )
                             if (-1 == currentImage) {
@@ -150,7 +146,7 @@ fun ColorAndImageBottomSheet(
                                         .background(Color.Blue)
                                         .size(16.dp)
                                         .align(Alignment.TopEnd),
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "",
                                     tint = Color.White,
 
@@ -181,7 +177,7 @@ fun ColorAndImageBottomSheet(
                                         .background(Color.Blue)
                                         .size(16.dp)
                                         .align(Alignment.TopEnd),
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "",
                                     tint = Color.White,
 
