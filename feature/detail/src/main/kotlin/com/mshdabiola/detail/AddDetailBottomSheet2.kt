@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,7 +118,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_take_photo)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_take_photo)) },
                 selected = false,
                 onClick = {
                     snapPictureLauncher.launch(Uri.parse(getPhotoUri()))
@@ -133,7 +134,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_add_image)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_add_image)) },
                 selected = false,
                 onClick = {
                     imageLauncher.launch(
@@ -152,7 +153,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_drawing)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_drawing)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -168,7 +169,7 @@ fun AddBottomSheet2(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_recording)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_recording)) },
                 selected = false,
                 onClick = {
                     onDismiss()
@@ -203,7 +204,7 @@ fun AddBottomSheet2(
                             contentDescription = "",
                         )
                     },
-                    label = { Text(text = stringResource(R.string.feature_detail_checkboxes)) },
+                    label = { Text(text = stringResource(Rd.string.modules_designsystem_checkboxes)) },
                     selected = false,
                     onClick = {
                         onDismiss()

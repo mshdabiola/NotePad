@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modules_designsystem_search_sort">
+        <item>Reminders</item>
+        <item>Lists</item>
+        <item>Images</item>
+        <item>Voice</item>
+        <item>Drawings</item>
+        <item>URLs</item>
+        <item>Labels</item>
+    </string-array>
+    <string-array name="modules_designsystem_theme">
+        <item>Default</item>
+        <item>Pink</item>
+    </string-array>
+
+    <string-array name="modules_designsystem_daynight">
+        <item>Follow system</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+</resources>

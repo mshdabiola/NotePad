@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +54,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_delete)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                 selected = false,
                 onClick = {
                     onDelete()
@@ -69,7 +70,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_make_a_copy)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
                 selected = false,
                 onClick = {
                     onCopy()
@@ -84,7 +85,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_send)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                 selected = false,
                 onClick = {
                     onSendNote()
@@ -99,7 +100,7 @@ fun NoteOptionBottomSheet(
                         contentDescription = "",
                     )
                 },
-                label = { Text(text = stringResource(R.string.feature_detail_labels)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_labels)) },
                 selected = false,
                 onClick = {
                     onLabel()

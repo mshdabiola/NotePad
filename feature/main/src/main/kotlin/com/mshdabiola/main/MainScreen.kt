@@ -92,6 +92,7 @@ import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.TrackScrollJank
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
+import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
 
@@ -321,17 +322,18 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier) {
+private fun EmptyState(modifier: Modifier = Modifier, noteType: NoteType = NoteType.NOTE) {
     Column(
         modifier = modifier
             .padding(16.dp)
             .fillMaxSize()
             .testTag("main:empty"),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Loader()
         Text(
-            text = "Empty",
+            text = "Empty notes",
             textAlign = TextAlign.Center,
         )
     }
@@ -489,7 +491,7 @@ fun MainContent(
             if (success.isSearch && success.notePads.isEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     LabelBox(
-                        title = stringResource(R.string.feature_searchscreen_types),
+                        title = stringResource(Rd.string.modules_designsystem_types),
                         success.types,
                         onItemClick = onSetSearch,
                     )
@@ -497,7 +499,7 @@ fun MainContent(
 
                 item(span = StaggeredGridItemSpan.FullLine) {
                     LabelBox(
-                        title = stringResource(R.string.feature_searchscreen_labels),
+                        title = stringResource(Rd.string.modules_designsystem_labels),
                         success.label,
                         onItemClick = onSetSearch,
                     )
@@ -537,11 +539,16 @@ fun MainContent(
                     }
                 }
             }
+            if (!success.isSearch && success.notePads.isEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    EmptyState(noteType = success.noteType)
+                }
+            }
             if (pinNotePad.first.isNotEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.feature_mainscreen_pin),
+                        text = stringResource(Rd.string.modules_designsystem_pin),
                     )
                 }
             }
@@ -558,7 +565,7 @@ fun MainContent(
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.feature_mainscreen_other),
+                        text = stringResource(Rd.string.modules_designsystem_other),
                     )
                 }
             }
@@ -617,7 +624,7 @@ fun RenameLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(id = R.string.feature_mainscreen_rename_label)) },
+            title = { Text(text = stringResource(id = Rd.string.modules_designsystem_rename_label)) },
             text = {
                 TextField(value = name, onValueChange = { name = it })
             },
@@ -628,12 +635,12 @@ fun RenameLabelAlertDialog(
                         onChangeName(name)
                     },
                 ) {
-                    Text(text = stringResource(R.string.feature_mainscreen_rename))
+                    Text(text = stringResource(Rd.string.modules_designsystem_rename))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(R.string.feature_mainscreen_cancel))
+                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
         )
@@ -719,10 +726,10 @@ fun LabelBox(
                 TextButton(onClick = { showMore = !showMore }) {
                     Text(
                         text = if (!showMore) {
-                            stringResource(id = R.string.feature_searchscreen_more)
+                            stringResource(id = Rd.string.modules_designsystem_more)
                         } else {
                             stringResource(
-                                id = R.string.feature_searchscreen_less,
+                                id = Rd.string.modules_designsystem_less,
                             )
                         },
                     )
@@ -781,10 +788,4 @@ fun SearchLabel(
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = name)
     }
-}
-
-@Preview
-@Composable
-private fun EmptyState() {
-    // EmptySearchScreen(labels = listOf("program","home"))
 }

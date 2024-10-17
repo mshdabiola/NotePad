@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel()) {
@@ -67,7 +68,7 @@ fun LabelScreen(
                     NoteTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = labelScreenUiState.editText,
-                        placeholder = { Text(text = stringResource(R.string.feature_selectlabelscreen_enter_text)) },
+                        placeholder = { Text(text = stringResource(Rd.string.modules_designsystem_enter_text)) },
                         onValueChange = onSearchText,
                     )
                 },
@@ -79,7 +80,7 @@ fun LabelScreen(
                 TextButton(onClick = { onCreateLabel() }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "${stringResource(id = R.string.feature_selectlabelscreen_create)} \"${labelScreenUiState.editText}\"")
+                    Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${labelScreenUiState.editText}\"")
                 }
             }
             LazyColumn {

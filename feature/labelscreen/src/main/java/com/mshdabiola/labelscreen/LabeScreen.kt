@@ -41,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, labelViewModel: LabelViewModel = hiltViewModel()) {
@@ -76,7 +77,7 @@ fun LabelScreen(
                     }
                 },
                 title = {
-                    Text(text = stringResource(R.string.feature_labelscreen_edit_label))
+                    Text(text = stringResource(Rd.string.modules_designsystem_edit_label))
                 },
             )
         },
@@ -136,11 +137,11 @@ fun EditLabelTextField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = stringResource(R.string.feature_labelscreen_create_new_label),
+                text = stringResource(Rd.string.modules_designsystem_create_new_label),
                 color = TextStyle.Default.color.copy(alpha = 0.5f),
             )
         },
-        supportingText = { Text(text = if (errorOccur) stringResource(R.string.feature_labelscreen_label_already_exists) else "") },
+        supportingText = { Text(text = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "") },
         isError = errorOccur,
         leadingIcon = {
             if (isFocus) {

@@ -41,6 +41,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.mshdabiola.ui.FirebaseScreenLog
 import java.io.File
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun DrawingScreen(
@@ -155,28 +156,28 @@ fun DrawingScreen(
                             onDismissRequest = { showDropDown = false },
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_grab_image_text)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
                                 onClick = {
                                     showDropDown = false
                                     //  onGrabText()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_copy)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_send)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                                 onClick = {
                                     showDropDown = false
                                     onSend()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_delete)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                                 onClick = {
                                     showDropDown = false
                                     onDeleteImage()

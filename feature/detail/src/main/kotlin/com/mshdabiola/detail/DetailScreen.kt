@@ -121,6 +121,7 @@ import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.toTime
 import kotlinx.datetime.Clock
 import java.io.File
+import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -504,7 +505,7 @@ fun EditScreen(
                         ) {
                             SkTextField(
                                 state = title,
-                                placeholder = stringResource(R.string.feature_detail_title),
+                                placeholder = stringResource(Rd.string.modules_designsystem_title),
                                 //  textStyle = MaterialTheme.typography.titleLarge,
 //                            colors = TextFieldDefaults.colors(
 //                                focusedContainerColor = Color.Transparent,
@@ -533,7 +534,7 @@ fun EditScreen(
                                         onDismissRequest = { expandCheck = false },
                                     ) {
                                         DropdownMenuItem(
-                                            text = { Text(text = stringResource(R.string.feature_detail_hide_checkboxes)) },
+                                            text = { Text(text = stringResource(Rd.string.modules_designsystem_hide_checkboxes)) },
                                             onClick = {
                                                 hideCheckBoxes()
                                                 expandCheck = false
@@ -541,14 +542,14 @@ fun EditScreen(
                                         )
                                         if (checkNote.isNotEmpty()) {
                                             DropdownMenuItem(
-                                                text = { Text(text = stringResource(R.string.feature_detail_uncheck_all_items)) },
+                                                text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
                                                 onClick = {
                                                     unCheckAllItems()
                                                     expandCheck = false
                                                 },
                                             )
                                             DropdownMenuItem(
-                                                text = { Text(text = stringResource(R.string.feature_detail_delete_checked_items)) },
+                                                text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_checked_items)) },
                                                 onClick = {
                                                     deleteCheckItems()
                                                     expandCheck = false
@@ -565,7 +566,7 @@ fun EditScreen(
                             SkTextField(
                                 state = content,
 //                            textStyle = MaterialTheme.typography.bodyMedium,
-                                placeholder = stringResource(R.string.feature_detail_subject),
+                                placeholder = stringResource(Rd.string.modules_designsystem_subject),
 //                            colors = TextFieldDefaults.colors(
 //                                focusedContainerColor = Color.Transparent,
 //                                unfocusedContainerColor = Color.Transparent,
@@ -600,7 +601,7 @@ fun EditScreen(
                             TextButton(onClick = addItem) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = "")
 
-                                Text(text = stringResource(R.string.feature_detail_add_list_item))
+                                Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
                             }
                         }
 
@@ -612,7 +613,7 @@ fun EditScreen(
                                         contentDescription = "",
                                     )
                                     Text(
-                                        text = "${checkNote.size} ${stringResource(R.string.feature_detail_checked_items)}",
+                                        text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
                                         style = MaterialTheme.typography.titleMedium,
                                     )
                                 }
@@ -712,7 +713,7 @@ fun EditScreen(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "${stringResource(R.string.feature_detail_edited)} ${notepad.editDateString}",
+                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDateString}",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }

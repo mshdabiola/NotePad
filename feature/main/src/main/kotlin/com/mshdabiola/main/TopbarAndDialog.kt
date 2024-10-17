@@ -83,7 +83,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.component.SkTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.main.R
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
@@ -92,6 +91,7 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
+import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +130,7 @@ fun SearchTopBar(
                         IconButton(onClick = { state.clearText() }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(R.string.feature_searchscreen_delete),
+                                contentDescription = stringResource(Rd.string.modules_designsystem_delete),
                             )
                         }
                     }
@@ -212,14 +212,14 @@ fun SelectTopBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_mainscreen_archive)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
                         onClick = {
                             showDropDown = false
                             onArchive()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_mainscreen_delete)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
@@ -227,14 +227,14 @@ fun SelectTopBar(
                     )
                     if (selectNumber == 1) {
                         DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.feature_mainscreen_make_a_copy)) },
+                            text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
                             onClick = {
                                 showDropDown = false
                                 onCopy()
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.feature_mainscreen_send)) },
+                            text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                             onClick = {
                                 showDropDown = false
                                 onSend()
@@ -291,14 +291,14 @@ fun LabelTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_mainscreen_rename_label)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
                         onClick = {
                             showDropDown = false
                             onRenameLabel()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_mainscreen_delete_label)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_label)) },
                         onClick = {
                             showDropDown = false
                             onDeleteLabel()
@@ -383,7 +383,7 @@ fun TrashTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_mainscreen_empty_trash)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_empty_trash)) },
                         onClick = {
                             showDropDown = false
                             onEmptyTrash()
@@ -441,7 +441,7 @@ fun MainTopAppBar(
                 }
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.feature_mainscreen_search_note),
+                    text = stringResource(Rd.string.modules_designsystem_search_note),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -484,7 +484,7 @@ fun RenameLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(id = R.string.feature_mainscreen_rename_label)) },
+            title = { Text(text = stringResource(id = Rd.string.modules_designsystem_rename_label)) },
             text = {
                 TextField(value = name, onValueChange = { name = it })
             },
@@ -495,12 +495,12 @@ fun RenameLabelAlertDialog(
                         onChangeName(name)
                     },
                 ) {
-                    Text(text = stringResource(R.string.feature_mainscreen_rename))
+                    Text(text = stringResource(Rd.string.modules_designsystem_rename))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(R.string.feature_mainscreen_cancel))
+                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
         )

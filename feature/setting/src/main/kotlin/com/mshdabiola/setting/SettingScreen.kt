@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.ui.Waiting
+import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
 
@@ -121,7 +122,7 @@ internal fun MainContent(
             modifier = Modifier.testTag("setting:theme").clickable { theme = true },
             headlineContent = { Text("Theme") },
             supportingContent = {
-                Text(stringArrayResource(R.array.feature_setting_theme)[settingState.themeBrand.ordinal])
+                Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
             },
         )
 
@@ -129,7 +130,7 @@ internal fun MainContent(
             modifier = Modifier.testTag("setting:mode").clickable { dark = true },
             headlineContent = { Text("DayNight mode") },
             supportingContent = {
-                Text(stringArrayResource(R.array.feature_setting_daynight)[settingState.darkThemeConfig.ordinal])
+                Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
             },
         )
     }
@@ -137,7 +138,7 @@ internal fun MainContent(
     AnimatedVisibility(theme) {
         OptionsDialog(
             modifier = Modifier,
-            options = stringArrayResource(R.array.feature_setting_theme).toList(),
+            options = stringArrayResource(Rd.array.modules_designsystem_theme).toList(),
             current = settingState.themeBrand.ordinal,
             onDismiss = { theme = false },
             onSelect = { setTheme(ThemeBrand.entries[it]) },
@@ -146,7 +147,7 @@ internal fun MainContent(
     AnimatedVisibility(dark) {
         OptionsDialog(
             modifier = Modifier,
-            options = stringArrayResource(R.array.feature_setting_daynight).toList(),
+            options = stringArrayResource(Rd.array.modules_designsystem_daynight).toList(),
             current = settingState.darkThemeConfig.ordinal,
             onDismiss = { dark = false },
             onSelect = { setDarkMode(DarkThemeConfig.entries[it]) },

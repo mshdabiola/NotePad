@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun GalleryScreen(
@@ -185,28 +186,28 @@ fun GalleryTopAppBar(
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_grab_image_text)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
                         onClick = {
                             showDropDown = false
                             onGrabText()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_copy)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
                         onClick = {
                             showDropDown = false
                             onCopy()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_send)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                         onClick = {
                             showDropDown = false
                             onSend()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_delete)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()
