@@ -80,7 +80,7 @@ class SettingViewModelTest : KoinTest {
 
                 assertTrue(state is SettingState.Success)
 
-                viewModel.setThemeBrand(com.mshdabiola.model.ThemeBrand.GREEN)
+                viewModel.setThemeBrand(com.mshdabiola.model.ThemeBrand.PINK)
 
                 state = awaitItem()
 
@@ -90,7 +90,7 @@ class SettingViewModelTest : KoinTest {
 
                 assertTrue(state is SettingState.Success)
 
-                assertEquals(state.themeBrand, com.mshdabiola.model.ThemeBrand.GREEN)
+                assertEquals(state.themeBrand, com.mshdabiola.model.ThemeBrand.PINK)
 
                 cancelAndIgnoreRemainingEvents()
             }

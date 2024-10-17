@@ -64,16 +64,16 @@ class OfflineFirstUserDataRepositoryTest {
 
     @Test
     fun offlineFirstUserDataRepository_set_theme_brand_delegates_to_nia_preferences() = runTest {
-        subject.setThemeBrand(ThemeBrand.GREEN)
+        subject.setThemeBrand(ThemeBrand.PINK)
 
         assertEquals(
-            ThemeBrand.GREEN,
+            ThemeBrand.PINK,
             subject.userData
                 .map { it.themeBrand }
                 .first(),
         )
         assertEquals(
-            ThemeBrand.GREEN,
+            ThemeBrand.PINK,
             niaPreferencesDataSource
                 .userData
                 .map { it.themeBrand }

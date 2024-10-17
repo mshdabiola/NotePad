@@ -6,5 +6,5 @@ package com.mshdabiola.model
 
 enum class ThemeBrand {
     DEFAULT,
-    GREEN,
+    PINK,
 }

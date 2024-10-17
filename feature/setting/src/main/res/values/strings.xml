@@ -2,7 +2,7 @@
 <resources>
     <string-array name="feature_setting_theme">
         <item>Default</item>
-        <item>Green</item>
+        <item>Pink</item>
     </string-array>
 
     <string-array name="feature_setting_daynight">

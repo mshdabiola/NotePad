@@ -77,7 +77,7 @@ sealed class MyColors {
     abstract val surfaceContainerHighDark: Color
     abstract val surfaceContainerHighestDark: Color
 
-    data object Brown : MyColors() {
+    data object Default : MyColors() {
 
         override val primaryLight = Color(0xFF8E4D31)
         override val onPrimaryLight = Color(0xFFFFFFFF)
@@ -152,7 +152,7 @@ sealed class MyColors {
         override val surfaceContainerHighestDark = Color(0xFF3D322F)
     }
 
-    data object Default : MyColors() {
+    data object Pink : MyColors() {
 
         override val primaryLight = Color(0xFF8D4A5C)
         override val onPrimaryLight = Color(0xFFFFFFFF)

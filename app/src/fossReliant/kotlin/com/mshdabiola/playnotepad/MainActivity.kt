@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 SkTheme(
+                    androidTheme = shouldUseAndroidTheme(uiState),
                     darkTheme = darkTheme,
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
@@ -123,7 +124,7 @@ private fun shouldUseAndroidTheme(
     MainActivityUiState.Loading -> false
     is MainActivityUiState.Success -> when (uiState.userData.themeBrand) {
         ThemeBrand.DEFAULT -> false
-        ThemeBrand.GREEN -> true
+        ThemeBrand.PINK -> true
     }
 }
 
