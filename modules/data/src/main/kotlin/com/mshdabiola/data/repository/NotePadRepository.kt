@@ -1,6 +1,7 @@
 package com.mshdabiola.data.repository
 
 import android.media.MediaMetadataRetriever
+import androidx.core.net.toUri
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.model.toNoteCheckEntity
 import com.mshdabiola.data.model.toNoteEntity
@@ -17,6 +18,7 @@ import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.NoteLabelEntity
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.model.NoteUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -142,6 +144,7 @@ internal class NotePadRepository
 
         return "%2d : %02d %s".format(hour, time.minute, timeset)
     }
+
     override fun dateToString(date: LocalDate): String {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val month = date.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
@@ -215,7 +218,13 @@ internal class NotePadRepository
             reminderString = dateToString(pad.reminder),
             editDateString = dateToString(pad.editDate),
             images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
-            voices = pad.voices.map { it.copy(voiceName = contentManager.getVoicePath(it.id), length = getAudioLength(contentManager.getVoicePath(it.id))) },
+            voices = pad.voices.map {
+                it.copy(
+                    voiceName = contentManager.getVoicePath(it.id),
+                    length = getAudioLength(contentManager.getVoicePath(it.id)),
+                )
+            },
+            uris = getUriFromDetail(pad.detail),
 
         )
     }
@@ -228,5 +237,27 @@ internal class NotePadRepository
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         // Log.e(this::class.simpleName, "$time time")
         return time?.toLong() ?: 1L
+    }
+
+    private val regex =
+        "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+
+    private fun getUriFromDetail(detail: String): List<NoteUri> {
+        return if (detail.contains(regex.toRegex())) {
+            detail.split("\\s".toRegex())
+                .filter { it.trim().matches(regex.toRegex()) }
+                .mapIndexed { index, s ->
+                    val path = s.toUri().authority ?: ""
+                    val icon = "https://icon.horse/icon/$path"
+                    NoteUri(
+                        id = index,
+                        icon = icon,
+                        path = path,
+                        uri = s,
+                    )
+                }
+        } else {
+            emptyList()
+        }
     }
 }
