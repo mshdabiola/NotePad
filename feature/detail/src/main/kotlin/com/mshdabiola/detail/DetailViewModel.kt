@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IAlarmManager
+import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.model.NoteCheck
@@ -61,6 +62,7 @@ class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notePadRepository: INotePadRepository,
     private val alarmManager: IAlarmManager,
+    private val voicePlayer: INotePlayer,
 
 ) : ViewModel() {
 
@@ -246,41 +248,6 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             notePadRepository.deleteNoteCheckByNoteId(note.value.id)
         }
-    }
-
-    private var playJob: Job? = null
-    private var currentIndex = -1
-    fun playMusic(index: Int) {
-//        playJob?.cancel()
-//        val voiceUiState = notePadUiState.voices[index]
-//        var voices = notePadUiState.voices.toMutableList()
-//
-//        if (currentIndex != index) {
-//            voices = voices.map { it.copy(currentProgress = 0f, isPlaying = false) }.toMutableList()
-//            notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
-//        }
-//        currentIndex = index
-//        playJob = viewModelScope.launch {
-//            voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
-//                .collect {
-//                    voices[index] =
-//                        voiceUiState.copy(currentProgress = it.toFloat(), isPlaying = true)
-//
-//                    notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
-//                }
-//            voices[index] = voiceUiState.copy(currentProgress = 0f, isPlaying = false)
-//            notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
-//        }
-    }
-
-    fun pause() {
-        // prevIndex=currentIndex
-//        val voiceUiState = notePadUiState.voices[currentIndex]
-//        val voices = notePadUiState.voices.toMutableList()
-//        voices[currentIndex] = voiceUiState.copy(isPlaying = false)
-//        notePadUiState = notePadUiState.copy(voices = voices.toImmutableList())
-//        playJob?.cancel()
-//        voicePlayer.pause()
     }
 
     fun pinNote() {
@@ -760,5 +727,42 @@ class DetailViewModel @Inject constructor(
         }
 
         return id
+    }
+
+    private var playJob: Job? = null
+    private var currentIndex = -1
+    fun playMusic(index: Int) {
+        playJob?.cancel()
+        var voices = note.value.voices.toMutableList()
+
+        val voiceUiState = voices[index]
+
+        if (currentIndex != index) {
+            voices = voices.map { it.copy(currentProgress = 0, isPlaying = false) }.toMutableList()
+            note.update { it.copy(voices = voices) }
+        }
+        currentIndex = index
+        playJob = viewModelScope.launch {
+            voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
+                .collect {
+                    voices[index] =
+                        voiceUiState.copy(currentProgress = it.toLong(), isPlaying = true)
+
+                    note.update { it.copy(voices = voices) }
+                }
+            voices[index] = voiceUiState.copy(currentProgress = 0, isPlaying = false)
+            note.update { it.copy(voices = voices) }
+        }
+    }
+
+    fun pause() {
+        // prevIndex=currentIndex
+        var voices = note.value.voices.toMutableList()
+
+        val voiceUiState = voices[currentIndex]
+        voices[currentIndex] = voiceUiState.copy(isPlaying = false)
+        note.update { it.copy(voices = voices) }
+        playJob?.cancel()
+        voicePlayer.pause()
     }
 }

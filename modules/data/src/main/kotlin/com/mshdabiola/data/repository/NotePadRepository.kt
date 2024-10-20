@@ -1,5 +1,6 @@
 package com.mshdabiola.data.repository
 
+import android.media.MediaMetadataRetriever
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.model.toNoteCheckEntity
 import com.mshdabiola.data.model.toNoteEntity
@@ -214,8 +215,18 @@ internal class NotePadRepository
             reminderString = dateToString(pad.reminder),
             editDateString = dateToString(pad.editDate),
             images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
-            voices = pad.voices.map { it.copy(voiceName = contentManager.getVoicePath(it.id)) },
+            voices = pad.voices.map { it.copy(voiceName = contentManager.getVoicePath(it.id), length = getAudioLength(contentManager.getVoicePath(it.id))) },
 
         )
+    }
+
+    private fun getAudioLength(path: String): Long {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+
+        mediaMetadataRetriever.setDataSource(path)
+        val time =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        // Log.e(this::class.simpleName, "$time time")
+        return time?.toLong() ?: 1L
     }
 }
