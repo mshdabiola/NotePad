@@ -828,7 +828,7 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
-        NoteVoice(3, 4, "", length = Clock.System.now().toEpochMilliseconds()),
+        NoteVoice(3, 4, "", currentProgress = 7 ,length = 14),
 
     )
 }
