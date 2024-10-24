@@ -744,12 +744,16 @@ class DetailViewModel @Inject constructor(
         currentIndex = index
         playJob = viewModelScope.launch {
             voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
-                .collect {
+                .collectLatest { currentProgress ->
+
+                     voices = note.value.voices.toMutableList()
+
                     voices[index] =
-                        voiceUiState.copy(currentProgress = it.toLong(), isPlaying = true)
+                        note.value.voices[index].copy(currentProgress = currentProgress.toLong(), isPlaying = true)
 
                     note.update { it.copy(voices = voices) }
                 }
+            voices = note.value.voices.toMutableList()
             voices[index] = voiceUiState.copy(currentProgress = 0, isPlaying = false)
             note.update { it.copy(voices = voices) }
         }
