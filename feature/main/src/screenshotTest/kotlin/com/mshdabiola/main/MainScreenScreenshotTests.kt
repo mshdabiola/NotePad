@@ -10,8 +10,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.mshdabiola.common.result.Result
-import com.mshdabiola.testing.util.Capture
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
@@ -26,6 +24,5 @@ private fun MainScreenShot() {
                 animatedContentScope = this,
             )
         }
-
     }
 }

@@ -27,8 +27,6 @@ private fun DetailScreenShot() {
                     animatedContentScope = this,
                 )
             }
-
         }
-
     }
 }

@@ -26,7 +26,6 @@ import com.mshdabiola.analytics.AnalyticsHelper
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.data.util.NetworkMonitor
 import com.mshdabiola.designsystem.theme.SkTheme
-import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.playnotepad.ui.NoteApp
