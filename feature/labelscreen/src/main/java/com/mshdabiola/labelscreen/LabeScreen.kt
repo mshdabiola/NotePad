@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,13 +22,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
-import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as Rd
 
@@ -112,34 +109,34 @@ fun EditLabelTextField(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = isEditMode, block = {
-        if (isEditMode && !isFirstTime) {
-            focusRequester.requestFocus()
-            isFirstTime = true
-        }
-    })
+    LaunchedEffect(
+        key1 = isEditMode,
+        block = {
+            if (isEditMode && !isFirstTime) {
+                focusRequester.requestFocus()
+                isFirstTime = true
+            }
+        },
+    )
     NoteTextField(
         modifier =
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { isFocus = it.isFocused },
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = stringResource(Rd.string.modules_designsystem_create_new_label),
-                color = TextStyle.Default.color.copy(alpha = 0.5f),
-            )
-        },
-        supportingText = { Text(text = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "") },
+        text = value,
+        onTextChange = onValueChange,
+        placeholder = stringResource(Rd.string.modules_designsystem_create_new_label),
+        supportingText = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "",
         isError = errorOccur,
         leadingIcon = {
             if (isFocus) {
-                IconButton(onClick = {
-                    onAddDelete()
-                    focusRequester.freeFocus()
-                }) {
+                IconButton(
+                    onClick = {
+                        onAddDelete()
+                        focusRequester.freeFocus()
+                    },
+                ) {
                     Icon(imageVector = NoteIcon.Clear, contentDescription = "Clear")
                 }
             } else {
@@ -151,8 +148,8 @@ fun EditLabelTextField(
                 Icon(imageVector = NoteIcon.Done, contentDescription = "add")
             }
         },
-        keyboardActions = KeyboardActions { onAddLabelDone() },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardAction = { onAddLabelDone() },
+        imeAction = ImeAction.Done,
     )
 }
 
@@ -174,8 +171,8 @@ fun LabelTextField(
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { focusState -> isFocus = focusState.isFocused },
-        value = labelUiState.label,
-        onValueChange = { onValue(it, labelUiState.id) },
+        text = labelUiState.label,
+        onTextChange = { onValue(it, labelUiState.id) },
         leadingIcon = {
             if (isFocus) {
                 IconButton(onClick = { onDelete(labelUiState.id) }) {
@@ -196,8 +193,8 @@ fun LabelTextField(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions { focusManager.clearFocus() },
+        imeAction = ImeAction.Done,
+        keyboardAction = { focusManager.clearFocus() },
     )
 }
 
