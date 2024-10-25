@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
-fun SkLoadingWheel(
+fun NoteLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -119,7 +119,7 @@ fun SkLoadingWheel(
 }
 
 @Composable
-fun SkOverlayLoadingWheel(
+fun NoteOverlayLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -130,7 +130,7 @@ fun SkOverlayLoadingWheel(
         modifier = modifier
             .size(60.dp),
     ) {
-        SkLoadingWheel(
+        NoteLoadingWheel(
             contentDesc = contentDesc,
         )
     }

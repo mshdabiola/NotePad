@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SkTextField(
+fun NoteTextField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     placeholder: String? = null,
@@ -94,7 +94,7 @@ fun SkTextField(
 }
 
 @Composable
-fun SkTextFieldCheck(
+fun NoteTextField(
     modifier: Modifier = Modifier,
     text: String,
     onTextChange: (String) -> Unit,

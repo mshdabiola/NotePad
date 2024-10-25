@@ -49,7 +49,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.SkTextField
+import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.model.DarkThemeConfig
@@ -272,7 +272,7 @@ fun ActionEditScreen(
                 }
             }
             item {
-                SkTextField(
+                NoteTextField(
                     state = title,
                     placeholder = "Title",
                     textStyle = MaterialTheme.typography.titleLarge,
@@ -284,7 +284,7 @@ fun ActionEditScreen(
             }
 
             item {
-                SkTextField(
+                NoteTextField(
                     state = content,
                     textStyle = MaterialTheme.typography.bodyMedium,
                     placeholder = "Subject",

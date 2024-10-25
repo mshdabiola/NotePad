@@ -61,7 +61,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.SkTextField
+import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
@@ -98,7 +98,7 @@ fun SearchTopBar(
             }
         },
         title = {
-            SkTextField(
+            NoteTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .fillMaxWidth(),

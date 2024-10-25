@@ -76,7 +76,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
-import com.mshdabiola.designsystem.component.SkLoadingWheel
+import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
@@ -234,7 +234,7 @@ internal fun MainScreen(
     mainState: MainState,
     searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
-    onOpenDrawer: () -> Unit={},
+    onOpenDrawer: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
     setAllPin: () -> Unit = {},
@@ -248,8 +248,8 @@ internal fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    toggleSearch: () -> Unit={},
-    onSetSearch: (SearchSort?) -> Unit={},
+    toggleSearch: () -> Unit = {},
+    onSetSearch: (SearchSort?) -> Unit = {},
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -312,7 +312,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
             .testTag("main:loading"),
         contentAlignment = Alignment.Center,
     ) {
-        SkLoadingWheel(
+        NoteLoadingWheel(
             contentDesc = "Loading",
         )
     }

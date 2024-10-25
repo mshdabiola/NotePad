@@ -86,8 +86,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.mshdabiola.designsystem.component.SkTextField
-import com.mshdabiola.designsystem.component.SkTextFieldCheck
+import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
@@ -485,17 +484,17 @@ fun EditScreen(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            SkTextField(
+                            NoteTextField(
                                 state = title,
                                 placeholder = stringResource(Rd.string.modules_designsystem_title),
                                 //  textStyle = MaterialTheme.typography.titleLarge,
-//                            colors = TextFieldDefaults.colors(
-//                                focusedContainerColor = Color.Transparent,
-//                                unfocusedContainerColor = Color.Transparent,
-//                                disabledContainerColor = Color.Transparent,
-//                                focusedIndicatorColor = Color.Transparent,
-//                                unfocusedIndicatorColor = Color.Transparent,
-//                            ),
+                                //                            colors = TextFieldDefaults.colors(
+                                //                                focusedContainerColor = Color.Transparent,
+                                //                                unfocusedContainerColor = Color.Transparent,
+                                //                                disabledContainerColor = Color.Transparent,
+                                //                                focusedIndicatorColor = Color.Transparent,
+                                //                                unfocusedIndicatorColor = Color.Transparent,
+                                //                            ),
                                 imeAction = ImeAction.Next,
                                 modifier = Modifier
                                     .padding(0.dp)
@@ -545,17 +544,17 @@ fun EditScreen(
                     }
                     if (!notepad.isCheck) {
                         item {
-                            SkTextField(
+                            NoteTextField(
                                 state = content,
-//                            textStyle = MaterialTheme.typography.bodyMedium,
+                                //                            textStyle = MaterialTheme.typography.bodyMedium,
                                 placeholder = stringResource(Rd.string.modules_designsystem_subject),
-//                            colors = TextFieldDefaults.colors(
-//                                focusedContainerColor = Color.Transparent,
-//                                unfocusedContainerColor = Color.Transparent,
-//                                disabledContainerColor = Color.Transparent,
-//                                focusedIndicatorColor = Color.Transparent,
-//                                unfocusedIndicatorColor = Color.Transparent,
-//                            ),
+                                //                            colors = TextFieldDefaults.colors(
+                                //                                focusedContainerColor = Color.Transparent,
+                                //                                unfocusedContainerColor = Color.Transparent,
+                                //                                disabledContainerColor = Color.Transparent,
+                                //                                focusedIndicatorColor = Color.Transparent,
+                                //                                unfocusedIndicatorColor = Color.Transparent,
+                                //                            ),
                                 imeAction = ImeAction.Next,
                                 keyboardAction = { subjectFocus.freeFocus() },
                                 //  keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
@@ -761,7 +760,7 @@ fun NoteCheck(
             checked = noteCheckUiState.isCheck,
             onCheckedChange = { onCheck(it, noteCheckUiState.id) },
         )
-        SkTextFieldCheck(
+        NoteTextField(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f),

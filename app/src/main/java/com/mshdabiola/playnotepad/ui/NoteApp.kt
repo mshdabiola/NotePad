@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import com.mshdabiola.about.navigateToAbout
-import com.mshdabiola.designsystem.component.SkBackground
-import com.mshdabiola.designsystem.component.SkGradientBackground
+import com.mshdabiola.designsystem.component.NoteBackground
+import com.mshdabiola.designsystem.component.NoteGradientBackground
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
@@ -73,8 +73,8 @@ fun NoteApp(
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
 
-    SkBackground(modifier = modifier) {
-        SkGradientBackground(
+    NoteBackground(modifier = modifier) {
+        NoteGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
                 LocalGradientColors.current
             } else {

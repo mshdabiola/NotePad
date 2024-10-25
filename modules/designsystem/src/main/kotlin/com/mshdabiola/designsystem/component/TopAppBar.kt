@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.testTag
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SkTopAppBar(
+fun NoteTopAppBar(
     titleRes: String,
     navigationIcon: ImageVector,
     navigationIconContentDescription: String,
@@ -62,7 +62,7 @@ fun SkTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopAppBar(
+fun NoteDetailTopAppBar(
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     onNavigationClick: () -> Unit = {},

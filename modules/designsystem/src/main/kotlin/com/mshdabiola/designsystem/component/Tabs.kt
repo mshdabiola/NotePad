@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
  * @param text The text label content.
  */
 @Composable
-fun SkTab(
+fun NoteTab(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,11 +60,11 @@ fun SkTab(
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
- * @param tabs The tabs inside this tab row. Typically this will be multiple [SkTab]s. Each element
+ * @param tabs The tabs inside this tab row. Typically this will be multiple [NoteTab]s. Each element
  * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
  */
 @Composable
-fun SkTabRow(
+fun NoteTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,

@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
  * @param checkedIcon The icon content to show when checked.
  */
 @Composable
-fun SkIconToggleButton(
+fun NoteIconToggleButton(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -45,7 +45,7 @@ fun SkIconToggleButton(
             checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             disabledContainerColor = if (checked) {
                 MaterialTheme.colorScheme.onBackground.copy(
-                    alpha = SkIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
+                    alpha = NoteIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
                 )
             } else {
                 Color.Transparent
@@ -56,7 +56,7 @@ fun SkIconToggleButton(
     }
 }
 
-object SkIconButtonDefaults {
+object NoteIconButtonDefaults {
     // TODO: File bug
     // IconToggleButton disabled container alpha not exposed by IconButtonDefaults
     const val DISABLED_ICON_BUTTON_CONTAINER_ALPHA = 0.12f
