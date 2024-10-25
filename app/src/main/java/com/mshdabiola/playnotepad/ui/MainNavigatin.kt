@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -140,7 +139,7 @@ fun MainNavigation(
                 selected = false,
                 onClick = { navigateToLevel(true) },
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
@@ -167,7 +166,7 @@ fun MainNavigation(
                 icon = {
                     Icon(NoteIcon.Settings, contentDescription = "")
                 },
-                label = { Text(text = stringResource(Rd.string.setting)) },
+                label = { Text(text = stringResource(Rd.string.modules_designsystem_settings)) },
                 selected = false,
                 onClick = navigateToSetting,
             )
