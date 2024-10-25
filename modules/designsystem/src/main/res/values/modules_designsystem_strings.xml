@@ -52,6 +52,7 @@
     <string name="modules_designsystem_drawings">Drawings</string>
     <string name="modules_designsystem_more">More</string>
     <string name="modules_designsystem_less">Less</string>
+    <string name="modules_designsystem_settings">Settings</string>
     <string name="modules_designsystem_enter_text">Enter text</string>
     <string name="modules_designsystem_create">Create</string>
     <string name="modules_designsystem_about_me">This is app is an open source project. develop by Mshdabiola</string>
