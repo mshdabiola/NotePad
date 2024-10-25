@@ -234,7 +234,7 @@ internal fun MainScreen(
     mainState: MainState,
     searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
-    onOpenDrawer: () -> Unit,
+    onOpenDrawer: () -> Unit={},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
     setAllPin: () -> Unit = {},
@@ -248,8 +248,8 @@ internal fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    toggleSearch: () -> Unit,
-    onSetSearch: (SearchSort?) -> Unit,
+    toggleSearch: () -> Unit={},
+    onSetSearch: (SearchSort?) -> Unit={},
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -690,7 +690,7 @@ fun DeleteLabelPreview() {
 
 @Composable
 fun Loader(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.feature_mainscreen_note_taking))
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.modules_designsystem_note_taking))
     LottieAnimation(
         modifier = modifier,
         composition = composition,
@@ -738,13 +738,13 @@ fun LabelBox(
             .forEach { searchSort ->
                 val item = when (searchSort) {
                     is SearchSort.Label -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.search_sort)[searchSort.iconIndex],
+                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.iconIndex],
                         NoteIcon.searchIcons[searchSort.iconIndex],
 
                     )
 
                     is SearchSort.Type -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.search_sort)[searchSort.index],
+                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.index],
                         NoteIcon.searchIcons[searchSort.index],
                     )
 
