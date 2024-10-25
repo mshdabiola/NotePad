@@ -106,12 +106,20 @@ fun NoteTextField(
     interactionSource: MutableInteractionSource? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    supportingText: String? = null,
 ) {
     TextField(
         modifier = modifier,
 
         value = text,
         onValueChange = onTextChange,
+        isError = isError,
+        supportingText = {
+            if (supportingText != null) {
+                Text(text = supportingText)
+            }
+        },
         placeholder = {
             if (placeholder != null) {
                 Text(text = placeholder)
