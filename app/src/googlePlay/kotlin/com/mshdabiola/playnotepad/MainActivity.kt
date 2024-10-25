@@ -152,16 +152,8 @@ private fun shouldUseAndroidTheme(
     MainActivityUiState.Loading -> false
     is MainActivityUiState.Success -> when (uiState.userData.themeBrand) {
         ThemeBrand.DEFAULT -> false
-        ThemeBrand.GREEN -> true
+        ThemeBrand.PINK -> true
     }
-}
-
-@Composable
-private fun chooseContrast(
-    uiState: MainActivityUiState,
-): Contrast = when (uiState) {
-    MainActivityUiState.Loading -> Contrast.Normal
-    is MainActivityUiState.Success -> uiState.userData.contrast
 }
 
 @Composable

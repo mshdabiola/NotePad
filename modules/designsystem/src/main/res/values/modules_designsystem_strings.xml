@@ -60,4 +60,6 @@
     <string name="modules_designsystem_version">Version</string>
     <string name="modules_designsystem_play_notepad">Play NotePad</string>
     <string name="modules_designsystem_terms_and_condition">Terms and Condition</string>
+    <string name="modules_designsystem_default_notification_channel_id" translatable="false">fcm_default_channel</string>
+
 </resources>
