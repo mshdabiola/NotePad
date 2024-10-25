@@ -104,12 +104,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_eraser),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser),
                             contentDescription = "eraser",
                             tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_eraser_tiny),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser_tiny),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray,
                         )
@@ -133,12 +133,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_pen),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_pen_cap),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen_cap),
                             contentDescription = "pen",
                             tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray,
                         )
@@ -164,12 +164,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_markerr),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_markerr),
                             contentDescription = "marker",
                             tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_marker_cap),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_marker_cap),
                             contentDescription = "marker",
                             tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray,
                         )
@@ -194,12 +194,12 @@ fun DrawingBar(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_crayon),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_crayon),
                             contentDescription = "crayon",
                             tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.feature_drawing_crayon_cap),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_crayon_cap),
                             contentDescription = "crayon",
                             tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray,
                         )
