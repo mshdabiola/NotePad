@@ -102,7 +102,6 @@ import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.toTime
-import kotlinx.datetime.Clock
 import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
@@ -828,7 +827,7 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
-        NoteVoice(3, 4, "", currentProgress = 7 ,length = 14),
+        NoteVoice(3, 4, "", currentProgress = 7, length = 14),
 
     )
 }

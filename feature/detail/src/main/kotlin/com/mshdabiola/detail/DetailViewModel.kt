@@ -746,7 +746,7 @@ class DetailViewModel @Inject constructor(
             voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
                 .collectLatest { currentProgress ->
 
-                     voices = note.value.voices.toMutableList()
+                    voices = note.value.voices.toMutableList()
 
                     voices[index] =
                         note.value.voices[index].copy(currentProgress = currentProgress.toLong(), isPlaying = true)
