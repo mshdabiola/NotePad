@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="modules_designsystem_note">Заметка</string>
+    <string name="modules_designsystem_title">Заголовок</string>
+    <string name="modules_designsystem_hide_checkboxes">Скрыть флажки</string>
+    <string name="modules_designsystem_delete_checked_items">Удалить отмеченные элементы</string>
+    <string name="modules_designsystem_uncheck_all_items">Снять все флажки</string>
+    <string name="modules_designsystem_subject">Тема</string>
+    <string name="modules_designsystem_add_list_item">Добавить элемент списка</string>
+    <string name="modules_designsystem_checked_items">Отмеченные элементы</string>
+    <string name="modules_designsystem_edited">Изменено</string>
+    <string name="modules_designsystem_take_photo">Сделать фото</string>
+    <string name="modules_designsystem_add_image">Добавить изображение</string>
+    <string name="modules_designsystem_drawing">Рисунок</string>
+    <string name="modules_designsystem_recording">Запись</string>
+    <string name="modules_designsystem_checkboxes">Флажки</string>
+    <string name="modules_designsystem_color">Цвет</string>
+    <string name="modules_designsystem_background">Фон</string>
+    <string name="modules_designsystem_delete">Удалить</string>
+    <string name="modules_designsystem_make_a_copy">Создать копию</string>
+    <string name="modules_designsystem_send">Отправить</string>
+    <string name="modules_designsystem_labels">Метки</string>
+    <string name="modules_designsystem_grab_image_text">Распознать текст с изображения</string>
+    <string name="modules_designsystem_copy">Копировать</string>
+    <string name="modules_designsystem_edit_label">Изменить метку</string>
+    <string name="modules_designsystem_create_new_label">Создать новую метку</string>
+    <string name="modules_designsystem_label_already_exists">\"Метка уже существует\"</string>
+    <string name="modules_designsystem_add_note">Добавить заметку</string>
+    <string name="modules_designsystem_pin">Закрепить</string>
+    <string name="modules_designsystem_other">Другое</string>
+    <string name="modules_designsystem_archive">Архив</string>
+    <string name="modules_designsystem_rename_label">Переименовать метку</string>
+    <string name="modules_designsystem_delete_label">Удалить метку</string>
+    <string name="modules_designsystem_empty_trash">Очистить корзину</string>
+    <string name="modules_designsystem_search_note">Искать заметку</string>
+    <string name="modules_designsystem_rename">Переименовать</string>
+    <string name="modules_designsystem_cancel">Отмена</string>
+    <string name="modules_designsystem_take_image">Сделать снимок</string>
+    <string name="modules_designsystem_choose_image">Выбрать изображение</string>
+    <string name="modules_designsystem_notes">Заметки</string>
+    <string name="modules_designsystem_reminders">Напоминания</string>
+    <string name="modules_designsystem_edit">Изменить</string>
+    <string name="modules_designsystem_trash">Корзина</string>
+    <string name="modules_designsystem_about">О программе</string>
+    <string name="modules_designsystem_lists">Списки</string>
+    <string name="modules_designsystem_types">Типы</string>
+    <string name="modules_designsystem_images">Изображения</string>
+    <string name="modules_designsystem_voice">Голос</string>
+    <string name="modules_designsystem_drawings">Рисунки</string>
+    <string name="modules_designsystem_more">Больше</string>
+    <string name="modules_designsystem_less">Меньше</string>
+    <string name="modules_designsystem_settings">Настройки</string>
+    <string name="modules_designsystem_enter_text">Введите текст</string>
+    <string name="modules_designsystem_create">Создать</string>
+    <string name="modules_designsystem_about_me">Это приложение является проектом с открытым исходным кодом. Разработано Mshdabiola</string>
+    <string name="modules_designsystem_last_update">Последнее обновление</string>
+    <string name="modules_designsystem_version">Версия</string>
+    <string name="modules_designsystem_play_notepad">Play NotePad</string>
+    <string name="modules_designsystem_terms_and_condition">Условия использования</string>
+    <string name="modules_designsystem_default_notification_channel_id" translatable="false">fcm_default_channel</string>
+
+</resources>
