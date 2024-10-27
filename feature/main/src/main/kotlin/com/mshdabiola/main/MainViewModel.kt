@@ -153,6 +153,15 @@ internal class MainViewModel
         }
     }
 
+    /**
+     * Handles the selection/deselection of a notepad card.
+     *
+     * This function is triggered when a user selects or deselects a notepad card.
+     * It updates the selected state of the corresponding notepad in the list and
+     * updates the UI state accordingly.
+     *
+     * @param id The ID of the notepad card that was selected or deselected.
+     */
     fun onSelectCard(id: Long) {
         val listNOtePad = getSuccess().notePads.toMutableList()
         val index = listNOtePad.indexOfFirst { it.id == id }

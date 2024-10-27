@@ -409,6 +409,7 @@ fun EditScreen(
                     navigationIcon = {
                         IconButton(onClick = { onBackClick() }) {
                             Icon(
+                                modifier=Modifier.testTag("detail:back"),
                                 imageVector = NoteIcon.ArrowBack,
                                 contentDescription = "back",
                             )
@@ -418,18 +419,24 @@ fun EditScreen(
                     actions = {
                         IconButton(onClick = { pinNote() }) {
                             Icon(
+                                modifier=Modifier.testTag("detail:pin"),
+
                                 imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin",
                             )
                         }
                         IconButton(onClick = { onNotification() }) {
                             Icon(
+                                modifier=Modifier.testTag("detail:notification"),
+
                                 imageVector = NoteIcon.NotificationAdd,
                                 contentDescription = "notification",
                             )
                         }
                         IconButton(onClick = { onArchive() }) {
                             Icon(
+                                modifier=Modifier.testTag("detail:archive"),
+
                                 imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                                 contentDescription = "archive",
                             )
@@ -447,7 +454,7 @@ fun EditScreen(
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .testTag("edit:lazy"),
+                        .testTag("detail:content"),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     if (notepad.images.isNotEmpty()) {
@@ -670,7 +677,7 @@ fun EditScreen(
 
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
-                        modifier = Modifier.testTag("edit:more"),
+                        modifier=Modifier.testTag("detail:more"),
                         onClick = { moreOptions() },
                     ) {
                         Icon(
@@ -679,7 +686,7 @@ fun EditScreen(
                         )
                     }
                     IconButton(
-                        modifier = Modifier.testTag("edit:color"),
+                        modifier=Modifier.testTag("detail:colors"),
                         onClick = { onColorClick() },
                     ) {
                         Icon(
@@ -699,7 +706,7 @@ fun EditScreen(
                         )
                     }
                     IconButton(
-                        modifier = Modifier.testTag("edit:option"),
+                        modifier=Modifier.testTag("detail:options"),
                         onClick = { noteOption() },
                     ) {
                         Icon(

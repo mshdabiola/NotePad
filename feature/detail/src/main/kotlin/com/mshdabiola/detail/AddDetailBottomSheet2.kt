@@ -17,6 +17,7 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
@@ -104,6 +105,7 @@ fun AddBottomSheet2(
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             containerColor = background,
+
         ) {
             NavigationDrawerItem(
                 icon = {
@@ -119,6 +121,7 @@ fun AddBottomSheet2(
                     onDismiss()
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                modifier = androidx.compose.ui.Modifier.testTag("detail:take_photo"),
             )
 
             NavigationDrawerItem(
@@ -139,6 +142,7 @@ fun AddBottomSheet2(
                     onDismiss()
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                modifier = androidx.compose.ui.Modifier.testTag("detail:add_image"),
             )
             NavigationDrawerItem(
                 icon = {
@@ -154,6 +158,7 @@ fun AddBottomSheet2(
                     onDrawing()
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                modifier = androidx.compose.ui.Modifier.testTag("detail:drawing"),
 
             )
             NavigationDrawerItem(
@@ -189,6 +194,7 @@ fun AddBottomSheet2(
                     }
                 },
                 colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                modifier = androidx.compose.ui.Modifier.testTag("detail:recording"),
             )
             if (!isNoteCheck) {
                 NavigationDrawerItem(
@@ -205,6 +211,7 @@ fun AddBottomSheet2(
                         changeToCheckBoxes()
                     },
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                    modifier = androidx.compose.ui.Modifier.testTag("detail:checkboxes"),
                 )
             }
         }
