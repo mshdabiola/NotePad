@@ -407,9 +407,11 @@ fun EditScreen(
                     title = { },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     navigationIcon = {
-                        IconButton(onClick = { onBackClick() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:back"),
+                            onClick = { onBackClick() },
+                        ) {
                             Icon(
-                                modifier=Modifier.testTag("detail:back"),
                                 imageVector = NoteIcon.ArrowBack,
                                 contentDescription = "back",
                             )
@@ -419,7 +421,7 @@ fun EditScreen(
                     actions = {
                         IconButton(onClick = { pinNote() }) {
                             Icon(
-                                modifier=Modifier.testTag("detail:pin"),
+                                modifier = Modifier.testTag("detail:pin"),
 
                                 imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin",
@@ -427,7 +429,7 @@ fun EditScreen(
                         }
                         IconButton(onClick = { onNotification() }) {
                             Icon(
-                                modifier=Modifier.testTag("detail:notification"),
+                                modifier = Modifier.testTag("detail:notification"),
 
                                 imageVector = NoteIcon.NotificationAdd,
                                 contentDescription = "notification",
@@ -435,7 +437,7 @@ fun EditScreen(
                         }
                         IconButton(onClick = { onArchive() }) {
                             Icon(
-                                modifier=Modifier.testTag("detail:archive"),
+                                modifier = Modifier.testTag("detail:archive"),
 
                                 imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                                 contentDescription = "archive",
@@ -462,6 +464,7 @@ fun EditScreen(
                             images.forEach { imageList ->
                                 Row(
                                     modifier = Modifier
+                                        .testTag("detail:images")
                                         .fillMaxWidth()
                                         .height(200.dp),
                                 ) {
@@ -494,24 +497,19 @@ fun EditScreen(
                             NoteTextField(
                                 state = title,
                                 placeholder = stringResource(Rd.string.modules_designsystem_title),
-                                //  textStyle = MaterialTheme.typography.titleLarge,
-                                //                            colors = TextFieldDefaults.colors(
-                                //                                focusedContainerColor = Color.Transparent,
-                                //                                unfocusedContainerColor = Color.Transparent,
-                                //                                disabledContainerColor = Color.Transparent,
-                                //                                focusedIndicatorColor = Color.Transparent,
-                                //                                unfocusedIndicatorColor = Color.Transparent,
-                                //                            ),
                                 imeAction = ImeAction.Next,
                                 modifier = Modifier
                                     .padding(0.dp)
                                     .weight(1f)
-                                    .testTag("title"),
+                                    .testTag("detail:title"),
 
                             )
                             if (notepad.isCheck) {
                                 Box {
-                                    IconButton(onClick = { expandCheck = true }) {
+                                    IconButton(
+                                        modifier = Modifier.testTag("detail:morecheck"),
+                                        onClick = { expandCheck = true },
+                                    ) {
                                         Icon(
                                             imageVector = NoteIcon.MoreVert,
                                             contentDescription = "",
@@ -522,6 +520,7 @@ fun EditScreen(
                                         onDismissRequest = { expandCheck = false },
                                     ) {
                                         DropdownMenuItem(
+                                            modifier = Modifier.testTag("detail:hidecheck"),
                                             text = { Text(text = stringResource(Rd.string.modules_designsystem_hide_checkboxes)) },
                                             onClick = {
                                                 hideCheckBoxes()
@@ -530,6 +529,7 @@ fun EditScreen(
                                         )
                                         if (checkNote.isNotEmpty()) {
                                             DropdownMenuItem(
+                                                modifier = Modifier.testTag("detail:uncheckall"),
                                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
                                                 onClick = {
                                                     unCheckAllItems()
@@ -537,6 +537,7 @@ fun EditScreen(
                                                 },
                                             )
                                             DropdownMenuItem(
+                                                modifier = Modifier.testTag("detail:deletecheck"),
                                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_checked_items)) },
                                                 onClick = {
                                                     deleteCheckItems()
@@ -553,23 +554,14 @@ fun EditScreen(
                         item {
                             NoteTextField(
                                 state = content,
-                                //                            textStyle = MaterialTheme.typography.bodyMedium,
                                 placeholder = stringResource(Rd.string.modules_designsystem_subject),
-                                //                            colors = TextFieldDefaults.colors(
-                                //                                focusedContainerColor = Color.Transparent,
-                                //                                unfocusedContainerColor = Color.Transparent,
-                                //                                disabledContainerColor = Color.Transparent,
-                                //                                focusedIndicatorColor = Color.Transparent,
-                                //                                unfocusedIndicatorColor = Color.Transparent,
-                                //                            ),
                                 imeAction = ImeAction.Next,
                                 keyboardAction = { subjectFocus.freeFocus() },
-                                //  keyboardActions = KeyboardActions(onDone = { subjectFocus.freeFocus() }),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .imePadding()
                                     .focusRequester(subjectFocus)
-                                    .testTag("detail"),
+                                    .testTag("detail:content"),
 
                             )
                         }
@@ -677,7 +669,7 @@ fun EditScreen(
 
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
-                        modifier=Modifier.testTag("detail:more"),
+                        modifier = Modifier.testTag("detail:more"),
                         onClick = { moreOptions() },
                     ) {
                         Icon(
@@ -686,7 +678,7 @@ fun EditScreen(
                         )
                     }
                     IconButton(
-                        modifier=Modifier.testTag("detail:colors"),
+                        modifier = Modifier.testTag("detail:colors"),
                         onClick = { onColorClick() },
                     ) {
                         Icon(
@@ -706,7 +698,7 @@ fun EditScreen(
                         )
                     }
                     IconButton(
-                        modifier=Modifier.testTag("detail:options"),
+                        modifier = Modifier.testTag("detail:options"),
                         onClick = { noteOption() },
                     ) {
                         Icon(
