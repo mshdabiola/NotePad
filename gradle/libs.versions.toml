@@ -92,8 +92,8 @@ kover = "0.8.3"
 series = "0.0.19"
 calf = "0.4.0"
 
-versionName = "1.3.0"
-versionCode = "130"
+versionName = "1.3.1"
+versionCode = "131"
 
 telephoto = "0.13.0"
 lottieCompose = "6.5.0"
