@@ -5,15 +5,12 @@ import com.mshdabiola.app.BuildType
 plugins {
 //    alias(libs.plugins.kotlinAndroid)
 
+
     id("mshdabiola.android.application")
     id("mshdabiola.android.application.compose")
-    id("mshdabiola.android.application.jacoco")
     id("mshdabiola.android.application.flavor")
     id("mshdabiola.android.hilt")
-    id("jacoco")
-//    id("mshdabiola.android.application.firebase")
     alias(libs.plugins.baselineprofile)
-    alias(libs.plugins.roborazzi)
 
 }
 
@@ -24,10 +21,7 @@ android {
         applicationId = "com.mshdabiola.playnotepad"
         versionCode = libs.versions.versionCode.get().toIntOrNull()
         versionName = System.getenv("VERSION_NAME") ?: libs.versions.versionName.get()
-//        versionCode = 1
-//        versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
-        // Custom test runner to set up Hilt dependency graph
         testInstrumentationRunner = "com.mshdabiola.testing.TestRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -88,19 +82,17 @@ dependencies {
     implementation(projects.modules.ui)
 
 
-//    implementation(projects.features.main)
-//    implementation(projects.features.detail)
+    implementation(projects.feature.main)
+    implementation(projects.feature.detail)
+    implementation(projects.feature.gallery)
+    implementation(projects.feature.drawing)
+    implementation(projects.feature.about)
+    implementation(projects.feature.labelscreen)
+    implementation(projects.feature.selectlabelscreen)
+    implementation(projects.feature.setting)
 
-    implementation(project(":feature:editScreen"))
-    implementation(project(":feature:labelscreen"))
-    implementation(project(":feature:selectlabelscreen"))
-    implementation(project(":feature:searchscreen"))
-    implementation(project(":feature:gallery"))
-    implementation(project(":feature:drawing"))
-    implementation(project(":feature:about"))
-    implementation(project(":feature:mainscreen"))
 
-//    implementation(project(":modules:worker"))
+
 
     implementation(libs.kotlinx.serialization.json)
 
@@ -135,9 +127,6 @@ dependencies {
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)
 
-    testFossReliantImplementation(libs.robolectric)
-    testFossReliantImplementation(libs.roborazzi)
-    testFossReliantImplementation(projects.modules.screenshotTesting)
 
 
     androidTestImplementation(projects.modules.testing)

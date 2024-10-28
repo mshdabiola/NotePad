@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="feature_drawing_grab_image_text">Grab image text</string>
-    <string name="feature_drawing_copy">Copy</string>
-    <string name="feature_drawing_send">Send</string>
-    <string name="feature_drawing_delete">Delete</string>
-</resources>

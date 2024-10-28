@@ -7,8 +7,9 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INoteLabelRepository
+import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,13 +22,16 @@ import javax.inject.Inject
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val labelRepository: ILabelRepository,
-    private val noteLabelRepository: INoteLabelRepository,
+    private val notePadRepository: INotePadRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
 
     private var list: List<LabelUiState> = emptyList()
-    private val labelsArgs = LabelsArgs(savedStateHandle)
+    private val labelsArgs = savedStateHandle.toRoute<LabelsArgs>()
+    private val ids = labelsArgs.ids.split(",")
+        .map { it.toLong() }
+        .toSet()
 
     init {
         viewModelScope.launch {
@@ -47,9 +51,9 @@ class LabelViewModel @Inject constructor(
             labels[index] = label
             labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
 
-            val labelsList = labelsArgs.ids.map { NoteLabel(noteId = it, labelId = label.id) }
+            val labelsList = ids.map { NoteLabel(noteId = it, labelId = label.id) }
             viewModelScope.launch {
-                noteLabelRepository.upsert(labelsList)
+                labelRepository.upsertNoteLabel(labelsList)
             }
         } else {
             label = label.copy(toggleableState = ToggleableState.Off)
@@ -57,7 +61,7 @@ class LabelViewModel @Inject constructor(
             labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
 
             viewModelScope.launch {
-                noteLabelRepository.delete(labelsArgs.ids, label.id)
+                labelRepository.deleteNoteLabel(ids, label.id)
             }
         }
     }
@@ -85,13 +89,14 @@ class LabelViewModel @Inject constructor(
     }
 
     private suspend fun updateList() {
-        val labelsCount = labelsArgs.ids.map {
-            noteLabelRepository.getAll(it).first()
-        }.flatten().groupingBy { it.labelId }.eachCount()
+        val labelsCount = ids.map {
+            notePadRepository.getOneNotePad(it).first()!!.labels
+        }
+            .flatten().groupingBy { it.id }.eachCount()
 
         val labels = labelRepository.getAllLabels().first().map {
             val state = when (labelsCount[it.id]) {
-                labelsArgs.ids.size -> ToggleableState.On
+                ids.size -> ToggleableState.On
                 null -> ToggleableState.Off
                 else -> ToggleableState.Indeterminate
             }

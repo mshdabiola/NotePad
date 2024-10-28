@@ -2,7 +2,7 @@
  *abiola 2023
  */
 
-package com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar
+package com.mshdabiola.designsystem.component.scrollbar
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.LazyListItemInfo

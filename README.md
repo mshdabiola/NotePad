@@ -20,10 +20,16 @@ Play NotePad is available on the Google Play Store:
     <img alt="Get it on Google Play"
         height="70"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
-</a>  
+</a>
+
+<a href="https://f-droid.org/packages/com.mshdabiola.playnotepad.foss/">
+    <img alt="Get it on F-Droid"
+        height="70"
+        src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" />
+</a>
 
 <a href="https://github.com/mshdabiola/NotePad/releases">
-    <img alt="Get it on Google Play"
+    <img alt="Get it on GitHub"
         height="70"
         src="images/github_image.png" />
 </a>  

@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,9 +24,11 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
-import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, viewModel: LabelViewModel = hiltViewModel()) {
@@ -58,15 +56,15 @@ fun LabelScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                        Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
                     NoteTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = labelScreenUiState.editText,
-                        placeholder = { Text(text = stringResource(R.string.feature_selectlabelscreen_enter_text)) },
-                        onValueChange = onSearchText,
+                        text = labelScreenUiState.editText,
+                        placeholder = stringResource(Rd.string.modules_designsystem_enter_text),
+                        onTextChange = onSearchText,
                     )
                 },
             )
@@ -75,9 +73,9 @@ fun LabelScreen(
         Column(Modifier.padding(paddingValues)) {
             if (labelScreenUiState.showAddLabel) {
                 TextButton(onClick = { onCreateLabel() }) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "${stringResource(id = R.string.feature_selectlabelscreen_create)} \"${labelScreenUiState.editText}\"")
+                    Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${labelScreenUiState.editText}\"")
                 }
             }
             LazyColumn {
@@ -106,7 +104,7 @@ fun LabelText(
         verticalAlignment = Alignment.CenterVertically,
 
     ) {
-        Icon(imageVector = Icons.Outlined.Label, contentDescription = "")
+        Icon(imageVector = NoteIcon.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
         Text(modifier = Modifier.weight(1f), text = labelUiState.label)
         TriStateCheckbox(

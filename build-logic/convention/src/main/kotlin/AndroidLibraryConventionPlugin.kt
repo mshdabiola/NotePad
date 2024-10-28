@@ -39,13 +39,26 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
                 apply("mshdabiola.android.lint")
                 apply( "org.jetbrains.kotlin.plugin.power-assert")
+                apply("org.jetbrains.kotlinx.kover")
+            }
+
+            extensions.configure<PowerAssertGradleExtension> {
+                functions.set(
+                    listOf(
+                        "kotlin.assert",
+                        "kotlin.test.assertTrue",
+                        "kotlin.test.assertEquals",
+                        "kotlin.test.assertNull",
+                    ),
+                )
+
             }
 
 
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = 34
+                defaultConfig.targetSdk = 35
                 testOptions.animationsDisabled = true
                 configureFlavors(this)
                 configureGradleManagedDevices(this)
@@ -59,13 +72,12 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configurePrintApksTask(this)
                 disableUnnecessaryAndroidTests(target)
             }
-            extensions.configure<PowerAssertGradleExtension> {
-                functions.set(listOf("kotlin.assert", "kotlin.test.assertTrue", "kotlin.test.assertEquals", "kotlin.test.assertNull"))
-            }
+
             dependencies {
                 add("testImplementation", kotlin("test"))
                 add("implementation", libs.findLibrary("androidx.tracing.ktx").get())
                 add("implementation", libs.findLibrary("timber").get())
+
             }
         }
 

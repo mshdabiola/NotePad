@@ -5,7 +5,6 @@
 plugins {
     id("mshdabiola.android.library")
     id("mshdabiola.android.library.compose")
-    id("mshdabiola.android.library.jacoco")
     alias(libs.plugins.kotlin.serialization)
 
 }
@@ -29,6 +28,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.activity.compose)
+
 
     androidTestImplementation(project(":modules:testing"))
 }

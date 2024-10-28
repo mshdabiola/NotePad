@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="modules_designsystem_search_sort">
+        <item>Напоминания</item>
+        <item>Списки</item>
+        <item>Изображения</item>
+        <item>Голос</item>
+        <item>Рисунки</item>
+        <item>URL-адреса</item>
+        <item>Ярлыки</item>
+    </string-array>
+    <string-array name="modules_designsystem_theme">
+        <item>По умолчанию</item>
+        <item>Розовый</item>
+    </string-array>
+
+    <string-array name="modules_designsystem_daynight">
+        <item>Следовать системе</item>
+        <item>Светлая</item>
+        <item>Темная</item>
+    </string-array>
+</resources>

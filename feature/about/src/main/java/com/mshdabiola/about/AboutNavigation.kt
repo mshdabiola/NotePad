@@ -4,16 +4,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-const val AboutRoute = "About_route"
-
 fun NavGraphBuilder.aboutScreen(onBack: () -> Unit) {
-    composable(
-        route = AboutRoute,
-    ) {
+    composable<AboutArg> {
         AboutScreen(onBack = onBack)
     }
 }
 
 fun NavController.navigateToAbout() {
-    navigate(route = AboutRoute)
+    navigate(AboutArg)
 }

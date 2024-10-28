@@ -1,22 +1,21 @@
 package com.mshdabiola.drawing
 
-// import com.mshdabiola.worker.Saver
-// import com.mshdabiola.ui.util.Converter
-import android.util.Log
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.IDrawingPathRepository
-import com.mshdabiola.data.repository.INoteImageRepository
+import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
-import com.mshdabiola.model.DrawingUtil
 import com.mshdabiola.model.PathData
-import com.mshdabiola.ui.util.Converter
+import com.mshdabiola.worker.util.changeToPathAndData
+import com.mshdabiola.worker.util.getBitMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,13 +27,12 @@ import javax.inject.Inject
 class DrawingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentManager: IContentManager,
-    private val noteImageRepository: INoteImageRepository,
     private val drawingPathRepository: IDrawingPathRepository,
+    private val notepadRepository: INotePadRepository,
 ) : ViewModel() {
 
-    val noteId = savedStateHandle.get<Long>(noteIdArg)!!
-    private val imageI = savedStateHandle.get<Long>(imageIdArg)!!
-    val imageID = if (imageI == (-1L)) System.currentTimeMillis() else imageI
+    private val drawingArgs = savedStateHandle.toRoute<DrawingArgs>()
+    private var imageID = drawingArgs.imageId
 
     var drawingUiState by mutableStateOf(
         DrawingUiState(
@@ -47,31 +45,63 @@ class DrawingViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (imageI != (-1L)) {
-                val drawPaths = drawingPathRepository.getAll(imageID).firstOrNull()
-                drawPaths?.let {
-                    val map = DrawingUtil.toPathMap(it)
-                    controller.setPathData(map)
-                }
+            val drawPaths = drawingPathRepository.getAll(imageID).firstOrNull()
+            drawPaths?.let {
+                val map = toPathMap(it)
+                controller.setPathData(map)
             }
         }
     }
 
-    fun saveData() {
-        // Saver.saveGame(imageId = imageID, noteId = noteId)
+    fun saveImage(context: Context) {
+        viewModelScope.launch {
+            try {
+                val width = context.resources.displayMetrics.widthPixels
+                val height = context.resources.displayMetrics.heightPixels
+                val density = context.resources.displayMetrics.density
+
+                val pathsMap = changeToDrawPath(controller.completePathData.value)
+
+                val bitmap = getBitMap(
+                    changeToPathAndData(controller.completePathData.value),
+                    width,
+                    height,
+                    density,
+                )
+                val path = contentManager.getImagePath(imageID)
+                contentManager.saveBitmap(path, bitmap)
+
+                if (pathsMap.isEmpty()) {
+                    drawingPathRepository.delete(imageID)
+                    // noteImageRepository.delete(imageId)
+                    File(contentManager.getImagePath(imageID)).deleteOnExit()
+                } else {
+//                noteImageRepository.upsert(
+//                    NoteImage(
+//                        imageId,
+//                        noteId,
+//                        isDrawing = true,
+//                        timestamp = System.currentTimeMillis(),
+//                    ),
+//                )
+                    drawingPathRepository.delete(imageID)
+                    drawingPathRepository.insert(pathsMap)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
-    fun keepDataInFile(da: Map<PathData, List<Coordinate>>) {
-        val data = changeToDrawPath(da)
-        val dataInText = Converter.pathToString(data)
-        Log.e("drawing", dataInText)
-        contentManager.dataFile(imageID).writeText(dataInText)
-    }
+//    suspend fun saveData() {
+//        // Saver.saveGame(imageId = imageID, noteId = noteId)
+//        drawingPathRepository.insert(changeToDrawPath(controller.completePathData.value))
+//    }
 
     fun deleteImage() {
         viewModelScope.launch(Dispatchers.IO) {
-            noteImageRepository.delete(imageID)
-            noteImageRepository.delete(imageID)
+//            noteImageRepository.delete(imageID)
+//            noteImageRepository.delete(imageID)
             File(contentManager.getImagePath(imageID)).deleteOnExit()
         }
     }
@@ -89,5 +119,25 @@ class DrawingViewModel @Inject constructor(
                 entry.value.joinToString { "${it.x}, ${it.y}" },
             )
         }
+    }
+    private fun toPathMap(list: List<DrawPath>): Map<PathData, List<Coordinate>> {
+        val map = HashMap<PathData, List<Coordinate>>()
+        list.forEach { drawPath ->
+            val path = PathData(
+                drawPath.color,
+                drawPath.width,
+                drawPath.cap,
+                drawPath.join,
+                drawPath.alpha,
+                drawPath.pathId,
+            )
+            val offsetList = drawPath.paths
+                .split(",")
+                .map { it.trim().toFloat() }
+                .chunked(2)
+                .map { Coordinate(it[0], it[1]) }
+            map[path] = offsetList
+        }
+        return map
     }
 }

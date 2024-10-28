@@ -3,7 +3,6 @@ package com.mshdabiola.gallery
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +34,20 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import java.io.File
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    navigateToEditScreen: (Long, String, Long) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     FirebaseScreenLog(screen = "gallery_screen")
     val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
     GalleryScreen(
@@ -55,19 +55,20 @@ fun GalleryScreen(
         onBack = onBack,
         onDelete = viewModel::deleteImage,
         onToText = {
-            val id = galleryUiState.value.images[0].noteId
-            navigateToEditScreen(id, "extract", it)
+            coroutineScope.launch {
+                viewModel.onImage(it)
+                onBack()
+            }
         },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun GalleryScreen(
     galleryUiState: GalleryUiState,
     onBack: () -> Unit = {},
     onDelete: (Long) -> Unit = {},
-    onToText: (Long) -> Unit = {},
+    onToText: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState() {
         galleryUiState.images.size
@@ -118,7 +119,7 @@ fun GalleryScreen(
             GalleryTopAppBar(
                 onBack = onBack,
                 onDelete = delete,
-                onGrabText = { onToText(galleryUiState.images[pagerState.currentPage].id) },
+                onGrabText = { onToText(galleryUiState.images[pagerState.currentPage].path) },
                 name = "${pagerState.currentPage + 1} of ${galleryUiState.images.size}",
                 onSend = onSend,
                 onCopy = onCopy,
@@ -171,39 +172,39 @@ fun GalleryTopAppBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
         title = { Text(text = name) },
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "more")
+                    Icon(NoteIcon.MoreVert, contentDescription = "more")
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_grab_image_text)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
                         onClick = {
                             showDropDown = false
                             onGrabText()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_copy)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
                         onClick = {
                             showDropDown = false
                             onCopy()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_send)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                         onClick = {
                             showDropDown = false
                             onSend()
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.feature_gallery_delete)) },
+                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                         onClick = {
                             showDropDown = false
                             onDelete()

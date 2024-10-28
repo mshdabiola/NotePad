@@ -1,38 +1,36 @@
 [versions]
 accompanist = "0.34.0"
-androidDesugarJdkLibs = "2.0.4"
-# AGP and tools should be updated together
-androidGradlePlugin = "8.4.2"
-androidTools = "31.5.0"
-androidxActivity = "1.9.0"
+androidDesugarJdkLibs = "2.1.2"
+androidGradlePlugin = "8.5.2"
+androidTools = "31.5.2"
+androidxActivity = "1.9.3"
 androidxAppCompat = "1.7.0"
 androidxBrowser = "1.8.0"
 androidxComposeAlpha = "1.7.0-beta03"
-androidxComposeBom = "2024.06.00"
-androidxComposeBomLatest = "2024.05.00-alpha03"
+androidxComposeBom = "2024.10.00"
+androidxComposeBomLatest = "2024.08.00-alpha02"
 androidxComposeCompiler = "1.5.12"
-androidxComposeMaterial3Adaptive = "1.0.0-beta03"
-androidxComposeMaterial3AdaptiveNavigationSuite = "1.3.0-beta03"
-androidxComposeRuntimeTracing = "1.0.0-beta01"
+androidxComposeRuntimeTracing = "1.7.4"
+androidxComposeMaterial3Adaptive = "1.0.0"
+androidxComposeMaterial3AdaptiveNavigationSuite = "1.3.0"
 androidxCore = "1.13.1"
 androidxCoreSplashscreen = "1.0.1"
 androidxDataStore = "1.1.1"
-androidxEspresso = "3.5.1"
+androidxEspresso = "3.6.1"
 androidxHiltNavigationCompose = "1.2.0"
-androidxLifecycle = "2.8.2"
-androidxMacroBenchmark = "1.3.0-beta01"
+androidxLifecycle = "2.8.6"
+androidxMacroBenchmark = "1.3.3"
 androidxMetrics = "1.0.0-beta01"
-androidxNavigation = "2.8.0-beta03"
-androidxProfileinstaller = "1.3.1"
-androidxTestCore = "1.5.0"
-androidxTestExt = "1.1.5"
-androidxTestRules = "1.5.0"
-androidxTestRunner = "1.5.2"
+androidxProfileinstaller = "1.4.1"
+androidxTestCore = "1.6.1"
+androidxTestExt = "1.2.1"
+androidxTestRules = "1.6.1"
+androidxTestRunner = "1.6.2"
 androidxTracing = "1.3.0-alpha02"
 androidxUiAutomator = "2.3.0"
 androidxWindowManager = "1.3.0"
-androidxWork = "2.9.0"
-coil = "2.6.0"
+androidxWork = "2.9.1"
+coil = "2.7.0"
 dependencyGuard = "0.5.0"
 firebaseBom = "33.1.0"
 firebaseCrashlyticsPlugin = "2.9.9"
@@ -42,46 +40,64 @@ googleOss = "17.1.0"
 googleOssPlugin = "0.10.6"
 hilt = "2.51.1"
 hiltExt = "1.2.0"
-jacoco = "0.8.12"
 junit4 = "4.13.2"
-kotlin = "2.0.0"
-kotlinxCoroutines = "1.8.0"
-kotlinxDatetime = "0.5.0"
-kotlinxSerializationJson = "1.6.3"
-ksp = "2.0.0-1.0.21"
-moduleGraph = "2.5.0"
-okhttp = "4.12.0"
+kotlin = "2.0.20"
+kotlinxCoroutines = "1.8.1"
+kotlinxDatetime = "0.6.0"
+kotlinxSerializationJson = "1.7.2"
 protobuf = "4.26.0"
 protobufPlugin = "0.9.4"
-retrofit = "2.9.0"
-retrofitKotlinxSerializationJson = "1.0.0"
-robolectric = "4.11.1"
-roborazzi = "1.11.0"
-room = "2.7.0-alpha04"
+ksp = "2.0.20-1.0.24"
+moduleGraph = "2.6.0"
+poi = "5.3.0"
+room = "2.7.0-alpha10"
 secrets = "2.0.1"
-truth = "1.4.2"
+truth = "1.4.3"
 turbine = "1.1.0"
 timber = "5.0.1"
 
+androidxNavigation = "2.8.3"
+androidxNavigationTest = "2.8.0-rc01" #for nav test
 
-playGame = "20.1.0"
+
+playGame = "20.1.2"
 playReview = "2.0.1"
 playUpdate = "2.1.0"
-playCoroutine = "1.8.0"
+playCoroutine = "1.8.1"
 firebaseAnalytics = "21.2.2"
 firebaseCrashlyticsKts = "18.3.6"
 firebaseCrashylyticsPlugins = "2.9.9"
 playServicesMlkitTextRecognition = "19.0.0"
 
-ktor = "2.3.11"
-uiTextGoogleFonts = "1.6.8"
+ktor = "2.3.12"
+uiTextGoogleFonts = "1.7.4"
 
-versionName = "1.3.0"
-versionCode = "130"
+koin = "4.0.0-RC1"
+koinCompose = "4.0.0-RC1"
 
-telephoto = "0.11.2"
-lottieCompose = "6.4.0"
+conveyor = "1.10"
+
+kermit = "2.0.4"
+slf4jSimple = "2.0.16"
+
+androidx-paging = "3.3.0"
+sqlite = "2.5.0-alpha07"
 kotlinxCollectionImmutable = "0.3.7"
+windowSizeClass = "0.5.0"
+
+screenshot = "0.0.1-alpha07"
+kover = "0.8.3"
+
+
+series = "0.0.19"
+calf = "0.4.0"
+
+versionName = "1.3.1"
+versionCode = "131"
+
+telephoto = "0.13.0"
+lottieCompose = "6.5.0"
+
 
 
 [libraries]
@@ -93,7 +109,7 @@ androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-mac
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidxBrowser" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-bom-latest = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "androidxComposeBomLatest" }
-androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxComposeAlpha" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
@@ -104,7 +120,7 @@ androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.mat
 androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-compose-runtime-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version.ref = "androidxComposeRuntimeTracing" }
-androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "androidxComposeAlpha" }
+androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4"}
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -155,11 +171,8 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 lint-api = { group = "com.android.tools.lint", name = "lint-api", version.ref = "androidTools" }
 lint-checks = { group = "com.android.tools.lint", name = "lint-checks", version.ref = "androidTools" }
 lint-tests = { group = "com.android.tools.lint", name = "lint-tests", version.ref = "androidTools" }
-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
-roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -206,13 +219,16 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 kotlin-powerAssert = { module = "org.jetbrains.kotlin:kotlin-power-assert", version.ref = "kotlin" }
+screenShot-gradlePlugin = { module = "com.android.compose.screenshot:screenshot-test-gradle-plugin", version.ref = "screenshot" }
+kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxMacroBenchmark"}
-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxMacroBenchmark" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version.ref = "dependencyGuard" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
@@ -223,11 +239,11 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
-roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 room = { id = "androidx.room", version.ref = "room" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 powerAssert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
-
-
-
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 

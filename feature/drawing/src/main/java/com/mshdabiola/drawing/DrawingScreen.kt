@@ -3,15 +3,11 @@ package com.mshdabiola.drawing
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Redo
-import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,39 +33,44 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun DrawingScreen(
     viewModel: DrawingViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    saveImage: (Long, Long) -> Unit,
 ) {
     FirebaseScreenLog(screen = "drawing_screen")
-    val lifecycleObserver = LocalLifecycleOwner.current
-    val defaultLifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onPause(owner: LifecycleOwner) {
-            super.onPause(owner)
-            //  viewModel.saveData()
-            saveImage(viewModel.imageID, viewModel.noteId)
-        }
+    val context = LocalContext.current
+    BackHandler {
+        viewModel.saveImage(context)
+        onBack()
     }
-    LaunchedEffect(key1 = viewModel.controller.completePathData.value, block = {
-        withContext(Dispatchers.IO) {
-            viewModel.keepDataInFile(viewModel.controller.completePathData.value)
-        }
-    })
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
-    DisposableEffect(key1 = Unit) {
-        lifecycleObserver.lifecycle.addObserver(defaultLifecycleObserver)
-        onDispose { lifecycleObserver.lifecycle.removeObserver(defaultLifecycleObserver) }
+    DisposableEffect(lifecycleOwner) {
+        val observer = object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
+                super.onPause(owner)
+                println("onPause")
+                viewModel.saveImage(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     DrawingScreen(
-        onBackk = onBack,
+        onBackk = {
+            viewModel.saveImage(context)
+            onBack()
+        },
         filePath = viewModel.drawingUiState.filePath,
         controller = viewModel.controller,
         onDeleteImage = {
@@ -120,7 +120,7 @@ fun DrawingScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackk) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = NoteIcon.ArrowBack,
                             contentDescription = "back",
                         )
                     }
@@ -134,45 +134,45 @@ fun DrawingScreen(
                         enabled = controller.canUndo.value,
                         onClick = { controller.undo() },
                     ) {
-                        Icon(imageVector = Icons.Default.Undo, contentDescription = "redo")
+                        Icon(imageVector = NoteIcon.Undo, contentDescription = "redo")
                     }
                     IconButton(
                         enabled = controller.canRedo.value,
                         onClick = { controller.redo() },
                     ) {
-                        Icon(imageVector = Icons.Default.Redo, contentDescription = "redo")
+                        Icon(imageVector = NoteIcon.Redo, contentDescription = "redo")
                     }
                     Box {
                         IconButton(onClick = { showDropDown = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "more")
+                            Icon(NoteIcon.MoreVert, contentDescription = "more")
                         }
                         DropdownMenu(
                             expanded = showDropDown,
                             onDismissRequest = { showDropDown = false },
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_grab_image_text)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
                                 onClick = {
                                     showDropDown = false
                                     //  onGrabText()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_copy)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_send)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                                 onClick = {
                                     showDropDown = false
                                     onSend()
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(text = stringResource(R.string.feature_drawing_delete)) },
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                                 onClick = {
                                     showDropDown = false
                                     onDeleteImage()

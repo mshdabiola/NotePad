@@ -6,7 +6,6 @@
 
 package com.mshdabiola.designsystem.component
 
-import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -22,15 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.mshdabiola.designsystem.R
-import com.mshdabiola.designsystem.icon.SkIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SkTopAppBar(
-    @StringRes titleRes: Int,
+fun NoteTopAppBar(
+    titleRes: String,
     navigationIcon: ImageVector,
     navigationIconContentDescription: String,
     actionIcon: ImageVector,
@@ -41,13 +36,13 @@ fun SkTopAppBar(
     onActionClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = titleRes)) },
+        title = { Text(text = titleRes) },
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
                     imageVector = navigationIcon,
                     contentDescription = navigationIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    //  tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         },
@@ -56,7 +51,7 @@ fun SkTopAppBar(
                 Icon(
                     imageVector = actionIcon,
                     contentDescription = actionIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    //  tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         },
@@ -67,14 +62,14 @@ fun SkTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopAppBar(
+fun NoteDetailTopAppBar(
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     onNavigationClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = R.string.modules_designsystem_note)) },
+        title = { Text(text = "") },
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
@@ -98,24 +93,4 @@ fun DetailTopAppBar(
         colors = colors,
         modifier = modifier.testTag("detailTopAppBar"),
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview("Top App Bar")
-@Composable
-private fun SkTopAppBarPreview() {
-    SkTopAppBar(
-        titleRes = android.R.string.untitled,
-        navigationIcon = SkIcons.Search,
-        navigationIconContentDescription = "Navigation icon",
-        actionIcon = SkIcons.MoreVert,
-        actionIconContentDescription = "Action icon",
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview("Top App Bar")
-@Composable
-private fun DetailTopAppBarPreview() {
-    DetailTopAppBar()
 }
