@@ -9,7 +9,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
 
 fun MacrobenchmarkScope.goBack() {
-    val selector = By.desc("back")
+    val selector = By.res("detail:back")
 
     device.wait(Until.hasObject(selector), 5000)
 
@@ -28,8 +28,8 @@ fun MacrobenchmarkScope.addNote() {
     val titleTextField = device.findObject(titleSelector)
     val contentTextField = device.findObject(contentSelector)
 
-    titleTextField.text = "title"
-    contentTextField.text = "content"
+    titleTextField?.text = "title"
+    contentTextField?.text = "content"
 
     // Wait until saved title are shown on screen
 }
