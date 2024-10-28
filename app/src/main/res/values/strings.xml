@@ -1,5 +1,0 @@
-<resources>
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-
-    <string name="app_name">Play NotePad</string>
-</resources>

@@ -23,7 +23,7 @@ class SkPreferencesDataSource @Inject constructor(
                     ThemeBrandProto.THEME_BRAND_DEFAULT,
                     -> com.mshdabiola.model.ThemeBrand.DEFAULT
 
-                    ThemeBrandProto.THEME_BRAND_GREEN -> com.mshdabiola.model.ThemeBrand.GREEN
+                    ThemeBrandProto.THEME_BRAND_GREEN -> com.mshdabiola.model.ThemeBrand.PINK
                 },
                 darkThemeConfig = when (it.darkThemeConfig) {
                     null,
@@ -61,7 +61,7 @@ class SkPreferencesDataSource @Inject constructor(
             it.copy {
                 this.themeBrand = when (themeBrand) {
                     com.mshdabiola.model.ThemeBrand.DEFAULT -> ThemeBrandProto.THEME_BRAND_DEFAULT
-                    com.mshdabiola.model.ThemeBrand.GREEN -> ThemeBrandProto.THEME_BRAND_GREEN
+                    com.mshdabiola.model.ThemeBrand.PINK -> ThemeBrandProto.THEME_BRAND_GREEN
                 }
             }
         }

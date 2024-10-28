@@ -31,10 +31,11 @@ import com.mshdabiola.database.model.NoteVoiceEntity
         LabelEntity::class,
         DrawPathEntity::class,
     ],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration(1, 2),
         AutoMigration(2, 3, NoteDatabase.Migrate2to3::class),
+        AutoMigration(3, 4, NoteDatabase.Migrate3to4::class),
     ],
 )
 abstract class NoteDatabase : RoomDatabase() {
@@ -57,4 +58,7 @@ abstract class NoteDatabase : RoomDatabase() {
 
     @DeleteColumn(tableName = "note_image_table", columnName = "imageName")
     class Migrate2to3 : AutoMigrationSpec
+
+    @DeleteColumn(tableName = "note_image_table", columnName = "imageName")
+    class Migrate3to4 : AutoMigrationSpec
 }

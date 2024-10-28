@@ -1,14 +1,15 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 interface INotePadRepository {
-    suspend fun insertNote(note: Note): Long
 
-    suspend fun insertNotepad(notePad: NotePad): Long
+    suspend fun upsert(notePad: NotePad): Long
+    suspend fun upsert(notePads: List<NotePad>)
 
     suspend fun deleteCheckNote(id: Long, noteId: Long)
 
@@ -25,4 +26,17 @@ interface INotePadRepository {
     suspend fun deleteNotePad(notePads: List<NotePad>)
 
     suspend fun delete(notePads: List<NotePad>)
+
+    fun timeToString(time: LocalTime): String
+    fun dateToString(date: LocalDate): String
+    fun dateToString(long: Long): String
+    suspend fun deleteVoiceNote(id: Long)
+
+    fun saveImage(uri: String): Long
+    fun saveVoice(uri: String): Long
+    fun getUri(): String
+    fun getVoicePath(id: Long): String
+    fun getImagePath(id: Long): String
+
+    suspend fun deleteImageNote(id: Long)
 }

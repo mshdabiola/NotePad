@@ -4,16 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,13 +22,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
-import com.mshdabiola.ui.NoteTextField
 import kotlinx.collections.immutable.toImmutableList
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun LabelScreen(onBack: () -> Unit, labelViewModel: LabelViewModel = hiltViewModel()) {
@@ -70,11 +61,11 @@ fun LabelScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                        Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
-                    Text(text = stringResource(R.string.feature_labelscreen_edit_label))
+                    Text(text = stringResource(Rd.string.modules_designsystem_edit_label))
                 },
             )
         },
@@ -118,47 +109,47 @@ fun EditLabelTextField(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = isEditMode, block = {
-        if (isEditMode && !isFirstTime) {
-            focusRequester.requestFocus()
-            isFirstTime = true
-        }
-    })
+    LaunchedEffect(
+        key1 = isEditMode,
+        block = {
+            if (isEditMode && !isFirstTime) {
+                focusRequester.requestFocus()
+                isFirstTime = true
+            }
+        },
+    )
     NoteTextField(
         modifier =
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { isFocus = it.isFocused },
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = stringResource(R.string.feature_labelscreen_create_new_label),
-                color = TextStyle.Default.color.copy(alpha = 0.5f),
-            )
-        },
-        supportingText = { Text(text = if (errorOccur) stringResource(R.string.feature_labelscreen_label_already_exists) else "") },
+        text = value,
+        onTextChange = onValueChange,
+        placeholder = stringResource(Rd.string.modules_designsystem_create_new_label),
+        supportingText = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "",
         isError = errorOccur,
         leadingIcon = {
             if (isFocus) {
-                IconButton(onClick = {
-                    onAddDelete()
-                    focusRequester.freeFocus()
-                }) {
-                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
+                IconButton(
+                    onClick = {
+                        onAddDelete()
+                        focusRequester.freeFocus()
+                    },
+                ) {
+                    Icon(imageVector = NoteIcon.Clear, contentDescription = "Clear")
                 }
             } else {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Add, contentDescription = "add")
             }
         },
         trailingIcon = {
             IconButton(onClick = { onAddLabelDone() }) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Done, contentDescription = "add")
             }
         },
-        keyboardActions = KeyboardActions { onAddLabelDone() },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardAction = { onAddLabelDone() },
+        imeAction = ImeAction.Done,
     )
 }
 
@@ -180,30 +171,30 @@ fun LabelTextField(
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { focusState -> isFocus = focusState.isFocused },
-        value = labelUiState.label,
-        onValueChange = { onValue(it, labelUiState.id) },
+        text = labelUiState.label,
+        onTextChange = { onValue(it, labelUiState.id) },
         leadingIcon = {
             if (isFocus) {
                 IconButton(onClick = { onDelete(labelUiState.id) }) {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Delete, contentDescription = "add")
                 }
             } else {
-                Icon(imageVector = Icons.Outlined.Label, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Label, contentDescription = "add")
             }
         },
         trailingIcon = {
             if (isFocus) {
                 IconButton(onClick = { focusManager.clearFocus() }) {
-                    Icon(imageVector = Icons.Default.Done, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Done, contentDescription = "add")
                 }
             } else {
                 IconButton(onClick = { focusRequester.requestFocus() }) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Edit, contentDescription = "add")
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions { focusManager.clearFocus() },
+        imeAction = ImeAction.Done,
+        keyboardAction = { focusManager.clearFocus() },
     )
 }
 

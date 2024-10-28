@@ -2,9 +2,8 @@
  *abiola 2023
  */
 
-package com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar
+package com.mshdabiola.designsystem.component.scrollbar
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
@@ -43,9 +42,9 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.ThumbState.Active
-import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.ThumbState.Dormant
-import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.ThumbState.Inactive
+import com.mshdabiola.designsystem.component.scrollbar.ThumbState.Active
+import com.mshdabiola.designsystem.component.scrollbar.ThumbState.Dormant
+import com.mshdabiola.designsystem.component.scrollbar.ThumbState.Inactive
 import kotlinx.coroutines.delay
 
 /**
@@ -154,7 +153,6 @@ private fun ScrollableState.DecorativeScrollbarThumb(
 
 // TODO: This lint is removed in 1.6 as the recommendation has changed
 // remove when project is upgraded
-@SuppressLint("ComposableModifierFactory")
 @Composable
 private fun Modifier.scrollThumb(
     scrollableState: ScrollableState,

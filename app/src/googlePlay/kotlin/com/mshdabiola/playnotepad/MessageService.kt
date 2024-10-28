@@ -16,6 +16,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.RemoteMessage.Notification
 import timber.log.Timber
 import java.net.URL
+import com.mshdabiola.designsystem.R as Rd
 
 class MessageService : FirebaseMessagingService() {
 
@@ -123,7 +124,7 @@ class MessageService : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                context.getString(R.string.default_notification_channel_id),
+                context.getString(Rd.string.modules_designsystem_default_notification_channel_id),
                 NotificationManager.IMPORTANCE_DEFAULT,
             )
             notificationManager.createNotificationChannel(channel)

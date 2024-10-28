@@ -4,10 +4,8 @@
 
 package com.mshdabiola.designsystem.component
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -19,13 +17,11 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalBackgroundTheme
 import com.mshdabiola.designsystem.theme.LocalGradientColors
-import com.mshdabiola.designsystem.theme.SkTheme
 import kotlin.math.tan
 
 /**
@@ -36,7 +32,7 @@ import kotlin.math.tan
  * @param content The background content.
  */
 @Composable
-fun SkBackground(
+fun NoteBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -62,7 +58,7 @@ fun SkBackground(
  * @param content The background content.
  */
 @Composable
-fun SkGradientBackground(
+fun NoteGradientBackground(
     modifier: Modifier = Modifier,
     gradientColors: GradientColors = LocalGradientColors.current,
     content: @Composable () -> Unit,
@@ -124,61 +120,5 @@ fun SkGradientBackground(
         ) {
             content()
         }
-    }
-}
-
-/**
- * Multipreview annotation that represents light and dark themes. Add this annotation to a
- * composable to render the both themes.
- */
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light theme")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme")
-annotation class ThemePreviews
-
-@ThemePreviews
-@Composable
-fun BackgroundDefault() {
-    SkTheme(disableDynamicTheming = true) {
-        SkBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun BackgroundDynamic() {
-    SkTheme(disableDynamicTheming = false) {
-        SkBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun BackgroundAndroid() {
-    SkTheme {
-        SkBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundDefault() {
-    SkTheme(disableDynamicTheming = true) {
-        SkGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundDynamic() {
-    SkTheme(disableDynamicTheming = false) {
-        SkGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundAndroid() {
-    SkTheme {
-        SkGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

@@ -1,6 +1,6 @@
 package com.mshdabiola.model
 
 data class Label(
-    val id: Long,
+    val id: Long = -1,
     val label: String,
 )

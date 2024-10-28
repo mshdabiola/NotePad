@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modules_designsystem_search_sort">
+        <item>Rappels</item>
+        <item>Listes</item>
+        <item>Images</item>
+        <item>Voix</item>
+        <item>Dessins</item>
+        <item>URL</item>
+        <item>Étiquettes</item>
+    </string-array>
+    <string-array name="modules_designsystem_theme">
+        <item>Par défaut</item>
+        <item>Rose</item>
+    </string-array>
+
+    <string-array name="modules_designsystem_daynight">
+        <item>Suivre le système</item>
+        <item>Clair</item>
+        <item>Sombre</item>
+    </string-array>
+</resources>

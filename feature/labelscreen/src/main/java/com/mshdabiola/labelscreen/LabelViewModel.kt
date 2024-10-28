@@ -7,8 +7,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INoteLabelRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -20,11 +20,10 @@ import javax.inject.Inject
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val labelRepository: ILabelRepository,
-    private val noteLabelRepository: INoteLabelRepository,
 ) : ViewModel() {
 
     var labelScreenUiState by mutableStateOf(LabelScreenUiState())
-    private val labelArg = LabelArg(savedStateHandle)
+    private val labelArg = savedStateHandle.toRoute<LabelArg>()
 
     init {
 
@@ -34,7 +33,7 @@ class LabelViewModel @Inject constructor(
                 labelRepository.getOneLabelList().map { it.toLabelUiState() }.toImmutableList()
 
             labelScreenUiState =
-                labelScreenUiState.copy(labels = list, isEditMode = labelArg.editMode)
+                labelScreenUiState.copy(labels = list, isEditMode = labelArg.isEditMode)
         }
         viewModelScope.launch {
             snapshotFlow { labelScreenUiState }
@@ -60,7 +59,6 @@ class LabelViewModel @Inject constructor(
         labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
         viewModelScope.launch {
             labelRepository.delete(id)
-            noteLabelRepository.deleteByLabelId(id)
         }
     }
 

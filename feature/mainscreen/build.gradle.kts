@@ -8,9 +8,6 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.datetime)
-}
-dependencies {
-
     implementation(libs.lottie.compose)
 
 }
