@@ -10,7 +10,7 @@ import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class SkPreferencesDataSource @Inject constructor(
+class UserPreferencesRepository @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
     val userData = userPreferences.data
