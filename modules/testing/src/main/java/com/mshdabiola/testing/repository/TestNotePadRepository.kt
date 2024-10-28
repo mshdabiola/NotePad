@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
-internal class TestNotePadRepository : INotePadRepository {
+class TestNotePadRepository : INotePadRepository {
     override suspend fun upsert(notePad: NotePad): Long {
         TODO("Not yet implemented")
     }
