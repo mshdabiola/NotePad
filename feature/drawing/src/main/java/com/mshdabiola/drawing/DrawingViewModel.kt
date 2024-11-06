@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.IDrawingPathRepository
-import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Coordinate
 import com.mshdabiola.model.DrawPath
 import com.mshdabiola.model.PathData
@@ -28,7 +27,6 @@ class DrawingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentManager: IContentManager,
     private val drawingPathRepository: IDrawingPathRepository,
-    private val notepadRepository: INotePadRepository,
 ) : ViewModel() {
 
     private val drawingArgs = savedStateHandle.toRoute<DrawingArgs>()
