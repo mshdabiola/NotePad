@@ -1,4 +1,4 @@
-package: name='com.mshdabiola.playnotepad.foss' versionCode='130' versionName='1.3.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+package: name='com.mshdabiola.playnotepad.foss' versionCode='131' versionName='1.3.1' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
 sdkVersion:'24'
 targetSdkVersion:'35'
 uses-permission: name='android.permission.RECORD_AUDIO'
