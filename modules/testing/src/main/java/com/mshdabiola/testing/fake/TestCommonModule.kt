@@ -24,17 +24,17 @@ import dagger.hilt.testing.TestInstallIn
 internal interface TestCommonModule {
 
     @Binds
-     fun bindsAlarmManager(
+    fun bindsAlarmManager(
         alarmManager: FakeAlarmManager,
     ): IAlarmManager
 
     @Binds
-     fun bindsContentManager(
+    fun bindsContentManager(
         contentManager: FakeContentManager,
     ): IContentManager
 
     @Binds
-     fun bindsNotePlayer(
+    fun bindsNotePlayer(
         notePlayer: FakeVoicePlayer,
     ): INotePlayer
 }
