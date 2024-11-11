@@ -10,7 +10,7 @@ import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.data.util.NetworkMonitor
-import com.mshdabiola.testing.fake.repository.FakeDrawingPath
+import com.mshdabiola.testing.fake.repository.FakeDrawingPathRepository
 import com.mshdabiola.testing.fake.repository.FakeLabelRepository
 import com.mshdabiola.testing.fake.repository.FakeNotePadRepository
 import com.mshdabiola.testing.fake.repository.FakeUserDataRepository
@@ -38,7 +38,7 @@ internal interface TestDataModule {
 
     @Binds
     fun bindsDrawingPathRepository(
-        drawingPathRepository: FakeDrawingPath,
+        drawingPathRepository: FakeDrawingPathRepository,
     ): IDrawingPathRepository
 
     @Binds

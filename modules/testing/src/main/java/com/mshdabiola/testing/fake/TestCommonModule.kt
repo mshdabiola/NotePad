@@ -21,20 +21,20 @@ import dagger.hilt.testing.TestInstallIn
     components = [SingletonComponent::class],
     replaces = [CommonModule::class],
 )
-abstract class TestCommonModule {
+internal interface TestCommonModule {
 
     @Binds
-    internal abstract fun bindsAlarmManager(
+     fun bindsAlarmManager(
         alarmManager: FakeAlarmManager,
     ): IAlarmManager
 
     @Binds
-    internal abstract fun bindsContentManager(
+     fun bindsContentManager(
         contentManager: FakeContentManager,
     ): IContentManager
 
     @Binds
-    internal abstract fun bindsNotePlayer(
+     fun bindsNotePlayer(
         notePlayer: FakeVoicePlayer,
     ): INotePlayer
 }
