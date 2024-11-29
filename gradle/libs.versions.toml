@@ -52,7 +52,7 @@ moduleGraph = "2.6.0"
 poi = "5.3.0"
 room = "2.7.0-alpha11"
 secrets = "2.0.1"
-truth = "1.4.3"
+truth = "1.4.4"
 turbine = "1.2.0"
 timber = "5.0.1"
 
