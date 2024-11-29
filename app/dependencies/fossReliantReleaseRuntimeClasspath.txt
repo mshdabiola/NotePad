@@ -140,11 +140,11 @@ com.airbnb.android:lottie-compose:6.5.0
 com.airbnb.android:lottie:6.5.0
 com.google.accompanist:accompanist-drawablepainter:0.34.0
 com.google.code.findbugs:jsr305:3.0.2
-com.google.dagger:dagger-lint-aar:2.51.1
-com.google.dagger:dagger:2.51.1
-com.google.dagger:hilt-android-testing:2.51.1
-com.google.dagger:hilt-android:2.51.1
-com.google.dagger:hilt-core:2.51.1
+com.google.dagger:dagger-lint-aar:2.52
+com.google.dagger:dagger:2.52
+com.google.dagger:hilt-android-testing:2.52
+com.google.dagger:hilt-android:2.52
+com.google.dagger:hilt-core:2.52
 com.google.errorprone:error_prone_annotations:2.7.1
 com.google.guava:failureaccess:1.0.1
 com.google.guava:guava:31.0.1-jre
@@ -163,6 +163,7 @@ io.coil-kt:coil-base:2.7.0
 io.coil-kt:coil-compose-base:2.7.0
 io.coil-kt:coil-compose:2.7.0
 io.coil-kt:coil:2.7.0
+jakarta.inject:jakarta.inject-api:2.0.1
 javax.inject:javax.inject:1
 junit:junit:4.13.2
 me.saket.telephoto:sub-sampling-image:0.13.0

@@ -201,11 +201,11 @@ com.google.android:annotations:4.1.1.4
 com.google.auto.value:auto-value-annotations:1.8.1
 com.google.code.findbugs:jsr305:3.0.2
 com.google.code.gson:gson:2.10.1
-com.google.dagger:dagger-lint-aar:2.51.1
-com.google.dagger:dagger:2.51.1
-com.google.dagger:hilt-android-testing:2.51.1
-com.google.dagger:hilt-android:2.51.1
-com.google.dagger:hilt-core:2.51.1
+com.google.dagger:dagger-lint-aar:2.52
+com.google.dagger:dagger:2.52
+com.google.dagger:hilt-android-testing:2.52
+com.google.dagger:hilt-android:2.52
+com.google.dagger:hilt-core:2.52
 com.google.errorprone:error_prone_annotations:2.26.0
 com.google.firebase:firebase-abt:21.1.1
 com.google.firebase:firebase-analytics-ktx:22.0.1
@@ -267,6 +267,7 @@ io.grpc:grpc-stub:1.57.2
 io.perfmark:perfmark-api:0.26.0
 io.reactivex.rxjava2:rxandroid:2.0.2
 io.reactivex.rxjava2:rxjava:2.1.14
+jakarta.inject:jakarta.inject-api:2.0.1
 javax.inject:javax.inject:1
 junit:junit:4.13.2
 me.saket.telephoto:sub-sampling-image:0.13.0
