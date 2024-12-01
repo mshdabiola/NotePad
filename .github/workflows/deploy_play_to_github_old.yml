@@ -1,9 +1,10 @@
-name: Generate Baseline Profiles
+name: Deploy Play to github
 
-on:
-  push:
-    tags:
-      - 'b[0-9]+.[0-9]+.[0-9]+'
+#on:
+#  push:
+#    tags:
+#      - '[0-9]+.[0-9]+.[0-9]+'
+on: workflow_dispatch
 
 
 jobs:
@@ -41,28 +42,34 @@ jobs:
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build release variant including baseline profile generation
-        run: ./gradlew generateBaselineProfile
+        run: ./gradlew generateGooglePlayReleaseBaselineProfile
           -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
           -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
           -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
           -Pandroid.experimental.androidTest.numManagedDeviceShards=1
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7.0.5
+      - name: Build release variant apk
+        run: ./gradlew :app:assembleGooglePlayRelease
+
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1.0.4
         with:
-          commit-message: Update baseline
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
-          signoff: false
-          branch: generate-baseline
-          base: develop
-          delete-branch: true
-          title: 'Generate Baseline'
-          body: |
-            Generate of all build flavor
-            - Foss Reliant
-            - Play Store
-          labels: |
-            report
-            baseline
+          releaseDirectory: app/build/outputs/apk/googlePlay/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Draft Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          allowUpdates: true
+          artifacts: "app/build/outputs/apk/**/**/**/*.apk,app/build/outputs/mapping/**/**/*.txt"
+          token: ${{ secrets.TOKEN }}
+          generateReleaseNotes: true
+          bodyFile: distribution/whatsnew/whatsnew-en-US
+          prerelease: false
+
