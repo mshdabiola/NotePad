@@ -5,7 +5,7 @@
 package com.mshdabiola.data.repository
 
 import com.mshdabiola.analytics.NoOpAnalyticsHelper
-import com.mshdabiola.datastore.SkPreferencesDataSource
+import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.datastore.di.testUserPreferencesDataStore
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
@@ -29,7 +29,7 @@ class OfflineFirstUserDataRepositoryTest {
 
     private lateinit var subject: OfflineFirstUserDataRepository
 
-    private lateinit var niaPreferencesDataSource: SkPreferencesDataSource
+    private lateinit var niaPreferencesDataSource: UserPreferencesRepository
 
     private val analyticsHelper = NoOpAnalyticsHelper()
 
@@ -38,12 +38,12 @@ class OfflineFirstUserDataRepositoryTest {
 
     @Before
     fun setup() {
-        niaPreferencesDataSource = SkPreferencesDataSource(
+        niaPreferencesDataSource = UserPreferencesRepository(
             tmpFolder.testUserPreferencesDataStore(testScope),
         )
 
         subject = OfflineFirstUserDataRepository(
-            skPreferencesDataSource = niaPreferencesDataSource,
+            userPreferencesRepository = niaPreferencesDataSource,
             analyticsHelper,
         )
     }

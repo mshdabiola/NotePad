@@ -5,7 +5,10 @@
 package com.mshdabiola.detail
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import org.junit.Rule
@@ -16,26 +19,29 @@ class DetailScreenTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     @Test
     fun loading_showsLoadingSpinner() {
         composeTestRule.setContent {
-            DetailScreen(
-                content = rememberTextFieldState(),
-                title = rememberTextFieldState(),
-                onShowSnackbar = { _, _ -> false },
-            )
+            SharedTransitionLayout {
+                AnimatedVisibility(true) {
+                    EditScreen(
+                        notepad = com.mshdabiola.model.NotePad(),
+                        title = TextFieldState(),
+                        content = TextFieldState(),
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this,
+                    )
+                }
+            }
         }
 
         composeTestRule
-            .onNodeWithTag("detail:loading")
-            .assertDoesNotExist()
-
-        composeTestRule
-            .onNodeWithTag("detail:content")
+            .onNodeWithTag("detail:content", true)
             .assertExists()
 
         composeTestRule
-            .onNodeWithTag("detail:title")
+            .onNodeWithTag("detail:title", true)
             .assertExists()
     }
 }

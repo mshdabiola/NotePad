@@ -15,18 +15,18 @@ import org.junit.rules.TemporaryFolder
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class SkPreferencesDataSourceTest {
+class UserPreferencesRepositoryTest {
 
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
-    private lateinit var subject: SkPreferencesDataSource
+    private lateinit var subject: UserPreferencesRepository
 
     @get:Rule
     val tmpFolder: TemporaryFolder = TemporaryFolder.builder().assureDeletion().build()
 
     @Before
     fun setup() {
-        subject = SkPreferencesDataSource(
+        subject = UserPreferencesRepository(
             tmpFolder.testUserPreferencesDataStore(testScope),
         )
     }

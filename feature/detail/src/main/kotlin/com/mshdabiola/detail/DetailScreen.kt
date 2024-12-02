@@ -456,7 +456,7 @@ fun EditScreen(
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .testTag("detail:content"),
+                        .testTag("detail:list"),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     if (notepad.images.isNotEmpty()) {

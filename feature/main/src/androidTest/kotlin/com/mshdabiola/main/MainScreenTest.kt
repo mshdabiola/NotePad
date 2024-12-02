@@ -5,10 +5,12 @@
 package com.mshdabiola.main
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import com.mshdabiola.common.result.Result
-import com.mshdabiola.ui.NotePreviewParameterProvider
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,16 +21,21 @@ class MainScreenTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-    private val notes = NotePreviewParameterProvider().values.first()
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     @Test
     fun enterText_showsShowText() {
         composeTestRule.setContent {
-            MainScreen(
-                mainState = Result.Success(notes),
-                onClick = {},
-                onShowSnackbar = { _, _ -> false },
-            )
+            SharedTransitionLayout {
+                AnimatedVisibility(true) {
+                    MainScreen(
+                        mainState = MainState.Success(),
+                        searchState = TextFieldState(),
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this,
+                    )
+                }
+            }
         }
 
         composeTestRule

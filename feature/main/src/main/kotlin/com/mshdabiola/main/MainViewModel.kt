@@ -10,7 +10,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
-import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.main.navigation.MainArg
 import com.mshdabiola.model.NoteType
@@ -49,7 +48,6 @@ internal class MainViewModel
 @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
-    private val labelRepository: ILabelRepository,
     private val alarmManager: IAlarmManager,
 ) : ViewModel() {
 

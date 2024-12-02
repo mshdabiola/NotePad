@@ -14,8 +14,13 @@ fun MacrobenchmarkScope.goBack() {
     device.wait(Until.hasObject(selector), 5000)
 
     val backButton = device.findObject(selector)
-    backButton.click()
-    device.waitForIdle()
+    try {
+        backButton.click()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        device.pressBack()
+    }
+    device.waitForIdle(7000)
     // Wait until saved title are shown on screen
 }
 

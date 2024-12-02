@@ -19,10 +19,14 @@ dependencies {
 
     debugApi(libs.androidx.compose.ui.testManifest)
 
-    implementation(libs.androidx.test.rules)
-    implementation(libs.hilt.android.testing)
-    implementation(libs.kotlinx.coroutines.test)
-    implementation(libs.kotlinx.datetime)
+    api(libs.androidx.test.core)
+    api(libs.androidx.compose.ui.test)
+
+    api(libs.turbine)
+    api(libs.androidx.test.rules)
+    api(libs.hilt.android.testing)
+    api(libs.kotlinx.coroutines.test)
+    api(libs.kotlinx.datetime)
     implementation(projects.modules.common)
     implementation(projects.modules.designsystem)
 }

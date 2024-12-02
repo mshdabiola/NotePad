@@ -5,7 +5,7 @@
 package com.mshdabiola.testing.fake.repository
 
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.datastore.SkPreferencesDataSource
+import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
@@ -20,29 +20,29 @@ import javax.inject.Inject
  * backend.
  */
 class FakeUserDataRepository @Inject constructor(
-    private val skPreferencesDataSource: SkPreferencesDataSource,
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : UserDataRepository {
 
     override val userData: Flow<UserData> =
-        skPreferencesDataSource.userData
+        userPreferencesRepository.userData
 
     override suspend fun setThemeBrand(themeBrand: ThemeBrand) {
-        skPreferencesDataSource.setThemeBrand(themeBrand)
+        userPreferencesRepository.setThemeBrand(themeBrand)
     }
 
     override suspend fun setThemeContrast(contrast: Contrast) {
-        skPreferencesDataSource.setThemeContrast(contrast)
+        userPreferencesRepository.setThemeContrast(contrast)
     }
 
     override suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
-        skPreferencesDataSource.setDarkThemeConfig(darkThemeConfig)
+        userPreferencesRepository.setDarkThemeConfig(darkThemeConfig)
     }
 
     override suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
-        skPreferencesDataSource.setDynamicColorPreference(useDynamicColor)
+        userPreferencesRepository.setDynamicColorPreference(useDynamicColor)
     }
 
     override suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
-        skPreferencesDataSource.setShouldHideOnboarding(shouldHideOnboarding)
+        userPreferencesRepository.setShouldHideOnboarding(shouldHideOnboarding)
     }
 }

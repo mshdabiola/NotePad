@@ -1,90 +1,84 @@
-package com.mshdabiola.testing.repository
+package com.mshdabiola.testing.fake.repository
 
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import javax.inject.Inject
 
-class TestNotePadRepository : INotePadRepository {
+class FakeNotePadRepository @Inject constructor() : INotePadRepository {
     override suspend fun upsert(notePad: NotePad): Long {
-        TODO("Not yet implemented")
+        return 1
     }
 
     override suspend fun upsert(notePads: List<NotePad>) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun deleteCheckNote(id: Long, noteId: Long) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun deleteNoteCheckByNoteId(noteId: Long) {
-        TODO("Not yet implemented")
     }
 
     override fun getNotePads(noteType: NoteType): Flow<List<NotePad>> {
-        TODO("Not yet implemented")
+        return flow { emptyList<NotePad>() }
     }
 
     override fun getNotePads(): Flow<List<NotePad>> {
-        TODO("Not yet implemented")
+        return flow { emptyList<NotePad>() }
     }
 
     override fun getOneNotePad(id: Long): Flow<NotePad?> {
-        TODO("Not yet implemented")
+        return flow { NotePad() }
     }
 
     override suspend fun deleteTrashType() {
-        TODO("Not yet implemented")
     }
 
     override suspend fun deleteNotePad(notePads: List<NotePad>) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun delete(notePads: List<NotePad>) {
-        TODO("Not yet implemented")
     }
 
     override fun timeToString(time: LocalTime): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override fun dateToString(date: LocalDate): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override fun dateToString(long: Long): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override suspend fun deleteVoiceNote(id: Long) {
-        TODO("Not yet implemented")
     }
 
     override fun saveImage(uri: String): Long {
-        TODO("Not yet implemented")
+        return 3
     }
 
     override fun saveVoice(uri: String): Long {
-        TODO("Not yet implemented")
+        return 2
     }
 
     override fun getUri(): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override fun getVoicePath(id: Long): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override fun getImagePath(id: Long): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override suspend fun deleteImageNote(id: Long) {
-        TODO("Not yet implemented")
     }
 }
