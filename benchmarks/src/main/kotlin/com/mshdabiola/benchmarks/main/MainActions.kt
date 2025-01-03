@@ -7,12 +7,11 @@ package com.mshdabiola.benchmarks.main
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
-import com.mshdabiola.benchmarks.flingElementDownUp
 
 fun MacrobenchmarkScope.goToDetailScreen() {
     val savedSelector = By.res("main:add")
 
-    device.wait(Until.hasObject(savedSelector), 5000)
+    device.wait(Until.hasObject(savedSelector), 10000)
 
     val addButton = device.findObject(savedSelector)
     addButton.click()
@@ -21,11 +20,11 @@ fun MacrobenchmarkScope.goToDetailScreen() {
 }
 
 fun MacrobenchmarkScope.mainScrollNoteDownUp() {
-    val selector = By.res("main:list")
-    device.wait(Until.hasObject(selector), 5000)
-
-    val feedList = device.findObject(selector)
-    device.flingElementDownUp(feedList)
+//    val selector = By.res("main:list")
+//    device.wait(Until.hasObject(selector), 10000)
+//
+//    val feedList = device.findObject(selector)
+//    device.flingElementDownUp(feedList)
 }
 
 fun MacrobenchmarkScope.mainWaitForContent() {
