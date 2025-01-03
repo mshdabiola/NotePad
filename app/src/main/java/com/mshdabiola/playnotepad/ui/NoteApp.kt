@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -91,7 +90,7 @@ fun NoteApp(
                 if (isOffline) {
                     snackbarHostState.showSnackbar(
                         message = notConnectedMessage,
-                        duration = Indefinite,
+                        duration = Short,
                     )
                 }
             }

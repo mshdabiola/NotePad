@@ -23,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -229,14 +228,19 @@ internal class NotePadRepository
         )
     }
 
-    private fun getAudioLength(path: String): Long {
-        val mediaMetadataRetriever = MediaMetadataRetriever()
-
-        mediaMetadataRetriever.setDataSource(path)
-        val time =
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        // Log.e(this::class.simpleName, "$time time")
-        return time?.toLong() ?: 1L
+    private fun getAudioLength(filePath: String): Long {
+        val retriever = MediaMetadataRetriever()
+        try {
+            retriever.setDataSource(filePath)
+            return retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.toLongOrNull() ?: 0
+        } catch (e: IllegalArgumentException) {
+            // Handle the exception, log error, etc.
+            e.printStackTrace()
+            return 0
+        } finally {
+            retriever.release()
+        }
     }
 
     private val regex =

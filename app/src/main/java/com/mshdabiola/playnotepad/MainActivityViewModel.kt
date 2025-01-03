@@ -49,7 +49,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     suspend fun insertNewAudioNote(uri: String, text: String): Long {
-        val id = notePadRepository.saveImage(uri)
+        val id = notePadRepository.saveVoice(uri)
 
         val voice = NoteVoice(
             id = id,
