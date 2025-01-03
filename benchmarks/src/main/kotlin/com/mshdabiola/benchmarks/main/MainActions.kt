@@ -7,7 +7,6 @@ package com.mshdabiola.benchmarks.main
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
-import com.mshdabiola.benchmarks.flingElementDownUp
 
 fun MacrobenchmarkScope.goToDetailScreen() {
     val savedSelector = By.res("main:add")
