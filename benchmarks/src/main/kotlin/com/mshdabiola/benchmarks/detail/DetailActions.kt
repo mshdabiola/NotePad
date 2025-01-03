@@ -11,7 +11,7 @@ import androidx.test.uiautomator.Until
 fun MacrobenchmarkScope.goBack() {
     val selector = By.res("detail:back")
 
-    device.wait(Until.hasObject(selector), 5000)
+    device.wait(Until.hasObject(selector), 10000)
 
     val backButton = device.findObject(selector)
     try {
@@ -28,7 +28,7 @@ fun MacrobenchmarkScope.addNote() {
     val titleSelector = By.res("detail:title")
     val contentSelector = By.res("detail:content")
 
-    device.wait(Until.hasObject(titleSelector), 5000)
+    device.wait(Until.hasObject(titleSelector), 10000)
 
     val titleTextField = device.findObject(titleSelector)
     val contentTextField = device.findObject(contentSelector)
