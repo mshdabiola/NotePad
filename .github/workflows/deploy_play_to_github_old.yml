@@ -64,7 +64,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Draft Release
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.15.0
         with:
           allowUpdates: true
           artifacts: "app/build/outputs/apk/**/**/**/*.apk,app/build/outputs/mapping/**/**/*.txt"
