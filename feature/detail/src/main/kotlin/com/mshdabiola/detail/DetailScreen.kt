@@ -555,7 +555,7 @@ fun EditScreen(
                             NoteTextField(
                                 state = content,
                                 placeholder = stringResource(Rd.string.modules_designsystem_subject),
-                                imeAction = ImeAction.Next,
+                                        imeAction = ImeAction.None,
                                 keyboardAction = { subjectFocus.freeFocus() },
                                 modifier = Modifier
                                     .fillMaxWidth()
