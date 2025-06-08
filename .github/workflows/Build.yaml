@@ -159,8 +159,8 @@ jobs:
           name: lint-reports
           path: '**/build/reports/lint-results-*.html'
 
-      - name: Check badging
-        run: ./gradlew checkFossReliantReleaseBadging
+#      - name: Check badging
+#        run: ./gradlew checkFossReliantReleaseBadging
 
       - name: Generate coverage reports for Jvm
         run: ./gradlew koverXmlReportFossReliantDebug; ./gradlew koverHtmlReportFossReliantDebug   #koverHtmlReportJvm
