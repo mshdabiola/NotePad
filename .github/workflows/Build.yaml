@@ -191,7 +191,7 @@ jobs:
         uses: codecov/codecov-action@v5.4.3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: "**/reportJvm.xml"
+          files: "**/reportFossReliantDebug.xml"
           verbose: true
 
 #  androidTest:
