@@ -1,0 +1,7 @@
+version: 1
+auto-merge-settings:
+    merge_level: "minor"
+    merge_strategy: "squash"
+    skip_ci: false
+    delete_branch: true
+    skip_check_runs: false
