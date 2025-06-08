@@ -19,6 +19,9 @@ updates:
           - "com.google.devtools.ksp"
           - "androidx.compose.compiler:compiler"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"  # Matches all dependencies
+        version: "*dev*"      # Ignores updates *to* versions containing "dev"
 registries:
   maven-google:
     type: "maven-repository"
