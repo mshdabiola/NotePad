@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.mshdabiola.designsystem.R
 import com.mshdabiola.designsystem.theme.LocalTintTheme
 
