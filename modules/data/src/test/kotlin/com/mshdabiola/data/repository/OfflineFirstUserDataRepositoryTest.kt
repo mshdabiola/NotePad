@@ -29,7 +29,7 @@ class OfflineFirstUserDataRepositoryTest {
 
     private lateinit var subject: OfflineFirstUserDataRepository
 
-    private lateinit var niaPreferencesDataSource: UserPreferencesRepository
+    private lateinit var notepadPreferencesDataSource: UserPreferencesRepository
 
     private val analyticsHelper = NoOpAnalyticsHelper()
 
@@ -38,12 +38,12 @@ class OfflineFirstUserDataRepositoryTest {
 
     @Before
     fun setup() {
-        niaPreferencesDataSource = UserPreferencesRepository(
+        notepadPreferencesDataSource = UserPreferencesRepository(
             tmpFolder.testUserPreferencesDataStore(testScope),
         )
 
         subject = OfflineFirstUserDataRepository(
-            userPreferencesRepository = niaPreferencesDataSource,
+            userPreferencesRepository = notepadPreferencesDataSource,
             analyticsHelper,
         )
     }
@@ -63,7 +63,7 @@ class OfflineFirstUserDataRepositoryTest {
     }
 
     @Test
-    fun offlineFirstUserDataRepository_set_theme_brand_delegates_to_nia_preferences() = runTest {
+    fun offlineFirstUserDataRepository_set_theme_brand_delegates_to_notepad_preferences() = runTest {
         subject.setThemeBrand(ThemeBrand.PINK)
 
         assertEquals(
@@ -74,7 +74,7 @@ class OfflineFirstUserDataRepositoryTest {
         )
         assertEquals(
             ThemeBrand.PINK,
-            niaPreferencesDataSource
+            notepadPreferencesDataSource
                 .userData
                 .map { it.themeBrand }
                 .first(),
@@ -82,7 +82,7 @@ class OfflineFirstUserDataRepositoryTest {
     }
 
     @Test
-    fun offlineFirstUserDataRepository_set_dynamic_color_delegates_to_nia_preferences() = runTest {
+    fun offlineFirstUserDataRepository_set_dynamic_color_delegates_to_notepad_preferences() = runTest {
         subject.setDynamicColorPreference(true)
 
         assertEquals(
@@ -93,7 +93,7 @@ class OfflineFirstUserDataRepositoryTest {
         )
         assertEquals(
             true,
-            niaPreferencesDataSource
+            notepadPreferencesDataSource
                 .userData
                 .map { it.useDynamicColor }
                 .first(),
@@ -101,7 +101,7 @@ class OfflineFirstUserDataRepositoryTest {
     }
 
     @Test
-    fun offlineFirstUserDataRepository_set_dark_theme_config_delegates_to_nia_preferences() = runTest {
+    fun offlineFirstUserDataRepository_set_dark_theme_config_delegates_to_notepad_preferences() = runTest {
         subject.setDarkThemeConfig(DarkThemeConfig.DARK)
 
         assertEquals(
@@ -112,7 +112,7 @@ class OfflineFirstUserDataRepositoryTest {
         )
         assertEquals(
             DarkThemeConfig.DARK,
-            niaPreferencesDataSource
+            notepadPreferencesDataSource
                 .userData
                 .map { it.darkThemeConfig }
                 .first(),
