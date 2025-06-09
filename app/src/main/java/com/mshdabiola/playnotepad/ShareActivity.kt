@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import com.mshdabiola.designsystem.R as Rd
 
 @AndroidEntryPoint
 class ShareActivity : ComponentActivity() {
@@ -313,7 +315,7 @@ fun ActionEditScreen(
             if (showLabel) {
                 item {
                     TextButton(onClick = { showLabelDialog() }) {
-                        Text("Add Labels")
+                        Text(stringResource(Rd.string.modules_designsystem_add_labels))
                     }
                 }
             }
@@ -332,10 +334,12 @@ fun EditLabels(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Add Labels") },
+            title = {
+                Text(stringResource(Rd.string.modules_designsystem_add_labels))
+            },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text("Close")
+                    Text(stringResource(Rd.string.modules_designsystem_close))
                 }
             },
             text = {

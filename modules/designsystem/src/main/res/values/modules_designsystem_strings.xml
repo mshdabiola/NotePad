@@ -61,5 +61,14 @@
     <string name="modules_designsystem_play_notepad">Play NotePad</string>
     <string name="modules_designsystem_terms_and_condition">Terms and Condition</string>
     <string name="modules_designsystem_default_notification_channel_id" translatable="false">fcm_default_channel</string>
-
+    <string name="modules_designsystem_close">Close</string>
+    <string name="modules_designsystem_daynight_mode">DayNight mode</string>
+    <string name="modules_designsystem_theme">Theme</string>
+    <string name="modules_designsystem_colors">Colors</string>
+    <string name="modules_designsystem_rename_label_detail">" We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted"</string>
+    <string name="modules_designsystem_empty_notes">Empty notes</string>
+    <string name="modules_designsystem_checked_items_value">+ %1$d checked items</string>
+    <string name="modules_designsystem_rename_details">" We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted"</string>
+    <string name="modules_designsystem_clear_canvas">Clear canvas</string>
+    <string name="modules_designsystem_add_labels">Add Labels</string>
 </resources>

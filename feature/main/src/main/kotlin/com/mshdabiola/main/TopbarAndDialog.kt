@@ -355,7 +355,7 @@ fun TrashTopAppBar(
                 Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
-        title = { Text(text = "Trash") },
+        title = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
@@ -502,9 +502,9 @@ fun DeleteLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Rename Label") },
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
             text = {
-                Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
+                Text(text = stringResource(Rd.string.modules_designsystem_rename_details))
             },
             confirmButton = {
                 TextButton(
@@ -513,12 +513,12 @@ fun DeleteLabelAlertDialog(
                         onDelete()
                     },
                 ) {
-                    Text(text = "Delete")
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
         )
@@ -735,7 +735,12 @@ fun NoteCard(
                                 Text(text = "....")
                             }
                             if (numberOfChecked > 0) {
-                                Text(text = "+ $numberOfChecked checked items")
+                                Text(
+                                    text = stringResource(
+                                        Rd.string.modules_designsystem_checked_items_value,
+                                        numberOfChecked,
+                                    ),
+                                )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                         }

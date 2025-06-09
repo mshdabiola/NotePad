@@ -64,7 +64,7 @@ fun AboutScreen(
                     }
                 },
                 title = {
-                    Text(text = "About")
+                    Text(text = stringResource(Rd.string.modules_designsystem_about))
                 },
             )
         },

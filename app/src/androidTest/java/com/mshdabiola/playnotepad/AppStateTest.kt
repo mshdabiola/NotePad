@@ -36,7 +36,7 @@ class AppStateTest {
     private lateinit var state: NoteAppState
 
 //    @Test
-//    fun niaAppState_currentDestination() = runTest {
+//    fun notepadAppState_currentDestination() = runTest {
 //        var currentDestination: String? = null
 //
 //        composeTestRule.setContent {
@@ -67,7 +67,7 @@ class AppStateTest {
 //    }
 
     @Test
-    fun niaAppState_whenNetworkMonitorIsOffline_StateIsOffline() = runTest(UnconfinedTestDispatcher()) {
+    fun notepadAppState_whenNetworkMonitorIsOffline_StateIsOffline() = runTest(UnconfinedTestDispatcher()) {
         composeTestRule.setContent {
             state = NoteAppState(
                 navController = NavHostController(LocalContext.current),

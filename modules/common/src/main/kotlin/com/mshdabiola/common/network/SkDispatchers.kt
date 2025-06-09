@@ -9,7 +9,7 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Qualifier
 @Retention(RUNTIME)
-annotation class Dispatcher(val niaDispatcher: SkDispatchers)
+annotation class Dispatcher(val notepadDispatcher: SkDispatchers)
 
 enum class SkDispatchers {
     Default,

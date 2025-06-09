@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 /**
- * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3
+ * Notepad toggle button with icon and checked icon content slots. Wraps Material 3
  * [IconButton].
  *
  * @param checked Whether the toggle button is currently checked.
