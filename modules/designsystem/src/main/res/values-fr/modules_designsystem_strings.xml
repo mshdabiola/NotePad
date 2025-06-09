@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+     abiola 2024
+
+-->
 <resources>
     <string name="modules_designsystem_note">Note</string>
     <string name="modules_designsystem_title">Titre</string>
@@ -20,7 +23,7 @@
     <string name="modules_designsystem_make_a_copy">Faire une copie</string>
     <string name="modules_designsystem_send">Envoyer</string>
     <string name="modules_designsystem_labels">Libellés</string>
-    <string name="modules_designsystem_grab_image_text">Extraire le texte de l'image</string>
+    <string name="modules_designsystem_grab_image_text">Extraire le texte de l\'image</string>
     <string name="modules_designsystem_copy">Copier</string>
     <string name="modules_designsystem_edit_label">Modifier le libellé</string>
     <string name="modules_designsystem_create_new_label">Créer un nouveau libellé</string>
