@@ -1,5 +1,5 @@
 What's new?
-* Support for Chinese (Simplified), Greek, Indonesian, Kannada, Lithuanian, Polish, Tamil, and Telugu languages
+* Support for Chinese (Simplified), Greek, Indonesian, Kannada, Lithuanotepadn, Polish, Tamil, and Telugu languages
 * Switch to uprotocol content-sharing library
 * Categorize Music by Albums and Artists
 * Categorize Image and Video sections by folder
