@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 /**
- * Now in Android tab. Wraps Material 3 [Tab] and shifts text label down.
+ * Notepad tab. Wraps Material 3 [Tab] and shifts text label down.
  *
  * @param selected Whether this tab is selected or not.
  * @param onClick The callback to be invoked when this tab is selected.
@@ -56,7 +56,7 @@ fun NoteTab(
 }
 
 /**
- * Now in Android tab row. Wraps Material 3 [TabRow].
+ * Notepad tab row. Wraps Material 3 [TabRow].
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.

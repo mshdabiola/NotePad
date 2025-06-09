@@ -48,7 +48,7 @@ fun NoteTopicTag(
 }
 
 /**
- * Now in Android tag default values.
+ * Notepad tag default values.
  */
 object SkTagDefaults {
     const val UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA = 0.5f
