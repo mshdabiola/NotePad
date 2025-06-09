@@ -351,7 +351,7 @@ private fun noteUiStateItemsSize(
 )
 @Composable
 fun MainContent(
-    modifier: Modifier ,
+    modifier: Modifier,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     success: MainState.Success,
@@ -480,8 +480,7 @@ fun MainContent(
         LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp)
-                ,
+                .padding(16.dp),
             columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp,

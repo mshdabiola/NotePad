@@ -30,8 +30,8 @@ class DetailScreenTest {
                 AnimatedVisibility(true) {
                     EditScreen(
                         modifier = Modifier.semantics {
-                        testTagsAsResourceId = true
-                    },
+                            testTagsAsResourceId = true
+                        },
                         notepad = com.mshdabiola.model.NotePad(),
                         title = TextFieldState(),
                         content = TextFieldState(),

@@ -4,13 +4,9 @@
 
 package com.mshdabiola.playnotepad
 
-import androidx.annotation.StringRes
-import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.mshdabiola.testing.rules.GrantPostNotificationsPermissionRule
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -18,7 +14,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.properties.ReadOnlyProperty
 
 /**
  * Tests all the navigation flows that are handled by the navigation library.
@@ -72,7 +67,7 @@ class NavigationTest {
             // GIVEN the user follows a topic
             onNodeWithTag("main:add").performClick()
 
-            //onNodeWithTag("detail:title").assertExists()
+            // onNodeWithTag("detail:title").assertExists()
         }
     }
 }

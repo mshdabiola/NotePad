@@ -7,7 +7,6 @@ package com.mshdabiola.playnotepad
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -43,7 +42,7 @@ class AppStateTest {
 //        composeTestRule.setContent {
 //            val navController = rememberTestNavController()
 //            state =
-////                remember(navController) {
+// //                remember(navController) {
 //                NoteAppState(
 //                    navController = NavHostController(LocalContext.current),
 //                    coroutineScope = backgroundScope,
@@ -53,7 +52,7 @@ class AppStateTest {
 //                        confirmStateChange = { true },
 //                    ),
 //                )
-////            }
+// //            }
 //
 //            // Update currentDestination whenever it changes
 //            currentDestination = state.currentRoute
