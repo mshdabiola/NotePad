@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="modules_designsystem_note">Remarque</string>
+    <string name="modules_designsystem_note">Note</string>
     <string name="modules_designsystem_title">Titre</string>
     <string name="modules_designsystem_hide_checkboxes">Masquer les cases à cocher</string>
     <string name="modules_designsystem_delete_checked_items">Supprimer les éléments cochés</string>
     <string name="modules_designsystem_uncheck_all_items">Décocher tous les éléments</string>
     <string name="modules_designsystem_subject">Sujet</string>
-    <string name="modules_designsystem_add_list_item">Ajouter un élément à la liste</string>
+    <string name="modules_designsystem_add_list_item">Ajouter un élément de liste</string>
     <string name="modules_designsystem_checked_items">Éléments cochés</string>
     <string name="modules_designsystem_edited">Modifié</string>
     <string name="modules_designsystem_take_photo">Prendre une photo</string>
@@ -19,18 +19,18 @@
     <string name="modules_designsystem_delete">Supprimer</string>
     <string name="modules_designsystem_make_a_copy">Faire une copie</string>
     <string name="modules_designsystem_send">Envoyer</string>
-    <string name="modules_designsystem_labels">Étiquettes</string>
-    <string name="modules_designsystem_grab_image_text">Extraire le texte de l\'image</string>
+    <string name="modules_designsystem_labels">Libellés</string>
+    <string name="modules_designsystem_grab_image_text">Extraire le texte de l'image</string>
     <string name="modules_designsystem_copy">Copier</string>
-    <string name="modules_designsystem_edit_label">Modifier l\'étiquette</string>
-    <string name="modules_designsystem_create_new_label">Créer une nouvelle étiquette</string>
-    <string name="modules_designsystem_label_already_exists">\"L\'étiquette existe déjà\"</string>
+    <string name="modules_designsystem_edit_label">Modifier le libellé</string>
+    <string name="modules_designsystem_create_new_label">Créer un nouveau libellé</string>
+    <string name="modules_designsystem_label_already_exists">"Le libellé existe déjà"</string>
     <string name="modules_designsystem_add_note">Ajouter une note</string>
     <string name="modules_designsystem_pin">Épingler</string>
     <string name="modules_designsystem_other">Autre</string>
     <string name="modules_designsystem_archive">Archiver</string>
-    <string name="modules_designsystem_rename_label">Renommer l\'étiquette</string>
-    <string name="modules_designsystem_delete_label">Supprimer l\'étiquette</string>
+    <string name="modules_designsystem_rename_label">Renommer le libellé</string>
+    <string name="modules_designsystem_delete_label">Supprimer le libellé</string>
     <string name="modules_designsystem_empty_trash">Vider la corbeille</string>
     <string name="modules_designsystem_search_note">Rechercher une note</string>
     <string name="modules_designsystem_rename">Renommer</string>
@@ -50,13 +50,22 @@
     <string name="modules_designsystem_more">Plus</string>
     <string name="modules_designsystem_less">Moins</string>
     <string name="modules_designsystem_settings">Paramètres</string>
-    <string name="modules_designsystem_enter_text">Entrez le texte</string>
+    <string name="modules_designsystem_enter_text">Saisir du texte</string>
     <string name="modules_designsystem_create">Créer</string>
-    <string name="modules_designsystem_about_me">Cette application est un projet open source. Développé par Mshdabiola</string>
+    <string name="modules_designsystem_about_me">Cette application est un projet open source. Développée par Mshdabiola</string>
     <string name="modules_designsystem_last_update">Dernière mise à jour</string>
     <string name="modules_designsystem_version">Version</string>
-    <string name="modules_designsystem_play_notepad" translatable="false">Play NotePad</string>
-    <string name="modules_designsystem_terms_and_condition">Conditions générales d\'utilisation</string>
+    <string name="modules_designsystem_play_notepad"  translatable="false">Play NotePad</string>
+    <string name="modules_designsystem_terms_and_condition">Conditions générales</string>
     <string name="modules_designsystem_default_notification_channel_id" translatable="false">fcm_default_channel</string>
-
+    <string name="modules_designsystem_close">Fermer</string>
+    <string name="modules_designsystem_daynight_mode">Mode Jour/Nuit</string>
+    <string name="modules_designsystem_theme">Thème</string>
+    <string name="modules_designsystem_colors">Couleurs</string>
+    <string name="modules_designsystem_rename_label_detail">"Nous allons supprimer le libellé et le retirer de toutes vos notes Keep. Vos notes ne seront pas supprimées"</string>
+    <string name="modules_designsystem_empty_notes">Notes vides</string>
+    <string name="modules_designsystem_checked_items_value">+ %1$d éléments cochés</string>
+    <string name="modules_designsystem_rename_details">"Nous allons supprimer le libellé et le retirer de toutes vos notes Keep. Vos notes ne seront pas supprimées"</string>
+    <string name="modules_designsystem_clear_canvas">Effacer le canevas</string>
+    <string name="modules_designsystem_add_labels">Ajouter des libellés</string>
 </resources>
