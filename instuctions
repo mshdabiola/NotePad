@@ -1,3 +1,4 @@
++
  ./gradlew :modules:designsystem:jacocoTestReport
 
    ./gradlew lintFossReliantDebug; ./gradlew updateFossReliantReleaseBadging; ./gradlew dependencyGuardBaseline; ./gradlew spotlessApply --init-script gradle/init.gradle.kts --no-configuration-cache; ./gradlew recordRoborazziFossReliantDebug

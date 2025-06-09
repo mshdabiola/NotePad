@@ -228,7 +228,7 @@ fun DrawingBar(
 
                         0 -> {
                             TextButton(onClick = { controller.clearPath() }) {
-                                Text(text = stringResource(R.string.feature_drawing_clear_canvas))
+                                Text(text = stringResource(Rd.string.modules_designsystem_clear_canvas))
                             }
                         }
 

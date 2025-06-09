@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import com.mshdabiola.designsystem.R as Rd
 
 @Composable
 fun OptionsDialog(
@@ -28,7 +29,7 @@ fun OptionsDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.feature_setting_close))
+                Text(stringResource(Rd.string.modules_designsystem_close))
             }
         },
         text = {

@@ -126,7 +126,7 @@ fun DrawingScreen(
                     }
                 },
                 title = {
-                    Text(stringResource(R.string.feature_drawing_drawing))
+                    Text(stringResource(Rd.string.modules_designsystem_drawing))
                 },
 
                 actions = {

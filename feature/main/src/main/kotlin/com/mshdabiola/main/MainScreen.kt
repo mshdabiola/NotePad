@@ -330,7 +330,7 @@ private fun EmptyState(modifier: Modifier = Modifier, noteType: NoteType = NoteT
     ) {
         Loader()
         Text(
-            text = stringResource(R.string.feature_main_empty_notes),
+            text = stringResource(Rd.string.modules_designsystem_empty_notes),
             textAlign = TextAlign.Center,
         )
     }
@@ -503,7 +503,7 @@ fun MainContent(
                     )
                 }
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(text = stringResource(R.string.feature_main_colors))
+                    Text(text = stringResource(Rd.string.modules_designsystem_colors))
                 }
 
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -660,9 +660,9 @@ fun DeleteLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(R.string.feature_main_rename_label)) },
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
             text = {
-                Text(text = stringResource(R.string.feature_main_we_ll_delete_the_label_and_remove_it_from_all_of_from_all_of_your_keep_notes_your_notes_won_t_be_deleted))
+                Text(text = stringResource(Rd.string.modules_designsystem_rename_label_detail))
             },
             confirmButton = {
                 TextButton(
@@ -671,12 +671,12 @@ fun DeleteLabelAlertDialog(
                         onDelete()
                     },
                 ) {
-                    Text(text = stringResource(R.string.feature_main_delete))
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(R.string.feature_main_cancel))
+                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
         )

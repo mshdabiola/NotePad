@@ -356,7 +356,7 @@ fun TrashTopAppBar(
                 Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
-        title = { Text(text = stringResource(R.string.feature_main_trash)) },
+        title = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
@@ -503,9 +503,9 @@ fun DeleteLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(R.string.feature_main_rename_label)) },
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
             text = {
-                Text(text = stringResource(R.string.rename_details))
+                Text(text = stringResource(Rd.string.modules_designsystem_rename_details))
             },
             confirmButton = {
                 TextButton(
@@ -514,12 +514,12 @@ fun DeleteLabelAlertDialog(
                         onDelete()
                     },
                 ) {
-                    Text(text =stringResource(R.string.feature_main_delete))
+                    Text(text =stringResource(Rd.string.modules_designsystem_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(R.string.feature_main_cancel))
+                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
         )
@@ -738,7 +738,7 @@ fun NoteCard(
                             if (numberOfChecked > 0) {
                                 Text(
                                     text = stringResource(
-                                        R.string.feature_main_checked_items,
+                                        Rd.string.modules_designsystem_checked_items_value,
                                         numberOfChecked,
                                     ),
                                 )

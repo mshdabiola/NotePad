@@ -107,7 +107,7 @@ internal fun MainContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(R.string.feature_setting_settings), style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(Rd.string.modules_designsystem_settings), style = MaterialTheme.typography.titleLarge)
             IconButton(
                 onClick = onBack,
 
@@ -122,7 +122,7 @@ internal fun MainContent(
             modifier = Modifier
                 .testTag("setting:theme")
                 .clickable { theme = true },
-            headlineContent = { Text(stringResource(R.string.feature_setting_theme)) },
+            headlineContent = { Text(stringResource(Rd.string.modules_designsystem_theme)) },
             supportingContent = {
                 Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
             },
@@ -132,7 +132,7 @@ internal fun MainContent(
             modifier = Modifier
                 .testTag("setting:mode")
                 .clickable { dark = true },
-            headlineContent = { Text(stringResource(R.string.feature_setting_daynight_mode)) },
+            headlineContent = { Text(stringResource(Rd.string.modules_designsystem_daynight_mode)) },
             supportingContent = {
                 Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
             },

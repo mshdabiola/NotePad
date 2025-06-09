@@ -61,6 +61,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import com.mshdabiola.designsystem.R as Rd
 
 @AndroidEntryPoint
 class ShareActivity : ComponentActivity() {
@@ -314,7 +315,7 @@ fun ActionEditScreen(
             if (showLabel) {
                 item {
                     TextButton(onClick = { showLabelDialog() }) {
-                        Text(stringResource(R.string.add_labels))
+                        Text(stringResource(Rd.string.modules_designsystem_add_labels))
                     }
                 }
             }
@@ -333,11 +334,11 @@ fun EditLabels(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(stringResource(R.string.add_labels))
+            title = { Text(stringResource(Rd.string.modules_designsystem_add_labels))
             },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(stringResource(R.string.close))
+                    Text(stringResource(Rd.string.modules_designsystem_close))
                 }
             },
             text = {
