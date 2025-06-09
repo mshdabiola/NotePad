@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.main.R
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
@@ -514,7 +513,7 @@ fun DeleteLabelAlertDialog(
                         onDelete()
                     },
                 ) {
-                    Text(text =stringResource(Rd.string.modules_designsystem_delete))
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
                 }
             },
             dismissButton = {

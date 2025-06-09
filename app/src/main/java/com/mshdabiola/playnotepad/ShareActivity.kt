@@ -334,7 +334,8 @@ fun EditLabels(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(stringResource(Rd.string.modules_designsystem_add_labels))
+            title = {
+                Text(stringResource(Rd.string.modules_designsystem_add_labels))
             },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
