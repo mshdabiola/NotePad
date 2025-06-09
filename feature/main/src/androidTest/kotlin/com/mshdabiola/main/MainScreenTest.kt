@@ -9,6 +9,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import org.junit.Rule
@@ -29,6 +32,9 @@ class MainScreenTest {
             SharedTransitionLayout {
                 AnimatedVisibility(true) {
                     MainScreen(
+                        modifier = Modifier.semantics {
+                            testTagsAsResourceId = true
+                        },
                         mainState = MainState.Success(),
                         searchState = TextFieldState(),
                         sharedTransitionScope = this@SharedTransitionLayout,

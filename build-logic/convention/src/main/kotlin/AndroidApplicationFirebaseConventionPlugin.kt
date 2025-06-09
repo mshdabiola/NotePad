@@ -1,6 +1,7 @@
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import com.google.firebase.perf.plugin.FirebasePerfExtension
 import com.mshdabiola.app.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,14 +20,29 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationAndroidComponentsExtension> {
                 finalizeDsl {
-                    it.buildTypes.forEach { buildType ->
-                        // Disable the Crashlytics mapping file upload. This feature should only be
-                        // enabled if a Firebase backend is available and configured in
-                        // google-services.json.
-                        buildType.configure<CrashlyticsExtension> {
-                            mappingFileUploadEnabled = !buildType.isDebuggable
+                    it.productFlavors.forEach { flavor ->
+                        val isGoogle = flavor.name
+                            .contains("google", true)
+                        flavor.configure<FirebasePerfExtension> {
+                            setInstrumentationEnabled(isGoogle)
                         }
+                        flavor.configure<CrashlyticsExtension> {
+                            mappingFileUploadEnabled = isGoogle
+                        }
+                        //   println("flavor ${flavor.name}")
                     }
+//                    it.buildTypes.forEach { buildType ->
+//                        // Disable the Crashlytics mapping file upload. This feature should only be
+//                        // enabled if a Firebase backend is available and configured in
+//                        // google-services.json.
+//                        buildType.configure<FirebasePerfExtension> {
+//                            setInstrumentationEnabled(false)
+//                        }
+//                        buildType.configure<CrashlyticsExtension> {
+//                            println("buildType $buildType")
+//                            mappingFileUploadEnabled = !buildType.isDebuggable
+//                        }
+//                    }
                 }
             }
         }

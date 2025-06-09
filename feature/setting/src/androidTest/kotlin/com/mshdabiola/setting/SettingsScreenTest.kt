@@ -5,6 +5,9 @@
 package com.mshdabiola.setting
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import org.junit.Rule
@@ -22,6 +25,9 @@ class SettingsScreenTest {
     fun enterText_showsShowText() {
         composeTestRule.setContent {
             SettingScreen(
+                modifier = Modifier.semantics {
+                    testTagsAsResourceId = true
+                },
                 settingState = SettingState.Success(),
             )
         }

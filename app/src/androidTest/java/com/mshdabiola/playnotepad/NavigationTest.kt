@@ -43,17 +43,17 @@ class NavigationTest {
     /**
      * Grant [android.Manifest.permission.POST_NOTIFICATIONS] permission.
      */
-    @get:Rule(order = 2)
-    val postNotificationsPermission = GrantPostNotificationsPermissionRule()
+//    @get:Rule(order = 2)
+//    val postNotificationsPermission = GrantPostNotificationsPermissionRule()
 
     /**
      * Use the primary activity to initialize the app normally.
      */
-    @get:Rule(order = 3)
+    @get:Rule(order = 2)
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-    private fun AndroidComposeTestRule<*, *>.stringResource(@StringRes resId: Int) =
-        ReadOnlyProperty<Any, String> { _, _ -> activity.getString(resId) }
+//    private fun AndroidComposeTestRule<*, *>.stringResource(@StringRes resId: Int) =
+//        ReadOnlyProperty<Any, String> { _, _ -> activity.getString(resId) }
 
     @Before
     fun setup() = hiltRule.inject()
