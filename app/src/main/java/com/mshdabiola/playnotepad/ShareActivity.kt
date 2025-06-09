@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -313,7 +314,7 @@ fun ActionEditScreen(
             if (showLabel) {
                 item {
                     TextButton(onClick = { showLabelDialog() }) {
-                        Text("Add Labels")
+                        Text(stringResource(R.string.add_labels))
                     }
                 }
             }
@@ -332,10 +333,11 @@ fun EditLabels(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Add Labels") },
+            title = { Text(stringResource(R.string.add_labels))
+            },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             },
             text = {

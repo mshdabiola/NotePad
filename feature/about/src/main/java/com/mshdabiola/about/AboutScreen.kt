@@ -64,7 +64,7 @@ fun AboutScreen(
                     }
                 },
                 title = {
-                    Text(text = "About")
+                    Text(text = stringResource(R.string.feature_about_about))
                 },
             )
         },

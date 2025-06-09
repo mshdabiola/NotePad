@@ -126,7 +126,7 @@ fun DrawingScreen(
                     }
                 },
                 title = {
-                    Text("Drawing")
+                    Text(stringResource(R.string.feature_drawing_drawing))
                 },
 
                 actions = {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_setting_close">Close</string>
+    <string name="feature_setting_daynight_mode">DayNight mode</string>
+    <string name="feature_setting_settings">Settings</string>
+    <string name="feature_setting_theme">Theme</string>
+</resources>

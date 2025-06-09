@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -106,7 +107,7 @@ internal fun MainContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Settings", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.feature_setting_settings), style = MaterialTheme.typography.titleLarge)
             IconButton(
                 onClick = onBack,
 
@@ -118,16 +119,20 @@ internal fun MainContent(
         Spacer(Modifier.height(8.dp))
 
         ListItem(
-            modifier = Modifier.testTag("setting:theme").clickable { theme = true },
-            headlineContent = { Text("Theme") },
+            modifier = Modifier
+                .testTag("setting:theme")
+                .clickable { theme = true },
+            headlineContent = { Text(stringResource(R.string.feature_setting_theme)) },
             supportingContent = {
                 Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
             },
         )
 
         ListItem(
-            modifier = Modifier.testTag("setting:mode").clickable { dark = true },
-            headlineContent = { Text("DayNight mode") },
+            modifier = Modifier
+                .testTag("setting:mode")
+                .clickable { dark = true },
+            headlineContent = { Text(stringResource(R.string.feature_setting_daynight_mode)) },
             supportingContent = {
                 Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
             },

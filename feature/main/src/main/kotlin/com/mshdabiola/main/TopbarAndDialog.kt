@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.main.R
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
@@ -355,7 +356,7 @@ fun TrashTopAppBar(
                 Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         },
-        title = { Text(text = "Trash") },
+        title = { Text(text = stringResource(R.string.feature_main_trash)) },
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
@@ -502,9 +503,9 @@ fun DeleteLabelAlertDialog(
     AnimatedVisibility(visible = show) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Rename Label") },
+            title = { Text(text = stringResource(R.string.feature_main_rename_label)) },
             text = {
-                Text(text = " We'll delete the label and remove it from all of from all of your keep notes. Your notes won't be deleted")
+                Text(text = stringResource(R.string.rename_details))
             },
             confirmButton = {
                 TextButton(
@@ -513,12 +514,12 @@ fun DeleteLabelAlertDialog(
                         onDelete()
                     },
                 ) {
-                    Text(text = "Delete")
+                    Text(text =stringResource(R.string.feature_main_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.feature_main_cancel))
                 }
             },
         )
@@ -735,7 +736,12 @@ fun NoteCard(
                                 Text(text = "....")
                             }
                             if (numberOfChecked > 0) {
-                                Text(text = "+ $numberOfChecked checked items")
+                                Text(
+                                    text = stringResource(
+                                        R.string.feature_main_checked_items,
+                                        numberOfChecked,
+                                    ),
+                                )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                         }

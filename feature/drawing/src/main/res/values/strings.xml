@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_drawing_clear_canvas">Clear canvas</string>
+    <string name="feature_drawing_drawing">Drawing</string>
+</resources>
