@@ -11,13 +11,16 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -34,6 +37,7 @@ fun NoteTopAppBar(
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
+
 ) {
     CenterAlignedTopAppBar(
         title = { Text(text = titleRes) },
@@ -60,15 +64,16 @@ fun NoteTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NoteDetailTopAppBar(
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     onNavigationClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
+    alignment: Alignment.Horizontal = Alignment.Start,
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         title = { Text(text = "") },
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
@@ -80,6 +85,8 @@ fun NoteDetailTopAppBar(
                 )
             }
         },
+        subtitle = {},
+        titleHorizontalAlignment = alignment,
         actions = {
             IconButton(onClick = onDeleteClick) {
                 Icon(
