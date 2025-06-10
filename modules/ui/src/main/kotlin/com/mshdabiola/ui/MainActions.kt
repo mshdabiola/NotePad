@@ -104,12 +104,16 @@ fun AudioDialog(
 
 @SuppressLint("QueryPermissionsNeeded")
 @Composable
+@SuppressLint("QueryPermissionsNeeded")
+@Composable
 fun supportVoice(): Boolean {
-    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-    val context = LocalContext.current
-    val pm = context.packageManager
-    val activities = pm.queryIntentActivities(intent, 0)
-    return activities.isNotEmpty()
+    return remember {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        val context = LocalContext.current
+        val pm = context.packageManager
+        val activities = pm.queryIntentActivities(intent, 0)
+        activities.isNotEmpty()
+    }
 }
 
 @Composable
