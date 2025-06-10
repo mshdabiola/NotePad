@@ -19,11 +19,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    userDataRepository: UserDataRepository,
+    private val userDataRepository: UserDataRepository,
     private val notePadRepository: INotePadRepository,
     private val labelRepository: ILabelRepository,
 
@@ -34,7 +35,7 @@ class MainActivityViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             initialValue = MainActivityUiState.Loading,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.WhileSubscribed(),
         )
 
     val labels = labelRepository
@@ -112,6 +113,12 @@ class MainActivityViewModel @Inject constructor(
             images = noteImage,
         )
         return notePadRepository.upsert(notePad)
+    }
+
+    fun setMainData(mainData: Long) {
+        viewModelScope.launch {
+            userDataRepository.setMainData(mainData)
+        }
     }
 }
 

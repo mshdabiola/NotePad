@@ -13,4 +13,5 @@ data class UserData(
     val useDynamicColor: Boolean,
     val shouldHideOnboarding: Boolean,
     val contrast: Contrast,
+    val mainData: MainData,
 )

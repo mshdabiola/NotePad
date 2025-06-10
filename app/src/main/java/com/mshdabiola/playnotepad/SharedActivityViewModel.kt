@@ -13,6 +13,7 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.ThemeBrand
@@ -156,6 +157,7 @@ sealed interface SharedActivityUiState {
             useDynamicColor = false,
             shouldHideOnboarding = false,
             contrast = Contrast.High,
+            mainData = MainData.Note,
         ),
         val notepad: NotePad = NotePad(),
         val labels: List<Label> = emptyList(),
