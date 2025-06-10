@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.main.navigation.MainArg
 import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
@@ -28,6 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -58,13 +58,19 @@ internal class MainViewModel
 ) : ViewModel() {
 
     val searchState = TextFieldState()
-    private val mainArg = userDataRepository.userData
-        .mapLatest { it.mainData }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MainData.Note)
+
+
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            userDataRepository.userData.collectLatest {
+                if (mainState.value is MainState.Success){
+                    _mainState.value = getSuccess().copy(mainData = it.mainData)
+                }
+            }
+        }
 
         viewModelScope.launch {
             combine(
@@ -128,18 +134,18 @@ internal class MainViewModel
                     } else {
 
                         val list =
-                            when (mainArg.value) {
-                                NoteType.LABEL -> {
-                                    notepad.filter { it.labels.any { it.id == mainArg.type } }
+                            when (mainState.mainData) {
+                                is MainData.Label -> {
+                                    notepad.filter { it.labels.any { it.id == mainState.mainData.index } }
                                 }
 
-                                NoteType.REMAINDER -> {
+                                is MainData.Remainder -> {
                                     notepad.filter { it.reminder > 0 }
                                 }
 
                                 else -> {
                                     notepad.filter {
-                                        it.noteType == mainArg.noteType
+                                        it.noteType.index == mainState.mainData.index
                                     }
                                 }
                             }
@@ -147,10 +153,12 @@ internal class MainViewModel
                             notePads = list,
                         )
                     }
-                } else {
-
+                }
+                else {
+                    val mainData = userDataRepository.userData.mapLatest { it.mainData }.firstOrNull() ?: MainData.Note
                     _mainState.value = MainState.Success(
                         notePads = emptyList(),
+                        mainData = mainData,
                     )
 
                     initDate()

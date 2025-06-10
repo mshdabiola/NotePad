@@ -1,5 +1,6 @@
 package com.mshdabiola.main
 
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 
@@ -13,6 +14,7 @@ sealed class MainState {
         val color: List<SearchSort.Color> = emptyList(),
         val label: List<SearchSort.Label> = emptyList(),
         val searchSort: SearchSort? = null,
+        val mainData: MainData = MainData.Note,
 
     ) : MainState()
 
