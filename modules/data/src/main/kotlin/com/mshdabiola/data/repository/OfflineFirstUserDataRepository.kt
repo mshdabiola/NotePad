@@ -45,4 +45,8 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
         userPreferencesRepository.setShouldHideOnboarding(shouldHideOnboarding)
         analyticsHelper.logOnboardingStateChanged(shouldHideOnboarding)
     }
+
+    override suspend fun setMainData(mainData: Long) {
+        userPreferencesRepository.setMainData(mainData)
+    }
 }
