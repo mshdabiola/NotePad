@@ -21,7 +21,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -54,11 +52,10 @@ internal class MainViewModel
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
     private val alarmManager: IAlarmManager,
-    userDataRepository: UserDataRepository
+    userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
     val searchState = TextFieldState()
-
 
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
@@ -66,7 +63,7 @@ internal class MainViewModel
     init {
         viewModelScope.launch {
             userDataRepository.userData.collectLatest {
-                if (mainState.value is MainState.Success){
+                if (mainState.value is MainState.Success) {
                     _mainState.value = getSuccess().copy(mainData = it.mainData)
                 }
             }
@@ -153,8 +150,7 @@ internal class MainViewModel
                             notePads = list,
                         )
                     }
-                }
-                else {
+                } else {
                     val mainData = userDataRepository.userData.mapLatest { it.mainData }.firstOrNull() ?: MainData.Note
                     _mainState.value = MainState.Success(
                         notePads = emptyList(),
