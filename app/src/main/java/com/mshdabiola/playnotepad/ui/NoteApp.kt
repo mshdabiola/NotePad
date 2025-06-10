@@ -163,7 +163,10 @@ fun NoteApp(
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewDrawing()
                                         appState.navController.navigateToDetail(DetailArg(id.first))
-                                        appState.navController.navigateToDrawing(id.first, id.second)
+                                        appState.navController.navigateToDrawing(
+                                            id.first,
+                                            id.second,
+                                        )
                                     }
                                 },
                                 isVoiceSupport = supportVoice(),
@@ -274,28 +277,28 @@ fun NoteBottomBar(
             }
 
             if (isVoiceSupport) {
-                        IconButton(
-                            modifier = Modifier.testTag("main:voice"),
-                            onClick = onAddVoiceNote,
-                        ) {
-                            Icon(
-                                imageVector = NoteIcon.KeyboardVoice,
-                                contentDescription = "add note voice",
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            modifier = Modifier.testTag("main:voice").then(Modifier.disabled()),
-                            onClick = {}, // or show a tooltip
-                            enabled = false
-                        ) {
-                            Icon(
-                                imageVector = NoteIcon.KeyboardVoice,
-                                contentDescription = "add note voice (unavailable)",
-                                tint = Color.Gray // or other visual cue
-                            )
-                        }
-                    }
+                IconButton(
+                    modifier = Modifier.testTag("main:voice"),
+                    onClick = onAddVoiceNote,
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.KeyboardVoice,
+                        contentDescription = "add note voice",
+                    )
+                }
+            } else {
+                IconButton(
+                    modifier = Modifier.testTag("main:voice"),
+                    onClick = {}, // or show a tooltip
+                    enabled = false,
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.KeyboardVoice,
+                        contentDescription = "add note voice (unavailable)",
+                        tint = Color.Gray, // or other visual cue
+                    )
+                }
+            }
 
             IconButton(
                 modifier = Modifier.testTag("main:image"),

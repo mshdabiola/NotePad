@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -104,12 +105,11 @@ fun AudioDialog(
 
 @SuppressLint("QueryPermissionsNeeded")
 @Composable
-@SuppressLint("QueryPermissionsNeeded")
-@Composable
 fun supportVoice(): Boolean {
+    val context = LocalContext.current
+
     return remember {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        val context = LocalContext.current
         val pm = context.packageManager
         val activities = pm.queryIntentActivities(intent, 0)
         activities.isNotEmpty()
