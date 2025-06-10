@@ -113,9 +113,9 @@ class UserPreferencesRepository @Inject constructor(
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
         }
     }
-    suspend fun setMainData(mainData: MainData) {
+    suspend fun setMainData(index: Long) {
         userPreferences.updateData {
-            it.copy { this.mainScreenType = mainData.index }
+            it.copy { this.mainScreenType = index }
         }
     }
 }
