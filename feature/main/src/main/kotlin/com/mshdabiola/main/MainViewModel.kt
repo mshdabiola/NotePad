@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.main.navigation.MainArg
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
@@ -20,11 +22,14 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -49,10 +54,13 @@ internal class MainViewModel
     savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
     private val alarmManager: IAlarmManager,
+    userDataRepository: UserDataRepository
 ) : ViewModel() {
 
     val searchState = TextFieldState()
-    private val mainArg = MainArg(savedStateHandle)
+    private val mainArg = userDataRepository.userData
+        .mapLatest { it.mainData }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MainData.Note)
     private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
     val mainState = _mainState.asStateFlow()
 
@@ -120,7 +128,7 @@ internal class MainViewModel
                     } else {
 
                         val list =
-                            when (mainArg.noteType) {
+                            when (mainArg.value) {
                                 NoteType.LABEL -> {
                                     notepad.filter { it.labels.any { it.id == mainArg.type } }
                                 }
