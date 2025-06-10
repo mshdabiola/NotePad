@@ -58,6 +58,7 @@ import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.setting.navigation.navigateToSetting
 import com.mshdabiola.ui.AudioDialog
 import com.mshdabiola.ui.ImageDialog2
+import com.mshdabiola.ui.supportVoice
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -165,6 +166,7 @@ fun NoteApp(
                                         appState.navController.navigateToDrawing(id.first, id.second)
                                     }
                                 },
+                                isVoiceSupport = supportVoice(),
 
                             )
                         }
@@ -246,8 +248,10 @@ fun NoteBottomBar(
     onAddDrawNote: () -> Unit = {},
     onAddVoiceNote: () -> Unit = {},
     onAddImageNote: () -> Unit = {},
+    isVoiceSupport: Boolean = false,
 ) {
     BottomAppBar(
+        modifier = modifier,
         actions = {
             IconButton(
                 modifier = Modifier.testTag("main:check"),
@@ -269,14 +273,16 @@ fun NoteBottomBar(
                 )
             }
 
-            IconButton(
-                modifier = Modifier.testTag("main:voice"),
-                onClick = onAddVoiceNote,
-            ) {
-                Icon(
-                    imageVector = NoteIcon.KeyboardVoice,
-                    contentDescription = "add note voice",
-                )
+            if (isVoiceSupport) {
+                IconButton(
+                    modifier = Modifier.testTag("main:voice"),
+                    onClick = onAddVoiceNote,
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.KeyboardVoice,
+                        contentDescription = "add note voice",
+                    )
+                }
             }
 
             IconButton(

@@ -36,6 +36,7 @@ fun AddBottomSheet2(
     onDrawing: () -> Unit = {},
     onDismiss: () -> Unit = {},
     show: Boolean,
+    isVoiceSupport: Boolean = false,
 ) {
     val background = if (currentImage != -1) {
         NoteIcon.background[currentImage].fgColor
@@ -161,41 +162,43 @@ fun AddBottomSheet2(
                 modifier = androidx.compose.ui.Modifier.testTag("detail:drawing"),
 
             )
-            NavigationDrawerItem(
-                icon = {
-                    Icon(
-                        imageVector = NoteIcon.KeyboardVoice,
-                        contentDescription = "",
-                    )
-                },
-                label = { Text(text = stringResource(Rd.string.modules_designsystem_recording)) },
-                selected = false,
-                onClick = {
-                    onDismiss()
-                    if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                        PackageManager.PERMISSION_GRANTED
-                    ) {
-                        voiceLauncher.launch(
-                            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                putExtra(
-                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
-                                )
-                                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
-                                putExtra(
-                                    "android.speech.extra.GET_AUDIO_FORMAT",
-                                    "audio/AMR",
-                                )
-                                putExtra("android.speech.extra.GET_AUDIO", true)
-                            },
+            if (isVoiceSupport) {
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = NoteIcon.KeyboardVoice,
+                            contentDescription = "",
                         )
-                    } else {
-                        audioPermission.launch(Manifest.permission.RECORD_AUDIO)
-                    }
-                },
-                colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
-                modifier = androidx.compose.ui.Modifier.testTag("detail:recording"),
-            )
+                    },
+                    label = { Text(text = stringResource(Rd.string.modules_designsystem_recording)) },
+                    selected = false,
+                    onClick = {
+                        onDismiss()
+                        if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            voiceLauncher.launch(
+                                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                    putExtra(
+                                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
+                                    )
+                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Speck Now Now")
+                                    putExtra(
+                                        "android.speech.extra.GET_AUDIO_FORMAT",
+                                        "audio/AMR",
+                                    )
+                                    putExtra("android.speech.extra.GET_AUDIO", true)
+                                },
+                            )
+                        } else {
+                            audioPermission.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = background),
+                    modifier = androidx.compose.ui.Modifier.testTag("detail:recording"),
+                )
+            }
             if (!isNoteCheck) {
                 NavigationDrawerItem(
                     icon = {

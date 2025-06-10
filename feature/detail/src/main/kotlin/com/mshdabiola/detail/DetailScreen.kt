@@ -100,6 +100,7 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
+import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
 import java.io.File
 import com.mshdabiola.designsystem.R as Rd
@@ -219,6 +220,7 @@ internal fun DetailRoute(
             navigateToDrawing(editViewModel.note.value.id, id)
         },
         onDismiss = { showModalState = false },
+        isVoiceSupport = supportVoice(),
     )
 //
     val images = note.images.map {

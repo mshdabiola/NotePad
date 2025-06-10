@@ -1,6 +1,7 @@
 package com.mshdabiola.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -99,6 +100,16 @@ fun AudioDialog(
             }
         },
     )
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+@Composable
+fun supportVoice(): Boolean {
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+    val context = LocalContext.current
+    val pm = context.packageManager
+    val activities = pm.queryIntentActivities(intent, 0)
+    return activities.isNotEmpty()
 }
 
 @Composable
