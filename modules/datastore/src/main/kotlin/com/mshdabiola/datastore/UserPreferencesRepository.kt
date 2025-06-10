@@ -7,7 +7,6 @@ package com.mshdabiola.datastore
 import androidx.datastore.core.DataStore
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.MainData
-import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -61,7 +60,7 @@ class UserPreferencesRepository @Inject constructor(
                     MainData.Trash.index -> MainData.Trash
                     MainData.Remainder.index -> MainData.Remainder
                     else -> MainData.Label(it.mainScreenType)
-                }
+                },
             )
         }
 
