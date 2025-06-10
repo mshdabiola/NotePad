@@ -53,6 +53,8 @@ import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
+import com.mshdabiola.model.MainData
+import com.mshdabiola.playnotepad.MainActivityUiState
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
 import com.mshdabiola.setting.navigation.navigateToSetting
@@ -69,6 +71,7 @@ fun NoteApp(
 ) {
     val shouldShowGradientBackground = true
     val labels = viewModel.labels.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
 
@@ -98,17 +101,12 @@ fun NoteApp(
                 drawerContent = {
                     MainNavigation(
                         labels = labels.value,
-                        currentMainArg = appState.mainArg,
+                        currentMainArg = (uiState as? MainActivityUiState.Success)
+                            ?.userData?.mainData?.index ?: MainData.Note.index,
                         onNavigation = {
-                            //  onNavigationNoteType(it)
-//                            appState.navController.navigateToMain()
+                            viewModel.setMainData(it)
                             appState.navController.popBackStack()
-                            appState.navController.navigateToMain(
-                                it,
-                                navOptions {
-                                    //  this.launchSingleTop=true
-                                },
-                            )
+                            appState.navController.navigateToMain()
                             appState.closeDrawer()
                         },
                         navigateToLevel = {

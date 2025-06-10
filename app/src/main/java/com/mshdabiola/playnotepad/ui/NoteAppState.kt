@@ -61,10 +61,10 @@ class NoteAppState(
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination?.route ?: ""
 
-    val mainArg: Long
-        @Composable get() = navController.currentBackStackEntryAsState().value?.arguments?.getLong(
-            TypeArg,
-        ) ?: NoteType.NOTE.index
+//    val mainArg: Long
+//        @Composable get() = navController.currentBackStackEntryAsState().value?.arguments?.getLong(
+//            TypeArg,
+//        ) ?: NoteType.NOTE.index
 
     //            navController
 //            .currentBackStackEntryAsState().value?.toRoute<Main>() ?:

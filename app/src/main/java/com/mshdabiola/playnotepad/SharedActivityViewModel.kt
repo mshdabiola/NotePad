@@ -157,7 +157,7 @@ sealed interface SharedActivityUiState {
             useDynamicColor = false,
             shouldHideOnboarding = false,
             contrast = Contrast.High,
-            mainData = MainData.Note
+            mainData = MainData.Note,
         ),
         val notepad: NotePad = NotePad(),
         val labels: List<Label> = emptyList(),
