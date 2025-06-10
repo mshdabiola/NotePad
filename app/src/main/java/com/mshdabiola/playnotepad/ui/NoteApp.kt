@@ -41,7 +41,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.navOptions
 import com.mshdabiola.about.navigateToAbout
 import com.mshdabiola.designsystem.component.NoteBackground
 import com.mshdabiola.designsystem.component.NoteGradientBackground
