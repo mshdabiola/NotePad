@@ -19,6 +19,7 @@ message UserPreferences {
 
     ThemeContrastProto contrast = 5;
 
+    int64 main_screen_type = 6;
 
-    // NEXT AVAILABLE ID: 6
+    // NEXT AVAILABLE ID: 7 // Update this comment for the next person
 }
