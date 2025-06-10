@@ -45,4 +45,8 @@ class FakeUserDataRepository @Inject constructor(
     override suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
         userPreferencesRepository.setShouldHideOnboarding(shouldHideOnboarding)
     }
+
+    override suspend fun setMainData(mainData: Long) {
+        userPreferencesRepository.setMainData(mainData)
+    }
 }
