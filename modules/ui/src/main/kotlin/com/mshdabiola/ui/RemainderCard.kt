@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material3.Icon
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.icon.NoteIcon
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
@@ -51,14 +51,14 @@ fun ReminderCard(
             if (interval > 0) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Default.Repeat,
+                    imageVector = NoteIcon.Repeat,
                     contentDescription = "",
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             } else {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Outlined.Alarm,
+                    imageVector = NoteIcon.Alarm,
                     contentDescription = "",
                 )
                 Spacer(modifier = Modifier.width(2.dp))
