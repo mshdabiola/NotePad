@@ -17,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -176,7 +175,7 @@ fun GalleryTopAppBar(
                 Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
-        title =  name,
+        title = name,
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
