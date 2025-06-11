@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AddBox
+import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Brush
 import androidx.compose.material.icons.outlined.Cancel
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
@@ -47,6 +49,8 @@ import com.mshdabiola.designsystem.R
 
 object NoteIcon {
 
+    val Alarm = Icons.Outlined.Alarm
+    val Repeat = Icons.Outlined.Repeat
     val Edit = Icons.Outlined.Edit
     val ViewAgenda = Icons.Outlined.ViewAgenda
     val Menu = Icons.Outlined.Menu
