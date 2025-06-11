@@ -1,14 +1,14 @@
 package com.mshdabiola.gallery
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalSharedTransitionApi
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,39 +19,103 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteImage
-import com.mshdabiola.ui.LocalSharedStScope
-import com.mshdabiola.ui.PreviewContainer
+import com.mshdabiola.ui.FirebaseScreenLog
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
+import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun GalleryScreen(
-    modifier: Modifier = Modifier,
-    galleryUiState: GalleryUiState,
-    pagerState: PagerState,
+    viewModel: GalleryViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    onToText: (String) -> Unit = {},
-    onSend: () -> Unit = {},
-    onCopy: () -> Unit = {},
-    delete: () -> Unit = {},
 ) {
-    val sharedTransitionScope = LocalSharedStScope.current
-    val animatedContentScope = LocalNavAnimatedContentScope.current
+    val coroutineScope = rememberCoroutineScope()
+    FirebaseScreenLog(screen = "gallery_screen")
+    val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
+    GalleryScreen(
+        galleryUiState = galleryUiState.value,
+        onBack = onBack,
+        onDelete = viewModel::deleteImage,
+        onToText = {
+            coroutineScope.launch {
+                viewModel.onImage(it)
+                onBack()
+            }
+        },
+    )
+}
+
+@Composable
+fun GalleryScreen(
+    galleryUiState: GalleryUiState,
+    onBack: () -> Unit = {},
+    onDelete: (Long) -> Unit = {},
+    onToText: (String) -> Unit = {},
+) {
+    val pagerState = rememberPagerState() {
+        galleryUiState.images.size
+    }
+//    var currIndex = remember(pagerState.currentPage) {
+//        pa
+//    }
+    LaunchedEffect(key1 = galleryUiState.currentIndex, block = {
+        if (galleryUiState.images.isNotEmpty()) {
+            delay(1000)
+            pagerState.animateScrollToPage(page = galleryUiState.currentIndex)
+        }
+    })
+    val context = LocalContext.current
+    val onSend = {
+        val index = pagerState.currentPage
+        val image = galleryUiState.images[index]
+
+        val file = File(image.path)
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+        val intent = ShareCompat.IntentBuilder(context)
+            .setType("image/*")
+            .setStream(uri)
+            .setChooserTitle("NotePad")
+            .createChooserIntent()
+
+        context.startActivity(intent)
+    }
+    val onCopy = {
+        val index = pagerState.currentPage
+        val image = galleryUiState.images[index]
+        val file = File(image.path)
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+
+        val content = context.contentResolver
+        val clip = ClipData.newUri(content, "image", uri)
+        val c = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        c.setPrimaryClip(clip)
+    }
+    val delete = {
+        val index = pagerState.currentPage
+        val image = galleryUiState.images[index]
+        onDelete(image.id)
+    }
+
     Scaffold(
-        modifier = modifier,
         topBar = {
             GalleryTopAppBar(
                 onBack = onBack,
@@ -65,55 +129,30 @@ fun GalleryScreen(
     ) { paddingValues ->
 
         HorizontalPager(
-            modifier = Modifier
-                .padding(paddingValues)
-                .testTag("gallery:pager"),
+            modifier = Modifier.padding(paddingValues),
             state = pagerState,
-        ) { page ->
+        ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                val image = galleryUiState.images.getOrNull(page)
-                // / currIndex=page
+                val image = galleryUiState.images.getOrNull(it)
+                // / currIndex=it
                 if (image != null) {
-                    with(sharedTransitionScope) {
-                        ZoomableAsyncImage(
-                            modifier = Modifier
-                                .sharedElement(
-                                    sharedContentState = rememberSharedContentState("image_$page"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                )
-                                .fillMaxSize()
-                                .testTag("gallery:image_$page"),
-                            model = image.path,
-                            contentDescription = "",
-                            alignment = Alignment.Center,
+                    ZoomableAsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = image.path,
+                        contentDescription = "",
+                        alignment = Alignment.Center,
 
-                        )
-                    }
+                    )
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-@SuppressLint("UnusedSharedTransitionModifierParameter")
 @Preview
 @Composable
 fun GalleryScreenPreview() {
-    PreviewContainer {
-        GalleryScreen(
-            galleryUiState = GalleryUiState(
-                images = listOf(
-                    NoteImage(id = 1),
-                    NoteImage(id = 1),
-                    NoteImage(id = 1),
-
-                ),
-
-            ),
-            pagerState = rememberPagerState(1) { 2 },
-        )
-    }
+    GalleryScreen(galleryUiState = GalleryUiState(), onDelete = {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,29 +170,17 @@ fun GalleryTopAppBar(
         mutableStateOf(false)
     }
 
-    TopAppBar(
+    NoteTopAppBar(
         navigationIcon = {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier.testTag("gallery:back_button"),
-            ) {
-                Icon(
-                    imageVector = NoteIcon.ArrowBack,
-                    contentDescription = "back",
-                )
+            IconButton(onClick = onBack) {
+                Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
-        title = { Text(text = name, modifier = Modifier.testTag("gallery:title")) },
+        title =  name,
         actions = {
             Box {
-                IconButton(
-                    onClick = { showDropDown = true },
-                    modifier = Modifier.testTag("gallery:more_options_button"),
-                ) {
-                    Icon(
-                        NoteIcon.MoreVert,
-                        contentDescription = "more",
-                    )
+                IconButton(onClick = { showDropDown = true }) {
+                    Icon(NoteIcon.MoreVert, contentDescription = "more")
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -162,7 +189,6 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onGrabText()
                         },
-                        modifier = Modifier.testTag("gallery:grab_text_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
@@ -170,7 +196,6 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onCopy()
                         },
-                        modifier = Modifier.testTag("gallery:copy_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
@@ -178,7 +203,6 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onSend()
                         },
-                        modifier = Modifier.testTag("gallery:send_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
@@ -186,7 +210,6 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onDelete()
                         },
-                        modifier = Modifier.testTag("gallery:delete_menu_item"),
                     )
                 }
             }

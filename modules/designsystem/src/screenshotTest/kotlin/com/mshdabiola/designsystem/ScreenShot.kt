@@ -12,10 +12,6 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 @Composable
 private fun TopAppBarScreenShot() {
     NoteTopAppBar(
-        titleRes = stringResource(android.R.string.untitled),
-        navigationIcon = NoteIcon.Search,
-        navigationIconContentDescription = "Navigation icon",
-        actionIcon = NoteIcon.MoreVert,
-        actionIconContentDescription = "Action icon",
+        title = stringResource(android.R.string.untitled),
     )
 }

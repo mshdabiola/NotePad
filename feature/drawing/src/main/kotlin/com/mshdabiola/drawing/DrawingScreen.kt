@@ -1,5 +1,9 @@
 package com.mshdabiola.drawing
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,99 +17,151 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.ui.Board
-import com.mshdabiola.ui.DrawingBar
-import com.mshdabiola.ui.DrawingController
+import com.mshdabiola.ui.FirebaseScreenLog
+import java.io.File
 import com.mshdabiola.designsystem.R as Rd
+
+@Composable
+fun DrawingScreen(
+    viewModel: DrawingViewModel = hiltViewModel(),
+    onBack: () -> Unit,
+) {
+    FirebaseScreenLog(screen = "drawing_screen")
+    val context = LocalContext.current
+    BackHandler {
+        viewModel.saveImage(context)
+        onBack()
+    }
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
+                super.onPause(owner)
+                println("onPause")
+                viewModel.saveImage(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    DrawingScreen(
+        onBackk = {
+            viewModel.saveImage(context)
+            onBack()
+        },
+        filePath = viewModel.drawingUiState.filePath,
+        controller = viewModel.controller,
+        onDeleteImage = {
+            viewModel.deleteImage()
+            onBack()
+        },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingScreen(
-    modifier: Modifier = Modifier,
     onBackk: () -> Unit = {},
-    controller: DrawingController = remember { DrawingController() },
-    drawingUiState: DrawingUiState = DrawingUiState(),
+    controller: DrawingController = rememberDrawingController(),
+    filePath: String = "",
     onDeleteImage: () -> Unit = {},
-    onCopy: () -> Unit = {},
-    onSend: () -> Unit = {},
 ) {
     var showDropDown by remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
+    val onSend = {
+        val file = File(filePath)
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+        val intent = ShareCompat.IntentBuilder(context)
+            .setType("image/*")
+            .setStream(uri)
+            .setChooserTitle("NotePad")
+            .createChooserIntent()
+
+        context.startActivity(intent)
+    }
+    val onCopy = {
+        val file = File(filePath)
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+
+        val content = context.contentResolver
+        val clip = ClipData.newUri(content, "image", uri)
+        val c = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        c.setPrimaryClip(clip)
+    }
 
     Scaffold(
-        modifier = modifier,
+
         topBar = {
-            TopAppBar(
+            NoteTopAppBar(
                 navigationIcon = {
-                    IconButton(
-                        onClick = onBackk,
-                        modifier = Modifier.testTag("drawing:back_button"),
-                    ) {
+                    IconButton(onClick = onBackk) {
                         Icon(
                             imageVector = NoteIcon.ArrowBack,
                             contentDescription = "back",
                         )
                     }
                 },
-                title = {
-                    Text(
-                        text = stringResource(Rd.string.modules_designsystem_drawing),
-                        modifier = Modifier.testTag("drawing:title"),
-                    )
-                },
+                title = stringResource(Rd.string.modules_designsystem_drawing),
 
                 actions = {
                     IconButton(
-                        enabled = controller.canUndo,
+                        enabled = controller.canUndo.value,
                         onClick = { controller.undo() },
-                        modifier = Modifier.testTag("drawing:undo_button"),
                     ) {
-                        Icon(imageVector = NoteIcon.Undo, contentDescription = "undo")
+                        Icon(imageVector = NoteIcon.Undo, contentDescription = "redo")
                     }
                     IconButton(
-                        enabled = controller.canRedo,
+                        enabled = controller.canRedo.value,
                         onClick = { controller.redo() },
-                        modifier = Modifier.testTag("drawing:redo_button"),
                     ) {
                         Icon(imageVector = NoteIcon.Redo, contentDescription = "redo")
                     }
                     Box {
-                        IconButton(
-                            onClick = { showDropDown = true },
-                            enabled = drawingUiState.drawings.isNotEmpty(),
-                            modifier = Modifier.testTag("drawing:more_options_button"),
-                        ) {
+                        IconButton(onClick = { showDropDown = true }) {
                             Icon(NoteIcon.MoreVert, contentDescription = "more")
                         }
                         DropdownMenu(
                             expanded = showDropDown,
                             onDismissRequest = { showDropDown = false },
                         ) {
-//                            DropdownMenuItem(
-//                                text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
-//                                onClick = {
-//                                    showDropDown = false
-//                                    //  onGrabText()
-//                                },
-//                            )
+                            DropdownMenuItem(
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_grab_image_text)) },
+                                onClick = {
+                                    showDropDown = false
+                                    //  onGrabText()
+                                },
+                            )
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
                                 onClick = {
                                     showDropDown = false
                                     onCopy()
                                 },
-                                modifier = Modifier.testTag("drawing:copy_menu_item"),
                             )
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
@@ -113,7 +169,6 @@ fun DrawingScreen(
                                     showDropDown = false
                                     onSend()
                                 },
-                                modifier = Modifier.testTag("drawing:send_menu_item"),
                             )
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
@@ -121,7 +176,6 @@ fun DrawingScreen(
                                     showDropDown = false
                                     onDeleteImage()
                                 },
-                                modifier = Modifier.testTag("drawing:delete_menu_item"),
                             )
                         }
                     }
@@ -131,18 +185,15 @@ fun DrawingScreen(
         bottomBar = {
             DrawingBar(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .testTag("drawing:drawing_bar"),
+                    .padding(horizontal = 8.dp),
                 controller = controller,
             )
         },
     ) { paddingValues: PaddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Board(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("drawing:board"),
-                controller = controller,
+                modifier = Modifier.fillMaxSize(),
+                drawingController = controller,
             )
         }
     }
