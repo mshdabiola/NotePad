@@ -13,7 +13,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
@@ -72,9 +72,12 @@ fun LabelScreen(
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             if (labelScreenUiState.showAddLabel) {
-                TextButton(onClick = { onCreateLabel() }) {
-                    Icon(imageVector = NoteIcon.Add, contentDescription = "add")
-                    Spacer(modifier = Modifier.width(16.dp))
+                NoteTextButton(
+                    onClick = { onCreateLabel() },
+                    leadingIcon = {
+                        Icon(imageVector = NoteIcon.Add, contentDescription = "add")
+                    },
+                ) {
                     Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${labelScreenUiState.editText}\"")
                 }
             }
