@@ -3,11 +3,11 @@ package com.mshdabiola.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.mshdabiola.designsystem.component.NoteLoadingWheel
 
 @Composable
 fun Waiting(modifier: Modifier = Modifier) {
@@ -16,7 +16,7 @@ fun Waiting(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CircularProgressIndicator()
+        NoteLoadingWheel("")
         Text("Loading...")
     }
 }

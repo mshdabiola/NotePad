@@ -1,15 +1,15 @@
 package com.mshdabiola.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.mshdabiola.designsystem.component.NoteButton
+import com.mshdabiola.designsystem.component.NoteTextButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +23,7 @@ fun TimeDialog(
         DatePickerDialog(
             onDismissRequest = onDismissRequest,
             confirmButton = {
-                Button(onClick = {
+                NoteButton(onClick = {
                     onSetTime()
 
                     onDismissRequest()
@@ -32,7 +32,7 @@ fun TimeDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = onDismissRequest) {
+                NoteTextButton(onClick = onDismissRequest) {
                     Text(text = "Cancel")
                 }
             },
