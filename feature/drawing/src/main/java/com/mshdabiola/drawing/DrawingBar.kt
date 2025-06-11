@@ -21,10 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.NoteTab
+import com.mshdabiola.designsystem.component.NoteTabRow
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.model.DRAW_MODE
 import com.mshdabiola.ui.FlowLayout2
 import kotlinx.coroutines.launch
@@ -87,10 +87,10 @@ fun DrawingBar(
     val coroutineScope = rememberCoroutineScope()
     Surface(modifier) {
         Column {
-            TabRow(
+            NoteTabRow(
                 selectedTabIndex = pagerState.currentPage,
             ) {
-                Tab(
+                NoteTab(
                     selected = pagerState.currentPage == 0,
                     onClick = {
                         controller.draw_mode = DRAW_MODE.ERASE
@@ -116,7 +116,7 @@ fun DrawingBar(
                         )
                     }
                 }
-                Tab(
+                NoteTab(
                     selected = pagerState.currentPage == 1,
                     onClick = {
                         controller.draw_mode = DRAW_MODE.PEN
@@ -146,9 +146,8 @@ fun DrawingBar(
                     }
                 }
 
-                Tab(
+                NoteTab(
                     selected = pagerState.currentPage == 2,
-                    unselectedContentColor = Color.Gray,
                     onClick = {
                         controller.draw_mode = DRAW_MODE.MARKER
                         controller.colorAlpha = 1f
@@ -176,9 +175,8 @@ fun DrawingBar(
                         )
                     }
                 }
-                Tab(
+                NoteTab(
                     selected = pagerState.currentPage == 3,
-                    unselectedContentColor = Color.Gray,
                     onClick = {
                         controller.draw_mode = DRAW_MODE.CRAYON
                         controller.colorAlpha = 0.5f
@@ -227,7 +225,7 @@ fun DrawingBar(
 //
 
                         0 -> {
-                            TextButton(onClick = { controller.clearPath() }) {
+                            NoteTextButton(onClick = { controller.clearPath() }) {
                                 Text(text = stringResource(Rd.string.modules_designsystem_clear_canvas))
                             }
                         }
