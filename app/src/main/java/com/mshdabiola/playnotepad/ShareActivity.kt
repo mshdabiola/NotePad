@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -50,9 +49,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil3.compose.AsyncImage
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.designsystem.theme.NoteTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.ThemeBrand
@@ -122,7 +122,7 @@ class ShareActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            SkTheme(
+            NoteTheme(
                 darkTheme = darkTheme,
                 disableDynamicTheming = shouldDisableDynamicTheming(uiState),
             ) {
@@ -314,7 +314,7 @@ fun ActionEditScreen(
             }
             if (showLabel) {
                 item {
-                    TextButton(onClick = { showLabelDialog() }) {
+                    NoteTextButton(onClick = { showLabelDialog() }) {
                         Text(stringResource(Rd.string.modules_designsystem_add_labels))
                     }
                 }
@@ -338,7 +338,7 @@ fun EditLabels(
                 Text(stringResource(Rd.string.modules_designsystem_add_labels))
             },
             confirmButton = {
-                TextButton(onClick = { onDismissRequest() }) {
+                NoteTextButton(onClick = { onDismissRequest() }) {
                     Text(stringResource(Rd.string.modules_designsystem_close))
                 }
             },
