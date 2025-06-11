@@ -39,14 +39,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -76,7 +74,9 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
+import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
@@ -627,7 +627,7 @@ fun RenameLabelAlertDialog(
                 TextField(value = name, onValueChange = { name = it })
             },
             confirmButton = {
-                Button(
+                NoteButton(
                     onClick = {
                         onDismissRequest()
                         onChangeName(name)
@@ -637,7 +637,7 @@ fun RenameLabelAlertDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
+                NoteTextButton(onClick = { onDismissRequest() }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
@@ -665,7 +665,7 @@ fun DeleteLabelAlertDialog(
                 Text(text = stringResource(Rd.string.modules_designsystem_rename_label_detail))
             },
             confirmButton = {
-                TextButton(
+                NoteTextButton(
                     onClick = {
                         onDismissRequest()
                         onDelete()
@@ -675,7 +675,7 @@ fun DeleteLabelAlertDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
+                NoteTextButton(onClick = { onDismissRequest() }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
@@ -721,7 +721,7 @@ fun LabelBox(
         ) {
             Text(modifier = Modifier.weight(1f), text = title)
             if (list.size > 3) {
-                TextButton(onClick = { showMore = !showMore }) {
+                NoteTextButton(onClick = { showMore = !showMore }) {
                     Text(
                         text = if (!showMore) {
                             stringResource(id = Rd.string.modules_designsystem_more)

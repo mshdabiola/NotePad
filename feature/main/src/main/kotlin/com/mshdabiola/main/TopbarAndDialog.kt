@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -32,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -61,6 +59,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.mshdabiola.designsystem.component.NoteButton
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
@@ -469,7 +469,7 @@ fun RenameLabelAlertDialog(
                 TextField(value = name, onValueChange = { name = it })
             },
             confirmButton = {
-                Button(
+                NoteButton(
                     onClick = {
                         onDismissRequest()
                         onChangeName(name)
@@ -479,7 +479,7 @@ fun RenameLabelAlertDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
+                NoteTextButton(onClick = { onDismissRequest() }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
@@ -507,7 +507,7 @@ fun DeleteLabelAlertDialog(
                 Text(text = stringResource(Rd.string.modules_designsystem_rename_details))
             },
             confirmButton = {
-                TextButton(
+                NoteTextButton(
                     onClick = {
                         onDismissRequest()
                         onDelete()
@@ -517,7 +517,7 @@ fun DeleteLabelAlertDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
+                NoteTextButton(onClick = { onDismissRequest() }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_cancel))
                 }
             },
@@ -635,8 +635,8 @@ fun NoteCard(
 
     OutlinedCard(
         modifier = modifier.combinedClickable(
-            onClick = { notePad.id.let { onCardClick(it) } },
-            onLongClick = { notePad.id.let { onLongClick(it) } },
+            onClick = { onCardClick(notePad.id) },
+            onLongClick = { onLongClick(notePad.id) },
         ),
         border = if (notePad.selected) {
             BorderStroke(3.dp, Color.Blue)
