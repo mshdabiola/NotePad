@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteDisplayCategory
@@ -114,7 +114,7 @@ fun MainNavigation(
                     modifier = Modifier.weight(1f),
                     text = stringResource(Rd.string.modules_designsystem_labels),
                 )
-                TextButton(onClick = { navigateToLevel(false) }) {
+                NoteTextButton(onClick = { navigateToLevel(false) }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_edit))
                 }
             }
