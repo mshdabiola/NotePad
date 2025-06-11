@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.designsystem.theme.NoteTheme
 
 /**
  * Takes six screenshots combining light/dark and default/Android themes and whether dynamic color
@@ -87,7 +87,7 @@ fun Capture(
     description: String = "",
     content: @Composable () -> Unit,
 ) {
-    SkTheme(
+    NoteTheme(
         androidTheme = androidTheme,
         darkTheme = darkMode,
         disableDynamicTheming = !dynamicTheming,
