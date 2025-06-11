@@ -87,6 +87,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
@@ -405,8 +406,7 @@ fun EditScreen(
                     }
                 },
             topBar = {
-                TopAppBar(
-                    title = { },
+                NoteTopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     navigationIcon = {
                         IconButton(

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mshdabiola.designsystem.component.NoteTextField
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.collections.immutable.toImmutableList
@@ -58,15 +59,13 @@ fun LabelScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            NoteTopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
-                title = {
-                    Text(text = stringResource(Rd.string.modules_designsystem_edit_label))
-                },
+                title =stringResource(Rd.string.modules_designsystem_edit_label),
             )
         },
     ) { paddingValues ->

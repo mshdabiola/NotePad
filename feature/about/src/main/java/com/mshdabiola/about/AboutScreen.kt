@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.datetime.Instant
@@ -57,15 +58,14 @@ fun AboutScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            NoteTopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
-                title = {
-                    Text(text = stringResource(Rd.string.modules_designsystem_about))
-                },
+                title = stringResource(Rd.string.modules_designsystem_about)
+
             )
         },
     ) { paddingValues ->

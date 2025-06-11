@@ -33,6 +33,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import java.io.File
@@ -116,7 +117,7 @@ fun DrawingScreen(
     Scaffold(
 
         topBar = {
-            TopAppBar(
+            NoteTopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackk) {
                         Icon(
@@ -125,9 +126,7 @@ fun DrawingScreen(
                         )
                     }
                 },
-                title = {
-                    Text(stringResource(Rd.string.modules_designsystem_drawing))
-                },
+                title = stringResource(Rd.string.modules_designsystem_drawing),
 
                 actions = {
                     IconButton(

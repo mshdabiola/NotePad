@@ -34,6 +34,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.delay
@@ -169,13 +170,13 @@ fun GalleryTopAppBar(
         mutableStateOf(false)
     }
 
-    TopAppBar(
+    NoteTopAppBar(
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
-        title = { Text(text = name) },
+        title =  name,
         actions = {
             Box {
                 IconButton(onClick = { showDropDown = true }) {
