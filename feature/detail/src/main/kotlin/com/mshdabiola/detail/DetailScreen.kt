@@ -50,7 +50,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -86,6 +85,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.mshdabiola.designsystem.component.NoteTextButton
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
@@ -580,7 +580,7 @@ fun EditScreen(
                         }
 
                         item {
-                            TextButton(onClick = addItem) {
+                            NoteTextButton(onClick = addItem) {
                                 Icon(imageVector = NoteIcon.Add, contentDescription = "")
 
                                 Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
@@ -589,11 +589,15 @@ fun EditScreen(
 
                         if (checkNote.isNotEmpty()) {
                             item {
-                                TextButton(onClick = { showCheckNote = !showCheckNote }) {
-                                    Icon(
-                                        imageVector = if (showCheckNote)NoteIcon.More else NoteIcon.Less,
-                                        contentDescription = "",
-                                    )
+                                NoteTextButton(
+                                    onClick = { showCheckNote = !showCheckNote },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = if (showCheckNote)NoteIcon.More else NoteIcon.Less,
+                                            contentDescription = "",
+                                        )
+                                    },
+                                ) {
                                     Text(
                                         text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
                                         style = MaterialTheme.typography.titleMedium,
