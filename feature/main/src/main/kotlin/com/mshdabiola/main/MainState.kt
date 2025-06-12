@@ -15,6 +15,7 @@ sealed class MainState {
         val label: List<SearchSort.Label> = emptyList(),
         val searchSort: SearchSort? = null,
         val mainData: MainData = MainData.Note,
+        val setOfSelected: Set<Long> = emptySet(),
 
     ) : MainState()
 
