@@ -159,7 +159,7 @@ internal fun MainRoute(
             navigateToSelectLevel((mainState.value as MainState.Success).setOfSelected)
         },
         onCopy = mainViewModel::copyNote,
-        onDelete = mainViewModel::setAllDelete,
+        onDelete = mainViewModel::setAllToTrash,
         onArchive = mainViewModel::setAllArchive,
         onSend = {
             mainViewModel.clearSelected()

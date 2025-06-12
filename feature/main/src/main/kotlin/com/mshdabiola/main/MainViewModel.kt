@@ -282,7 +282,7 @@ internal class MainViewModel
         }
     }
 
-    fun setAllDelete() {
+    fun setAllToTrash() {
         val selected = getSuccess().setOfSelected
         val selectedNotes =
             getSuccess().notePads.filter { selected.contains(it.id) }
