@@ -596,6 +596,7 @@ fun NoteBottomBar(modifier: Modifier = Modifier) {
 fun NoteCard(
     modifier: Modifier = Modifier,
     notePad: NotePad,
+    isSelect: Boolean = false,
     onCardClick: (Long) -> Unit = {},
     onLongClick: (Long) -> Unit = {},
 ) {
@@ -638,7 +639,7 @@ fun NoteCard(
             onClick = { notePad.id.let { onCardClick(it) } },
             onLongClick = { notePad.id.let { onLongClick(it) } },
         ),
-        border = if (notePad.selected) {
+        border = if (isSelect) {
             BorderStroke(3.dp, Color.Blue)
         } else {
             BorderStroke(
@@ -789,7 +790,7 @@ fun NoteCardPreview() {
             color = 2,
             isPin = false,
             background = 3,
-            selected = true,
+//            selected = true,
 
 //            labels = listOf(
 //                "ade",

@@ -21,3 +21,7 @@
       sed -i -e '/androidx.dev/d' settings.gradle.kts
       sed -i -e '/with(target) {/,/^        }/d' -e '/CrashlyticsExtension/d' build-logic/convention/src/main/kotlin/AndroidApplicationFirebaseConventionPlugin.kt
       sed -i -e '/libs.firebase/d' build-logic/convention/build.gradle.kts
+
+
+
+      ./gradlew --rerun-tasks assembleFossReliantDebug -PenableComposeCompilerMetrics=true -PenableComposeCompilerReports=true

@@ -173,20 +173,16 @@ internal class MainViewModel
      * @param id The ID of the notepad card that was selected or deselected.
      */
     fun onSelectCard(id: Long) {
-        val listNOtePad = getSuccess().notePads.toMutableList()
-        val index = listNOtePad.indexOfFirst { it.id == id }
-        val notepad = listNOtePad[index]
-        val newNotepad = notepad.copy(selected = !notepad.selected)
-
-        listNOtePad[index] = newNotepad
-
-        _mainState.value = getSuccess().copy(notePads = listNOtePad.toImmutableList())
+        val selected = getSuccess().setOfSelected
+        if (selected.contains(id)) {
+            _mainState.value = getSuccess().copy(setOfSelected = selected - id)
+        } else {
+            _mainState.value = getSuccess().copy(setOfSelected = selected + id)
+        }
     }
 
     fun clearSelected() {
-        val listNOtePad =
-            getSuccess().notePads.map { it.copy(selected = false) }
-        _mainState.value = getSuccess().copy(notePads = listNOtePad.toImmutableList())
+        _mainState.value = getSuccess().copy(setOfSelected = emptySet())
     }
 
     fun setNoteType(noteType: NoteType) {
@@ -194,8 +190,9 @@ internal class MainViewModel
     }
 
     fun setPin() {
+        val selected = getSuccess().setOfSelected
         val selectedNotepad =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
 
@@ -215,8 +212,9 @@ internal class MainViewModel
     }
 
     private fun setAlarm(time: Long, interval: Long?) {
+        val setOfSelected = getSuccess().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { setOfSelected.contains(it.id) }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
@@ -240,8 +238,9 @@ internal class MainViewModel
     }
 
     fun deleteAlarm() {
+        val selected = getSuccess().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
@@ -258,8 +257,9 @@ internal class MainViewModel
     }
 
     fun setAllColor(colorId: Int) {
+        val selected = getSuccess().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(color = colorId) }
@@ -270,8 +270,9 @@ internal class MainViewModel
     }
 
     fun setAllArchive() {
+        val selected = getSuccess().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
@@ -281,9 +282,10 @@ internal class MainViewModel
         }
     }
 
-    fun setAllDelete() {
+    fun setAllToTrash() {
+        val selected = getSuccess().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { it.selected }
+            getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
@@ -295,7 +297,7 @@ internal class MainViewModel
 
     fun copyNote() {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = getSuccess().notePads.single { it.selected }.id
+            val id = getSuccess().setOfSelected.first()
             val notepads = notepadRepository.getOneNotePad(id).first()
 
             if (notepads != null) {

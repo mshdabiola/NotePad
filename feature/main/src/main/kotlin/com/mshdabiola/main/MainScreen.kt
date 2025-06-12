@@ -156,12 +156,10 @@ internal fun MainRoute(
         setAllAlarm = { showDialog = true },
         setAllColor = { showColor = true },
         setAllLabel = {
-            val selectId =
-                (mainState.value as MainState.Success).notePads.filter { it.selected }.map { it.id }
-            navigateToSelectLevel(selectId.toSet())
+            navigateToSelectLevel((mainState.value as MainState.Success).setOfSelected)
         },
         onCopy = mainViewModel::copyNote,
-        onDelete = mainViewModel::setAllDelete,
+        onDelete = mainViewModel::setAllToTrash,
         onArchive = mainViewModel::setAllArchive,
         onSend = {
             mainViewModel.clearSelected()
@@ -383,11 +381,11 @@ fun MainContent(
         }
     }
 
-    val noOfSelected = remember(success.notePads) {
-        success.notePads.count { it.selected }
+    val noOfSelected = remember(success.setOfSelected) {
+        success.setOfSelected.size
     }
     val isAllPin = remember(success.notePads) {
-        success.notePads.filter { it.selected }
+        success.notePads.filter { success.setOfSelected.contains(it.id) }
             .all { it.isPin }
     }
     var isGrid by rememberSaveable { mutableStateOf(true) }
@@ -557,6 +555,7 @@ fun MainContent(
                 items = pinNotePad.first.toImmutableList(),
                 onNoteClick = onNoteClick,
                 onSelectedCard = onSelectedCard,
+                setOfSelected = success.setOfSelected,
             )
 
             if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
@@ -574,6 +573,7 @@ fun MainContent(
                 items = pinNotePad.second.toImmutableList(),
                 onNoteClick = onNoteClick,
                 onSelectedCard = onSelectedCard,
+                setOfSelected = success.setOfSelected,
             )
         }
     }
@@ -585,6 +585,7 @@ fun LazyStaggeredGridScope.noteItems(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     items: List<NotePad>,
+    setOfSelected: Set<Long>,
     onNoteClick: (Long) -> Unit,
     onSelectedCard: (Long) -> Unit,
 ) = items(
@@ -600,6 +601,7 @@ fun LazyStaggeredGridScope.noteItems(
                     animatedVisibilityScope = animatedContentScope,
 
                 ),
+                isSelect = setOfSelected.contains(note.id),
                 notePad = note,
                 onCardClick = onNoteClick,
                 onLongClick = onSelectedCard,

@@ -15,7 +15,6 @@ data class NotePad(
     val editDateString: String = "Jul 3",
     val reminderString: String = "feb 1",
     val noteType: NoteType = NoteType.NOTE,
-    val selected: Boolean = false,
     val images: List<NoteImage> = emptyList(),
     val voices: List<NoteVoice> = emptyList(),
     val checks: List<NoteCheck> = emptyList(),
