@@ -102,7 +102,7 @@ fun NoteApp(
                     MainNavigation(
                         labels = labels.value,
                         currentMainArg = (uiState as? MainActivityUiState.Success)
-                            ?.userData?.mainData?.index ?: MainData.Note.index,
+                            ?.userData?.mainData ?: MainData(),
                         onNavigation = {
                             viewModel.setMainData(it)
                             appState.navController.popBackStack()
