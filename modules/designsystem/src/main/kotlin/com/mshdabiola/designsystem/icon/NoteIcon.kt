@@ -12,10 +12,10 @@ import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Brush
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
@@ -80,7 +80,7 @@ object NoteIcon {
     val CheckBox = Icons.Outlined.CheckBox
     val Image = Icons.Outlined.Image
     val KeyboardVoice = Icons.Outlined.KeyboardVoice
-    val Cancel = Icons.Outlined.Cancel
+    val Cancel = Icons.Outlined.Close
     val ArrowBack = Icons.AutoMirrored.Outlined.ArrowBack
     val MoreVert = Icons.Outlined.MoreVert
     val Search = Icons.Outlined.Search
