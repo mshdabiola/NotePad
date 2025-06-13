@@ -41,9 +41,10 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -789,6 +790,7 @@ fun NoteCheck(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NoteVoicePlayer(
     noteVoiceUiState: NoteVoice,
@@ -814,7 +816,7 @@ fun NoteVoicePlayer(
                     }
                 }
             }
-            LinearProgressIndicator(
+            LinearWavyProgressIndicator(
                 progress = { (noteVoiceUiState.currentProgress.toFloat() / noteVoiceUiState.length) },
                 modifier = Modifier.weight(1f),
             )
