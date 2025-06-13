@@ -32,7 +32,8 @@ class FakeNotePadRepository @Inject constructor() : INotePadRepository {
     }
 
     override fun getOneNotePad(id: Long): Flow<NotePad?> {
-        return flow { NotePad() }
+        println("id2 $id")
+        return flow { NotePad(id = id) }
     }
 
     override suspend fun deleteTrashType() {

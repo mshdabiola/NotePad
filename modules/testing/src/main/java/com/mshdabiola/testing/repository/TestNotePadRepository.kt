@@ -4,6 +4,7 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
@@ -33,7 +34,9 @@ class TestNotePadRepository : INotePadRepository {
     }
 
     override fun getOneNotePad(id: Long): Flow<NotePad?> {
-        TODO("Not yet implemented")
+        println("id1 $id")
+
+        return flow { NotePad(id = id) }
     }
 
     override suspend fun deleteTrashType() {
