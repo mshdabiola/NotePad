@@ -54,13 +54,7 @@ class UserPreferencesRepository @Inject constructor(
 
                     ThemeContrastProto.THEME_CONTRAST_MEDIUM -> Contrast.Medium
                 },
-                mainData = when (it.mainScreenType) {
-                    MainData.Note.index -> MainData.Note
-                    MainData.Achieve.index -> MainData.Achieve
-                    MainData.Trash.index -> MainData.Trash
-                    MainData.Remainder.index -> MainData.Remainder
-                    else -> MainData.Label(it.mainScreenType)
-                },
+                mainData = MainData(it.mainScreenType),
             )
         }
 
@@ -112,9 +106,9 @@ class UserPreferencesRepository @Inject constructor(
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
         }
     }
-    suspend fun setMainData(index: Long) {
+    suspend fun setMainData(mainData: MainData) {
         userPreferences.updateData {
-            it.copy { this.mainScreenType = index }
+            it.copy { this.mainScreenType = mainData.index }
         }
     }
 }
