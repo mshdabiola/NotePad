@@ -16,11 +16,13 @@ import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.NoteLabelEntity
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -76,9 +78,30 @@ internal class NotePadRepository
         noteCheckDao.deleteByNoteId(noteId)
     }
 
-    override fun getNotePads(noteType: NoteType) = notePadDao
-        .getListOfNotePad(noteType)
-        .map { entities -> entities.map { transform(it.toNotePad()) } }
+    override fun getNotePadsWithMainData(mainData: MainData): Flow<List<NotePad>> {
+        return when (mainData.noteType) {
+            NoteType.LABEL -> {
+                notePadDao.getListOfNotePad()
+                    .map {
+                        it.filter {
+                            it.labels
+                                .any { it.label.id == mainData.index }
+                        }
+                    }
+            }
+
+            NoteType.REMAINDER -> {
+                notePadDao.getListOfNotePadByReminder()
+            }
+
+            else -> notePadDao.getListOfNotePadByNoteType(mainData.noteType)
+        }
+            .map { entities -> entities.map { transform(it.toNotePad()) } }
+    }
+//
+//    override fun getNotePads(noteType: NoteType) = notePadDao
+//        .getListOfNotePad(noteType)
+//        .map { entities -> entities.map { transform(it.toNotePad()) } }
 
     override fun getNotePads() = notePadDao
         .getListOfNotePad().map { entities -> entities.map { transform(it.toNotePad()) } }
@@ -97,7 +120,7 @@ internal class NotePadRepository
     }
 
     override suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
-        val list = getNotePads(NoteType.TRASH).first()
+        val list = getNotePadsWithMainData(MainData(NoteType.TRASH.index)).first()
 
         delete(list)
     }

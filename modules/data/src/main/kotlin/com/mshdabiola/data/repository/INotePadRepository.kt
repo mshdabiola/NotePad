@@ -1,7 +1,7 @@
 package com.mshdabiola.data.repository
 
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -14,7 +14,8 @@ interface INotePadRepository {
     suspend fun deleteCheckNote(id: Long, noteId: Long)
 
     suspend fun deleteNoteCheckByNoteId(noteId: Long)
-    fun getNotePads(noteType: NoteType): Flow<List<NotePad>>
+
+    fun getNotePadsWithMainData(mainData: MainData): Flow<List<NotePad>>
     fun getNotePads(): Flow<List<NotePad>>
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
