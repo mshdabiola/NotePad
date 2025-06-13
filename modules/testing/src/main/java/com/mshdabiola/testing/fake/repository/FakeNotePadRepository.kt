@@ -1,8 +1,8 @@
 package com.mshdabiola.testing.fake.repository
 
 import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDate
@@ -23,8 +23,8 @@ class FakeNotePadRepository @Inject constructor() : INotePadRepository {
     override suspend fun deleteNoteCheckByNoteId(noteId: Long) {
     }
 
-    override fun getNotePads(noteType: NoteType): Flow<List<NotePad>> {
-        return flow { emptyList<NotePad>() }
+    override fun getNotePadsWithMainData(mainData: MainData): Flow<List<NotePad>> {
+        TODO("Not yet implemented")
     }
 
     override fun getNotePads(): Flow<List<NotePad>> {

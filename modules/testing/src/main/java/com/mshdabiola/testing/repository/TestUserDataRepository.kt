@@ -61,7 +61,7 @@ class TestUserDataRepository : UserDataRepository {
         }
     }
 
-    override suspend fun setMainData(mainData: Long) {
+    override suspend fun setMainData(mainData: MainData) {
         currentUserData.let { current ->
             _userData.tryEmit(current.copy(mainData = MainData.Note))
         }
