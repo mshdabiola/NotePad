@@ -61,7 +61,7 @@ class LabelViewModel @Inject constructor(
         labels.removeAt(index)
         labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
         viewModelScope.launch {
-            userDataRepository.setMainData(MainData.Note.index)
+            userDataRepository.setMainData(MainData())
             labelRepository.delete(id)
         }
     }
