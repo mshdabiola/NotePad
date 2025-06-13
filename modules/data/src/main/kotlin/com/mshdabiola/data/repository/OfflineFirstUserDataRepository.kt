@@ -8,6 +8,7 @@ import com.mshdabiola.analytics.AnalyticsHelper
 import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.Flow
@@ -46,7 +47,7 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
         analyticsHelper.logOnboardingStateChanged(shouldHideOnboarding)
     }
 
-    override suspend fun setMainData(mainData: Long) {
+    override suspend fun setMainData(mainData: MainData) {
         userPreferencesRepository.setMainData(mainData)
     }
 }
