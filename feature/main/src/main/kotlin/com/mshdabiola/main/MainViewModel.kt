@@ -1,18 +1,15 @@
 package com.mshdabiola.main
 
 import android.util.Log
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
@@ -21,13 +18,13 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -55,138 +52,66 @@ internal class MainViewModel
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-    val searchState = TextFieldState()
+    private val _dateTimeState = MutableStateFlow(DateDialogUiData())
+    val dateTimeState = _dateTimeState.asStateFlow()
+    private lateinit var currentDateTime: LocalDateTime
+    private lateinit var today: LocalDateTime
+    private val timeListDefault = mutableListOf(
+        LocalTime(7, 0, 0),
+        LocalTime(13, 0, 0),
+        LocalTime(19, 0, 0),
+        LocalTime(20, 0, 0),
+        LocalTime(20, 0, 0),
+    )
 
-    private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
-    val mainState = _mainState.asStateFlow()
+    @OptIn(ExperimentalMaterial3Api::class)
+    var datePicker: DatePickerState = DatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        locale = Locale.getDefault(),
+    )
 
-    init {
-        viewModelScope.launch {
-            userDataRepository.userData.collectLatest {
-                if (mainState.value is MainState.Success) {
-                    _mainState.value = getSuccess().copy(mainData = it.mainData)
-                }
-            }
+    @OptIn(ExperimentalMaterial3Api::class)
+    var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
+    private lateinit var currentLocalDate: LocalDate
+
+    private val setOfSelected = MutableStateFlow<Set<Long>>(setOf())
+    private val currentNotepads = userDataRepository
+        .userData
+        .mapLatest { it.mainData }
+        .flatMapLatest {
+            notepadRepository.getNotePadsWithMainData(it)
         }
+    val mainState = combine(
+        currentNotepads,
+        userDataRepository.userData.mapLatest { it.mainData },
+        setOfSelected,
+    ) { notepad, mainData, setOfSelected ->
 
-        viewModelScope.launch {
-            combine(
-                mainState,
-                snapshotFlow { searchState.text }
-                    .debounce(500),
-                notepadRepository.getNotePads(),
-            ) { mainState, search, notepad ->
-                Triple(mainState, search, notepad)
-            }.collectLatest { triple ->
+        MainState.Success(
+            notePads = notepad,
+            mainData = mainData,
+            setOfSelected = setOfSelected,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = MainState.Loading,
+    )
 
-                val (mainState, search, notepad) = triple
-                if (mainState is MainState.Success) {
-                    if (mainState.isSearch) {
-                        when {
-                            mainState.searchSort != null -> {
-                                var list = when (val searchsort = mainState.searchSort) {
-                                    is SearchSort.Color -> {
-                                        notepad.filter { it.color == searchsort.colorIndex }
-                                    }
-                                    is SearchSort.Label -> {
-                                        notepad.filter { it.labels.any { it.id == searchsort.id } }
-                                    }
-                                    is SearchSort.Type -> {
-                                        when (searchsort.index) {
-                                            0 -> notepad.filter { it.reminder > 0 }
-                                            1 -> notepad.filter { it.isCheck }
-                                            2 -> notepad.filter { it.images.isNotEmpty() }
-                                            3 -> notepad.filter { it.voices.isNotEmpty() }
-                                            4 -> notepad.filter { it.images.any { it.isDrawing } }
-                                            5 -> notepad.filter { it.uris.isNotEmpty() }
-                                            else -> notepad
-                                        }
-                                    }
-
-                                    null -> TODO()
-                                }
-
-                                if (search.isNotBlank()) {
-                                    list = list.filter { it.toString().contains(search, true) }
-                                }
-
-                                _mainState.update {
-                                    getSuccess().copy(notePads = list)
-                                }
-                            }
-                            search.isNotBlank() -> {
-
-                                val list = notepad.filter { it.toString().contains(search, true) }
-                                _mainState.update {
-                                    getSuccess().copy(notePads = list)
-                                }
-                            }
-
-                            else -> {
-                                _mainState.value = getSuccess().copy(
-                                    notePads = emptyList(),
-                                )
-                            }
-                        }
-                    } else {
-
-                        val list =
-                            when (mainState.mainData) {
-                                is MainData.Label -> {
-                                    notepad.filter { it.labels.any { it.id == mainState.mainData.index } }
-                                }
-
-                                is MainData.Remainder -> {
-                                    notepad.filter { it.reminder > 0 }
-                                }
-
-                                else -> {
-                                    notepad.filter {
-                                        it.noteType.index == mainState.mainData.index
-                                    }
-                                }
-                            }
-                        _mainState.value = getSuccess().copy(
-                            notePads = list,
-                        )
-                    }
-                } else {
-                    val mainData = userDataRepository.userData.mapLatest { it.mainData }.firstOrNull() ?: MainData.Note
-                    _mainState.value = MainState.Success(
-                        notePads = emptyList(),
-                        mainData = mainData,
-                    )
-
-                    initDate()
-                }
-            }
-        }
-    }
-
-    /**
-     * Handles the selection/deselection of a notepad card.
-     *
-     * This function is triggered when a user selects or deselects a notepad card.
-     * It updates the selected state of the corresponding notepad in the list and
-     * updates the UI state accordingly.
-     *
-     * @param id The ID of the notepad card that was selected or deselected.
-     */
     fun onSelectCard(id: Long) {
         val selected = getSuccess().setOfSelected
         if (selected.contains(id)) {
-            _mainState.value = getSuccess().copy(setOfSelected = selected - id)
+            setOfSelected.value = selected - id
         } else {
-            _mainState.value = getSuccess().copy(setOfSelected = selected + id)
+            setOfSelected.value = selected + id
         }
     }
 
     fun clearSelected() {
-        _mainState.value = getSuccess().copy(setOfSelected = emptySet())
+        setOfSelected.value = emptySet()
     }
 
     fun setNoteType(noteType: NoteType) {
-        _mainState.value = MainState.Success(noteType = noteType)
     }
 
     fun setPin() {
@@ -343,28 +268,6 @@ internal class MainViewModel
             }
         }
     }
-
-    private val _dateTimeState = MutableStateFlow(DateDialogUiData())
-    val dateTimeState = _dateTimeState.asStateFlow()
-    private lateinit var currentDateTime: LocalDateTime
-    private lateinit var today: LocalDateTime
-    private val timeListDefault = mutableListOf(
-        LocalTime(7, 0, 0),
-        LocalTime(13, 0, 0),
-        LocalTime(19, 0, 0),
-        LocalTime(20, 0, 0),
-        LocalTime(20, 0, 0),
-    )
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    var datePicker: DatePickerState = DatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis(),
-        locale = Locale.getDefault(),
-    )
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
-    private lateinit var currentLocalDate: LocalDate
 
     // date and time dialog logic
 
@@ -656,75 +559,4 @@ internal class MainViewModel
     }
 
     private fun getSuccess() = mainState.value as MainState.Success
-
-    fun toggleSearch() {
-        viewModelScope.launch {
-            val isSearch = getSuccess().isSearch
-
-            if (isSearch) {
-                _mainState.update {
-                    getSuccess().copy(
-                        isSearch = false,
-                        types = emptyList(),
-                        color = emptyList(),
-                        label = emptyList(),
-                        searchSort = null,
-                    )
-                }
-            } else {
-                val notes = notepadRepository.getNotePads().first()
-
-                val labels = notes.asSequence().filter { it.labels.isEmpty().not() }
-                    .map { it.labels }
-                    .flatten()
-                    .distinct()
-                    .map { SearchSort.Label(it.label, 6, it.id) }.toList()
-
-                val colors = notes.asSequence()
-                    .map { it.color }
-                    .distinct()
-                    .map { SearchSort.Color(it) }.toList()
-
-                val type = ArrayList<SearchSort.Type>(6)
-                if (notes.any { it.reminder > 0 }) {
-                    type.add(SearchSort.Type(0))
-                }
-                if (notes.any { it.isCheck }) {
-                    type.add(SearchSort.Type(1))
-                }
-                if (notes.any { it.images.isNotEmpty() }) {
-                    type.add(SearchSort.Type(2))
-                }
-                if (notes.any { it.voices.isNotEmpty() }) {
-                    type.add(SearchSort.Type(3))
-                }
-
-                if (notes.any { it.images.any { it.isDrawing } }) {
-                    type.add(SearchSort.Type(4))
-                }
-
-                if (notes.any { it.uris.isNotEmpty() }) {
-                    type.add(SearchSort.Type(5))
-                }
-
-                _mainState.update {
-                    getSuccess().copy(
-                        isSearch = true,
-                        searchSort = null,
-                        types = type,
-                        color = colors,
-                        label = labels,
-                    )
-                }
-            }
-        }
-    }
-
-    fun onSetSearch(searchSort: SearchSort?) {
-        _mainState.update {
-            getSuccess().copy(
-                searchSort = searchSort,
-            )
-        }
-    }
 }

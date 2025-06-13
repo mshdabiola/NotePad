@@ -8,7 +8,6 @@ import ArchiveTopAppBar
 import LabelTopAppBar
 import MainTopAppBar
 import NoteCard
-import SearchTopBar
 import SelectTopBar
 import TrashTopAppBar
 import androidx.compose.animation.AnimatedVisibility
@@ -37,7 +36,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,6 +76,7 @@ import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.model.MainData
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
@@ -149,7 +148,6 @@ internal fun MainRoute(
         modifier = modifier,
         mainState = mainState.value,
         navigateToEdit = navigateToDetail,
-        searchState = mainViewModel.searchState,
         onSelectedCard = mainViewModel::onSelectCard,
         onClearSelected = mainViewModel::clearSelected,
         setAllPin = mainViewModel::setPin,
@@ -168,8 +166,6 @@ internal fun MainRoute(
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
         onOpenDrawer = onOpenDrawer,
-        toggleSearch = mainViewModel::toggleSearch,
-        onSetSearch = mainViewModel::onSetSearch,
         //   items = timeline,
 
     )
@@ -230,7 +226,6 @@ internal fun MainScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
-    searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onOpenDrawer: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
@@ -246,8 +241,6 @@ internal fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
-    toggleSearch: () -> Unit = {},
-    onSetSearch: (SearchSort?) -> Unit = {},
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -259,7 +252,6 @@ internal fun MainScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
                 success = mainState,
-                searchState = searchState,
                 navigateToEdit = navigateToEdit,
                 onSelectedCard = onSelectedCard,
                 onClearSelected = onClearSelected,
@@ -275,20 +267,12 @@ internal fun MainScreen(
                 onDeleteLabel = onDeleteLabel,
                 onEmptyTrash = onEmptyTrash,
                 onOpenDrawer = onOpenDrawer,
-                toggleSearch = toggleSearch,
-                onSetSearch = onSetSearch,
             )
         }
 
         is MainState.Loading -> {
             LoadingState()
         }
-
-        is MainState.Empty -> {
-            EmptyState()
-        }
-
-        is MainState.Finish -> {}
     }
 
 //    with(sharedTransitionScope) {
@@ -317,7 +301,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier, noteType: NoteType = NoteType.NOTE) {
+private fun EmptyState(modifier: Modifier = Modifier, mainData: MainData = MainData()) {
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -353,7 +337,6 @@ fun MainContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     success: MainState.Success,
-    searchState: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
@@ -369,8 +352,6 @@ fun MainContent(
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     onOpenDrawer: () -> Unit = {},
-    toggleSearch: () -> Unit = {},
-    onSetSearch: (SearchSort?) -> Unit, // ={}
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -420,7 +401,7 @@ fun MainContent(
                     )
                 }
 
-                success.noteType == NoteType.LABEL -> {
+                success.mainData.noteType == NoteType.LABEL -> {
                     LabelTopAppBar(
                         label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
                         onNavigate = { },
@@ -430,24 +411,17 @@ fun MainContent(
                     )
                 }
 
-                success.noteType == NoteType.NOTE -> {
-                    if (success.isSearch) {
-                        SearchTopBar(
-                            state = searchState,
-                            toggleSearch = toggleSearch,
-                        )
-                    } else {
-                        MainTopAppBar(
-                            onNavigate = onOpenDrawer,
-                            scrollBehavior = scrollBehavior,
-                            isGrid = isGrid,
-                            navigateToSearch = toggleSearch,
-                            onToggleGrid = { isGrid = !isGrid },
-                        )
-                    }
+                success.mainData.noteType == NoteType.NOTE -> {
+                    MainTopAppBar(
+                        onNavigate = onOpenDrawer,
+                        scrollBehavior = scrollBehavior,
+                        isGrid = isGrid,
+                        navigateToSearch = {},
+                        onToggleGrid = { isGrid = !isGrid },
+                    )
                 }
 
-                success.noteType == NoteType.TRASH -> {
+                success.mainData.noteType == NoteType.TRASH -> {
                     TrashTopAppBar(
                         onNavigate = { },
                         scrollBehavior = scrollBehavior,
@@ -455,7 +429,7 @@ fun MainContent(
                     )
                 }
 
-                success.noteType == NoteType.REMAINDER -> {
+                success.mainData.noteType == NoteType.REMAINDER -> {
                     ArchiveTopAppBar(
                         name = "Remainder",
                         onNavigate = { },
@@ -464,7 +438,7 @@ fun MainContent(
                     )
                 }
 
-                success.noteType == NoteType.ARCHIVE -> {
+                success.mainData.noteType == NoteType.ARCHIVE -> {
                     ArchiveTopAppBar(
                         onNavigate = { },
                         scrollBehavior = scrollBehavior,
@@ -484,60 +458,60 @@ fun MainContent(
             verticalItemSpacing = 8.dp,
 
         ) {
-            if (success.isSearch && success.notePads.isEmpty()) {
+//            if (success.isSearch && success.notePads.isEmpty()) {
+//                item(span = StaggeredGridItemSpan.FullLine) {
+//                    LabelBox(
+//                        title = stringResource(Rd.string.modules_designsystem_types),
+//                        success.types,
+//                        onItemClick = onSetSearch,
+//                    )
+//                }
+//
+//                item(span = StaggeredGridItemSpan.FullLine) {
+//                    LabelBox(
+//                        title = stringResource(Rd.string.modules_designsystem_labels),
+//                        success.label,
+//                        onItemClick = onSetSearch,
+//                    )
+//                }
+//                item(span = StaggeredGridItemSpan.FullLine) {
+//                    Text(text = stringResource(Rd.string.modules_designsystem_colors))
+//                }
+//
+//                item(span = StaggeredGridItemSpan.FullLine) {
+//                    FlowRow(
+//                        verticalArrangement = Arrangement.spacedBy(4.dp),
+//
+//                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+//                    ) {
+//                        success.color.forEach {
+//                            Surface(
+//                                onClick = {
+//                                    onSetSearch(it)
+//                                },
+//                                shape = CircleShape,
+//                                color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
+//                                modifier = Modifier
+//                                    .width(40.dp)
+//                                    .aspectRatio(1f),
+//
+//                            ) {
+//                                if (it.colorIndex == -1) {
+//                                    Icon(
+//                                        imageVector = NoteIcon.FormatColorReset,
+//                                        contentDescription = "done",
+//                                        tint = Color.Gray,
+//                                        modifier = Modifier.padding(4.dp),
+//                                    )
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+            if (success.notePads.isEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    LabelBox(
-                        title = stringResource(Rd.string.modules_designsystem_types),
-                        success.types,
-                        onItemClick = onSetSearch,
-                    )
-                }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    LabelBox(
-                        title = stringResource(Rd.string.modules_designsystem_labels),
-                        success.label,
-                        onItemClick = onSetSearch,
-                    )
-                }
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_colors))
-                }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    FlowRow(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        success.color.forEach {
-                            Surface(
-                                onClick = {
-                                    onSetSearch(it)
-                                },
-                                shape = CircleShape,
-                                color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .aspectRatio(1f),
-
-                            ) {
-                                if (it.colorIndex == -1) {
-                                    Icon(
-                                        imageVector = NoteIcon.FormatColorReset,
-                                        contentDescription = "done",
-                                        tint = Color.Gray,
-                                        modifier = Modifier.padding(4.dp),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (!success.isSearch && success.notePads.isEmpty()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    EmptyState(noteType = success.noteType)
+                    EmptyState(mainData = success.mainData)
                 }
             }
             if (pinNotePad.first.isNotEmpty()) {
