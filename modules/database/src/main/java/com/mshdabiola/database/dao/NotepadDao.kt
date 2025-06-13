@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.Flow
 interface NotepadDao {
     @Transaction
     @Query("SELECT * FROM note_table WHERE noteType = :noteType ORDER BY id DESC")
-    fun getListOfNotePad(noteType: NoteType): Flow<List<NotePadEntity>>
+    fun getListOfNotePadByNoteType(noteType: NoteType): Flow<List<NotePadEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM note_table WHERE reminder > 0 ORDER BY id DESC")
+    fun getListOfNotePadByReminder(): Flow<List<NotePadEntity>>
 
     @Transaction
     @Query("SELECT * FROM note_table ORDER BY id DESC")
