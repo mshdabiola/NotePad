@@ -10,3 +10,10 @@ plugins {
 android {
     namespace = "com.mshdabiola.domain"
 }
+dependencies {
+    api(projects.modules.data)
+    api(projects.modules.model)
+
+
+    testImplementation(projects.modules.testing)
+}
