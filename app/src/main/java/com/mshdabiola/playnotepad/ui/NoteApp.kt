@@ -8,15 +8,17 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -29,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.about.navigateToAbout
@@ -135,9 +139,10 @@ fun NoteApp(
                     contentColor = MaterialTheme.colorScheme.onBackground,
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
-                    bottomBar = {
+                    floatingActionButton = {
                         if (appState.isMain) {
-                            NoteBottomBar(
+                            NoteFloatingToolbar(
+                                modifier = Modifier.navigationBarsPadding(),
                                 onAddNewNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewNote()
@@ -240,8 +245,9 @@ private fun Modifier.notificationDot(): Modifier =
         }
     }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun NoteBottomBar(
+fun NoteFloatingToolbar(
     modifier: Modifier = Modifier,
     onAddNewNote: () -> Unit = {},
     onAddCheckNote: () -> Unit = {},
@@ -250,9 +256,34 @@ fun NoteBottomBar(
     onAddImageNote: () -> Unit = {},
     isVoiceSupport: Boolean = false,
 ) {
-    BottomAppBar(
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+    HorizontalFloatingToolbar(
         modifier = modifier,
-        actions = {
+        expanded = expanded,
+        floatingActionButton = {
+            FloatingToolbarDefaults.VibrantFloatingActionButton(
+                modifier = Modifier.testTag("main:add"),
+                onClick = {
+                    expanded = !expanded
+                },
+            ) {
+                Icon(
+                    imageVector = if (expanded) NoteIcon.Cancel else NoteIcon.Add,
+                    contentDescription = "add note",
+                )
+            }
+        },
+        colors = vibrantColors,
+        content = {
+            IconButton(
+                modifier = Modifier.testTag("main:note"),
+                onClick = onAddNewNote,
+                colors = IconButtonDefaults.filledIconButtonColors(),
+            ) {
+                Icon(imageVector = NoteIcon.Add, contentDescription = "add note")
+            }
+
             IconButton(
                 modifier = Modifier.testTag("main:check"),
                 onClick = onAddCheckNote,
@@ -283,18 +314,6 @@ fun NoteBottomBar(
                         contentDescription = "add note voice",
                     )
                 }
-            } else {
-                IconButton(
-                    modifier = Modifier.testTag("main:voice"),
-                    onClick = {}, // or show a tooltip
-                    enabled = false,
-                ) {
-                    Icon(
-                        imageVector = NoteIcon.KeyboardVoice,
-                        contentDescription = "add note voice (unavailable)",
-                        tint = Color.Gray, // or other visual cue
-                    )
-                }
             }
 
             IconButton(
@@ -307,15 +326,12 @@ fun NoteBottomBar(
                 )
             }
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.testTag("main:add"),
-                onClick = onAddNewNote,
-                containerColor = MaterialTheme.colorScheme.primary,
-                elevation = FloatingActionButtonDefaults.elevation(),
-            ) {
-                Icon(imageVector = NoteIcon.Add, contentDescription = "add note")
-            }
-        },
     )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview
+@Composable
+fun NoteBottomBarPreview() {
+    NoteFloatingToolbar()
 }
