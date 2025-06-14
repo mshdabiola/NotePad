@@ -1,19 +1,32 @@
+
+import android.view.Surface
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -24,6 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -31,18 +45,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarScrollBehavior
+import androidx.compose.material3.SearchBarValue
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopSearchBar
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,8 +82,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.main.LabelBox
+import com.mshdabiola.main.SearchSort
+import com.mshdabiola.main.SearchState
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
@@ -70,8 +95,259 @@ import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import com.mshdabiola.designsystem.R as Rd
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainTopAppBar(
+    isGrid: Boolean = false,
+    navigateToSearch: () -> Unit = {},
+    onNavigate: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    onToggleGrid: () -> Unit = {},
+) {
+    TopAppBar(
+        modifier = Modifier,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable { navigateToSearch() }
+                    .fillMaxWidth()
+                    .padding(4.dp)
+                    .padding(end = 16.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topEnd = 50f,
+                            topStart = 50f,
+                            bottomEnd = 50f,
+                            bottomStart = 50f,
+                        ),
+                    )
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
+            ) {
+                IconButton(onClick = onNavigate) {
+                    Icon(
+                        imageVector = NoteIcon.Menu,
+                        contentDescription = "menu",
+                    )
+                }
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(Rd.string.modules_designsystem_search_note),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                )
+                IconButton(onClick = { onToggleGrid() }) {
+                    if (!isGrid) {
+                        Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
+                    } else {
+                        Icon(imageVector = NoteIcon.ViewAgenda, contentDescription = "column")
+                    }
+                }
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent,
+        ),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@Composable
+fun NewTopMainAppBar(
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
+    searchQuery: TextFieldState = rememberTextFieldState(),
+    searchState: SearchState = SearchState.Loading,
+    isGrid: Boolean = false,
+    scrollBehavior: SearchBarScrollBehavior? = null,
+    onNavigateIcon: () -> Unit = {},
+    onToggleGrid: () -> Unit = {},
+    onSetSearch: (SearchSort?) -> Unit = {},
+    onNoteClick: (Long) -> Unit = {},
+    onExpandSearch: (Boolean) -> Unit = {},
+
+) {
+    val searchBarState = rememberSearchBarState(initialValue = SearchBarValue.Collapsed)
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = searchBarState.currentValue) {
+        onExpandSearch(searchBarState.currentValue == SearchBarValue.Expanded)
+    }
+
+    val inputField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                modifier = Modifier,
+                searchBarState = searchBarState,
+                textFieldState = searchQuery,
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = { Text(stringResource(Rd.string.modules_designsystem_search_note)) },
+                leadingIcon = {
+                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                        IconButton(
+                            onClick = { scope.launch { searchBarState.animateToCollapsed() } },
+                        ) {
+                            Icon(NoteIcon.ArrowBack, contentDescription = "Back")
+                        }
+                    } else {
+                        IconButton(
+                            onClick = onNavigateIcon,
+                        ) {
+                            Icon(NoteIcon.Menu, contentDescription = "menu")
+                        }
+                    }
+                },
+                trailingIcon = {
+                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                        IconButton(
+                            onClick = { searchQuery.clearText() },
+                        ) {
+                            Icon(NoteIcon.Clear, contentDescription = "clear")
+                        }
+                    } else {
+                        IconButton(onClick = { onToggleGrid() }) {
+                            if (!isGrid) {
+                                Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
+                            } else {
+                                Icon(
+                                    imageVector = NoteIcon.ViewAgenda,
+                                    contentDescription = "column",
+                                )
+                            }
+                        }
+                    }
+                },
+            )
+        }
+
+    TopSearchBar(
+        modifier = modifier,
+        state = searchBarState,
+        inputField = inputField,
+        scrollBehavior = scrollBehavior,
+    )
+    ExpandedFullScreenSearchBar(
+        state = searchBarState,
+        inputField = inputField,
+    ) {
+        when (searchState) {
+            is SearchState.Loading -> {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    NoteLoadingWheel("")
+                }
+            }
+
+            is SearchState.Success -> {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    if (searchState.searches.isEmpty()) {
+                        if (searchState.types.isNotEmpty()) {
+                            item() {
+                                LabelBox(
+                                    title = stringResource(Rd.string.modules_designsystem_types),
+                                    searchState.types,
+                                    onItemClick = onSetSearch,
+                                )
+                            }
+                        }
+
+                        if (searchState.label.isNotEmpty()) {
+                            item() {
+                                LabelBox(
+                                    title = stringResource(Rd.string.modules_designsystem_labels),
+                                    searchState.label,
+                                    onItemClick = onSetSearch,
+                                )
+                            }
+                        }
+                        if (searchState.color.isNotEmpty()) {
+                            item() {
+                                Text(text = stringResource(Rd.string.modules_designsystem_colors))
+                            }
+
+                            item() {
+                                FlowRow(
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    searchState.color.forEach {
+                                        Surface(
+                                            onClick = {
+                                                onSetSearch(it)
+                                            },
+                                            shape = CircleShape,
+                                            color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
+                                            modifier = Modifier
+                                                .width(40.dp)
+                                                .aspectRatio(1f),
+
+                                        ) {
+                                            if (it.colorIndex == -1) {
+                                                Icon(
+                                                    imageVector = NoteIcon.FormatColorReset,
+                                                    contentDescription = "done",
+                                                    tint = Color.Gray,
+                                                    modifier = Modifier.padding(4.dp),
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    items(items = searchState.searches) {
+                        with(sharedTransitionScope) {
+                            NoteCard(
+                                modifier = modifier.sharedBounds(
+                                    sharedContentState = rememberSharedContentState("note${it.id}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
+                                notePad = it,
+                                onCardClick = onNoteClick,
+                                onLongClick = {},
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+//        SearchResults(
+//            onResultClick = {
+//                result - & gt;
+//                textFieldState.setTextAndPlaceCursorAtEnd(result)
+//                scope.launch { searchBarState.animateToCollapsed() }
+//            }
+//        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+fun NewTopMainAppBarPreview() {
+    SharedTransitionLayout {
+        AnimatedVisibility(true) {
+            NewTopMainAppBar(
+                modifier = Modifier,
+                sharedTransitionScope = this@SharedTransitionLayout,
+                animatedContentScope = this,
+
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,10 +366,12 @@ fun SearchTopBar(
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
-            IconButton(onClick = {
-                state.clearText()
-                toggleSearch()
-            }) {
+            IconButton(
+                onClick = {
+                    state.clearText()
+                    toggleSearch()
+                },
+            ) {
                 Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
             }
         },
@@ -382,64 +660,6 @@ fun TrashTopAppBar(
 @Composable
 fun TrashTopAppBarPreview() {
     TrashTopAppBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainTopAppBar(
-    isGrid: Boolean = false,
-    navigateToSearch: () -> Unit = {},
-    onNavigate: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    onToggleGrid: () -> Unit = {},
-) {
-    TopAppBar(
-        modifier = Modifier,
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clickable { navigateToSearch() }
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .padding(end = 16.dp)
-                    .clip(
-                        RoundedCornerShape(
-                            topEnd = 50f,
-                            topStart = 50f,
-                            bottomEnd = 50f,
-                            bottomStart = 50f,
-                        ),
-                    )
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
-            ) {
-                IconButton(onClick = onNavigate) {
-                    Icon(
-                        imageVector = NoteIcon.Menu,
-                        contentDescription = "menu",
-                    )
-                }
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(Rd.string.modules_designsystem_search_note),
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
-                IconButton(onClick = { onToggleGrid() }) {
-                    if (!isGrid) {
-                        Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
-                    } else {
-                        Icon(imageVector = NoteIcon.ViewAgenda, contentDescription = "column")
-                    }
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
-        ),
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
