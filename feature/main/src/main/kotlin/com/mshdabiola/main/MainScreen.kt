@@ -541,6 +541,7 @@ fun LazyStaggeredGridScope.noteItems(
     setOfSelected: Set<Long>,
     onNoteClick: (Long) -> Unit,
     onSelectedCard: (Long) -> Unit,
+    sharedName: String = "note",
 ) = items(
     items = items,
     key = { it.id },
@@ -550,7 +551,7 @@ fun LazyStaggeredGridScope.noteItems(
         with(sharedTransitionScope) {
             NoteCard(
                 modifier = modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState("note${note.id}"),
+                    sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
                     animatedVisibilityScope = animatedContentScope,
 
                 ),
@@ -668,7 +669,7 @@ fun LabelBox(
         maxItemsInEachRow = 3,
         maxLines = if (showMore) Int.MAX_VALUE else 2,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.Start),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
