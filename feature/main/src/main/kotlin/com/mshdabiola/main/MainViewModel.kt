@@ -111,6 +111,7 @@ internal class MainViewModel
             >,
         >(Triple(emptyList(), emptyList(), emptyList()))
     private val searchSort = MutableStateFlow<SearchSort?>(null)
+    private var isTextAfterSearchSort = false
 
     val searchState = combine(
         snapshotFlow { searchQuery.text }
@@ -130,11 +131,6 @@ internal class MainViewModel
 
         val searchList = onSearch(old)
 
-        println("searchstate")
-        println(query)
-        println(
-            old.copy(searches = searchList),
-        )
         SearchState.Success(
             searches = searchList,
             types = triple.first,
@@ -150,8 +146,6 @@ internal class MainViewModel
         )
 
     private fun onSearch(mainState: SearchState.Success): List<NotePad> {
-        println("onSearch")
-        println("query ${searchQuery.text}")
         return when {
             mainState.searchSort != null -> {
                 var list = when (val searchSort = mainState.searchSort) {
@@ -179,12 +173,19 @@ internal class MainViewModel
                 }
 
                 if (searchQuery.text.isNotBlank()) {
+                    isTextAfterSearchSort = true
+
                     list = list.filter {
                         it.toString().contains(
                             searchQuery.text,
                             true,
                         )
                     }
+                }
+
+                if (isTextAfterSearchSort && searchQuery.text.isBlank()) {
+                    isTextAfterSearchSort = false
+                    onSetSearch(null)
                 }
 
                 list

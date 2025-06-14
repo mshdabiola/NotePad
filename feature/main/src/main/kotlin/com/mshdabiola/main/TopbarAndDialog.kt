@@ -257,7 +257,19 @@ fun NewTopMainAppBar(
                     verticalItemSpacing = 8.dp,
 
                 ) {
-                    if (searchState.searches.isEmpty()) {
+                    if (searchQuery.text.isNotBlank() && searchState.searches.isEmpty()) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            Column(
+                                Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Icon(imageVector = NoteIcon.Search, contentDescription = "search")
+                                Text(text = stringResource(Rd.string.modules_designsystem_no_result))
+                            }
+                        }
+                    }
+                    if (searchState.searches.isEmpty() && searchQuery.text.isBlank()) {
                         if (searchState.types.isNotEmpty()) {
                             item(span = StaggeredGridItemSpan.FullLine) {
                                 LabelBox(
