@@ -1,5 +1,4 @@
 
-import android.view.Surface
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -24,8 +23,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
@@ -88,6 +88,7 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.main.LabelBox
 import com.mshdabiola.main.SearchSort
 import com.mshdabiola.main.SearchState
+import com.mshdabiola.main.noteItems
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
@@ -248,10 +249,17 @@ fun NewTopMainAppBar(
             }
 
             is SearchState.Success -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp,
+
+                ) {
                     if (searchState.searches.isEmpty()) {
                         if (searchState.types.isNotEmpty()) {
-                            item() {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 LabelBox(
                                     title = stringResource(Rd.string.modules_designsystem_types),
                                     searchState.types,
@@ -261,7 +269,7 @@ fun NewTopMainAppBar(
                         }
 
                         if (searchState.label.isNotEmpty()) {
-                            item() {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 LabelBox(
                                     title = stringResource(Rd.string.modules_designsystem_labels),
                                     searchState.label,
@@ -270,11 +278,11 @@ fun NewTopMainAppBar(
                             }
                         }
                         if (searchState.color.isNotEmpty()) {
-                            item() {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 Text(text = stringResource(Rd.string.modules_designsystem_colors))
                             }
 
-                            item() {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 FlowRow(
                                     verticalArrangement = Arrangement.spacedBy(4.dp),
 
@@ -306,19 +314,16 @@ fun NewTopMainAppBar(
                             }
                         }
                     }
-                    items(items = searchState.searches) {
-                        with(sharedTransitionScope) {
-                            NoteCard(
-                                modifier = modifier.sharedBounds(
-                                    sharedContentState = rememberSharedContentState("note${it.id}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                                notePad = it,
-                                onCardClick = onNoteClick,
-                                onLongClick = {},
-                            )
-                        }
-                    }
+
+                    noteItems(
+                        modifier = Modifier,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope,
+                        items = searchState.searches,
+                        onNoteClick = onNoteClick,
+                        onSelectedCard = {},
+                        setOfSelected = emptySet(),
+                    )
                 }
             }
         }
