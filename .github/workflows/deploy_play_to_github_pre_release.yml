@@ -1,0 +1,59 @@
+name: Deploy Play to github Pre Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+
+## 2
+jobs:
+  ## 3
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      # 2
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Accept Android licenses
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
+
+      - name: Build release variant apk
+        run: ./gradlew assembleGooglePlayRelease
+
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1.0.4
+        with:
+          releaseDirectory: app/build/outputs/apk/googlePlay/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      # 4
+      - name: Draft Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          allowUpdates: true
+          artifacts: "app/build/outputs/apk/**/**/**/*.apk,app/build/outputs/mapping/**/**/*.txt"
+          token: ${{ secrets.TOKEN }}
+          generateReleaseNotes: true
+          bodyFile: distribution/whatsnew/whatsnew-en-US
+          prerelease: true
