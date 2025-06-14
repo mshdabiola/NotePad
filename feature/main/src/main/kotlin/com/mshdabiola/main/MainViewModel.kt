@@ -121,7 +121,7 @@ internal class MainViewModel
 
     ) { query, notepads, triple, searchSort ->
         val old = SearchState.Success(
-            searches = notepads.filter { it.title.contains(query) },
+            searches = notepads,
             types = triple.first,
             color = triple.second,
             label = triple.third,
@@ -150,6 +150,8 @@ internal class MainViewModel
         )
 
     private fun onSearch(mainState: SearchState.Success): List<NotePad> {
+        println("onSearch")
+        println("query ${searchQuery.text}")
         return when {
             mainState.searchSort != null -> {
                 var list = when (val searchSort = mainState.searchSort) {
