@@ -300,19 +300,19 @@ fun NewTopMainAppBar(
 
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 ) {
-                                    searchState.color.forEach {
+                                    searchState.color.forEach { color ->
                                         Surface(
                                             onClick = {
-                                                onSetSearch(it)
+                                                onSetSearch(color)
                                             },
                                             shape = CircleShape,
-                                            color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
+                                            color = if (color.colorIndex == -1) Color.White else NoteIcon.noteColors[color.colorIndex],
                                             modifier = Modifier
                                                 .width(40.dp)
                                                 .aspectRatio(1f),
 
                                         ) {
-                                            if (it.colorIndex == -1) {
+                                            if (color.colorIndex == -1) {
                                                 Icon(
                                                     imageVector = NoteIcon.FormatColorReset,
                                                     contentDescription = "done",
@@ -335,6 +335,7 @@ fun NewTopMainAppBar(
                         onNoteClick = onNoteClick,
                         onSelectedCard = {},
                         setOfSelected = emptySet(),
+                        sharedName = "search",
                     )
                 }
             }
