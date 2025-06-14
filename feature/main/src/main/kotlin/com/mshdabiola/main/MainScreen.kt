@@ -6,7 +6,7 @@ package com.mshdabiola.main
 
 import ArchiveTopAppBar
 import LabelTopAppBar
-import MainTopAppBar
+import NewTopMainAppBar
 import NoteCard
 import SelectTopBar
 import TrashTopAppBar
@@ -36,12 +36,14 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -107,6 +109,7 @@ internal fun MainRoute(
 
     FirebaseScreenLog(screen = "main_screen")
     val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
+    val searchState = mainViewModel.searchState.collectAsStateWithLifecycle()
 
     LaunchedEffect(
         key1 = Unit,
@@ -147,6 +150,8 @@ internal fun MainRoute(
         animatedContentScope = animatedContentScope,
         modifier = modifier,
         mainState = mainState.value,
+        searchState = searchState.value,
+        searchQuery = mainViewModel.searchQuery,
         navigateToEdit = navigateToDetail,
         onSelectedCard = mainViewModel::onSelectCard,
         onClearSelected = mainViewModel::clearSelected,
@@ -166,6 +171,9 @@ internal fun MainRoute(
         onDeleteLabel = { showDeleteLabel = true },
         onEmptyTrash = mainViewModel::emptyTrash,
         onOpenDrawer = onOpenDrawer,
+        onSetSearch = mainViewModel::onSetSearch,
+        onExpandSearch = mainViewModel::onExpandSearch,
+
         //   items = timeline,
 
     )
@@ -226,6 +234,8 @@ internal fun MainScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
+    searchState: SearchState,
+    searchQuery: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onOpenDrawer: () -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
@@ -241,6 +251,8 @@ internal fun MainScreen(
     onRenameLabel: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
+    onSetSearch: (SearchSort?) -> Unit = {},
+    onExpandSearch: (Boolean) -> Unit = {},
 ) {
     val state = rememberLazyListState()
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
@@ -252,6 +264,8 @@ internal fun MainScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
                 success = mainState,
+                searchState = searchState,
+                searchQuery = searchQuery,
                 navigateToEdit = navigateToEdit,
                 onSelectedCard = onSelectedCard,
                 onClearSelected = onClearSelected,
@@ -267,6 +281,8 @@ internal fun MainScreen(
                 onDeleteLabel = onDeleteLabel,
                 onEmptyTrash = onEmptyTrash,
                 onOpenDrawer = onOpenDrawer,
+                onSetSearch = onSetSearch,
+                onExpandSearch = onExpandSearch,
             )
         }
 
@@ -337,6 +353,8 @@ fun MainContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     success: MainState.Success,
+    searchState: SearchState,
+    searchQuery: TextFieldState,
     navigateToEdit: (Long) -> Unit = {},
     onSelectedCard: (Long) -> Unit = {},
     onClearSelected: () -> Unit = {},
@@ -352,8 +370,12 @@ fun MainContent(
     onDeleteLabel: () -> Unit = {},
     onEmptyTrash: () -> Unit = {},
     onOpenDrawer: () -> Unit = {},
+    onExpandSearch: (Boolean) -> Unit = {},
+    onSetSearch: (SearchSort?) -> Unit = {},
+
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val searchScrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val pinNotePad by remember(success.notePads) {
@@ -412,12 +434,19 @@ fun MainContent(
                 }
 
                 success.mainData.noteType == NoteType.NOTE -> {
-                    MainTopAppBar(
-                        onNavigate = onOpenDrawer,
-                        scrollBehavior = scrollBehavior,
+                    NewTopMainAppBar(
+                        onNavigateIcon = onOpenDrawer,
+                        scrollBehavior = searchScrollBehavior,
                         isGrid = isGrid,
-                        navigateToSearch = {},
                         onToggleGrid = { isGrid = !isGrid },
+                        modifier = Modifier,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope,
+                        searchQuery = searchQuery,
+                        searchState = searchState,
+                        onSetSearch = onSetSearch,
+                        onNoteClick = onNoteClick,
+                        onExpandSearch = onExpandSearch,
                     )
                 }
 
@@ -458,57 +487,7 @@ fun MainContent(
             verticalItemSpacing = 8.dp,
 
         ) {
-//            if (success.isSearch && success.notePads.isEmpty()) {
-//                item(span = StaggeredGridItemSpan.FullLine) {
-//                    LabelBox(
-//                        title = stringResource(Rd.string.modules_designsystem_types),
-//                        success.types,
-//                        onItemClick = onSetSearch,
-//                    )
-//                }
 //
-//                item(span = StaggeredGridItemSpan.FullLine) {
-//                    LabelBox(
-//                        title = stringResource(Rd.string.modules_designsystem_labels),
-//                        success.label,
-//                        onItemClick = onSetSearch,
-//                    )
-//                }
-//                item(span = StaggeredGridItemSpan.FullLine) {
-//                    Text(text = stringResource(Rd.string.modules_designsystem_colors))
-//                }
-//
-//                item(span = StaggeredGridItemSpan.FullLine) {
-//                    FlowRow(
-//                        verticalArrangement = Arrangement.spacedBy(4.dp),
-//
-//                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-//                    ) {
-//                        success.color.forEach {
-//                            Surface(
-//                                onClick = {
-//                                    onSetSearch(it)
-//                                },
-//                                shape = CircleShape,
-//                                color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
-//                                modifier = Modifier
-//                                    .width(40.dp)
-//                                    .aspectRatio(1f),
-//
-//                            ) {
-//                                if (it.colorIndex == -1) {
-//                                    Icon(
-//                                        imageVector = NoteIcon.FormatColorReset,
-//                                        contentDescription = "done",
-//                                        tint = Color.Gray,
-//                                        modifier = Modifier.padding(4.dp),
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
             if (success.notePads.isEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     EmptyState(mainData = success.mainData)
@@ -715,13 +694,13 @@ fun LabelBox(
             .forEach { searchSort ->
                 val item = when (searchSort) {
                     is SearchSort.Label -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.iconIndex],
+                        stringArrayResource(Rd.array.modules_designsystem_search_sort)[searchSort.iconIndex],
                         NoteIcon.searchIcons[searchSort.iconIndex],
 
                     )
 
                     is SearchSort.Type -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.index],
+                        stringArrayResource(Rd.array.modules_designsystem_search_sort)[searchSort.index],
                         NoteIcon.searchIcons[searchSort.index],
                     )
 
