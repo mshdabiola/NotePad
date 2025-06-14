@@ -668,7 +668,7 @@ fun LabelBox(
         maxItemsInEachRow = 3,
         maxLines = if (showMore) Int.MAX_VALUE else 2,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.Start,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -694,7 +694,7 @@ fun LabelBox(
             .forEach { searchSort ->
                 val item = when (searchSort) {
                     is SearchSort.Label -> Pair(
-                        stringArrayResource(Rd.array.modules_designsystem_search_sort)[searchSort.iconIndex],
+                        searchSort.name,
                         NoteIcon.searchIcons[searchSort.iconIndex],
 
                     )
