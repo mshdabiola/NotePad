@@ -12,8 +12,12 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
+import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.model.NotificationInterval
+import com.mshdabiola.model.NotificationPlace
+import com.mshdabiola.model.NotificationUiState
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,6 +59,16 @@ internal class MainViewModel
     private val alarmManager: IAlarmManager,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
+    val notificationUiState = NotificationUiState(
+        currentDateTime = LocalDateTime(2026, 6, 16, 22, 1),
+        currentInterval = NotificationInterval.Daily(
+            interval = 1,
+            intervalEnd = IntervalEnd.Forever,
+        ),
+        currentPlace = NotificationPlace.Home,
+
+    )
 
     private val _dateTimeState = MutableStateFlow(DateDialogUiData())
     val dateTimeState = _dateTimeState.asStateFlow()
