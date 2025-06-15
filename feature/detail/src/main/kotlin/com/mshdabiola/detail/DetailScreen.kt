@@ -102,6 +102,7 @@ import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
+import kotlinx.datetime.LocalDateTime
 import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
@@ -279,27 +280,29 @@ internal fun DetailRoute(
 //
     NotificationDialogNew(
         showDialog = showDialog,
-        dateDialogUiData = dateDialogUiData.value,
+//        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
-        onSetAlarm = editViewModel::setAlarm,
-        onTimeChange = editViewModel::onSetTime,
-        onDateChange = editViewModel::onSetDate,
-        onIntervalChange = editViewModel::onSetInterval,
-        onDeleteAlarm = editViewModel::deleteAlarm,
+        isEdit = false,
+        isError = false,
+        pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
+        onSetAlarm = {},
+        onDeleteAlarm = {  },
+        onSetValue = {},
+//        onSetAlarm = editViewModel::setAlarm,
     )
 //
-    TimeDialog(
-        state = editViewModel.timePicker,
-        showDialog = dateDialogUiData.value.showTimeDialog,
-        onDismissRequest = editViewModel::hideTime,
-        onSetTime = editViewModel::onSetTime,
-    )
-    DateDialog(
-        state = editViewModel.datePicker,
-        showDialog = dateDialogUiData.value.showDateDialog,
-        onDismissRequest = editViewModel::hideDate,
-        onSetDate = editViewModel::onSetDate,
-    )
+//    TimeDialog(
+//        state = editViewModel.timePicker,
+//        showDialog = dateDialogUiData.value.showTimeDialog,
+//        onDismissRequest = editViewModel::hideTime,
+//        onSetTime = editViewModel::onSetTime,
+//    )
+//    DateDialog(
+//        state = editViewModel.datePicker,
+//        showDialog = dateDialogUiData.value.showDateDialog,
+//        onDismissRequest = editViewModel::hideDate,
+//        onSetDate = editViewModel::onSetDate,
+//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
