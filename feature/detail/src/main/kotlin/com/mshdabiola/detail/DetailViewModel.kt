@@ -21,12 +21,16 @@ import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
+import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
+import com.mshdabiola.model.NotificationInterval
+import com.mshdabiola.model.NotificationPlace
+import com.mshdabiola.model.NotificationUiState
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,6 +70,15 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
+    val notificationUiState = NotificationUiState(
+        currentDateTime = LocalDateTime(2026, 6, 16, 22, 1),
+        currentInterval = NotificationInterval.Daily(
+            interval = 1,
+            intervalEnd = IntervalEnd.Forever,
+        ),
+        currentPlace = NotificationPlace.Home,
+
+    )
     private val id = savedStateHandle.toRoute<DetailArg>().id
     val note = MutableStateFlow(NotePad())
 
