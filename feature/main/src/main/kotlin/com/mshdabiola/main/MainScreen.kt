@@ -90,6 +90,7 @@ import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.TrackScrollJank
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDateTime
 import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
@@ -178,31 +179,22 @@ internal fun MainRoute(
 
     )
     val colorIndex by remember { mutableStateOf(0) }
-    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
+//    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
         showDialog = showDialog,
-        dateDialogUiData = dateDialogUiData.value,
+//        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
-        onSetAlarm = mainViewModel::setAlarm,
-        onTimeChange = mainViewModel::onSetTime,
-        onDateChange = mainViewModel::onSetDate,
-        onIntervalChange = mainViewModel::onSetInterval,
-        onDeleteAlarm = mainViewModel::deleteAlarm,
+        isEdit = false,
+        isError = false,
+        pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
+        onSetAlarm = {},
+        onDeleteAlarm = {  },
+        onSetValue = {},
+//        onSetAlarm = editViewModel::setAlarm,
     )
 
-    TimeDialog(
-        state = mainViewModel.timePicker,
-        showDialog = dateDialogUiData.value.showTimeDialog,
-        onDismissRequest = mainViewModel::hideTime,
-        onSetTime = mainViewModel::onSetTime,
-    )
-    DateDialog(
-        state = mainViewModel.datePicker,
-        showDialog = dateDialogUiData.value.showDateDialog,
-        onDismissRequest = mainViewModel::hideDate,
-        onSetDate = mainViewModel::onSetDate,
-    )
+
 
     ColorDialog(
         show = showColor,
