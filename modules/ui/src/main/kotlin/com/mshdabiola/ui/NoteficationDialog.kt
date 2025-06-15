@@ -67,8 +67,7 @@ fun NotificationDialogNew(
     onSetAlarm: () -> Unit = { },
     onDeleteAlarm: () -> Unit = {},
 
-    ) {
-
+) {
     var showDateDialog by remember {
         mutableStateOf(false)
     }
@@ -84,7 +83,6 @@ fun NotificationDialogNew(
             onDismissRequest = onDismissRequest,
             title = { Text(text = if (isEdit) "Edit Reminder" else "Add Reminder") },
             text = {
-
             },
             confirmButton = {
                 Button(
@@ -173,9 +171,7 @@ fun NotificationDialogNew(
             ) {
                 TimePicker(state = timeState)
             }
-
         }
-
     }
 }
 
@@ -219,7 +215,8 @@ fun NotificationDialogNewPreview() {
                 false,
             ),
             NotificationDate(
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date, true,
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                true,
             ),
         ),
         intervals = listOf(
@@ -239,16 +236,13 @@ fun NotificationDialogNewPreview() {
     NotificationDialogNew(notificationUiState = notificationUiState, showDialog = true)
 }
 
-
 @Composable
 private fun NotificationContent(
     modifier: Modifier = Modifier,
     notificationUiState: NotificationUiState,
 ) {
-
-
     val pagerState = rememberPagerState { 2 }
-    Column (modifier.fillMaxSize()){
+    Column(modifier.fillMaxSize()) {
         NoteTabRow(pagerState.currentPage) {
             NoteTab(pagerState.currentPage == 0, onClick = {}) {
                 Text(text = "Time")
@@ -260,10 +254,11 @@ private fun NotificationContent(
         HorizontalPager(modifier = Modifier.fillMaxSize().weight(1f), state = pagerState) {
             when (it) {
                 0 -> {
-                    Column(Modifier.fillMaxSize(),
+                    Column(
+                        Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
 
-                        ) {
+                    ) {
                         TimeTextDropbox(
                             modifier = Modifier.fillMaxWidth(),
                             currentTime = notificationUiState.currentTime,
@@ -289,22 +284,16 @@ private fun NotificationContent(
                 }
 
                 1 -> {
-
                     NotificationPlace(
                         places = notificationUiState.places,
                         onValueChange = {
                         },
                         currentPlace = notificationUiState.currentPlace,
                     )
-
-
                 }
-
             }
         }
     }
-
-
 }
 
 @Preview(backgroundColor = 0xFF968F8F)
@@ -345,7 +334,8 @@ fun NotificationContentPreview() {
                 false,
             ),
             NotificationDate(
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date, true,
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                true,
             ),
         ),
         intervals = listOf(
@@ -366,7 +356,7 @@ fun NotificationPlace(
     modifier: Modifier = Modifier,
     places: List<NotificationPlace> = emptyList(),
     onValueChange: (NotificationPlace) -> Unit = {},
-    currentPlace: NotificationPlace? =null,
+    currentPlace: NotificationPlace? = null,
 ) {
     val placeStringArray = stringArrayResource(R.array.modules_designsystem_notification_places)
     Column(modifier = modifier) {
@@ -376,7 +366,6 @@ fun NotificationPlace(
                     RadioButton(selected = place == currentPlace, onClick = {})
                     Text(text = placeStringArray[index])
                 }
-
             } else {
                 Row {
                     RadioButton(selected = place == currentPlace, onClick = { })
@@ -384,13 +373,10 @@ fun NotificationPlace(
                         state = rememberTextFieldState(),
                     )
                 }
-
             }
         }
     }
-
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -400,7 +386,6 @@ fun TimeTextDropbox(
     onValueChange: (NotificationTime) -> Unit = {},
     times: List<NotificationTime> = emptyList(),
 ) {
-
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -420,13 +405,11 @@ fun TimeTextDropbox(
 
     val timeStringArray = stringArrayResource(R.array.modules_designsystem_notification_times)
 
-
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
     ) {
-
         TextField(
             modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
@@ -437,7 +420,7 @@ fun TimeTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -454,11 +437,14 @@ fun TimeTextDropbox(
                     enabled = notificationTime.isEnable,
                     trailingIcon = {
                         Text(
-                            text = if (notificationTime.isPickTime) "" else
+                            text = if (notificationTime.isPickTime) {
+                                ""
+                            } else {
                                 "${notificationTime.time.hour}:${notificationTime.time.minute} " +
-                                        if (notificationTime.time.hour < 12) "AM" else "PM",
+                                    if (notificationTime.time.hour < 12) "AM" else "PM"
+                            },
 
-                            )
+                        )
                     },
                 )
             }
@@ -477,7 +463,7 @@ fun TimeTextDropboxPreview() {
         NotificationTime(LocalTime(18, 0), false, true),
         NotificationTime(LocalTime(0, 0), true, true),
     )
-    TimeTextDropbox(currentTime = currentTime, times = times,)
+    TimeTextDropbox(currentTime = currentTime, times = times)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -488,7 +474,6 @@ fun DateTextDropbox(
     onValueChange: (NotificationDate) -> Unit = {},
     dates: List<NotificationDate> = emptyList(),
 ) {
-
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -502,20 +487,16 @@ fun DateTextDropbox(
             if (currentDate.year != now.year) {
                 append(", ${currentDate.year}")
             }
-
         }
-
     }
 
     val dateStringArray = stringArrayResource(R.array.modules_designsystem_notification_days)
-
 
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
     ) {
-
         TextField(
             modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
@@ -524,7 +505,7 @@ fun DateTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -581,7 +562,6 @@ fun IntervalTextDropboxPreview() {
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntervalTextDropbox(
@@ -590,7 +570,6 @@ fun IntervalTextDropbox(
     onValueChange: (NotificationInterval) -> Unit = {},
     notificationIntervals: List<NotificationInterval> = emptyList(),
 ) {
-
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -599,23 +578,18 @@ fun IntervalTextDropbox(
     LaunchedEffect(key1 = currentInterval) {
         state.clearText()
         state.edit {
-
-
         }
-
     }
 
     val intervalStringArray = stringArrayResource(
         R.array.modules_designsystem_notification_interval,
     )
 
-
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
     ) {
-
         TextField(
             modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
@@ -624,7 +598,7 @@ fun IntervalTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {

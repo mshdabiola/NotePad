@@ -19,21 +19,19 @@ import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 class DateTimeRepository @Inject constructor() {
-    private val _notificationUiState = MutableStateFlow<NotificationUiState?>( null)
+    private val _notificationUiState = MutableStateFlow<NotificationUiState?>(null)
     val notificationUiState: StateFlow<NotificationUiState?> = _notificationUiState
-
-
 
     fun initialize(
         currentDateTime: LocalDateTime,
         currentInterval: NotificationInterval,
-        currentPlace : NotificationPlace?= null
+        currentPlace: NotificationPlace? = null,
     ) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val times = listOf(
-            NotificationTime(LocalTime(7, 0, 0), ),
-            NotificationTime(LocalTime(13, 0, 0),  ),
-            NotificationTime(LocalTime(19, 0, 0),  ),
+            NotificationTime(LocalTime(7, 0, 0)),
+            NotificationTime(LocalTime(13, 0, 0)),
+            NotificationTime(LocalTime(19, 0, 0)),
             NotificationTime(LocalTime(20, 0, 0)),
             NotificationTime(LocalTime(20, 0, 0), true),
         )
@@ -45,32 +43,33 @@ class DateTimeRepository @Inject constructor() {
             NotificationDate(now.date, false),
             NotificationDate(now.date.plus(1, DateTimeUnit.DAY), false),
             NotificationDate(now.date.plus(1, DateTimeUnit.WEEK), false),
-            NotificationDate(now.date.plus(1, DateTimeUnit.MONTH), true))
+            NotificationDate(now.date.plus(1, DateTimeUnit.MONTH), true),
+        )
 
         val intervals = listOf(
             NotificationInterval.DoNotRepeat,
             NotificationInterval.Daily(
-                intervalEnd = IntervalEnd.Forever
+                intervalEnd = IntervalEnd.Forever,
             ),
             NotificationInterval.Weekly(
                 days = listOf(now.date.dayOfWeek),
-                intervalEnd = IntervalEnd.Forever
+                intervalEnd = IntervalEnd.Forever,
             ),
             NotificationInterval.Monthly(
                 sameDay = true,
-                intervalEnd = IntervalEnd.Forever
+                intervalEnd = IntervalEnd.Forever,
             ),
             NotificationInterval.Yearly(
-                intervalEnd = IntervalEnd.Forever
+                intervalEnd = IntervalEnd.Forever,
             ),
-            NotificationInterval.Custom
+            NotificationInterval.Custom,
         )
 
         val places = listOf(
             NotificationPlace.Home,
             NotificationPlace.Work,
             NotificationPlace.School,
-            NotificationPlace.Edit("")
+            NotificationPlace.Edit(""),
         )
 
         _notificationUiState.value = NotificationUiState(
@@ -81,22 +80,20 @@ class DateTimeRepository @Inject constructor() {
             times = times,
             dates = dates,
             intervals = intervals,
-            places = places
+            places = places,
         )
-
     }
 
-    fun setPlace(place: NotificationPlace){
+    fun setPlace(place: NotificationPlace) {
         _notificationUiState.value = _notificationUiState.value?.copy(currentPlace = place)
     }
-    fun setDate(date: LocalDate){
+    fun setDate(date: LocalDate) {
         _notificationUiState.value = _notificationUiState.value?.copy(currentDate = date)
     }
-    fun setTime(time: LocalTime){
+    fun setTime(time: LocalTime) {
         _notificationUiState.value = _notificationUiState.value?.copy(currentTime = time)
     }
-    fun setInterval(interval: NotificationInterval){
+    fun setInterval(interval: NotificationInterval) {
         _notificationUiState.value = _notificationUiState.value?.copy(currentInterval = interval)
     }
-
 }
