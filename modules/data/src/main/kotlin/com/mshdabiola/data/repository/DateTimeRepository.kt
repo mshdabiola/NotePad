@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -29,21 +28,18 @@ class DateTimeRepository @Inject constructor() {
     ) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val times = listOf(
-            NotificationTime(LocalTime(7, 0, 0)),
-            NotificationTime(LocalTime(13, 0, 0)),
-            NotificationTime(LocalTime(19, 0, 0)),
-            NotificationTime(LocalTime(20, 0, 0)),
-            NotificationTime(LocalTime(20, 0, 0), true),
+            NotificationTime.Time(LocalTime(7, 0, 0)),
+            NotificationTime.Time(LocalTime(13, 0, 0)),
+            NotificationTime.Time(LocalTime(19, 0, 0)),
+            NotificationTime.Time(LocalTime(20, 0, 0)),
+            NotificationTime.PickTime,
         )
-            .map {
-                it.copy(isEnable = currentDateTime.time > it.time)
-            }
 
         val dates = listOf(
-            NotificationDate(now.date, false),
-            NotificationDate(now.date.plus(1, DateTimeUnit.DAY), false),
-            NotificationDate(now.date.plus(1, DateTimeUnit.WEEK), false),
-            NotificationDate(now.date.plus(1, DateTimeUnit.MONTH), true),
+            NotificationDate.Date(now.date),
+            NotificationDate.Date(now.date.plus(1, DateTimeUnit.DAY)),
+            NotificationDate.Date(now.date.plus(1, DateTimeUnit.WEEK)),
+            NotificationDate.PickDate,
         )
 
         val intervals = listOf(
@@ -71,29 +67,5 @@ class DateTimeRepository @Inject constructor() {
             NotificationPlace.School,
             NotificationPlace.Edit(""),
         )
-
-        _notificationUiState.value = NotificationUiState(
-            currentTime = currentDateTime.time,
-            currentDate = currentDateTime.date,
-            currentInterval = currentInterval,
-            currentPlace = currentPlace,
-            times = times,
-            dates = dates,
-            intervals = intervals,
-            places = places,
-        )
-    }
-
-    fun setPlace(place: NotificationPlace) {
-        _notificationUiState.value = _notificationUiState.value?.copy(currentPlace = place)
-    }
-    fun setDate(date: LocalDate) {
-        _notificationUiState.value = _notificationUiState.value?.copy(currentDate = date)
-    }
-    fun setTime(time: LocalTime) {
-        _notificationUiState.value = _notificationUiState.value?.copy(currentTime = time)
-    }
-    fun setInterval(interval: NotificationInterval) {
-        _notificationUiState.value = _notificationUiState.value?.copy(currentInterval = interval)
     }
 }
