@@ -2,11 +2,11 @@ package com.mshdabiola.ui
 
 import android.annotation.SuppressLint
 import android.os.Build
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -37,7 +37,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +53,7 @@ import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
 import com.mshdabiola.model.NotificationTime
 import com.mshdabiola.model.NotificationUiState
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -74,6 +77,7 @@ fun NotificationDialogNew(
 
 ) {
     val pagerState = rememberPagerState { 2 }
+    val coroutineScope = rememberCoroutineScope()
 
     var isError by remember {
         mutableStateOf(false)
@@ -86,20 +90,29 @@ fun NotificationDialogNew(
             text = {
                 Column {
                     NoteTabRow(pagerState.currentPage) {
-                        NoteTab(pagerState.currentPage == 0, onClick = {}) {
+                        NoteTab(
+                            pagerState.currentPage == 0,
+                            onClick = {
+                                coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                            },
+                        ) {
                             Text(text = "Time")
                         }
-                        NoteTab(pagerState.currentPage == 1, onClick = {}) {
+                        NoteTab(pagerState.currentPage == 1, onClick = {
+                            coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                        }) {
                             Text(text = "Place")
                         }
                     }
-                    HorizontalPager(modifier = Modifier.fillMaxSize().weight(1f), state = pagerState) {
+                    HorizontalPager(
+                        modifier = Modifier,
+                        state = pagerState,
+                        userScrollEnabled = false,
+                    ) {
                         when (it) {
                             0 -> {
                                 Column(
-                                    Modifier.fillMaxSize(),
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-
                                 ) {
                                     TimeTextDropbox(
                                         modifier = Modifier.fillMaxWidth(),
@@ -205,12 +218,19 @@ fun NotificationPlace(
     Column(modifier = modifier) {
         places.forEachIndexed { index, place ->
             if (place !is NotificationPlace.Edit) {
-                Row {
-                    RadioButton(selected = place == currentPlace, onClick = {})
-                    Text(text = placeStringArray[index])
-                }
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = editState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    placeholder = { Text(text = placeStringArray[index]) },
+                )
             } else {
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onValueChange(place) },
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                ) {
                     RadioButton(selected = place == currentPlace, onClick = { })
                     TextField(
                         state = editState,
@@ -254,7 +274,8 @@ fun TimeTextDropbox(
     LaunchedEffect(key1 = currentTime) {
         state.clearText()
         state.edit {
-            append("${currentTime.hour}:${currentTime.minute} ")
+            val hour = if (currentTime.hour > 12) currentTime.hour - 12 else currentTime.hour
+            append("$hour:${currentTime.minute} ")
             append(if (currentTime.hour < 12) "AM" else "PM")
         }
         showError = currentTime <= nowTime
@@ -385,7 +406,7 @@ fun DateTextDropbox(
     LaunchedEffect(key1 = currentDate) {
         state.clearText()
         state.edit {
-            append("${currentDate.month.name} ${currentDate.dayOfMonth}")
+            append("${currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${currentDate.dayOfMonth}")
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             if (currentDate.year != now.year) {
                 append(", ${currentDate.year}")
