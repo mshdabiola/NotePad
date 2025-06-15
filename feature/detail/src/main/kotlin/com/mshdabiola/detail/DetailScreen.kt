@@ -93,13 +93,11 @@ import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
-import com.mshdabiola.ui.DateDialog
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
-import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
 import kotlinx.datetime.LocalDateTime
@@ -286,7 +284,7 @@ internal fun DetailRoute(
         isError = false,
         pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
         onSetAlarm = {},
-        onDeleteAlarm = {  },
+        onDeleteAlarm = { },
         onSetValue = {},
 //        onSetAlarm = editViewModel::setAlarm,
     )

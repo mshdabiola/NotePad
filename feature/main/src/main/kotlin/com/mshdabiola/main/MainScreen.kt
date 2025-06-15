@@ -83,10 +83,8 @@ import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.ColorDialog
-import com.mshdabiola.ui.DateDialog
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NotificationDialogNew
-import com.mshdabiola.ui.TimeDialog
 import com.mshdabiola.ui.TrackScrollJank
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -189,12 +187,10 @@ internal fun MainRoute(
         isError = false,
         pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
         onSetAlarm = {},
-        onDeleteAlarm = {  },
+        onDeleteAlarm = { },
         onSetValue = {},
 //        onSetAlarm = editViewModel::setAlarm,
     )
-
-
 
     ColorDialog(
         show = showColor,
