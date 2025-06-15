@@ -88,7 +88,6 @@ import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.TrackScrollJank
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import kotlinx.datetime.LocalDateTime
 import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
@@ -180,16 +179,13 @@ internal fun MainRoute(
 //    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
+        notificationUiState = mainViewModel.notificationUiState,
         showDialog = showDialog,
 //        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
         isEdit = false,
-        isError = false,
-        pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
         onSetAlarm = {},
         onDeleteAlarm = { },
-        onSetValue = {},
-//        onSetAlarm = editViewModel::setAlarm,
     )
 
     ColorDialog(
