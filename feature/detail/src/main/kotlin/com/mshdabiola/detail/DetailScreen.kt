@@ -100,7 +100,6 @@ import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
-import kotlinx.datetime.LocalDateTime
 import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
@@ -277,15 +276,13 @@ internal fun DetailRoute(
     val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
 //
     NotificationDialogNew(
+        notificationUiState = editViewModel.notificationUiState,
         showDialog = showDialog,
 //        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
         isEdit = false,
-        isError = false,
-        pair = Pair(LocalDateTime(2022, 1, 1, 1, 1), 1),
         onSetAlarm = {},
         onDeleteAlarm = { },
-        onSetValue = {},
 //        onSetAlarm = editViewModel::setAlarm,
     )
 //
