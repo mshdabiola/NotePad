@@ -236,26 +236,36 @@ fun NotificationPlace(
     modifier: Modifier = Modifier,
     onValueChange: (NotificationPlace) -> Unit = {},
     currentPlace: NotificationPlace? = null,
-    editState: TextFieldState = rememberTextFieldState(),
 ) {
     val places = remember {
         listOf(
             NotificationPlace.Home,
             NotificationPlace.Work,
             NotificationPlace.School,
-            NotificationPlace.Edit(""),
+            NotificationPlace.Edit(TextFieldState()),
         )
     }
     val placeStringArray = stringArrayResource(R.array.modules_designsystem_notification_places)
     Column(modifier = modifier) {
         places.forEachIndexed { index, place ->
             if (place is NotificationPlace.Edit) {
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = editState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    placeholder = { Text(text = placeStringArray[index]) },
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(selected = place == currentPlace, onClick = {
+                        onValueChange(place)
+                    })
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = place.place,
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        placeholder = { Text(text = placeStringArray[index]) },
+                    )
+                }
+
             } else {
                 Row(
                     modifier = Modifier
