@@ -276,7 +276,7 @@ internal fun DetailRoute(
     val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
 //
     NotificationDialogNew(
-        notificationUiState = editViewModel.notificationUiState,
+        initState = editViewModel.notificationUiState,
         showDialog = showDialog,
 //        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
