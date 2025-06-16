@@ -179,7 +179,7 @@ internal fun MainRoute(
 //    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
 
     NotificationDialogNew(
-        notificationUiState = mainViewModel.notificationUiState,
+        //  notificationUiState = mainViewModel.notificationUiState,
         showDialog = showDialog,
 //        dateDialogUiData = dateDialogUiData.value,
         onDismissRequest = { showDialog = false },
