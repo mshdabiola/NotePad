@@ -47,12 +47,12 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.R
 import com.mshdabiola.designsystem.component.NoteTab
 import com.mshdabiola.designsystem.component.NoteTabRow
-import com.mshdabiola.model.IntervalEnd
-import com.mshdabiola.model.NotificationDate
-import com.mshdabiola.model.NotificationInterval
-import com.mshdabiola.model.NotificationPlace
-import com.mshdabiola.model.NotificationTime
-import com.mshdabiola.model.NotificationUiState
+import com.mshdabiola.ui.state.IntervalEnd
+import com.mshdabiola.ui.state.NotificationDate
+import com.mshdabiola.ui.state.NotificationInterval
+import com.mshdabiola.ui.state.NotificationPlace
+import com.mshdabiola.ui.state.NotificationTime
+import com.mshdabiola.ui.state.NotificationUiState
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -60,6 +60,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
@@ -68,16 +71,27 @@ import kotlinx.datetime.toLocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationDialogNew(
-    notificationUiState: NotificationUiState,
+    initState: NotificationUiState? = null,
     isEdit: Boolean = false,
     showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    onSetAlarm: () -> Unit = { },
+    onSetAlarm: (NotificationUiState) -> Unit = { },
     onDeleteAlarm: () -> Unit = {},
 
 ) {
     val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
+    var notificationUiState by remember(initState) {
+        val value = initState ?: NotificationUiState(
+            currentPlace = null,
+            currentInterval = NotificationInterval.DoNotRepeat,
+            currentDateTime = Clock
+                .System
+                .now().plus(1, DateTimeUnit.HOUR)
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
+        )
+        mutableStateOf(value)
+    }
 
     var isError by remember {
         mutableStateOf(false)
@@ -108,8 +122,8 @@ fun NotificationDialogNew(
                         modifier = Modifier,
                         state = pagerState,
                         userScrollEnabled = false,
-                    ) {
-                        when (it) {
+                    ) { index ->
+                        when (index) {
                             0 -> {
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -118,6 +132,12 @@ fun NotificationDialogNew(
                                         modifier = Modifier.fillMaxWidth(),
                                         currentTime = notificationUiState.currentDateTime.time,
                                         onValueChange = {
+                                            notificationUiState = notificationUiState.copy(
+                                                currentDateTime = LocalDateTime(
+                                                    date = notificationUiState.currentDateTime.date,
+                                                    time = it,
+                                                ),
+                                            )
                                         },
                                         onErrorMessage = {
                                             isError = it
@@ -127,12 +147,21 @@ fun NotificationDialogNew(
                                         modifier = Modifier.fillMaxWidth(),
                                         currentDate = notificationUiState.currentDateTime.date,
                                         onValueChange = {
+                                            notificationUiState = notificationUiState.copy(
+                                                currentDateTime = LocalDateTime(
+                                                    date = it,
+                                                    time = notificationUiState.currentDateTime.time,
+                                                ),
+                                            )
                                         },
                                     )
                                     IntervalTextDropbox(
                                         modifier = Modifier.fillMaxWidth(),
                                         currentInterval = notificationUiState.currentInterval,
                                         onValueChange = {
+                                            notificationUiState = notificationUiState.copy(
+                                                currentInterval = it,
+                                            )
                                         },
                                     )
                                 }
@@ -141,6 +170,9 @@ fun NotificationDialogNew(
                             1 -> {
                                 NotificationPlace(
                                     onValueChange = {
+                                        notificationUiState = notificationUiState.copy(
+                                            currentPlace = it,
+                                        )
                                     },
                                     currentPlace = notificationUiState.currentPlace,
                                 )
@@ -152,7 +184,7 @@ fun NotificationDialogNew(
             confirmButton = {
                 Button(
                     onClick = {
-                        onSetAlarm()
+                        onSetAlarm(notificationUiState)
                         onDismissRequest()
                     },
                     enabled = !isError,
@@ -196,7 +228,7 @@ fun NotificationDialogNewPreview() {
         currentPlace = NotificationPlace.Home,
 
     )
-    NotificationDialogNew(notificationUiState = notificationUiState, showDialog = true)
+    NotificationDialogNew(initState = notificationUiState, showDialog = true)
 }
 
 @Composable
@@ -217,7 +249,7 @@ fun NotificationPlace(
     val placeStringArray = stringArrayResource(R.array.modules_designsystem_notification_places)
     Column(modifier = modifier) {
         places.forEachIndexed { index, place ->
-            if (place !is NotificationPlace.Edit) {
+            if (place is NotificationPlace.Edit) {
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     state = editState,
@@ -229,12 +261,13 @@ fun NotificationPlace(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onValueChange(place) },
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RadioButton(selected = place == currentPlace, onClick = { })
-                    TextField(
-                        state = editState,
-                    )
+                    RadioButton(selected = place == currentPlace, onClick = {
+                        onValueChange(place)
+                    })
+                    Text(modifier = Modifier.weight(1f), text = placeStringArray[index])
                 }
             }
         }
@@ -271,12 +304,18 @@ fun TimeTextDropbox(
         mutableStateOf(false)
     }
     val state = rememberTextFieldState()
+    val formatter = LocalTime.Format {
+        amPmHour(Padding.ZERO) // hh (01-12) with zero padding
+        char(':')
+        minute(Padding.ZERO) // mm (00-59) with zero padding
+        char(' ')
+        amPmMarker("AM", "PM") // AM/PM marker in uppercase)
+    }
+
     LaunchedEffect(key1 = currentTime) {
         state.clearText()
         state.edit {
-            val hour = if (currentTime.hour > 12) currentTime.hour - 12 else currentTime.hour
-            append("$hour:${currentTime.minute} ")
-            append(if (currentTime.hour < 12) "AM" else "PM")
+            append(currentTime.format(formatter))
         }
         showError = currentTime <= nowTime
         onErrorMessage(showError)
@@ -290,7 +329,9 @@ fun TimeTextDropbox(
         onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
-            modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
             state = state,
             supportingText = { if (showError) Text(text = "Time as past") },
@@ -319,8 +360,7 @@ fun TimeTextDropbox(
                             enabled = notificationTime.localTime > nowTime,
                             trailingIcon = {
                                 Text(
-                                    "${notificationTime.localTime.hour}:${notificationTime.localTime.minute} " +
-                                        if (notificationTime.localTime.hour < 12) "AM" else "PM",
+                                    notificationTime.localTime.format(formatter),
                                 )
                             },
                         )
@@ -422,7 +462,9 @@ fun DateTextDropbox(
         onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
-            modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
             state = state,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -440,7 +482,11 @@ fun DateTextDropbox(
                 DropdownMenuItem(
                     text = { Text(text = dateStringArray[index]) },
                     onClick = {
-                        showDateDialog = true
+                        if (notificationTime is NotificationDate.Date) {
+                            onValueChange(notificationTime.localDate)
+                        } else {
+                            showDateDialog = true
+                        }
                         expanded = false
                     },
                 )
@@ -530,20 +576,21 @@ fun IntervalTextDropbox(
             NotificationInterval.Yearly(
                 intervalEnd = IntervalEnd.Forever,
             ),
-            NotificationInterval.Custom,
+            // NotificationInterval.Custom,
         )
     }
+    val intervalStringArray = stringArrayResource(
+        R.array.modules_designsystem_notification_interval,
+    )
 
     val state = rememberTextFieldState()
     LaunchedEffect(key1 = currentInterval) {
         state.clearText()
+        val index = notificationIntervals.indexOf(currentInterval)
         state.edit {
+            append(intervalStringArray[index])
         }
     }
-
-    val intervalStringArray = stringArrayResource(
-        R.array.modules_designsystem_notification_interval,
-    )
 
     ExposedDropdownMenuBox(
         modifier = modifier,
@@ -551,7 +598,9 @@ fun IntervalTextDropbox(
         onExpandedChange = { expanded = !expanded },
     ) {
         TextField(
-            modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
             readOnly = true,
             state = state,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
