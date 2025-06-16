@@ -1,4 +1,4 @@
-package com.mshdabiola.model
+package com.mshdabiola.ui.state
 
 import kotlinx.datetime.LocalTime
 
