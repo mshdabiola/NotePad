@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -112,9 +113,12 @@ fun NotificationDialogNew(
                         ) {
                             Text(text = "Time")
                         }
-                        NoteTab(pagerState.currentPage == 1, onClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                        }) {
+                        NoteTab(
+                            pagerState.currentPage == 1,
+                            onClick = {
+                                coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                            },
+                        ) {
                             Text(text = "Place")
                         }
                     }
@@ -242,7 +246,7 @@ fun NotificationPlace(
             NotificationPlace.Home,
             NotificationPlace.Work,
             NotificationPlace.School,
-            NotificationPlace.Edit(TextFieldState()),
+            NotificationPlace.Edit(TextFieldState()), // Default TextFieldState
         )
     }
     val placeStringArray = stringArrayResource(R.array.modules_designsystem_notification_places)
@@ -255,28 +259,39 @@ fun NotificationPlace(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RadioButton(selected = place == currentPlace, onClick = {
-                        onValueChange(place)
-                    })
+                    RadioButton(
+                        selected = place == currentPlace,
+                        onClick = {
+                            onValueChange(place) // Still allow click to select
+                        },
+                    )
                     TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = place.place,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused && currentPlace != place) {
+                                    onValueChange(place)
+                                }
+                            },
+                        state = place.place, // Use the TextFieldState from the place object
                         lineLimits = TextFieldLineLimits.SingleLine,
                         placeholder = { Text(text = placeStringArray[index]) },
                     )
                 }
-
             } else {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onValueChange(place) },
+                        .clickable { onValueChange(place) }, // Make the whole row clickable
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RadioButton(selected = place == currentPlace, onClick = {
-                        onValueChange(place)
-                    })
+                    RadioButton(
+                        selected = place == currentPlace,
+                        onClick = {
+                            onValueChange(place)
+                        },
+                    )
                     Text(modifier = Modifier.weight(1f), text = placeStringArray[index])
                 }
             }
