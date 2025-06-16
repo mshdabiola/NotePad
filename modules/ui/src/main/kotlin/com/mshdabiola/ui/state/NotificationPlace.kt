@@ -1,4 +1,4 @@
-package com.mshdabiola.model
+package com.mshdabiola.ui.state
 
 sealed class NotificationPlace {
     data class Edit(val place: String) : NotificationPlace()
