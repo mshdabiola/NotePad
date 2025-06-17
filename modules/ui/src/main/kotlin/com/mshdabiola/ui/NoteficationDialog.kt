@@ -590,7 +590,6 @@ fun IntervalTextDropbox(
                 intervalEnd = IntervalEnd.Forever,
             ),
             NotificationInterval.Weekly(
-                days = listOf(nowDate.dayOfWeek),
                 intervalEnd = IntervalEnd.Forever,
             ),
             NotificationInterval.Monthly(

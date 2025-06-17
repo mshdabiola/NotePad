@@ -1,13 +1,16 @@
 package com.mshdabiola.ui
 
 import android.os.Build
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
@@ -23,6 +26,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
@@ -83,7 +89,6 @@ fun NotificationDialogInterval(
         }
     }
 
-
 //    BasicAlertDialog(
 //        modifier = modifier,
 //        onDismissRequest = { },
@@ -107,7 +112,7 @@ fun NotificationDialogInterval(
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     lineLimits = TextFieldLineLimits.SingleLine,
 
-                    )
+                )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = {
@@ -127,7 +132,6 @@ fun NotificationDialogInterval(
             }
             when (currentInterval) {
                 is NotificationInterval.Daily -> {
-
                     IntervalTextField(
                         prefix = "Every",
                         suffix = "days",
@@ -139,50 +143,116 @@ fun NotificationDialogInterval(
                         currentIntervalEnd = currentInterval.intervalEnd,
                         onValueChange = {},
                     )
-
-
                 }
 
                 is NotificationInterval.Weekly -> {
+                    val daysOfWeek = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
+                    IntervalTextField(
+                        prefix = "Every",
+                        suffix = "weeks",
+                        state = currentInterval.interval,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FlowRow {
+                        daysOfWeek
+                            .map { it.take(3) }
+                            .forEachIndexed { index, days ->
+                                val contain = index in currentInterval.days
+                                Surface(
+                                    shape = CircleShape,
+                                    border = BorderStroke(4.dp, MaterialTheme.colorScheme.primaryContainer),
+                                    color = if (contain) {
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    } else {
+                                        MaterialTheme.colorScheme.surface
+                                    },
+                                    contentColor = if (contain) {
+                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
 
+                                ) {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Text(days)
+                                    }
+                                }
+                            }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    IntervalRepeatEnd(
+                        currentIntervalEnd = currentInterval.intervalEnd,
+                        onValueChange = {},
+                    )
                 }
 
                 is NotificationInterval.Monthly -> {
+                    IntervalTextField(
+                        prefix = "Every",
+                        suffix = "months",
+                        state = currentInterval.interval,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(currentInterval.sameDay, onClick = {})
+                        Text(modifier = Modifier.weight(1f), text = "On same day each month")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(!currentInterval.sameDay, onClick = {})
+                        Text(modifier = Modifier.weight(1f), text = "On Third of Tuesday")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    IntervalRepeatEnd(
+                        currentIntervalEnd = currentInterval.intervalEnd,
+                        onValueChange = {},
+                    )
                 }
 
                 is NotificationInterval.Yearly -> {
+                    IntervalTextField(
+                        prefix = "Every",
+                        suffix = "years",
+                        state = currentInterval.interval,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    IntervalRepeatEnd(
+                        currentIntervalEnd = currentInterval.intervalEnd,
+                        onValueChange = {},
+                    )
                 }
 
                 is NotificationInterval.DoNotRepeat -> {
-
+                    Spacer(modifier = Modifier.height(64.dp))
                 }
 
                 is NotificationInterval.Custom -> {
-
                 }
-
             }
-
-
         }
-
     }
 
 //    }
-
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun NotificationDialogIntervalPreview() {
     val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val currentInterval = NotificationInterval.Daily(
+    val currentInterval = NotificationInterval.Weekly(
         intervalEnd = IntervalEnd.EndDate(LocalDate(2023, 1, 1)),
+        days = setOf(0, 4, 6),
     )
     val intervals = listOf(
         NotificationInterval.DoNotRepeat,
@@ -190,7 +260,6 @@ fun NotificationDialogIntervalPreview() {
             intervalEnd = IntervalEnd.Forever,
         ),
         NotificationInterval.Weekly(
-            days = listOf(nowDate.dayOfWeek),
             intervalEnd = IntervalEnd.Forever,
         ),
         NotificationInterval.Monthly(
@@ -209,7 +278,6 @@ fun NotificationDialogIntervalPreview() {
         onValueChange = {},
     )
 }
-
 
 @Composable
 fun IntervalTextField(
@@ -234,7 +302,7 @@ fun IntervalTextField(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
 
-            ),
+        ),
     )
 }
 
@@ -257,7 +325,6 @@ fun IntervalRepeatEnd(
     val intervalEndStringArray = stringArrayResource(
         R.array.modules_designsystem_notification_interval_end2,
     )
-
 
     val intervalsEnds: Map<IntervalEnd, String> = remember {
         mapOf(
@@ -296,10 +363,10 @@ fun IntervalRepeatEnd(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
 
-                    ),
+                ),
                 lineLimits = TextFieldLineLimits.SingleLine,
 
-                )
+            )
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
@@ -347,7 +414,7 @@ fun IntervalRepeatEnd(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
 
-                        ),
+                    ),
                 )
                 if (showDateDialog) {
                     val dateState =
@@ -365,7 +432,6 @@ fun IntervalRepeatEnd(
                                         dateState.getSelectedDate()?.toKotlinLocalDate()?.let {
                                             onValueChange(IntervalEnd.EndDate(it))
                                         }
-
                                     } else {
                                         onValueChange(IntervalEnd.Forever)
                                     }
@@ -408,24 +474,20 @@ fun IntervalRepeatEnd(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
 
-                        ),
+                    ),
                 )
             }
         }
     }
-
-
 }
 
 @Preview
 @Composable
 private fun InvervalRepeatEndPreview() {
-
     IntervalRepeatEnd(
         currentIntervalEnd = IntervalEnd.Forever,
     )
 }
-
 
 class DigitsOnlyInputTransformation(private val maxLength: Int = Int.MAX_VALUE) :
     InputTransformation {

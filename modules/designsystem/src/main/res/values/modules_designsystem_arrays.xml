@@ -57,4 +57,16 @@
     </string-array>
 
 
+    <string-array name="modules_designsystem_days_of_weeks">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+
 </resources>
