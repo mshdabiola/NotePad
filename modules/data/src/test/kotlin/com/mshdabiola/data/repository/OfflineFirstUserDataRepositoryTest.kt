@@ -58,7 +58,7 @@ class OfflineFirstUserDataRepositoryTest {
                 useDynamicColor = false,
                 shouldHideOnboarding = false,
                 contrast = Contrast.Normal,
-                mainData = MainData.Label(0),
+                mainData = MainData(0),
             ),
             subject.userData.first(),
         )
