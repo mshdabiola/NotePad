@@ -1,8 +1,6 @@
 package com.mshdabiola.ui.state
 
 import androidx.compose.foundation.text.input.TextFieldState
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
 sealed class NotificationInterval {
@@ -12,7 +10,7 @@ sealed class NotificationInterval {
     ) : NotificationInterval()
     data class Weekly(
         val interval: TextFieldState = TextFieldState("1"),
-        val days: List<DayOfWeek>,
+        val days: Set<Int> = emptySet(),
         val intervalEnd: IntervalEnd,
     ) : NotificationInterval()
     data class Monthly(
