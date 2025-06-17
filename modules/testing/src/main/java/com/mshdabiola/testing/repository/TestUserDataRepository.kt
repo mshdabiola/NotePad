@@ -21,7 +21,7 @@ val emptyUserData = UserData(
     useDynamicColor = false,
     shouldHideOnboarding = false,
     contrast = Contrast.High,
-    mainData = MainData.Note,
+    mainData = MainData(),
 )
 
 class TestUserDataRepository : UserDataRepository {
@@ -63,7 +63,7 @@ class TestUserDataRepository : UserDataRepository {
 
     override suspend fun setMainData(mainData: MainData) {
         currentUserData.let { current ->
-            _userData.tryEmit(current.copy(mainData = MainData.Note))
+            _userData.tryEmit(current.copy(mainData = MainData()))
         }
     }
 
