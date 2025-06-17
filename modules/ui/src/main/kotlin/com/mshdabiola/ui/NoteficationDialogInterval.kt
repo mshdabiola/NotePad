@@ -1,16 +1,13 @@
 package com.mshdabiola.ui
 
-import android.os.Build
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
@@ -19,14 +16,13 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
@@ -34,8 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.getSelectedDate
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,8 +50,6 @@ import com.mshdabiola.ui.state.NotificationInterval
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,6 +60,7 @@ fun NotificationDialogInterval(
     intervals: List<NotificationInterval>,
     showDialog: Boolean = false,
     onValueChange: (NotificationInterval) -> Unit = {},
+    onDismiss:()->Unit ={}
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -96,7 +89,9 @@ fun NotificationDialogInterval(
     Surface(
         shape = ShapeDefaults.Small,
     ) {
-        Column {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ){
             ExposedDropdownMenuBox(
                 modifier = Modifier,
                 expanded = expanded,
@@ -112,7 +107,7 @@ fun NotificationDialogInterval(
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     lineLimits = TextFieldLineLimits.SingleLine,
 
-                )
+                    )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = {
@@ -137,7 +132,6 @@ fun NotificationDialogInterval(
                         suffix = "days",
                         state = currentInterval.interval,
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     IntervalRepeatEnd(
                         currentIntervalEnd = currentInterval.intervalEnd,
@@ -152,37 +146,32 @@ fun NotificationDialogInterval(
                         suffix = "weeks",
                         state = currentInterval.interval,
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FlowRow {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         daysOfWeek
-                            .map { it.take(3) }
                             .forEachIndexed { index, days ->
-                                val contain = index in currentInterval.days
-                                Surface(
-                                    shape = CircleShape,
-                                    border = BorderStroke(4.dp, MaterialTheme.colorScheme.primaryContainer),
-                                    color = if (contain) {
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    } else {
-                                        MaterialTheme.colorScheme.surface
-                                    },
-                                    contentColor = if (contain) {
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurface
-                                    },
+                                val isSelected = index in currentInterval.days
+                                InputChip(
+                                    selected = isSelected,
+                                    onClick = {
 
-                                ) {
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(days)
-                                    }
-                                }
+                                        val newDays = currentInterval.days.toMutableSet()
+                                        if (isSelected)
+                                            newDays.remove(index)
+                                        else
+                                            newDays.add(index)
+                                        onValueChange(
+                                            currentInterval.copy(
+                                                days = newDays,
+                                            ),
+                                        )
+                                    },
+                                    label = { Text(days) },
+                                )
                             }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     IntervalRepeatEnd(
                         currentIntervalEnd = currentInterval.intervalEnd,
@@ -196,21 +185,18 @@ fun NotificationDialogInterval(
                         suffix = "months",
                         state = currentInterval.interval,
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(currentInterval.sameDay, onClick = {})
                         Text(modifier = Modifier.weight(1f), text = "On same day each month")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(!currentInterval.sameDay, onClick = {})
                         Text(modifier = Modifier.weight(1f), text = "On Third of Tuesday")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     IntervalRepeatEnd(
                         currentIntervalEnd = currentInterval.intervalEnd,
@@ -224,7 +210,6 @@ fun NotificationDialogInterval(
                         suffix = "years",
                         state = currentInterval.interval,
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     IntervalRepeatEnd(
                         currentIntervalEnd = currentInterval.intervalEnd,
@@ -239,6 +224,21 @@ fun NotificationDialogInterval(
                 is NotificationInterval.Custom -> {
                 }
             }
+
+            HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("Close")
+                }
+                Button(onClick = {}) {
+                    Text("Set repeat")
+
+                }
+            }
+
         }
     }
 
@@ -250,9 +250,10 @@ fun NotificationDialogInterval(
 @Composable
 fun NotificationDialogIntervalPreview() {
     val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val currentInterval = NotificationInterval.Weekly(
+    val currentInterval = NotificationInterval.Monthly(
         intervalEnd = IntervalEnd.EndDate(LocalDate(2023, 1, 1)),
-        days = setOf(0, 4, 6),
+        sameDay = true,
+        //  days = setOf(0, 4, 6),
     )
     val intervals = listOf(
         NotificationInterval.DoNotRepeat,
@@ -287,7 +288,7 @@ fun IntervalTextField(
     state: TextFieldState = rememberTextFieldState(),
 ) {
     TextField(
-        modifier = modifier,
+        modifier = modifier.width(150.dp),
         state = state,
         lineLimits = TextFieldLineLimits.SingleLine,
         inputTransformation = DigitsOnlyInputTransformation(),
@@ -302,7 +303,7 @@ fun IntervalTextField(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
 
-        ),
+            ),
     )
 }
 
@@ -346,10 +347,11 @@ fun IntervalRepeatEnd(
     }
 
     Row(
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        modifier=modifier,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ExposedDropdownMenuBox(
-            modifier = modifier,
+            modifier = Modifier.weight(3f),
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
         ) {
@@ -363,10 +365,10 @@ fun IntervalRepeatEnd(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
 
-                ),
+                    ),
                 lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+                )
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
@@ -392,76 +394,20 @@ fun IntervalRepeatEnd(
         when (currentIntervalEnd) {
             IntervalEnd.Forever -> {}
             is IntervalEnd.EndDate -> {
-                var showDateDialog by remember {
-                    mutableStateOf(false)
-                }
-                val dateTextFiledState = rememberTextFieldState()
-                TextField(
-                    modifier = modifier.clickable {
-                        showDateDialog = true
-                    },
-                    state = dateTextFiledState,
-                    readOnly = true,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    inputTransformation = DigitsOnlyInputTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done,
-                        showKeyboardOnFocus = true,
-                    ),
-                    suffix = { Text(text = "Events") },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-
-                    ),
-                )
-                if (showDateDialog) {
-                    val dateState =
-                        rememberDatePickerState(initialSelectedDate = currentIntervalEnd.date.toJavaLocalDate())
-
-                    DatePickerDialog(
-                        onDismissRequest = {
-                            showDateDialog = false
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    showDateDialog = false
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        dateState.getSelectedDate()?.toKotlinLocalDate()?.let {
-                                            onValueChange(IntervalEnd.EndDate(it))
-                                        }
-                                    } else {
-                                        onValueChange(IntervalEnd.Forever)
-                                    }
-                                },
-                            ) {
-                                Text(text = "Set date")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = {
-                                    showDateDialog = false
-                                },
-                            ) {
-                                Text(text = "Cancel")
-                            }
-                        },
-                    ) {
-                        DatePicker(
-                            state = dateState,
-                            //   dateValidator = { it > (System.currentTimeMillis() - (48 * 60 * 60 * 1000)) }
-                        )
+                DateTextDropbox(
+                    modifier = Modifier.weight(2f),
+                    currentDate = currentIntervalEnd.date,
+                    onValueChange = {
+                        onValueChange(currentIntervalEnd.copy(it))
                     }
-                }
+                )
             }
 
             is IntervalEnd.NumberOfTimes -> {
+                val numberOfTimesState = rememberTextFieldState(currentIntervalEnd.times.toString())
                 TextField(
-                    modifier = modifier,
-                    state = state,
+                    modifier = Modifier.weight(2f),
+                    state = numberOfTimesState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     inputTransformation = DigitsOnlyInputTransformation(),
                     keyboardOptions = KeyboardOptions(
@@ -474,7 +420,7 @@ fun IntervalRepeatEnd(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
 
-                    ),
+                        ),
                 )
             }
         }
