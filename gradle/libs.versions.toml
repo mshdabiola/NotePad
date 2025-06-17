@@ -55,7 +55,7 @@ room = "2.7.1"
 moduleGraph = "2.8.0"
 secrets = "2.0.1"
 truth = "1.4.4"
-turbine = "1.2.0"
+turbine = "1.2.1"
 timber = "5.0.1"
 
 androidxNavigation = "2.9.0"
