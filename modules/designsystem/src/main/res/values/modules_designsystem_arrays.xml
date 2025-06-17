@@ -48,4 +48,13 @@
         <item>School</item>
         <item>Edit location</item>
     </string-array>
+
+
+    <string-array name="modules_designsystem_notification_interval_end2">
+        <item>Forever</item>
+        <item>Until a date</item>
+        <item>For a number of events</item>
+    </string-array>
+
+
 </resources>
