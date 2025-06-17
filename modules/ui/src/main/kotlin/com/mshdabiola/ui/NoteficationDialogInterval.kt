@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
@@ -56,7 +57,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun NotificationDialogInterval(
     modifier: Modifier = Modifier,
-    currentInterval: NotificationInterval,
+    initInterval: NotificationInterval,
     intervals: List<NotificationInterval>,
     showDialog: Boolean = false,
     onValueChange: (NotificationInterval) -> Unit = {},
@@ -67,6 +68,9 @@ fun NotificationDialogInterval(
     }
     val nowDate = remember {
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    }
+    var currentInterval by remember (initInterval){
+        mutableStateOf(initInterval)
     }
 
     val intervalStringArray = stringArrayResource(
@@ -114,11 +118,11 @@ fun NotificationDialogInterval(
                         expanded = false
                     },
                 ) {
-                    intervals.forEachIndexed { index, notificationTime ->
+                    intervals.forEachIndexed { index, interval ->
                         DropdownMenuItem(
                             text = { Text(text = intervalStringArray[index]) },
                             onClick = {
-                                onValueChange(notificationTime)
+                                currentInterval=interval
                                 expanded = false
                             },
                         )
@@ -127,44 +131,48 @@ fun NotificationDialogInterval(
             }
             when (currentInterval) {
                 is NotificationInterval.Daily -> {
+                    val daily =currentInterval as NotificationInterval.Daily
                     IntervalTextField(
                         prefix = "Every",
                         suffix = "days",
-                        state = currentInterval.interval,
+                        state = daily.interval,
                     )
 
                     IntervalRepeatEnd(
-                        currentIntervalEnd = currentInterval.intervalEnd,
-                        onValueChange = {},
+                        currentIntervalEnd = daily.intervalEnd,
+                        onValueChange = {
+                            currentInterval=daily.copy(intervalEnd = it)
+                        },
                     )
                 }
 
                 is NotificationInterval.Weekly -> {
                     val daysOfWeek = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
+                    val weekly = currentInterval as NotificationInterval.Weekly
                     IntervalTextField(
                         prefix = "Every",
                         suffix = "weeks",
-                        state = currentInterval.interval,
+                        state = weekly.interval,
                     )
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         daysOfWeek
                             .forEachIndexed { index, days ->
-                                val isSelected = index in currentInterval.days
+                                val isSelected = index in weekly.days
                                 InputChip(
                                     selected = isSelected,
                                     onClick = {
 
-                                        val newDays = currentInterval.days.toMutableSet()
+                                        val newDays = weekly.days.toMutableSet()
                                         if (isSelected)
                                             newDays.remove(index)
                                         else
                                             newDays.add(index)
-                                        onValueChange(
-                                            currentInterval.copy(
+                                        currentInterval=
+                                            weekly.copy(
                                                 days = newDays,
-                                            ),
+
                                         )
                                     },
                                     label = { Text(days) },
@@ -174,46 +182,57 @@ fun NotificationDialogInterval(
 
 
                     IntervalRepeatEnd(
-                        currentIntervalEnd = currentInterval.intervalEnd,
-                        onValueChange = {},
+                        currentIntervalEnd = weekly.intervalEnd,
+                        onValueChange = {
+                            currentInterval=weekly.copy(intervalEnd = it)
+
+                        },
                     )
                 }
 
                 is NotificationInterval.Monthly -> {
+                    val monthly = currentInterval as NotificationInterval.Monthly
                     IntervalTextField(
                         prefix = "Every",
                         suffix = "months",
-                        state = currentInterval.interval,
+                        state = monthly.interval,
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        RadioButton(currentInterval.sameDay, onClick = {})
+                        RadioButton(monthly.sameDay, onClick = {})
                         Text(modifier = Modifier.weight(1f), text = "On same day each month")
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        RadioButton(!currentInterval.sameDay, onClick = {})
+                        RadioButton(!monthly.sameDay, onClick = {})
                         Text(modifier = Modifier.weight(1f), text = "On Third of Tuesday")
                     }
 
                     IntervalRepeatEnd(
-                        currentIntervalEnd = currentInterval.intervalEnd,
-                        onValueChange = {},
+                        currentIntervalEnd = monthly.intervalEnd,
+                        onValueChange = {
+                            currentInterval=monthly.copy(intervalEnd = it)
+
+                        },
                     )
                 }
 
                 is NotificationInterval.Yearly -> {
+                    val yearly = currentInterval as NotificationInterval.Yearly
                     IntervalTextField(
                         prefix = "Every",
                         suffix = "years",
-                        state = currentInterval.interval,
+                        state = yearly.interval,
                     )
 
                     IntervalRepeatEnd(
-                        currentIntervalEnd = currentInterval.intervalEnd,
-                        onValueChange = {},
+                        currentIntervalEnd = yearly.intervalEnd,
+                        onValueChange = {
+                            currentInterval=yearly.copy(intervalEnd = it)
+
+                        },
                     )
                 }
 
@@ -227,13 +246,17 @@ fun NotificationDialogInterval(
 
             HorizontalDivider()
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 TextButton(onClick = onDismiss) {
                     Text("Close")
                 }
-                Button(onClick = {}) {
+                Button(onClick = {
+                    onValueChange(currentInterval)
+                }) {
                     Text("Set repeat")
 
                 }
@@ -273,7 +296,7 @@ fun NotificationDialogIntervalPreview() {
         NotificationInterval.Custom,
     )
     NotificationDialogInterval(
-        currentInterval = currentInterval,
+        initInterval = currentInterval,
         intervals = intervals,
         showDialog = true,
         onValueChange = {},
