@@ -226,7 +226,6 @@ fun NotificationDialogNewPreview() {
     val notificationUiState = NotificationUiState(
         currentDateTime = LocalDateTime(2026, 6, 16, 22, 1),
         currentInterval = NotificationInterval.Daily(
-            interval = 1,
             intervalEnd = IntervalEnd.Forever,
         ),
         currentPlace = NotificationPlace.Home,
@@ -656,7 +655,6 @@ fun IntervalTextDropbox(
 @Composable
 fun IntervalTextDropboxPreview() {
     val currentInterval = NotificationInterval.Daily(
-        interval = 1,
         intervalEnd = IntervalEnd.Forever,
     )
 
