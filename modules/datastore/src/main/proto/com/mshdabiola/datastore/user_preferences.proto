@@ -1,10 +1,11 @@
-
 syntax = "proto3";
+
+package com.mshdabiola.datastore;
 
 import "com/mshdabiola/datastore/dark_theme_config.proto";
 import "com/mshdabiola/datastore/theme_brand.proto";
 import "com/mshdabiola/datastore/theme_contrast.proto";
-
+import "com/mshdabiola/datastore/note_display_category.proto";
 
 option java_package = "com.mshdabiola.datastore";
 option java_multiple_files = true;
@@ -12,14 +13,11 @@ option java_multiple_files = true;
 message UserPreferences {
     ThemeBrandProto theme_brand = 1;
     DarkThemeConfigProto dark_theme_config = 2;
-
     bool should_hide_onboarding = 3;
-
     bool use_dynamic_color = 4;
-
     ThemeContrastProto contrast = 5;
+    NoteDisplayCategoryProto note_display_category = 6;
 
-    int64 main_screen_type = 6;
+    // NEXT AVAILABLE ID: 7 (if using field 6 for note_display_category)
 
-    // NEXT AVAILABLE ID: 7 // Update this comment for the next person
 }

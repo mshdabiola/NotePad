@@ -54,7 +54,17 @@ class UserPreferencesRepository @Inject constructor(
 
                     ThemeContrastProto.THEME_CONTRAST_MEDIUM -> Contrast.Medium
                 },
-                noteDisplayCategory = NoteDisplayCategory(it.mainScreenType),
+                noteDisplayCategory = NoteDisplayCategory(
+                    it.noteDisplayCategory.labelId,
+                    noteType = when (it.noteDisplayCategory.noteType) {
+                        NoteTypeProto.NOTE_TYPE_NOTE -> com.mshdabiola.model.NoteType.NOTE
+                        NoteTypeProto.NOTE_TYPE_ARCHIVE -> com.mshdabiola.model.NoteType.ARCHIVE
+                        NoteTypeProto.NOTE_TYPE_TRASH -> com.mshdabiola.model.NoteType.TRASH
+                        NoteTypeProto.NOTE_TYPE_REMINDER -> com.mshdabiola.model.NoteType.REMINDER
+                        NoteTypeProto.NOTE_TYPE_LABEL -> com.mshdabiola.model.NoteType.LABEL
+                        NoteTypeProto.UNRECOGNIZED, NoteTypeProto.NOTE_TYPE_UNSPECIFIED -> com.mshdabiola.model.NoteType.NOTE // Default
+                    },
+                ),
             )
         }
 
@@ -108,7 +118,20 @@ class UserPreferencesRepository @Inject constructor(
     }
     suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
         userPreferences.updateData {
-            it.copy { this.mainScreenType = noteDisplayCategory.index }
+            it.copy {
+                this.noteDisplayCategory =
+                    this.noteDisplayCategory.copy {
+                        this.labelId = noteDisplayCategory.labelId
+                        this.noteType = when (noteDisplayCategory.noteType) {
+                            com.mshdabiola.model.NoteType.NOTE -> NoteTypeProto.NOTE_TYPE_NOTE
+                            com.mshdabiola.model.NoteType.ARCHIVE -> NoteTypeProto.NOTE_TYPE_ARCHIVE
+                            com.mshdabiola.model.NoteType.TRASH -> NoteTypeProto.NOTE_TYPE_TRASH
+                            com.mshdabiola.model.NoteType.REMINDER -> NoteTypeProto.NOTE_TYPE_REMINDER
+                            com.mshdabiola.model.NoteType.LABEL -> NoteTypeProto.NOTE_TYPE_LABEL
+                            // Handle any other types
+                        }
+                    }
+            }
         }
     }
 }

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.mshdabiola.datastore; // Or your common datastore package
+
+import "com/mshdabiola/datastore/note_type.proto"; // Import if NoteTypeProto is in a separate file
+
+option java_package = "com.mshdabiola.datastore";
+option java_multiple_files = true;
+
+message NoteDisplayCategoryProto {
+    NoteTypeProto note_type = 1;
+    int64 label_id = 2; // Will store the labelId. Only relevant if note_type is LABEL.
+}
