@@ -78,7 +78,7 @@ fun NotificationDialogNew(
     onSetAlarm: (NotificationUiState) -> Unit = { },
     onDeleteAlarm: () -> Unit = {},
 
-    ) {
+) {
     val today = remember {
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     }
@@ -233,7 +233,7 @@ fun NotificationDialogNewPreview() {
         ),
         currentPlace = NotificationPlace.Home,
 
-        )
+    )
     NotificationDialogNew(initState = notificationUiState, showDialog = true)
 }
 
@@ -367,7 +367,7 @@ fun TimeTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -508,7 +508,7 @@ fun DateTextDropbox(
             ),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -517,7 +517,7 @@ fun DateTextDropbox(
         ) {
             dates.forEachIndexed { index, notificationTime ->
                 DropdownMenuItem(
-                    text = { Text(text = dateStringArray[index]+ " " + if (index==2)daysOfWeeks[todayDate.dayOfWeek.ordinal] else "") },
+                    text = { Text(text = dateStringArray[index] + " " + if (index == 2)daysOfWeeks[todayDate.dayOfWeek.ordinal] else "") },
                     onClick = {
                         if (notificationTime is NotificationDate.Date) {
                             onValueChange(notificationTime.localDate)
@@ -551,7 +551,6 @@ fun DateTextDropbox(
                         onValueChange(
                             date,
                         )
-
                     },
                 ) {
                     Text(text = "Set date")
@@ -629,7 +628,6 @@ fun IntervalTextDropbox(
 
     val state = rememberTextFieldState()
     LaunchedEffect(key1 = currentInterval) {
-
         state.clearText()
         state.edit {
             append(intervalStringArray[currentInterval.index])
@@ -651,7 +649,7 @@ fun IntervalTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-            )
+        )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -664,12 +662,10 @@ fun IntervalTextDropbox(
                     onClick = {
                         if (notificationTime is NotificationInterval.Custom) {
                             showIntervalDialog = true
-
                         } else {
                             onValueChange(notificationTime)
                         }
                         expanded = false
-
                     },
                 )
             }
@@ -690,7 +686,6 @@ fun IntervalTextDropbox(
             todayDate = nowDate,
         )
     }
-
 }
 
 @Preview

@@ -1,6 +1,5 @@
 package com.mshdabiola.ui
 
-import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,7 +64,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,233 +76,224 @@ fun NotificationDialogInterval(
     onValueChange: (NotificationInterval) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
 
-        var expanded by remember {
-            mutableStateOf(false)
+    var currentInterval by remember(initInterval) {
+        mutableStateOf(initInterval)
+    }
+
+    val intervalStringArray = stringArrayResource(
+        R.array.modules_designsystem_notification_interval,
+    )
+
+    val state = rememberTextFieldState()
+    LaunchedEffect(key1 = currentInterval) {
+        state.clearText()
+        state.edit {
+            append(intervalStringArray[currentInterval.index])
         }
+    }
 
-        var currentInterval by remember(initInterval) {
-            mutableStateOf(initInterval)
-        }
-
-        val intervalStringArray = stringArrayResource(
-            R.array.modules_designsystem_notification_interval,
-        )
-
-        val state = rememberTextFieldState()
-        LaunchedEffect(key1 = currentInterval) {
-
-            state.clearText()
-            state.edit {
-                append(intervalStringArray[currentInterval.index])
-            }
-        }
-
-        BasicAlertDialog(
-            modifier = modifier,
-            onDismissRequest = { },
+    BasicAlertDialog(
+        modifier = modifier,
+        onDismissRequest = { },
+    ) {
+        Surface(
+            shape = ShapeDefaults.Small,
         ) {
-            Surface(
-                shape = ShapeDefaults.Small,
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ExposedDropdownMenuBox(
+                    modifier = Modifier,
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
                 ) {
-                    ExposedDropdownMenuBox(
-                        modifier = Modifier,
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
-                    ) {
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
-                            readOnly = true,
-                            state = state,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                            lineLimits = TextFieldLineLimits.SingleLine,
-
-                            )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                            },
-                        ) {
-                            intervals.forEachIndexed { index, interval ->
-                                DropdownMenuItem(
-                                    text = { Text(text = intervalStringArray[index]) },
-                                    onClick = {
-                                        currentInterval = interval
-                                        expanded = false
-                                    },
-                                )
-                            }
-                        }
-                    }
-                    when (currentInterval) {
-                        is NotificationInterval.Daily -> {
-                            val daily = currentInterval as NotificationInterval.Daily
-                            IntervalTextField(
-                                prefix = "Every",
-                                suffix = "day",
-                                suffixPlural = "days",
-                                state = daily.interval,
-                            )
-
-                            IntervalRepeatEnd(
-                                currentIntervalEnd = daily.intervalEnd,
-                                todayDate = todayDate,
-                                onValueChange = {
-                                    currentInterval = daily.copy(intervalEnd = it)
-                                },
-                            )
-                        }
-
-                        is NotificationInterval.Weekly -> {
-                            val daysOfWeek =
-                                stringArrayResource(R.array.modules_designsystem_days_of_weeks)
-                            val weekly = currentInterval as NotificationInterval.Weekly
-                            IntervalTextField(
-                                prefix = "Every",
-                                suffix = "week",
-                                suffixPlural = "weeks",
-                                state = weekly.interval,
-                            )
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            ) {
-                                daysOfWeek
-                                    .forEachIndexed { index, days ->
-                                        val isSelected = index in weekly.days
-                                        InputChip(
-                                            selected = isSelected,
-                                            onClick = {
-
-                                                val newDays = weekly.days.toMutableSet()
-                                                if (isSelected)
-                                                    newDays.remove(index)
-                                                else
-                                                    newDays.add(index)
-                                                currentInterval =
-                                                    weekly.copy(
-                                                        days = newDays,
-
-                                                        )
-                                            },
-                                            label = { Text(days) },
-                                        )
-                                    }
-                            }
-
-
-                            IntervalRepeatEnd(
-                                currentIntervalEnd = weekly.intervalEnd,
-                                todayDate = todayDate,
-                                onValueChange = {
-                                    currentInterval = weekly.copy(intervalEnd = it)
-
-                                },
-                            )
-                        }
-
-                        is NotificationInterval.Monthly -> {
-                            val monthly = currentInterval as NotificationInterval.Monthly
-                            val daysOfWeek = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
-                            IntervalTextField(
-                                prefix = "Every",
-                                suffix = "month",
-                                suffixPlural = "months",
-                                state = monthly.interval,
-                            )
-                            Row(
-                                modifier = Modifier.clickable {
-                                    currentInterval = monthly.copy(sameDay = true)
-                                },
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(monthly.sameDay, onClick = {
-                                    currentInterval = monthly.copy(sameDay = true)
-                                })
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = "On same day each month",
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.clickable {
-                                    currentInterval = monthly.copy(sameDay = false)
-                                },
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(!monthly.sameDay, onClick = {
-                                    currentInterval = monthly.copy(sameDay = false)
-                                })
-                                Text(modifier = Modifier.weight(1f), text = "On Third of ${daysOfWeek[todayDate.dayOfWeek.ordinal]}")
-                            }
-
-                            IntervalRepeatEnd(
-                                currentIntervalEnd = monthly.intervalEnd,
-                                todayDate = todayDate,
-                                onValueChange = {
-                                    currentInterval = monthly.copy(intervalEnd = it)
-
-                                },
-                            )
-                        }
-
-                        is NotificationInterval.Yearly -> {
-                            val yearly = currentInterval as NotificationInterval.Yearly
-                            IntervalTextField(
-                                prefix = "Every",
-                                suffix = "year",
-                                suffixPlural = "years",
-                                state = yearly.interval,
-                            )
-
-                            IntervalRepeatEnd(
-                                currentIntervalEnd = yearly.intervalEnd,
-                                todayDate = todayDate,
-                                onValueChange = {
-                                    currentInterval = yearly.copy(intervalEnd = it)
-
-                                },
-                            )
-                        }
-
-                        is NotificationInterval.DoNotRepeat -> {
-                            Spacer(modifier = Modifier.height(64.dp))
-                        }
-
-                        is NotificationInterval.Custom -> {
-                        }
-                    }
-
-                    HorizontalDivider()
-                    Row(
+                    TextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-                    ) {
-                        TextButton(onClick = onDismiss) {
-                            Text("Close")
-                        }
-                        Button(
-                            onClick = {
-                                onValueChange(currentInterval)
-                            },
-                        ) {
-                            Text("Set repeat")
+                            .menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable, true),
+                        readOnly = true,
+                        state = state,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        lineLimits = TextFieldLineLimits.SingleLine,
 
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        },
+                    ) {
+                        intervals.forEachIndexed { index, interval ->
+                            DropdownMenuItem(
+                                text = { Text(text = intervalStringArray[index]) },
+                                onClick = {
+                                    currentInterval = interval
+                                    expanded = false
+                                },
+                            )
                         }
                     }
+                }
+                when (currentInterval) {
+                    is NotificationInterval.Daily -> {
+                        val daily = currentInterval as NotificationInterval.Daily
+                        IntervalTextField(
+                            prefix = "Every",
+                            suffix = "day",
+                            suffixPlural = "days",
+                            state = daily.interval,
+                        )
 
+                        IntervalRepeatEnd(
+                            currentIntervalEnd = daily.intervalEnd,
+                            todayDate = todayDate,
+                            onValueChange = {
+                                currentInterval = daily.copy(intervalEnd = it)
+                            },
+                        )
+                    }
+
+                    is NotificationInterval.Weekly -> {
+                        val daysOfWeek =
+                            stringArrayResource(R.array.modules_designsystem_days_of_weeks)
+                        val weekly = currentInterval as NotificationInterval.Weekly
+                        IntervalTextField(
+                            prefix = "Every",
+                            suffix = "week",
+                            suffixPlural = "weeks",
+                            state = weekly.interval,
+                        )
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            daysOfWeek
+                                .forEachIndexed { index, days ->
+                                    val isSelected = index in weekly.days
+                                    InputChip(
+                                        selected = isSelected,
+                                        onClick = {
+                                            val newDays = weekly.days.toMutableSet()
+                                            if (isSelected) {
+                                                newDays.remove(index)
+                                            } else {
+                                                newDays.add(index)
+                                            }
+                                            currentInterval =
+                                                weekly.copy(
+                                                    days = newDays,
+
+                                                )
+                                        },
+                                        label = { Text(days) },
+                                    )
+                                }
+                        }
+
+                        IntervalRepeatEnd(
+                            currentIntervalEnd = weekly.intervalEnd,
+                            todayDate = todayDate,
+                            onValueChange = {
+                                currentInterval = weekly.copy(intervalEnd = it)
+                            },
+                        )
+                    }
+
+                    is NotificationInterval.Monthly -> {
+                        val monthly = currentInterval as NotificationInterval.Monthly
+                        val daysOfWeek = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
+                        IntervalTextField(
+                            prefix = "Every",
+                            suffix = "month",
+                            suffixPlural = "months",
+                            state = monthly.interval,
+                        )
+                        Row(
+                            modifier = Modifier.clickable {
+                                currentInterval = monthly.copy(sameDay = true)
+                            },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(monthly.sameDay, onClick = {
+                                currentInterval = monthly.copy(sameDay = true)
+                            })
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = "On same day each month",
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.clickable {
+                                currentInterval = monthly.copy(sameDay = false)
+                            },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(!monthly.sameDay, onClick = {
+                                currentInterval = monthly.copy(sameDay = false)
+                            })
+                            Text(modifier = Modifier.weight(1f), text = "On Third of ${daysOfWeek[todayDate.dayOfWeek.ordinal]}")
+                        }
+
+                        IntervalRepeatEnd(
+                            currentIntervalEnd = monthly.intervalEnd,
+                            todayDate = todayDate,
+                            onValueChange = {
+                                currentInterval = monthly.copy(intervalEnd = it)
+                            },
+                        )
+                    }
+
+                    is NotificationInterval.Yearly -> {
+                        val yearly = currentInterval as NotificationInterval.Yearly
+                        IntervalTextField(
+                            prefix = "Every",
+                            suffix = "year",
+                            suffixPlural = "years",
+                            state = yearly.interval,
+                        )
+
+                        IntervalRepeatEnd(
+                            currentIntervalEnd = yearly.intervalEnd,
+                            todayDate = todayDate,
+                            onValueChange = {
+                                currentInterval = yearly.copy(intervalEnd = it)
+                            },
+                        )
+                    }
+
+                    is NotificationInterval.DoNotRepeat -> {
+                        Spacer(modifier = Modifier.height(64.dp))
+                    }
+
+                    is NotificationInterval.Custom -> {
+                    }
+                }
+
+                HorizontalDivider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Close")
+                    }
+                    Button(
+                        onClick = {
+                            onValueChange(currentInterval)
+                        },
+                    ) {
+                        Text("Set repeat")
+                    }
                 }
             }
         }
-
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -339,7 +327,7 @@ fun NotificationDialogIntervalPreview() {
         initInterval = currentInterval,
         intervals = intervals,
         onValueChange = {},
-        todayDate = nowDate
+        todayDate = nowDate,
     )
 }
 
@@ -363,17 +351,21 @@ fun IntervalTextField(
             showKeyboardOnFocus = true,
         ),
         prefix = { Text(text = prefix) },
-        suffix = { Text(text = when{
-            state.text.isBlank() -> suffix
-            state.text.toString().toInt() > 1 -> suffixPlural
-            else -> suffix}) },
+        suffix = {
+            Text(
+                text = when {
+                    state.text.isBlank() -> suffix
+                    state.text.toString().toInt() > 1 -> suffixPlural
+                    else -> suffix },
+            )
+        },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
 
-            ),
+        ),
     )
 }
 
@@ -383,7 +375,7 @@ fun IntervalTextFieldPreview() {
     IntervalTextField(
         prefix = "Every",
         suffix = "days",
-        state = rememberTextFieldState("44")
+        state = rememberTextFieldState("44"),
     )
 }
 
@@ -402,8 +394,8 @@ fun IntervalRepeatEnd(
     val intervalsEnds = remember {
         listOf(
             IntervalEnd.Forever,
-            IntervalEnd.EndDate(todayDate) ,
-            IntervalEnd.NumberOfTimes(1) ,
+            IntervalEnd.EndDate(todayDate),
+            IntervalEnd.NumberOfTimes(1),
         )
     }
     var expanded by remember {
@@ -438,10 +430,10 @@ fun IntervalRepeatEnd(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
 
-                    ),
+                ),
                 lineLimits = TextFieldLineLimits.SingleLine,
 
-                )
+            )
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
@@ -486,12 +478,12 @@ fun IntervalRepeatEnd(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
 
-                        ),
+                    ),
                     trailingIcon = {
-                        IconButton(onClick = {showDateDialog = true}) {
-                            Icon(Icons.Default.DateRange,contentDescription = "Date")
+                        IconButton(onClick = { showDateDialog = true }) {
+                            Icon(Icons.Default.DateRange, contentDescription = "Date")
                         }
-                    }
+                    },
                 )
                 if (showDateDialog) {
                     val dateState =
@@ -505,16 +497,15 @@ fun IntervalRepeatEnd(
                             Button(
                                 onClick = {
                                     showDateDialog = false
-                                    val date =dateState.selectedDateMillis?.let { millis ->
-                                    Instant.fromEpochMilliseconds(millis)
-                                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                                        .date
-                                } ?: LocalDate(1970, 1, 1)
+                                    val date = dateState.selectedDateMillis?.let { millis ->
+                                        Instant.fromEpochMilliseconds(millis)
+                                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                                            .date
+                                    } ?: LocalDate(1970, 1, 1)
                                     onValueChange(
                                         currentIntervalEnd.copy(date = date),
 
                                     )
-
                                 },
                             ) {
                                 Text(text = "Set date")
@@ -541,10 +532,9 @@ fun IntervalRepeatEnd(
             is IntervalEnd.NumberOfTimes -> {
                 val numberOfTimesState = rememberTextFieldState(currentIntervalEnd.times.toString())
                 LaunchedEffect(key1 = numberOfTimesState.text) {
-                   onValueChange(
-                        currentIntervalEnd.copy(times = numberOfTimesState.text.toString().toInt())
+                    onValueChange(
+                        currentIntervalEnd.copy(times = numberOfTimesState.text.toString().toInt()),
                     )
-
                 }
                 TextField(
                     modifier = Modifier.weight(2f),
@@ -563,7 +553,7 @@ fun IntervalRepeatEnd(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
 
-                        ),
+                    ),
                 )
             }
         }
@@ -575,7 +565,7 @@ fun IntervalRepeatEnd(
 private fun InvervalRepeatEndPreview() {
     IntervalRepeatEnd(
         currentIntervalEnd = IntervalEnd.Forever,
-        todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     )
 }
 
