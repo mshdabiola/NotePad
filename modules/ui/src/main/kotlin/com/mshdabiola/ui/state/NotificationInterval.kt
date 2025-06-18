@@ -26,8 +26,8 @@ sealed class NotificationInterval(val index:Int=0) {
     data object Custom : NotificationInterval(5)
 }
 
-sealed class IntervalEnd {
-    data object Forever : IntervalEnd()
-    data class EndDate(val date: LocalDate) : IntervalEnd()
-    data class NumberOfTimes(val times: Int) : IntervalEnd()
+sealed class IntervalEnd (val index: Int){
+    data object Forever : IntervalEnd(0)
+    data class EndDate(val date: LocalDate) : IntervalEnd(1)
+    data class NumberOfTimes(val times: Int) : IntervalEnd(2)
 }
