@@ -353,9 +353,9 @@ fun IntervalTextField(
     text: String = "",
     onValueChange: (String) -> Unit = {},
 ) {
-   val state: TextFieldState = rememberTextFieldState(text)
+    val state: TextFieldState = rememberTextFieldState(text)
     LaunchedEffect(key1 = state.text) {
-       onValueChange(state.text.toString())
+        onValueChange(state.text.toString())
     }
 
     TextField(

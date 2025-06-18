@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
@@ -48,11 +47,11 @@ import com.mshdabiola.designsystem.R
 import com.mshdabiola.designsystem.component.NoteTab
 import com.mshdabiola.designsystem.component.NoteTabRow
 import com.mshdabiola.model.IntervalEnd
-import com.mshdabiola.ui.state.NotificationDate
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
 import com.mshdabiola.model.NotificationTime
 import com.mshdabiola.model.NotificationUiState
+import com.mshdabiola.ui.state.NotificationDate
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
