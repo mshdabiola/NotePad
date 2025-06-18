@@ -616,12 +616,10 @@ fun IntervalTextDropbox(
 
     val state = rememberTextFieldState()
     LaunchedEffect(key1 = currentInterval) {
-        val index = notificationIntervals.indexOf(currentInterval)
-        if (index == -1) return@LaunchedEffect
 
         state.clearText()
         state.edit {
-            append(intervalStringArray[index])
+            append(intervalStringArray[currentInterval.index])
         }
     }
 
