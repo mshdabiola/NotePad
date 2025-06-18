@@ -12,7 +12,7 @@ sealed class MainState {
         val setOfSelected: Set<Long> = emptySet(),
         val notificationUiState: NotificationUiState? = null,
 
-        ) : MainState()
+    ) : MainState()
 
     //    data class Error(val message: String) : MainStateN()
 }

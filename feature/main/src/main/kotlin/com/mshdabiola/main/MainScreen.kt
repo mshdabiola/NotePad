@@ -77,8 +77,8 @@ import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.Note
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.ui.ColorDialog
@@ -441,7 +441,7 @@ fun MainContent(
                     )
                 }
 
-                success.noteDisplayCategory.noteType == NoteType.REMAINDER -> {
+                success.noteDisplayCategory.noteType == NoteType.REMINDER -> {
                     ArchiveTopAppBar(
                         name = "Remainder",
                         onNavigate = { },
