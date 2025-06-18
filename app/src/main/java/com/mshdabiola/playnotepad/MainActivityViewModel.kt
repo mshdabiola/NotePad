@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice

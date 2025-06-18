@@ -95,8 +95,8 @@ fun MainNavigation(
                     Icon(imageVector = NoteIcon.Notification, contentDescription = "")
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_reminders)) },
-                selected = currentMainArg.noteType == NoteType.REMAINDER,
-                onClick = { onNavigation(NoteDisplayCategory(NoteType.REMAINDER.index)) },
+                selected = currentMainArg.noteType == NoteType.REMINDER,
+                onClick = { onNavigation(NoteDisplayCategory(NoteType.REMINDER.index)) },
             )
             HorizontalDivider(
                 modifier = Modifier
@@ -128,7 +128,7 @@ fun MainNavigation(
                         )
                     },
                     label = { Text(text = it.label) },
-                    selected = currentMainArg.index == it.id,
+                    selected = currentMainArg.labelId == it.id,
                     onClick = { onNavigation(NoteDisplayCategory(it.id)) },
                 )
             }
