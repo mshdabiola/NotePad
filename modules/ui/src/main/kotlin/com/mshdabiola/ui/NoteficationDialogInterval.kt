@@ -57,8 +57,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.R
-import com.mshdabiola.ui.state.IntervalEnd
-import com.mshdabiola.ui.state.NotificationInterval
+import com.mshdabiola.model.IntervalEnd
+import com.mshdabiola.model.NotificationInterval
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -146,7 +146,11 @@ fun NotificationDialogInterval(
                             prefix = "Every",
                             suffix = "day",
                             suffixPlural = "days",
-                            state = daily.interval,
+                            text = daily.interval,
+                            onValueChange = {
+                                currentInterval = daily.copy(interval = it)
+                            },
+
                         )
 
                         IntervalRepeatEnd(
@@ -166,7 +170,10 @@ fun NotificationDialogInterval(
                             prefix = "Every",
                             suffix = "week",
                             suffixPlural = "weeks",
-                            state = weekly.interval,
+                            text = weekly.interval,
+                            onValueChange = {
+                                currentInterval = weekly.copy(interval = it)
+                            },
                         )
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -210,7 +217,10 @@ fun NotificationDialogInterval(
                             prefix = "Every",
                             suffix = "month",
                             suffixPlural = "months",
-                            state = monthly.interval,
+                            text = monthly.interval,
+                            onValueChange = {
+                                currentInterval = monthly.copy(interval = it)
+                            },
                         )
                         Row(
                             modifier = Modifier.clickable {
@@ -253,7 +263,10 @@ fun NotificationDialogInterval(
                             prefix = "Every",
                             suffix = "year",
                             suffixPlural = "years",
-                            state = yearly.interval,
+                            text = yearly.interval,
+                            onValueChange = {
+                                currentInterval = yearly.copy(interval = it)
+                            },
                         )
 
                         IntervalRepeatEnd(
@@ -337,8 +350,14 @@ fun IntervalTextField(
     prefix: String = "",
     suffix: String = "",
     suffixPlural: String = "",
-    state: TextFieldState = rememberTextFieldState(),
+    text: String = "",
+    onValueChange: (String) -> Unit = {},
 ) {
+   val state: TextFieldState = rememberTextFieldState(text)
+    LaunchedEffect(key1 = state.text) {
+       onValueChange(state.text.toString())
+    }
+
     TextField(
         modifier = modifier.width(172.dp),
         state = state,
@@ -375,7 +394,7 @@ fun IntervalTextFieldPreview() {
     IntervalTextField(
         prefix = "Every",
         suffix = "days",
-        state = rememberTextFieldState("44"),
+        text = "44",
     )
 }
 

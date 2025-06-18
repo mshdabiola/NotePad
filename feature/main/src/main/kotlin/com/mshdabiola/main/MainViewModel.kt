@@ -10,7 +10,7 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
-import com.mshdabiola.ui.state.NotificationUiState
+import com.mshdabiola.model.NotificationUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.plus
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)

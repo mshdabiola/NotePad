@@ -47,12 +47,12 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.R
 import com.mshdabiola.designsystem.component.NoteTab
 import com.mshdabiola.designsystem.component.NoteTabRow
-import com.mshdabiola.ui.state.IntervalEnd
+import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.ui.state.NotificationDate
-import com.mshdabiola.ui.state.NotificationInterval
-import com.mshdabiola.ui.state.NotificationPlace
-import com.mshdabiola.ui.state.NotificationTime
-import com.mshdabiola.ui.state.NotificationUiState
+import com.mshdabiola.model.NotificationInterval
+import com.mshdabiola.model.NotificationPlace
+import com.mshdabiola.model.NotificationTime
+import com.mshdabiola.model.NotificationUiState
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -248,13 +248,17 @@ fun NotificationPlace(
             NotificationPlace.Home,
             NotificationPlace.Work,
             NotificationPlace.School,
-            NotificationPlace.Edit(TextFieldState()), // Default TextFieldState
+            NotificationPlace.Edit(""), // Default TextFieldState
         )
     }
     val placeStringArray = stringArrayResource(R.array.modules_designsystem_notification_places)
     Column(modifier = modifier) {
         places.forEachIndexed { index, place ->
             if (place is NotificationPlace.Edit) {
+                val state = rememberTextFieldState(place.place)
+                LaunchedEffect(key1 = state.text) {
+                    onValueChange(place.copy(place = state.text.toString()))
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -275,7 +279,7 @@ fun NotificationPlace(
                                     onValueChange(place)
                                 }
                             },
-                        state = place.place, // Use the TextFieldState from the place object
+                        state = state, // Use the TextFieldState from the place object
                         lineLimits = TextFieldLineLimits.SingleLine,
                         placeholder = { Text(text = placeStringArray[index]) },
                     )

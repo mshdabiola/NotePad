@@ -29,10 +29,10 @@ import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.state.DateDialogUiData
 import com.mshdabiola.ui.state.DateListUiState
-import com.mshdabiola.ui.state.IntervalEnd
-import com.mshdabiola.ui.state.NotificationInterval
-import com.mshdabiola.ui.state.NotificationPlace
-import com.mshdabiola.ui.state.NotificationUiState
+import com.mshdabiola.model.IntervalEnd
+import com.mshdabiola.model.NotificationInterval
+import com.mshdabiola.model.NotificationPlace
+import com.mshdabiola.model.NotificationUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
