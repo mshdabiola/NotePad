@@ -98,6 +98,7 @@ import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
+import com.mshdabiola.ui.myFormat
 import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
 import java.io.File
@@ -273,7 +274,6 @@ internal fun DetailRoute(
         currentImage = note.background,
 
     ) { noteficationModalState = false }
-    val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
 //
     NotificationDialogNew(
         initState = editViewModel.notificationUiState,
@@ -630,10 +630,9 @@ fun EditScreen(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             verticalSpacing = 8.dp,
                         ) {
-                            if (notepad.reminder > 0) {
+                            notepad.notification?.let {
                                 ReminderCard(
-                                    date = notepad.reminderString,
-                                    interval = notepad.interval,
+                                    notification = it,
                                     color = sColor,
                                     style = MaterialTheme.typography.bodyLarge,
                                     onClick = showNotificationDialog,
@@ -693,7 +692,7 @@ fun EditScreen(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDateString}",
+                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDate.myFormat()}",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }
