@@ -24,15 +24,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.model.NotificationInterval
+import com.mshdabiola.model.NotificationUiState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReminderCard(
-    date: String,
-    interval: Long,
+    notification: NotificationUiState,
     color: Color,
     style: TextStyle = MaterialTheme.typography.bodySmall,
     onClick: (() -> Unit)? = null,
@@ -48,7 +57,7 @@ fun ReminderCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(4.dp),
         ) {
-            if (interval > 0) {
+            if (notification.currentInterval !is NotificationInterval.DoNotRepeat) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.Repeat,
@@ -63,22 +72,38 @@ fun ReminderCard(
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             }
-            Text(
-                modifier = Modifier.basicMarquee(),
-                text = date,
-                style = style,
-                maxLines = 1,
+            if (notification.currentPlace != null) {
+                Text(
+                    text = "Place",
+                    style = style,
+                    maxLines = 1,
+                )
+            } else {
+                Text(
+                    modifier = Modifier.basicMarquee(),
+                    text = notification.currentDateTime.myFormat(),
+                    style = style,
+                    maxLines = 1,
 
-            )
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
-fun RemainderCardPreview() {
-    val time = Clock.System.now().minus(24, DateTimeUnit.HOUR)
-    ReminderCard(date = "Today, 1:29 AM", interval = -1, color = Color.Red)
+fun ReminderCardPreview() {
+    val notification = NotificationUiState(
+        currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        currentInterval = NotificationInterval.DoNotRepeat,
+        currentPlace = null,
+    )
+    ReminderCard(
+        notification = notification,
+        color = Color.White,
+    )
 }
 
 @Composable
@@ -109,4 +134,32 @@ fun LabelCardPreview() {
         name = "Food",
         color = Color.Red,
     )
+}
+
+fun LocalDateTime.myFormat(): String {
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+    return when (this.date) {
+        now.date -> {
+            "Today, ${this.time.format(timeFormater)}"
+        }
+        now.date.minus(1, DateTimeUnit.DAY) -> {
+            "Yesterday, ${this.time.format(timeFormater)}"
+        }
+        now.date.plus(1, DateTimeUnit.DAY) -> {
+            "Tomorrow, ${this.time.format(timeFormater)}"
+        }
+        else -> {
+            "${this.date}, ${this.time.format(timeFormater)}"
+        }
+    }
+}
+
+val timeFormater = LocalTime.Format {
+
+    this.amPmHour(Padding.SPACE)
+    char(':')
+    minute(Padding.SPACE)
+    char(' ')
+    amPmMarker("AM", "PM")
 }
