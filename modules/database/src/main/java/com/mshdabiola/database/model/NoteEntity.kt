@@ -15,7 +15,5 @@ data class NoteEntity(
     val color: Int,
     val background: Int,
     val isPin: Boolean,
-    val reminder: Long,
-    val interval: Long,
     val noteType: NoteType,
 )

@@ -6,6 +6,8 @@ import androidx.room.Relation
 data class NotePadEntity(
     @Embedded
     val noteEntity: NoteEntity,
+    @Relation(parentColumn = "id", entityColumn = "note_id")
+    val notification: NotificationEntity?,
     @Relation(parentColumn = "id", entityColumn = "noteId")
     val images: List<NoteImageEntity>,
     @Relation(parentColumn = "id", entityColumn = "noteId")

@@ -10,6 +10,7 @@ import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
+import com.mshdabiola.database.dao.NotificationDao
 import com.mshdabiola.database.dao.PathDao
 import dagger.Module
 import dagger.Provides
@@ -79,5 +80,11 @@ object DatabaseModule {
     @Singleton
     fun pathDaoProvider(noteDatabase: NoteDatabase): PathDao {
         return noteDatabase.getPath()
+    }
+
+    @Provides
+    @Singleton
+    fun notificationDaoProvider(noteDatabase: NoteDatabase): NotificationDao {
+        return noteDatabase.getNotification()
     }
 }
