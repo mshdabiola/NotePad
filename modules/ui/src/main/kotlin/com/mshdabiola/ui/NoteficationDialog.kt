@@ -1,7 +1,6 @@
 package com.mshdabiola.ui
 
 import android.annotation.SuppressLint
-import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -58,6 +56,7 @@ import com.mshdabiola.ui.state.NotificationUiState
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -66,7 +65,6 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @SuppressLint("NewApi")
@@ -80,7 +78,10 @@ fun NotificationDialogNew(
     onSetAlarm: (NotificationUiState) -> Unit = { },
     onDeleteAlarm: () -> Unit = {},
 
-) {
+    ) {
+    val today = remember {
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    }
     val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
     var notificationUiState by remember(initState) {
@@ -151,6 +152,7 @@ fun NotificationDialogNew(
                                     DateTextDropbox(
                                         modifier = Modifier.fillMaxWidth(),
                                         currentDate = notificationUiState.currentDateTime.date,
+                                        todayDate = today.date,
                                         onValueChange = {
                                             notificationUiState = notificationUiState.copy(
                                                 currentDateTime = LocalDateTime(
@@ -231,7 +233,7 @@ fun NotificationDialogNewPreview() {
         ),
         currentPlace = NotificationPlace.Home,
 
-    )
+        )
     NotificationDialogNew(initState = notificationUiState, showDialog = true)
 }
 
@@ -365,7 +367,7 @@ fun TimeTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-        )
+            )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -390,6 +392,7 @@ fun TimeTextDropbox(
                             },
                         )
                     }
+
                     is NotificationTime.PickTime -> {
                         DropdownMenuItem(
                             text = { Text(text = timeStringArray[index]) },
@@ -446,6 +449,7 @@ fun TimeTextDropboxPreview() {
 fun DateTextDropbox(
     modifier: Modifier = Modifier,
     currentDate: LocalDate,
+    todayDate: LocalDate,
     onValueChange: (LocalDate) -> Unit = {},
 ) {
     var expanded by remember {
@@ -471,7 +475,11 @@ fun DateTextDropbox(
     LaunchedEffect(key1 = currentDate) {
         state.clearText()
         state.edit {
-            append("${currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${currentDate.dayOfMonth}")
+            append(
+                "${
+                    currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
+                } ${currentDate.dayOfMonth}",
+            )
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             if (currentDate.year != now.year) {
                 append(", ${currentDate.year}")
@@ -480,6 +488,7 @@ fun DateTextDropbox(
     }
 
     val dateStringArray = stringArrayResource(R.array.modules_designsystem_notification_days)
+    val daysOfWeeks = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
 
     ExposedDropdownMenuBox(
         modifier = modifier,
@@ -495,11 +504,11 @@ fun DateTextDropbox(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
+                unfocusedContainerColor = Color.Transparent,
             ),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-        )
+            )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -508,7 +517,7 @@ fun DateTextDropbox(
         ) {
             dates.forEachIndexed { index, notificationTime ->
                 DropdownMenuItem(
-                    text = { Text(text = dateStringArray[index]) },
+                    text = { Text(text = dateStringArray[index]+ " " + if (index==2)daysOfWeeks[todayDate.dayOfWeek.ordinal] else "") },
                     onClick = {
                         if (notificationTime is NotificationDate.Date) {
                             onValueChange(notificationTime.localDate)
@@ -533,13 +542,16 @@ fun DateTextDropbox(
                 Button(
                     onClick = {
                         showDateDialog = false
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            onValueChange(
-                                dateState.getSelectedDate()?.toKotlinLocalDate() ?: nowDate,
-                            )
-                        } else {
-                            onValueChange(nowDate)
-                        }
+
+                        val date = dateState.selectedDateMillis?.let { millis ->
+                            Instant.fromEpochMilliseconds(millis)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
+                        } ?: nowDate
+                        onValueChange(
+                            date,
+                        )
+
                     },
                 ) {
                     Text(text = "Set date")
@@ -570,6 +582,7 @@ fun DateTextDropboxPreview() {
 
     DateTextDropbox(
         currentDate = currentTime,
+        todayDate = currentTime,
     )
 }
 
@@ -607,7 +620,7 @@ fun IntervalTextDropbox(
             NotificationInterval.Yearly(
                 intervalEnd = IntervalEnd.Forever,
             ),
-             NotificationInterval.Custom,
+            NotificationInterval.Custom,
         )
     }
     val intervalStringArray = stringArrayResource(
@@ -638,7 +651,7 @@ fun IntervalTextDropbox(
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             lineLimits = TextFieldLineLimits.SingleLine,
 
-        )
+            )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {
@@ -649,10 +662,10 @@ fun IntervalTextDropbox(
                 DropdownMenuItem(
                     text = { Text(text = intervalStringArray[index]) },
                     onClick = {
-                        if (notificationTime is NotificationInterval.Custom){
-                            showIntervalDialog=true
+                        if (notificationTime is NotificationInterval.Custom) {
+                            showIntervalDialog = true
 
-                        }else{
+                        } else {
                             onValueChange(notificationTime)
                         }
                         expanded = false
@@ -667,12 +680,14 @@ fun IntervalTextDropbox(
         NotificationDialogInterval(
             initInterval = currentInterval,
             intervals = notificationIntervals.toMutableList().apply {
-                removeAt(5)},
+                removeAt(5)
+            },
             onValueChange = {
                 onValueChange(it)
                 showIntervalDialog = false
             },
-            onDismiss = {showIntervalDialog = false}
+            onDismiss = { showIntervalDialog = false },
+            todayDate = nowDate,
         )
     }
 
