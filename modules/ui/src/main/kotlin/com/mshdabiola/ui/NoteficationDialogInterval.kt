@@ -317,10 +317,10 @@ fun IntervalTextField(
     state: TextFieldState = rememberTextFieldState(),
 ) {
     TextField(
-        modifier = modifier.width(150.dp),
+        modifier = modifier,
         state = state,
         lineLimits = TextFieldLineLimits.SingleLine,
-        inputTransformation = DigitsOnlyInputTransformation(),
+        inputTransformation = DigitsOnlyInputTransformation(2),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done,
@@ -331,6 +331,8 @@ fun IntervalTextField(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
 
             ),
     )
@@ -393,6 +395,8 @@ fun IntervalRepeatEnd(
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
 
                     ),
                 lineLimits = TextFieldLineLimits.SingleLine,
@@ -438,7 +442,7 @@ fun IntervalRepeatEnd(
                     modifier = Modifier.weight(2f),
                     state = numberOfTimesState,
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    inputTransformation = DigitsOnlyInputTransformation(),
+                    inputTransformation = DigitsOnlyInputTransformation(2),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done,
@@ -448,6 +452,8 @@ fun IntervalRepeatEnd(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
 
                         ),
                 )

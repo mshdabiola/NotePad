@@ -616,8 +616,10 @@ fun IntervalTextDropbox(
 
     val state = rememberTextFieldState()
     LaunchedEffect(key1 = currentInterval) {
-        state.clearText()
         val index = notificationIntervals.indexOf(currentInterval)
+        if (index == -1) return@LaunchedEffect
+
+        state.clearText()
         state.edit {
             append(intervalStringArray[index])
         }
@@ -668,7 +670,11 @@ fun IntervalTextDropbox(
             initInterval = currentInterval,
             intervals = notificationIntervals.toMutableList().apply {
                 removeAt(5)},
-            onValueChange = onValueChange,
+            onValueChange = {
+                onValueChange(it)
+                showIntervalDialog = false
+            },
+            onDismiss = {showIntervalDialog = false}
         )
     }
 
