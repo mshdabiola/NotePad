@@ -74,6 +74,7 @@ import kotlinx.datetime.toLocalDateTime
 fun NotificationDialogInterval(
     modifier: Modifier = Modifier,
     initInterval: NotificationInterval,
+    todayDate: LocalDate,
     intervals: List<NotificationInterval>,
     onValueChange: (NotificationInterval) -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -155,6 +156,7 @@ fun NotificationDialogInterval(
 
                             IntervalRepeatEnd(
                                 currentIntervalEnd = daily.intervalEnd,
+                                todayDate = todayDate,
                                 onValueChange = {
                                     currentInterval = daily.copy(intervalEnd = it)
                                 },
@@ -200,6 +202,7 @@ fun NotificationDialogInterval(
 
                             IntervalRepeatEnd(
                                 currentIntervalEnd = weekly.intervalEnd,
+                                todayDate = todayDate,
                                 onValueChange = {
                                     currentInterval = weekly.copy(intervalEnd = it)
 
@@ -209,6 +212,7 @@ fun NotificationDialogInterval(
 
                         is NotificationInterval.Monthly -> {
                             val monthly = currentInterval as NotificationInterval.Monthly
+                            val daysOfWeek = stringArrayResource(R.array.modules_designsystem_days_of_weeks)
                             IntervalTextField(
                                 prefix = "Every",
                                 suffix = "month",
@@ -238,11 +242,12 @@ fun NotificationDialogInterval(
                                 RadioButton(!monthly.sameDay, onClick = {
                                     currentInterval = monthly.copy(sameDay = false)
                                 })
-                                Text(modifier = Modifier.weight(1f), text = "On Third of Tuesday")
+                                Text(modifier = Modifier.weight(1f), text = "On Third of ${daysOfWeek[todayDate.dayOfWeek.ordinal]}")
                             }
 
                             IntervalRepeatEnd(
                                 currentIntervalEnd = monthly.intervalEnd,
+                                todayDate = todayDate,
                                 onValueChange = {
                                     currentInterval = monthly.copy(intervalEnd = it)
 
@@ -261,6 +266,7 @@ fun NotificationDialogInterval(
 
                             IntervalRepeatEnd(
                                 currentIntervalEnd = yearly.intervalEnd,
+                                todayDate = todayDate,
                                 onValueChange = {
                                     currentInterval = yearly.copy(intervalEnd = it)
 
@@ -333,6 +339,7 @@ fun NotificationDialogIntervalPreview() {
         initInterval = currentInterval,
         intervals = intervals,
         onValueChange = {},
+        todayDate = nowDate
     )
 }
 
@@ -385,6 +392,7 @@ fun IntervalTextFieldPreview() {
 fun IntervalRepeatEnd(
     modifier: Modifier = Modifier,
     currentIntervalEnd: IntervalEnd,
+    todayDate: LocalDate,
     onValueChange: (IntervalEnd) -> Unit = {},
 ) {
     val intervalEndStringArray = stringArrayResource(
@@ -394,7 +402,7 @@ fun IntervalRepeatEnd(
     val intervalsEnds = remember {
         listOf(
             IntervalEnd.Forever,
-            IntervalEnd.EndDate(LocalDate(2023, 1, 1)) ,
+            IntervalEnd.EndDate(todayDate) ,
             IntervalEnd.NumberOfTimes(1) ,
         )
     }
@@ -567,6 +575,7 @@ fun IntervalRepeatEnd(
 private fun InvervalRepeatEndPreview() {
     IntervalRepeatEnd(
         currentIntervalEnd = IntervalEnd.Forever,
+        todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     )
 }
 
