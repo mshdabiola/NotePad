@@ -95,12 +95,12 @@ internal class NotePadRepository
                     .map {
                         it.filter {
                             it.labels
-                                .any { it.label.id == noteDisplayCategory.index }
+                                .any { it.label.id == noteDisplayCategory.labelId }
                         }
                     }
             }
 
-            NoteType.REMAINDER -> {
+            NoteType.REMINDER -> {
                 notePadDao.getListOfNotePad()
                     .map {
                         it.filter {
