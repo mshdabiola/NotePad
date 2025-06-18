@@ -3,7 +3,7 @@ package com.mshdabiola.ui.state
 import androidx.compose.foundation.text.input.TextFieldState
 import kotlinx.datetime.LocalDate
 
-sealed class NotificationInterval(val index:Int=0) {
+sealed class NotificationInterval(val index: Int = 0) {
     data class Daily(
         val interval: TextFieldState = TextFieldState("1"),
         val intervalEnd: IntervalEnd,
@@ -26,7 +26,7 @@ sealed class NotificationInterval(val index:Int=0) {
     data object Custom : NotificationInterval(5)
 }
 
-sealed class IntervalEnd (val index: Int){
+sealed class IntervalEnd(val index: Int) {
     data object Forever : IntervalEnd(0)
     data class EndDate(val date: LocalDate) : IntervalEnd(1)
     data class NumberOfTimes(val times: Int) : IntervalEnd(2)
