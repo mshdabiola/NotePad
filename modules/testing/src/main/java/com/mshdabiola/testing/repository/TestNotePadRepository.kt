@@ -1,7 +1,7 @@
 package com.mshdabiola.testing.repository
 
 import com.mshdabiola.data.repository.INotePadRepository
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
@@ -24,7 +24,7 @@ class TestNotePadRepository : INotePadRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getNotePadsWithMainData(mainData: MainData): Flow<List<NotePad>> {
+    override fun getNotePadsWithMainData(noteDisplayCategory: NoteDisplayCategory): Flow<List<NotePad>> {
         TODO("Not yet implemented")
     }
 

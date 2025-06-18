@@ -6,7 +6,7 @@ package com.mshdabiola.datastore
 
 import androidx.datastore.core.DataStore
 import com.mshdabiola.model.Contrast
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -54,7 +54,7 @@ class UserPreferencesRepository @Inject constructor(
 
                     ThemeContrastProto.THEME_CONTRAST_MEDIUM -> Contrast.Medium
                 },
-                mainData = MainData(it.mainScreenType),
+                noteDisplayCategory = NoteDisplayCategory(it.mainScreenType),
             )
         }
 
@@ -106,9 +106,9 @@ class UserPreferencesRepository @Inject constructor(
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
         }
     }
-    suspend fun setMainData(mainData: MainData) {
+    suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
         userPreferences.updateData {
-            it.copy { this.mainScreenType = mainData.index }
+            it.copy { this.mainScreenType = noteDisplayCategory.index }
         }
     }
 }

@@ -9,7 +9,7 @@ import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.datastore.di.testUserPreferencesDataStore
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.first
@@ -58,7 +58,7 @@ class OfflineFirstUserDataRepositoryTest {
                 useDynamicColor = false,
                 shouldHideOnboarding = false,
                 contrast = Contrast.Normal,
-                mainData = MainData(0),
+                noteDisplayCategory = NoteDisplayCategory(0),
             ),
             subject.userData.first(),
         )

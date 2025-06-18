@@ -8,7 +8,7 @@ import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.Flow
@@ -47,7 +47,7 @@ class FakeUserDataRepository @Inject constructor(
         userPreferencesRepository.setShouldHideOnboarding(shouldHideOnboarding)
     }
 
-    override suspend fun setMainData(mainData: MainData) {
-        userPreferencesRepository.setMainData(mainData)
+    override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
+        userPreferencesRepository.setMainData(noteDisplayCategory)
     }
 }

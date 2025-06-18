@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -61,7 +61,7 @@ class LabelViewModel @Inject constructor(
         labels.removeAt(index)
         labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
         viewModelScope.launch {
-            userDataRepository.setMainData(MainData())
+            userDataRepository.setMainData(NoteDisplayCategory())
             labelRepository.delete(id)
         }
     }
