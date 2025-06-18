@@ -40,20 +40,20 @@ internal class MainViewModel
     private val notificationUiState = MutableStateFlow<NotificationUiState?>(null)
     private val currentNotepads = userDataRepository
         .userData
-        .mapLatest { it.mainData }
+        .mapLatest { it.noteDisplayCategory }
         .flatMapLatest {
             notepadRepository.getNotePadsWithMainData(it)
         }
     val mainState = combine(
         currentNotepads,
-        userDataRepository.userData.mapLatest { it.mainData },
+        userDataRepository.userData.mapLatest { it.noteDisplayCategory },
         setOfSelected,
         notificationUiState,
     ) { notepad, mainData, setOfSelected, notificationUiState ->
 
         MainState.Success(
             notePads = notepad,
-            mainData = mainData,
+            noteDisplayCategory = mainData,
             setOfSelected = setOfSelected,
             notificationUiState = notificationUiState,
         )

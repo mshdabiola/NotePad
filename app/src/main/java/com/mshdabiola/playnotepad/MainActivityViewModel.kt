@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
@@ -116,9 +116,9 @@ class MainActivityViewModel @Inject constructor(
         return notePadRepository.upsert(notePad)
     }
 
-    fun setMainData(mainData: MainData) {
+    fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
         viewModelScope.launch {
-            userDataRepository.setMainData(mainData)
+            userDataRepository.setMainData(noteDisplayCategory)
         }
     }
 }

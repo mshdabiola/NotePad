@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.Label
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteType
 import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as Rd
@@ -41,8 +41,8 @@ import com.mshdabiola.designsystem.R as Rd
 @Composable
 fun MainNavigation(
 
-    onNavigation: (MainData) -> Unit = {},
-    currentMainArg: MainData = MainData(),
+    onNavigation: (NoteDisplayCategory) -> Unit = {},
+    currentMainArg: NoteDisplayCategory = NoteDisplayCategory(),
     navigateToLevel: (Boolean) -> Unit = {},
     labels: List<Label>,
     navigateToAbout: () -> Unit = {},
@@ -88,7 +88,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_notes)) },
                 selected = currentMainArg.noteType == NoteType.NOTE,
-                onClick = { onNavigation(MainData(NoteType.NOTE.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(NoteType.NOTE.index)) },
             )
             NavigationDrawerItem(
                 icon = {
@@ -96,7 +96,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_reminders)) },
                 selected = currentMainArg.noteType == NoteType.REMAINDER,
-                onClick = { onNavigation(MainData(NoteType.REMAINDER.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(NoteType.REMAINDER.index)) },
             )
             HorizontalDivider(
                 modifier = Modifier
@@ -129,7 +129,7 @@ fun MainNavigation(
                     },
                     label = { Text(text = it.label) },
                     selected = currentMainArg.index == it.id,
-                    onClick = { onNavigation(MainData(it.id)) },
+                    onClick = { onNavigation(NoteDisplayCategory(it.id)) },
                 )
             }
             NavigationDrawerItem(
@@ -152,7 +152,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
                 selected = currentMainArg.noteType == NoteType.ARCHIVE,
-                onClick = { onNavigation(MainData(NoteType.ARCHIVE.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(NoteType.ARCHIVE.index)) },
             )
 
             NavigationDrawerItem(
@@ -161,7 +161,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
                 selected = currentMainArg.noteType == NoteType.TRASH,
-                onClick = { onNavigation(MainData(NoteType.TRASH.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(NoteType.TRASH.index)) },
             )
             NavigationDrawerItem(
                 icon = {

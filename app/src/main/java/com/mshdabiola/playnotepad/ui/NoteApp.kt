@@ -52,7 +52,7 @@ import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.playnotepad.MainActivityUiState
 import com.mshdabiola.playnotepad.MainActivityViewModel
 import com.mshdabiola.playnotepad.navigation.NoteNavHost
@@ -102,7 +102,7 @@ fun NoteApp(
                     MainNavigation(
                         labels = labels.value,
                         currentMainArg = (uiState as? MainActivityUiState.Success)
-                            ?.userData?.mainData ?: MainData(),
+                            ?.userData?.noteDisplayCategory ?: NoteDisplayCategory(),
                         onNavigation = {
                             viewModel.setMainData(it)
                             appState.navController.popBackStack()

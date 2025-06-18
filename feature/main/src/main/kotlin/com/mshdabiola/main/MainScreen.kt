@@ -59,7 +59,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -78,7 +77,7 @@ import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.common.result.Result
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
@@ -301,7 +300,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier, mainData: MainData = MainData()) {
+private fun EmptyState(modifier: Modifier = Modifier, noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory()) {
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -407,7 +406,7 @@ fun MainContent(
                     )
                 }
 
-                success.mainData.noteType == NoteType.LABEL -> {
+                success.noteDisplayCategory.noteType == NoteType.LABEL -> {
                     LabelTopAppBar(
                         label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
                         onNavigate = { },
@@ -417,7 +416,7 @@ fun MainContent(
                     )
                 }
 
-                success.mainData.noteType == NoteType.NOTE -> {
+                success.noteDisplayCategory.noteType == NoteType.NOTE -> {
                     NewTopMainAppBar(
                         onNavigateIcon = onOpenDrawer,
                         scrollBehavior = searchScrollBehavior,
@@ -434,7 +433,7 @@ fun MainContent(
                     )
                 }
 
-                success.mainData.noteType == NoteType.TRASH -> {
+                success.noteDisplayCategory.noteType == NoteType.TRASH -> {
                     TrashTopAppBar(
                         onNavigate = { },
                         scrollBehavior = scrollBehavior,
@@ -442,7 +441,7 @@ fun MainContent(
                     )
                 }
 
-                success.mainData.noteType == NoteType.REMAINDER -> {
+                success.noteDisplayCategory.noteType == NoteType.REMAINDER -> {
                     ArchiveTopAppBar(
                         name = "Remainder",
                         onNavigate = { },
@@ -451,7 +450,7 @@ fun MainContent(
                     )
                 }
 
-                success.mainData.noteType == NoteType.ARCHIVE -> {
+                success.noteDisplayCategory.noteType == NoteType.ARCHIVE -> {
                     ArchiveTopAppBar(
                         onNavigate = { },
                         scrollBehavior = scrollBehavior,
@@ -474,7 +473,7 @@ fun MainContent(
 //
             if (success.notePads.isEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    EmptyState(mainData = success.mainData)
+                    EmptyState(noteDisplayCategory = success.noteDisplayCategory)
                 }
             }
             if (pinNotePad.first.isNotEmpty()) {

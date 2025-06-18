@@ -7,7 +7,7 @@ package com.mshdabiola.testing.repository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -21,7 +21,7 @@ val emptyUserData = UserData(
     useDynamicColor = false,
     shouldHideOnboarding = false,
     contrast = Contrast.High,
-    mainData = MainData(),
+    noteDisplayCategory = NoteDisplayCategory(),
 )
 
 class TestUserDataRepository : UserDataRepository {
@@ -61,9 +61,9 @@ class TestUserDataRepository : UserDataRepository {
         }
     }
 
-    override suspend fun setMainData(mainData: MainData) {
+    override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
         currentUserData.let { current ->
-            _userData.tryEmit(current.copy(mainData = MainData()))
+            _userData.tryEmit(current.copy(noteDisplayCategory = NoteDisplayCategory()))
         }
     }
 

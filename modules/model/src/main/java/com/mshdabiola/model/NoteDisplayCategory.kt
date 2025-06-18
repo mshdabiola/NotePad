@@ -1,6 +1,6 @@
 package com.mshdabiola.model
 
-data class MainData(val index: Long = NoteType.NOTE.index) {
+data class NoteDisplayCategory(val index: Long = NoteType.NOTE.index) {
     val noteType: NoteType
         get() = when (index) {
             -1L -> NoteType.NOTE
