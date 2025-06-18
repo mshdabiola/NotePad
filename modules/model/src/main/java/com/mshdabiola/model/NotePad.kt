@@ -1,19 +1,18 @@
 package com.mshdabiola.model
 
+import kotlinx.datetime.LocalDateTime
+
 data class NotePad(
     val id: Long = -1,
     val title: String = "",
     val detail: String = "",
-    val editDate: Long = 0,
+    val editDate: LocalDateTime = LocalDateTime(2022, 1, 1, 1, 1),
     val isCheck: Boolean = false,
     val color: Int = -1,
     val background: Int = -1,
     val isPin: Boolean = false,
     val focus: Boolean = false,
-    val reminder: Long = 0,
-    val interval: Long = 0,
-    val editDateString: String = "Jul 3",
-    val reminderString: String = "feb 1",
+    val notification: NotificationUiState? = null,
     val noteType: NoteType = NoteType.NOTE,
     val images: List<NoteImage> = emptyList(),
     val voices: List<NoteVoice> = emptyList(),
