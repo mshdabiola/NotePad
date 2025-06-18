@@ -90,6 +90,8 @@ dependencies {
     implementation(projects.feature.labelscreen)
     implementation(projects.feature.selectlabelscreen)
     implementation(projects.feature.setting)
+    implementation(projects.feature.search)
+
 
 
 
