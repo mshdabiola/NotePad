@@ -120,7 +120,7 @@ internal class MainViewModel
 
                     is SearchSort.Type -> {
                         when (searchSort.index) {
-                            0 -> mainState.searches.filter { it.reminder > 0 }
+                            0 -> mainState.searches.filter { it.notification != null }
                             1 -> mainState.searches.filter { it.isCheck }
                             2 -> mainState.searches.filter { it.images.isNotEmpty() }
                             3 -> mainState.searches.filter { it.voices.isNotEmpty() }
@@ -188,7 +188,7 @@ internal class MainViewModel
                         .map { SearchSort.Color(it) }.toList()
 
                     val type = ArrayList<SearchSort.Type>(6)
-                    if (notes.any { it.reminder > 0 }) {
+                    if (notes.any { it.notification != null }) {
                         type.add(SearchSort.Type(0))
                     }
                     if (notes.any { it.isCheck }) {
@@ -383,7 +383,7 @@ internal class MainViewModel
             getSuccess().notePads.filter { setOfSelected.contains(it.id) }
 
         clearSelected()
-        val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
+        val notes = selectedNotes // .map { it.copy(reminder = time, interval = interval ?: -1) }
 
         viewModelScope.launch {
             notepadRepository.upsert(notes)
@@ -409,7 +409,7 @@ internal class MainViewModel
             getSuccess().notePads.filter { selected.contains(it.id) }
 
         clearSelected()
-        val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
+        val notes = selectedNotes // .map { it.copy(reminder = -1, interval = -1) }
 
         viewModelScope.launch {
             notepadRepository.upsert(notes)
