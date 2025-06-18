@@ -266,7 +266,7 @@ fun NotificationPlace(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RadioButton(
-                        selected = place == currentPlace,
+                        selected = currentPlace is NotificationPlace.Edit,
                         onClick = {
                             onValueChange(place) // Still allow click to select
                         },
@@ -275,7 +275,7 @@ fun NotificationPlace(
                         modifier = Modifier
                             .fillMaxWidth()
                             .onFocusChanged { focusState ->
-                                if (focusState.isFocused && currentPlace != place) {
+                                if (focusState.isFocused) {
                                     onValueChange(place)
                                 }
                             },
