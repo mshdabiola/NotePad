@@ -2,7 +2,7 @@ package com.mshdabiola.main
 
 import com.mshdabiola.model.MainData
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.ui.state.NotificationUiState
+import com.mshdabiola.model.NotificationUiState
 
 sealed class MainState {
     data object Loading : MainState()
