@@ -3,6 +3,7 @@ package com.mshdabiola.data.repository
 import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
 import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.model.toEntity
 import com.mshdabiola.data.model.toNoteCheckEntity
 import com.mshdabiola.data.model.toNoteEntity
 import com.mshdabiola.data.model.toNoteImageEntity
@@ -14,6 +15,7 @@ import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
+import com.mshdabiola.database.dao.NotificationDao
 import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.NoteLabelEntity
 import com.mshdabiola.model.MainData
@@ -45,13 +47,22 @@ internal class NotePadRepository
     private val noteVoiceDao: NoteVoiceDao,
     private val notePadDao: NotepadDao,
     private val pathDao: PathDao,
+    private val notificationDao: NotificationDao,
     private val contentManager: IContentManager,
 ) : INotePadRepository {
 
     override suspend fun upsert(notePad: NotePad): Long {
-        var id = noteDao.upsert(notePad.copy(editDate = System.currentTimeMillis()).toNoteEntity())
+        var id = noteDao.upsert(
+            notePad.copy(
+                editDate =
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            ).toNoteEntity(),
+        )
         if (id == -1L) {
             id = notePad.id
+        }
+        notePad.notification?.let {
+            notificationDao.upsertNotification(it.toEntity(id))
         }
         noteCheckDao.upsert(notePad.checks.map { it.copy(noteId = id).toNoteCheckEntity() })
 
@@ -91,7 +102,12 @@ internal class NotePadRepository
             }
 
             NoteType.REMAINDER -> {
-                notePadDao.getListOfNotePadByReminder()
+                notePadDao.getListOfNotePad()
+                    .map {
+                        it.filter {
+                            it.notification != null
+                        }
+                    }
             }
 
             else -> notePadDao.getListOfNotePadByNoteType(mainData.noteType)
@@ -237,8 +253,7 @@ internal class NotePadRepository
 
     private fun transform(pad: NotePad): NotePad {
         return pad.copy(
-            reminderString = dateToString(pad.reminder),
-            editDateString = dateToString(pad.editDate),
+
             images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
             voices = pad.voices.map {
                 it.copy(
