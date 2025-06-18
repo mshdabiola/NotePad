@@ -5,5 +5,5 @@ enum class NoteType(val index: Long = 0) {
     ARCHIVE(-2),
     TRASH(-3),
     LABEL,
-    REMAINDER(-4),
+    REMINDER(-4),
 }
