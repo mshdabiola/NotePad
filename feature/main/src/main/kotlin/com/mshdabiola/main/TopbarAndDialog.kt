@@ -97,7 +97,6 @@ import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -994,10 +993,9 @@ fun NoteCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                             }
-                            if (notePad.reminder > 0) {
+                            notePad.notification?.let {
                                 ReminderCard(
-                                    date = notePad.reminderString,
-                                    interval = notePad.interval,
+                                    notification = it,
                                     color = sColor,
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -1022,9 +1020,7 @@ fun NoteCardPreview() {
             id = 1,
             title = "Mandy abiola",
             detail = "Lamia moshood",
-            editDate = 314L,
             isCheck = true,
-            reminder = Clock.System.now().toEpochMilliseconds(),
             color = 2,
             isPin = false,
             background = 3,
