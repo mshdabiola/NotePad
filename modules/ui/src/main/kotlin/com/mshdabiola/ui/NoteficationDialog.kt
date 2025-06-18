@@ -587,6 +587,10 @@ fun IntervalTextDropbox(
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     }
 
+    var showIntervalDialog by remember {
+        mutableStateOf(false)
+    }
+
     val notificationIntervals = remember(nowDate) {
         listOf(
             NotificationInterval.DoNotRepeat,
@@ -603,7 +607,7 @@ fun IntervalTextDropbox(
             NotificationInterval.Yearly(
                 intervalEnd = IntervalEnd.Forever,
             ),
-            // NotificationInterval.Custom,
+             NotificationInterval.Custom,
         )
     }
     val intervalStringArray = stringArrayResource(
@@ -645,13 +649,29 @@ fun IntervalTextDropbox(
                 DropdownMenuItem(
                     text = { Text(text = intervalStringArray[index]) },
                     onClick = {
-                        onValueChange(notificationTime)
+                        if (notificationTime is NotificationInterval.Custom){
+                            showIntervalDialog=true
+
+                        }else{
+                            onValueChange(notificationTime)
+                        }
                         expanded = false
+
                     },
                 )
             }
         }
     }
+
+    if (showIntervalDialog) {
+        NotificationDialogInterval(
+            initInterval = currentInterval,
+            intervals = notificationIntervals.toMutableList().apply {
+                removeAt(5)},
+            onValueChange = onValueChange,
+        )
+    }
+
 }
 
 @Preview
