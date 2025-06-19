@@ -14,4 +14,5 @@ data class UserData(
     val shouldHideOnboarding: Boolean,
     val contrast: Contrast,
     val noteDisplayCategory: NoteDisplayCategory,
+    val isGrid: Boolean,
 )
