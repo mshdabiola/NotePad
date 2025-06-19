@@ -17,7 +17,8 @@ message UserPreferences {
     bool use_dynamic_color = 4;
     ThemeContrastProto contrast = 5;
     NoteDisplayCategoryProto note_display_category = 6;
+    bool is_grid = 7;
 
-    // NEXT AVAILABLE ID: 7 (if using field 6 for note_display_category)
+    // NEXT AVAILABLE ID: 8 (if using field 6 for note_display_category)
 
 }
