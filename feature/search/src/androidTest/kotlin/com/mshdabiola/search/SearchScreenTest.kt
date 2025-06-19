@@ -18,7 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * UI tests for [MainScreen] composable.
+ * UI tests for [SearchhhhhhhhScreen] composable.
  */
 class SearchScreenTest {
 
@@ -31,7 +31,7 @@ class SearchScreenTest {
         composeTestRule.setContent {
             SharedTransitionLayout {
                 AnimatedVisibility(true) {
-                    MainScreen(
+                    SearchhhhhhhhScreen(
                         modifier = Modifier.semantics {
                             testTagsAsResourceId = true
                         },

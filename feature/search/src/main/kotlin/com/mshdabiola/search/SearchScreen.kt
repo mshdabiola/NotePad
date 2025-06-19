@@ -40,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,26 +64,19 @@ import com.mshdabiola.designsystem.R as Rd
     ExperimentalMaterial3Api::class,
 )
 @Composable
-internal fun MainScreen(
+internal fun SearchScreen(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     searchQuery: TextFieldState = rememberTextFieldState(),
     searchState: SearchState = SearchState.Loading,
     isGrid: Boolean = false,
-//    scrollBehavior: SearchBarScrollBehavior? = null,
-    onNavigateIcon: () -> Unit = {},
-    onToggleGrid: () -> Unit = {},
+    onBack: () -> Unit = {},
     onSetSearch: (SearchSort?) -> Unit = {},
-    onNoteClick: (Long) -> Unit = {},
-    onExpandSearch: (Boolean) -> Unit = {},
 ) {
     val searchBarState = rememberSearchBarState(initialValue = SearchBarValue.Collapsed)
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = searchBarState.currentValue) {
-        onExpandSearch(searchBarState.currentValue == SearchBarValue.Expanded)
-    }
     val inputField =
         @Composable {
             SearchBarDefaults.InputField(
@@ -94,38 +86,17 @@ internal fun MainScreen(
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
                 placeholder = { Text(stringResource(Rd.string.modules_designsystem_search_note)) },
                 leadingIcon = {
-                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                        IconButton(
-                            onClick = { scope.launch { searchBarState.animateToCollapsed() } },
-                        ) {
-                            Icon(NoteIcon.ArrowBack, contentDescription = "Back")
-                        }
-                    } else {
-                        IconButton(
-                            onClick = onNavigateIcon,
-                        ) {
-                            Icon(NoteIcon.Menu, contentDescription = "menu")
-                        }
+                    IconButton(
+                        onClick = onBack,
+                    ) {
+                        Icon(NoteIcon.ArrowBack, contentDescription = "Back")
                     }
                 },
                 trailingIcon = {
-                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                        IconButton(
-                            onClick = { searchQuery.clearText() },
-                        ) {
-                            Icon(NoteIcon.Clear, contentDescription = "clear")
-                        }
-                    } else {
-                        IconButton(onClick = { onToggleGrid() }) {
-                            if (!isGrid) {
-                                Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
-                            } else {
-                                Icon(
-                                    imageVector = NoteIcon.ViewAgenda,
-                                    contentDescription = "column",
-                                )
-                            }
-                        }
+                    IconButton(
+                        onClick = { searchQuery.clearText() },
+                    ) {
+                        Icon(NoteIcon.Clear, contentDescription = "clear")
                     }
                 },
             )
@@ -236,14 +207,6 @@ internal fun MainScreen(
                 }
             }
         }
-
-//        SearchResults(
-//            onResultClick = {
-//                result - & gt;
-//                textFieldState.setTextAndPlaceCursorAtEnd(result)
-//                scope.launch { searchBarState.animateToCollapsed() }
-//            }
-//        )
     }
 }
 

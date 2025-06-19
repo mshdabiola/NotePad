@@ -14,30 +14,39 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
+import com.mshdabiola.search.SearchScreen
 import com.mshdabiola.search.SearchViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
 
-fun NavController.navigateToMain(
+fun NavController.navigateToSearch(
     navOptions: NavOptions = navOptions { },
-) = navigate(route = MainRoute, navOptions)
+) = navigate(route = SearchRoute, navOptions)
 
-const val MainRoute = "search"
-const val FullMainRoute = MainRoute
+const val SearchRoute = "search"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.mainScreen(
+fun NavGraphBuilder.search(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    onShowSnack: suspend (String, String?) -> Boolean,
-    navigateToDetail: (Long) -> Unit,
-    navigateToSelectLevel: (Set<Long>) -> Unit,
-    onOpenDrawer: () -> Unit,
+    onBack: () -> Unit,
+
 ) {
     composable(
-        route = FullMainRoute,
+        route = SearchRoute,
     ) {
         FirebaseScreenLog(screen = "main_screen")
         val searchViewModel: SearchViewModel = hiltViewModel()
         val searchState = searchViewModel.searchState.collectAsStateWithLifecycle()
+
+        SearchScreen(
+            modifier = modifier,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this,
+            searchState = searchState.value,
+            searchQuery = searchViewModel.searchQuery,
+            onBack = onBack,
+            onSetSearch = searchViewModel::onSetSearch,
+
+        )
     }
 }

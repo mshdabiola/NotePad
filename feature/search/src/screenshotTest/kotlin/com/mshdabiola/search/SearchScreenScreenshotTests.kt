@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 private fun MainScreenShot() {
     SharedTransitionLayout {
         AnimatedVisibility(true) {
-            MainScreen(
+            SearchhhhhhhhScreen(
                 mainState = SearchState.Success(),
                 searchState = TextFieldState(),
                 sharedTransitionScope = this@SharedTransitionLayout,
