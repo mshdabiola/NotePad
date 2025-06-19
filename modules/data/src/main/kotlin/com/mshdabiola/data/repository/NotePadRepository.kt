@@ -92,11 +92,16 @@ internal class NotePadRepository
         return when (noteDisplayCategory.noteType) {
             NoteType.LABEL -> {
                 notePadDao.getListOfNotePad()
-                    .map {
-                        it.filter {
-                            it.labels
-                                .any { it.label.id == noteDisplayCategory.labelId }
-                        }
+                    .map { notes ->
+
+                        notes
+                            .filter {
+                                it.noteEntity.noteType == NoteType.LABEL
+                            }
+                            .filter { note ->
+                                note.labels
+                                    .any { it.label.id == noteDisplayCategory.labelId }
+                            }
                     }
             }
 

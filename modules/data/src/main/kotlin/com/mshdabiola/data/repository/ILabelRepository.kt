@@ -8,6 +8,8 @@ interface ILabelRepository {
     suspend fun upsert(labels: List<Label>)
     suspend fun upsertNoteLabel(notelabels: List<NoteLabel>)
     fun getNoteLabel(id: Long): Flow<List<NoteLabel>>
+
+    fun getLabel(id: Long): Flow<Label?>
     suspend fun deleteNoteLabel(noteIds: Set<Long>, labelId: Long)
 
     suspend fun getOneLabelList(): List<Label>
