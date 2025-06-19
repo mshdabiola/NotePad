@@ -22,6 +22,8 @@ import com.mshdabiola.labelscreen.labelScreen
 import com.mshdabiola.main.navigation.FullMainRoute
 import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
+import com.mshdabiola.search.navigation.navigateToSearch
+import com.mshdabiola.search.navigation.search
 import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
 import com.mshdabiola.selectlabelscreen.selectLabelScreen
 import com.mshdabiola.setting.navigation.settingScreen
@@ -49,7 +51,7 @@ fun NoteNavHost(
                 onOpenDrawer = {
                     appState.openDrawer()
                 },
-                navigateToSearch = {},
+                navigateToSearch = navController::navigateToSearch,
             )
             detailScreen(
                 modifier = Modifier,
@@ -71,6 +73,12 @@ fun NoteNavHost(
                 modifier = Modifier,
                 onShowSnack = onShowSnackbar,
                 onBack = navController::popBackStack,
+            )
+            search(
+                modifier= Modifier,
+                sharedTransitionScope = this@SharedTransitionLayout,
+                onBack = navController::popBackStack,
+
             )
         }
     }
