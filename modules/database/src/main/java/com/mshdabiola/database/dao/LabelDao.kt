@@ -22,4 +22,7 @@ interface LabelDao {
 
     @Query("SELECT * FROM label_table")
     fun getAllLabels(): Flow<List<LabelEntity>>
+
+    @Query("SELECT * FROM label_table WHERE id = :id")
+    fun getById(id: Long): Flow<LabelEntity?>
 }
