@@ -65,7 +65,7 @@ class UserPreferencesRepository @Inject constructor(
                         NoteTypeProto.UNRECOGNIZED, NoteTypeProto.NOTE_TYPE_UNSPECIFIED -> com.mshdabiola.model.NoteType.NOTE // Default
                     },
                 ),
-                isGrid = it.isGrid
+                isGrid = it.isGrid,
             )
         }
 
