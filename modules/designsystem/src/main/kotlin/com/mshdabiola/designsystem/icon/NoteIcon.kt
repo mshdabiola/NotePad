@@ -37,6 +37,7 @@ import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
@@ -47,6 +48,7 @@ import com.mshdabiola.designsystem.R
 
 object NoteIcon {
 
+    val RestoreFromTrash = Icons.Outlined.Restore
     val Edit = Icons.Outlined.Edit
     val ViewAgenda = Icons.Outlined.ViewAgenda
     val Menu = Icons.Outlined.Menu
