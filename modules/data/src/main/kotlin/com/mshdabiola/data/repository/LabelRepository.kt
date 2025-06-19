@@ -32,6 +32,10 @@ internal class LabelRepository
         return noteLabelDao.getAll(id).map { it.map { it.toNoteLabel() } }
     }
 
+    override fun getLabel(id: Long): Flow<Label?> {
+        return labelDao.getById(id).map { it?.toLabel() }
+    }
+
     override suspend fun deleteNoteLabel(noteIds: Set<Long>, labelId: Long) {
         noteLabelDao.delete(noteIds, labelId)
     }
