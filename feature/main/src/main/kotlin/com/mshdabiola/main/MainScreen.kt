@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -83,7 +84,7 @@ internal fun MainScreen(
 
     onDeleteAllTrash: () -> Unit = {},
 
-) {
+    ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val state = rememberLazyListState()
@@ -93,6 +94,7 @@ internal fun MainScreen(
         is MainState.Loading -> {
             LoadingState()
         }
+
         is MainState.Success -> {
             val onNoteClick: (Long) -> Unit = {
                 if (mainState.selectState != null) {
@@ -126,10 +128,10 @@ internal fun MainScreen(
                         onDeleteLabel = onDeleteLabel,
                         onDeleteAllTrash = onDeleteAllTrash,
 
-                    )
+                        )
                 },
 
-            ) { paddingValues ->
+                ) { paddingValues ->
 
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier
@@ -139,7 +141,7 @@ internal fun MainScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalItemSpacing = 8.dp,
 
-                ) {
+                    ) {
 //
                     if (mainState.unPinNotePads.isEmpty() && mainState.pinNotePads.isEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
@@ -187,6 +189,50 @@ internal fun MainScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+internal fun MainScreenPreview() {
+    val mainState = MainState.Success(
+        isGrid = true,
+        labelName = "Sample Label",
+        pinNotePads = listOf(
+            NotePad(id = 1, title = "Pinned Note 1", detail = "Content 1", isPin = true),
+            NotePad(id = 2, title = "Pinned Note 2", detail = "Content 2", isPin = true),
+        ),
+        unPinNotePads = listOf(
+            NotePad(id = 3, title = "Unpinned Note 1", detail = "Content 3"),
+            NotePad(id = 4, title = "Unpinned Note 2", detail = "Content 4"),
+            NotePad(id = 5, title = "Unpinned Note 1", detail = "Content 3"),
+            NotePad(id = 6, title = "Unpinned Note 2", detail = "Content 4"),
+            NotePad(
+                id = 7,
+                title = "Unpinned Note 1", detail = "Content 3",
+            ),
+            NotePad(id = 8, title = "Unpinned Note 2", detail = "Content 4"),
+            NotePad(
+                id = 9,
+                title = "Unpinned Note 1", detail = "Content 3",
+            ),
+            NotePad(id = 10, title = "Unpinned Note 2", detail = "Content 4"),
+            NotePad(id = 11, title = "Unpinned Note 1", detail = "Content 3"),
+            NotePad(id = 12, title = "Unpinned Note 2", detail = "Content 4"),
+        ),
+        noteDisplayCategory = NoteDisplayCategory(),
+        selectState = SelectState(colorIndex = 0, isAllPin = true, setOfSelected = setOf(1L)),
+    )
+    SharedTransitionScope {
+        AnimatedVisibility(visible = true) {
+            MainScreen(
+                modifier = Modifier.fillMaxSize(),
+                sharedTransitionScope = this@SharedTransitionScope,
+                animatedContentScope = this,
+                mainState = mainState,
+            )
+        }
+    }
+}
+
 @Composable
 private fun LoadingState(modifier: Modifier = Modifier) {
     Box(
@@ -202,7 +248,10 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier, noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory()) {
+private fun EmptyState(
+    modifier: Modifier = Modifier,
+    noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
+) {
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -247,7 +296,7 @@ fun LazyStaggeredGridScope.noteItems(
                     sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
                     animatedVisibilityScope = animatedContentScope,
 
-                ),
+                    ),
                 isSelect = setOfSelected.contains(note.id),
                 notePad = note,
                 onCardClick = onNoteClick,

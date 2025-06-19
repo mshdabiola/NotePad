@@ -91,7 +91,9 @@ internal class MainViewModel
             notificationUiState = note.notification
         }
 
-        val isAllPin = getAllNotePad().all { it.isPin }
+        val isAllPin = getAllNotePad()
+            .filter { setOfSelected.contains(it.id) }
+            .all { it.isPin  }
 
         selectedNotesState.value = state.copy(
             setOfSelected = setOfSelected,
