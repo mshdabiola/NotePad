@@ -143,6 +143,7 @@ fun MainTopBar(
                             }
                         }
                     }
+
                     else -> {
                         var showDropDown by remember {
                             mutableStateOf(false)
@@ -337,6 +338,16 @@ fun MainTopBar(
                                 contentDescription = "search",
                             )
                         }
+                        IconButton(onClick = { onDisplayModeChange() }) {
+                            if (!isGrid) {
+                                Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
+                            } else {
+                                Icon(
+                                    imageVector = NoteIcon.ViewAgenda,
+                                    contentDescription = "column",
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -364,10 +375,54 @@ fun MainTopBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         navigationIcon = navigationAction,
-        title = { Text(text = label) },
+        title = {
+            if (noteDisplayCategory.noteType == NoteType.NOTE) {
+                OutlinedCard(
+                    onClick = onSearchClick,
+                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                ) {
+                    Box(
+                        modifier = Modifier.padding(
+                            horizontal = 64.dp,
+
+                            vertical = 4.dp,
+                        ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.labelLarge,
+
+                            text = stringResource(Rd.string.modules_designsystem_search_note),
+                        )
+                    }
+                }
+            } else {
+                Text(text = label)
+            }
+        },
         subtitle = {},
         actions = actions,
         colors = color,
+        titleHorizontalAlignment = if (noteDisplayCategory.noteType == NoteType.NOTE) {
+            Alignment.CenterHorizontally
+        } else {
+            Alignment.Start
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Preview
+@Composable
+fun MainTopBarPreview() {
+    MainTopBar(
+        noteDisplayCategory = NoteDisplayCategory(
+            labelId = 1,
+            noteType = NoteType.NOTE,
+        ),
+        isGrid = false,
+        selectState = null,
+        labelName = "Label Name",
     )
 }
 
