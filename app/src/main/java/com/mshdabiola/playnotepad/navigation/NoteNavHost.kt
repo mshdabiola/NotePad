@@ -75,7 +75,7 @@ fun NoteNavHost(
                 onBack = navController::popBackStack,
             )
             search(
-                modifier= Modifier,
+                modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
 
