@@ -47,6 +47,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.analytics.LocalAnalyticsHelper
+import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
@@ -77,6 +78,8 @@ internal fun MainScreen(
     onDeleteNotes: () -> Unit = {},
     onShareNote: () -> Unit = {},
     onCopyNote: () -> Unit = {},
+    onDeletedForever: () -> Unit = {},
+    onRestore: () -> Unit = {},
 
     onSearchClick: () -> Unit = {},
     onLabelNameChange: () -> Unit = {},
@@ -134,6 +137,8 @@ internal fun MainScreen(
                         onLabelNameChange = onLabelNameChange,
                         onDeleteLabel = onDeleteLabel,
                         onDeleteAllTrash = onDeleteAllTrash,
+                        onDeleteForever = onDeletedForever,
+                        onRestore = onRestore,
                     )
                 },
             ) { paddingValues ->
@@ -377,6 +382,80 @@ fun DeleteLabelAlertDialog(
             dismissButton = {
                 TextButton(onClick = { onDismissRequest() }) {
                     Text(text = stringResource(Rd.string.modules_designsystem_cancel))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun EmptyTrashDialog(
+    modifier: Modifier = Modifier,
+    show: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    onDelete: () -> Unit = {},
+
+) {
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            modifier = modifier,
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_dialog_empty_trash)) },
+            text = {
+                Text(text = stringResource(Rd.string.modules_designsystem_dialog_empty_trash_content))
+            },
+            confirmButton = {
+                NoteButton(
+                    onClick = {
+                        onDismissRequest()
+                    },
+                ) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_close))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDelete()
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun DeleteForeverDialog(
+    modifier: Modifier = Modifier,
+    show: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    onDelete: () -> Unit = {},
+
+) {
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            modifier = modifier,
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_dialog_delete_forever)) },
+            text = {
+                Text(text = stringResource(Rd.string.modules_designsystem_dialog_delete_forever_content))
+            },
+            confirmButton = {
+                NoteButton(
+                    onClick = {
+                        onDismissRequest()
+                    },
+                ) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_close))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDelete()
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
                 }
             },
         )
