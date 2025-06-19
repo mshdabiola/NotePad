@@ -12,6 +12,7 @@ import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 internal class OfflineFirstUserDataRepository @Inject constructor(
@@ -48,6 +49,10 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
     }
 
     override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
-        userPreferencesRepository.setMainData(noteDisplayCategory)
+        userPreferencesRepository.setNoteDisplayCategory(noteDisplayCategory)
+    }
+
+    override suspend fun toggleGrid() {
+        userPreferencesRepository.toggleGrid()
     }
 }

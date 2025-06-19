@@ -37,4 +37,6 @@ interface UserDataRepository {
      */
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean)
     suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory)
+
+    suspend fun toggleGrid()
 }
