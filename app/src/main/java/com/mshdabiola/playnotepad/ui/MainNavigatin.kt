@@ -88,7 +88,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_notes)) },
                 selected = currentMainArg.noteType == NoteType.NOTE,
-                onClick = { onNavigation(NoteDisplayCategory(NoteType.NOTE.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(noteType = NoteType.NOTE)) },
             )
             NavigationDrawerItem(
                 icon = {
@@ -96,7 +96,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_reminders)) },
                 selected = currentMainArg.noteType == NoteType.REMINDER,
-                onClick = { onNavigation(NoteDisplayCategory(NoteType.REMINDER.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(noteType = NoteType.REMINDER)) },
             )
             HorizontalDivider(
                 modifier = Modifier
@@ -129,7 +129,7 @@ fun MainNavigation(
                     },
                     label = { Text(text = it.label) },
                     selected = currentMainArg.noteType == NoteType.LABEL && currentMainArg.labelId == it.id,
-                    onClick = { onNavigation(NoteDisplayCategory(it.id)) },
+                    onClick = { onNavigation(NoteDisplayCategory(it.id, NoteType.LABEL)) },
                 )
             }
             NavigationDrawerItem(
@@ -152,7 +152,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
                 selected = currentMainArg.noteType == NoteType.ARCHIVE,
-                onClick = { onNavigation(NoteDisplayCategory(NoteType.ARCHIVE.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(noteType = NoteType.ARCHIVE)) },
             )
 
             NavigationDrawerItem(
@@ -161,7 +161,7 @@ fun MainNavigation(
                 },
                 label = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
                 selected = currentMainArg.noteType == NoteType.TRASH,
-                onClick = { onNavigation(NoteDisplayCategory(NoteType.TRASH.index)) },
+                onClick = { onNavigation(NoteDisplayCategory(noteType = NoteType.TRASH)) },
             )
             NavigationDrawerItem(
                 icon = {
