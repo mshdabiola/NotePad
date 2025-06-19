@@ -166,7 +166,10 @@ internal class MainViewModel
             getAllNotePad().filter { selected.contains(it.id) }
 
         deselectNotes()
-        val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
+        val notes = selectedNotes.map {
+            val noteType = if (it.noteType == NoteType.ARCHIVE) NoteType.NOTE else NoteType.ARCHIVE
+            it.copy(noteType = noteType)
+        }
 
         viewModelScope.launch {
             notepadRepository.upsert(notes)
@@ -179,10 +182,34 @@ internal class MainViewModel
             getAllNotePad().filter { selected.contains(it.id) }
 
         deselectNotes()
-        val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
+        val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH, isPin = false) }
 
         viewModelScope.launch {
             notepadRepository.upsert(notes)
+        }
+    }
+
+    fun onDeleteForever() {
+        val selected = getSelectState().setOfSelected
+        val selectedNotes =
+            getAllNotePad().filter { selected.contains(it.id) }
+
+        deselectNotes()
+
+        viewModelScope.launch {
+            notepadRepository.delete(selectedNotes)
+        }
+    }
+    fun onRestore() {
+        val selected = getSelectState().setOfSelected
+        val selectedNotes =
+            getAllNotePad().filter { selected.contains(it.id) }
+                .map { it.copy(noteType = NoteType.NOTE) }
+
+        deselectNotes()
+
+        viewModelScope.launch {
+            notepadRepository.upsert(selectedNotes)
         }
     }
 
