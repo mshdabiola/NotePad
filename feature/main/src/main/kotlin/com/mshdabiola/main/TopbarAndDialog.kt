@@ -78,6 +78,8 @@ fun MainTopBar(
     onDeleteNotes: () -> Unit = {},
     onShareNote: () -> Unit = {},
     onCopyNote: () -> Unit = {},
+    onDeleteForever: () -> Unit = {},
+    onRestore: () -> Unit = {},
 
     onSearchClick: () -> Unit = {},
     onLabelNameChange: () -> Unit = {},
@@ -100,83 +102,136 @@ fun MainTopBar(
     val actions: @Composable RowScope.() -> Unit =
         {
             if (selectState != null) {
-                var showDropDown by remember {
-                    mutableStateOf(false)
-                }
+                when (noteDisplayCategory.noteType) {
+                    NoteType.TRASH -> {
+                        var showDropDown by remember {
+                            mutableStateOf(false)
+                        }
 
-                IconButton(
-                    modifier = Modifier.testTag("main:pin"),
-                    onClick = onPinNotes,
-                ) {
-                    Icon(
-                        imageVector = if (selectState.isAllPin) NoteIcon.PushPinD else NoteIcon.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
-                        contentDescription = "pin note",
-                    )
-                }
-                IconButton(
-                    modifier = Modifier.testTag("main:notification"),
-                    onClick = onNotificationClick,
-                ) {
-                    Icon(
-                        imageVector = NoteIcon.Notification,
-                        contentDescription = "notification",
-                    )
-                }
-                IconButton(
-                    modifier = Modifier.testTag("main:color"),
-                    onClick = onSelectColor,
-                ) {
-                    Icon(
-                        imageVector = NoteIcon.ColorLens,
-                        contentDescription = "color",
-                    )
-                }
-                IconButton(
-                    modifier = Modifier.testTag("main:label"),
-                    onClick = onLabelNotes,
-                ) {
-                    Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
-                }
-                Box {
-                    IconButton(
-                        modifier = Modifier.testTag("main:more"),
-                        onClick = { showDropDown = true },
-                    ) {
-                        Icon(NoteIcon.MoreVert, contentDescription = "more")
+                        IconButton(
+                            modifier = Modifier.testTag("main:restore"),
+                            onClick = onRestore,
+                        ) {
+                            Icon(
+                                imageVector = NoteIcon.RestoreFromTrash,
+                                contentDescription = "restore note",
+                            )
+                        }
+                        Box {
+                            IconButton(
+                                modifier = Modifier.testTag("main:more"),
+                                onClick = { showDropDown = true },
+                            ) {
+                                Icon(NoteIcon.MoreVert, contentDescription = "more")
+                            }
+                            DropdownMenu(
+                                expanded = showDropDown,
+                                onDismissRequest = { showDropDown = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text =
+                                            stringResource(Rd.string.modules_designsystem_delete_forever),
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropDown = false
+                                        onDeleteForever()
+                                    },
+                                )
+                            }
+                        }
                     }
-                    DropdownMenu(
-                        expanded = showDropDown,
-                        onDismissRequest = { showDropDown = false },
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
-                            onClick = {
-                                showDropDown = false
-                                onArchive()
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
-                            onClick = {
-                                showDropDown = false
-                                onDeleteNotes()
-                            },
-                        )
-                        if (selectState.setOfSelected.size == 1) {
-                            DropdownMenuItem(
-                                text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
-                                onClick = {
-                                    showDropDown = false
-                                    onCopyNote()
-                                },
+                    else -> {
+                        var showDropDown by remember {
+                            mutableStateOf(false)
+                        }
+
+                        IconButton(
+                            modifier = Modifier.testTag("main:pin"),
+                            onClick = onPinNotes,
+                        ) {
+                            Icon(
+                                imageVector = if (selectState.isAllPin) NoteIcon.PushPinD else NoteIcon.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                                contentDescription = "pin note",
                             )
-                            DropdownMenuItem(
-                                text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
-                                onClick = {
-                                    showDropDown = false
-                                    onShareNote()
-                                },
+                        }
+                        IconButton(
+                            modifier = Modifier.testTag("main:notification"),
+                            onClick = onNotificationClick,
+                        ) {
+                            Icon(
+                                imageVector = NoteIcon.Notification,
+                                contentDescription = "notification",
                             )
+                        }
+                        IconButton(
+                            modifier = Modifier.testTag("main:color"),
+                            onClick = onSelectColor,
+                        ) {
+                            Icon(
+                                imageVector = NoteIcon.ColorLens,
+                                contentDescription = "color",
+                            )
+                        }
+                        IconButton(
+                            modifier = Modifier.testTag("main:label"),
+                            onClick = onLabelNotes,
+                        ) {
+                            Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
+                        }
+                        Box {
+                            IconButton(
+                                modifier = Modifier.testTag("main:more"),
+                                onClick = { showDropDown = true },
+                            ) {
+                                Icon(NoteIcon.MoreVert, contentDescription = "more")
+                            }
+                            DropdownMenu(
+                                expanded = showDropDown,
+                                onDismissRequest = { showDropDown = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text =
+                                            if (noteDisplayCategory.noteType == NoteType.ARCHIVE) {
+                                                stringResource(Rd.string.modules_designsystem_unarchive)
+                                            } else {
+                                                stringResource(Rd.string.modules_designsystem_archive)
+                                            },
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropDown = false
+                                        onArchive()
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
+                                    onClick = {
+                                        showDropDown = false
+                                        onDeleteNotes()
+                                    },
+                                )
+                                if (selectState.setOfSelected.size == 1) {
+                                    DropdownMenuItem(
+                                        text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
+                                        onClick = {
+                                            showDropDown = false
+                                            onCopyNote()
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
+                                        onClick = {
+                                            showDropDown = false
+                                            onShareNote()
+                                        },
+                                    )
+                                }
+                            }
                         }
                     }
                 }
