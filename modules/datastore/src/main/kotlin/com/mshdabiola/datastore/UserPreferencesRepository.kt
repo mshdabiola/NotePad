@@ -119,7 +119,7 @@ class UserPreferencesRepository @Inject constructor(
     }
     suspend fun toggleGrid() {
         userPreferences.updateData {
-            it.copy { this.isGrid = isGrid }
+            it.copy { this.isGrid = !isGrid }
         }
     }
 
