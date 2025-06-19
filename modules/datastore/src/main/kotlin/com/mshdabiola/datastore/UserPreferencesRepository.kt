@@ -65,6 +65,7 @@ class UserPreferencesRepository @Inject constructor(
                         NoteTypeProto.UNRECOGNIZED, NoteTypeProto.NOTE_TYPE_UNSPECIFIED -> com.mshdabiola.model.NoteType.NOTE // Default
                     },
                 ),
+                isGrid = it.isGrid
             )
         }
 
@@ -116,7 +117,13 @@ class UserPreferencesRepository @Inject constructor(
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
         }
     }
-    suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
+    suspend fun toggleGrid() {
+        userPreferences.updateData {
+            it.copy { this.isGrid = isGrid }
+        }
+    }
+
+    suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory) {
         userPreferences.updateData {
             it.copy {
                 this.noteDisplayCategory =
