@@ -96,7 +96,8 @@ internal class NotePadRepository
 
                         notes
                             .filter {
-                                it.noteEntity.noteType == NoteType.LABEL
+                                it.noteEntity.noteType != NoteType.TRASH ||
+                                    it.noteEntity.noteType != NoteType.ARCHIVE
                             }
                             .filter { note ->
                                 note.labels
