@@ -32,9 +32,18 @@
     <string name="modules_designsystem_pin">Pin</string>
     <string name="modules_designsystem_other">Other</string>
     <string name="modules_designsystem_archive">Archive</string>
+    <string name="modules_designsystem_unarchive">Unarchive</string>
     <string name="modules_designsystem_rename_label">Rename label</string>
     <string name="modules_designsystem_delete_label">Delete label</string>
     <string name="modules_designsystem_empty_trash">Empty trash</string>
+    <string name="modules_designsystem_dialog_empty_trash">Empty Trash?</string>
+    <string name="modules_designsystem_dialog_empty_trash_content">
+        All note in Trash will be permanently deleted.
+    </string>
+    <string name="modules_designsystem_dialog_delete_forever">Delete Forever</string>
+    <string name="modules_designsystem_dialog_delete_forever_content">
+        This note will be permanently deleted.
+    </string>
     <string name="modules_designsystem_search_note">Search note</string>
     <string name="modules_designsystem_rename">Rename</string>
     <string name="modules_designsystem_cancel">Cancel</string>
