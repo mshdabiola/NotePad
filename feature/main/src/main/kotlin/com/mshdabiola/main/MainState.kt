@@ -8,7 +8,7 @@ sealed class MainState {
     data object Loading : MainState()
     data class Success(
         val isGrid: Boolean = true,
-        val labelName: String = "",
+        val labelName: String? = null,
         val pinNotePads: List<NotePad> = emptyList(),
         val unPinNotePads: List<NotePad> = emptyList(),
         val noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),

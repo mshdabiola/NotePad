@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,13 +57,14 @@ import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as Rd
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MainTopBar(
     modifier: Modifier = Modifier,
     noteDisplayCategory: NoteDisplayCategory,
     isGrid: Boolean = false,
     selectState: SelectState? = null,
+    labelName: String? = null,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     onDisplayModeChange: () -> Unit = {},
     onHamburgerMenuClick: () -> Unit = {},
@@ -285,16 +287,22 @@ fun MainTopBar(
             }
         }
 
-    val label = if (selectState != null) {
-        selectState.setOfSelected.size.toString()
-    } else {
-        when (noteDisplayCategory.noteType) {
+    val label = selectState?.setOfSelected?.size?.toString()
+        ?: when (noteDisplayCategory.noteType) {
             NoteType.NOTE -> "Note"
             NoteType.REMINDER -> "Reminder"
-            NoteType.LABEL -> "Label"
+            NoteType.LABEL -> labelName ?: ""
             NoteType.TRASH -> "Trash"
             NoteType.ARCHIVE -> "Archive"
         }
+    val color = if (selectState != null) {
+        TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        )
+    } else {
+        TopAppBarDefaults.topAppBarColors(
+            scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        )
     }
 
     TopAppBar(
@@ -302,7 +310,9 @@ fun MainTopBar(
         scrollBehavior = scrollBehavior,
         navigationIcon = navigationAction,
         title = { Text(text = label) },
+        subtitle = {},
         actions = actions,
+        colors = color,
     )
 }
 

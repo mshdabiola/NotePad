@@ -82,7 +82,7 @@ fun NavGraphBuilder.mainScreen(
             mainState = mainState.value,
             navigateToNoteEditor = navigateToDetail,
             onNoteSelected = mainViewModel::handleCardSelection,
-            onClearSelection = mainViewModel::onClearSelection,
+            onClearSelection = mainViewModel::deselectNotes,
             onPinNotes = mainViewModel::pinOrUnpinNotes,
             onNotificationClick = { showDialog = true },
             onSelectColor = { showColor = true },

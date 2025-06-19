@@ -43,23 +43,36 @@ internal class MainViewModel
         .flatMapLatest {
             notepadRepository.getNotePadsWithMainData(it)
         }
+    private val label = userDataRepository
+        .userData
+        .mapLatest { it.noteDisplayCategory }
+        .flatMapLatest {
+            labelRepository.getLabel(it.labelId)
+        }
+    private val noteDisplayCategory = userDataRepository
+        .userData
+        .mapLatest { it.noteDisplayCategory }
+
+    private val isGrid = userDataRepository
+        .userData
+        .mapLatest { it.isGrid }
     val mainState = combine(
         currentNotepads,
-        userDataRepository.userData,
+        label,
+        noteDisplayCategory,
         selectedNotesState,
-        labelRepository.getAllLabels(),
-    ) { notepad, userData, selectState, labels ->
+        isGrid,
+    ) { notepad, label, displayCategory, selectState, isGrid ->
 
         val pinNote = notepad.filter { it.isPin }
         val unPinNote = notepad.filter { !it.isPin }
-        val labelName = labels.singleOrNull() { it.id == userData.noteDisplayCategory.labelId }?.label ?: ""
         MainState.Success(
-            labelName = labelName,
+            labelName = label?.label,
             pinNotePads = pinNote,
             unPinNotePads = unPinNote,
-            noteDisplayCategory = userData.noteDisplayCategory,
+            noteDisplayCategory = displayCategory,
             selectState = selectState,
-            isGrid = userData.isGrid,
+            isGrid = isGrid,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -78,6 +91,11 @@ internal class MainViewModel
     fun handleCardSelection(id: Long) {
         val state = getSelectState()
 
+        if (state.setOfSelected.contains(id) && state.setOfSelected.size == 1) {
+            deselectNotes()
+            return
+        }
+
         val setOfSelected = if (state.setOfSelected.contains(id)) {
             state.setOfSelected - id
         } else {
@@ -93,7 +111,7 @@ internal class MainViewModel
 
         val isAllPin = getAllNotePad()
             .filter { setOfSelected.contains(it.id) }
-            .all { it.isPin  }
+            .all { it.isPin }
 
         selectedNotesState.value = state.copy(
             setOfSelected = setOfSelected,
@@ -103,7 +121,7 @@ internal class MainViewModel
         )
     }
 
-    fun onClearSelection() {
+    fun deselectNotes() {
         selectedNotesState.value = null
     }
 
@@ -112,7 +130,7 @@ internal class MainViewModel
         val selectedNotepad =
             getAllNotePad().filter { selected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
 
         if (selectedNotepad.any { !it.isPin }) {
             val pinNotepad = selectedNotepad.map { it.copy(isPin = true) }
@@ -134,7 +152,7 @@ internal class MainViewModel
         val selectedNotes =
             getAllNotePad().filter { selected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
         val notes = selectedNotes.map { it.copy(color = colorId) }
 
         viewModelScope.launch {
@@ -147,7 +165,7 @@ internal class MainViewModel
         val selectedNotes =
             getAllNotePad().filter { selected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
 
         viewModelScope.launch {
@@ -160,7 +178,7 @@ internal class MainViewModel
         val selectedNotes =
             getAllNotePad().filter { selected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
         val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
 
         viewModelScope.launch {
@@ -172,6 +190,8 @@ internal class MainViewModel
         viewModelScope.launch(Dispatchers.IO) {
             val id = getSelectState().setOfSelected.first()
             val notepads = notepadRepository.getOneNotePad(id).first()
+
+            deselectNotes()
 
             if (notepads != null) {
                 val copy = notepads.copy(id = -1)
@@ -257,7 +277,7 @@ internal class MainViewModel
         val selectedNotes =
             getAllNotePad().filter { setOfSelected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
         val notes = selectedNotes // .map { it.copy(reminder = time, interval = interval ?: -1) }
 
         viewModelScope.launch {
@@ -283,7 +303,7 @@ internal class MainViewModel
         val selectedNotes =
             getAllNotePad().filter { selected.contains(it.id) }
 
-        onClearSelection()
+        deselectNotes()
         val notes = selectedNotes // .map { it.copy(reminder = -1, interval = -1) }
 
         viewModelScope.launch {
@@ -299,6 +319,8 @@ internal class MainViewModel
 
     private fun getSuccess() = mainState.value as MainState.Success
     fun onSendNote(): NotePad {
-        return getAllNotePad().first { it.id == getSelectState().setOfSelected.first() }
+        val note = getAllNotePad().first { it.id == getSelectState().setOfSelected.first() }
+        deselectNotes()
+        return note
     }
 }

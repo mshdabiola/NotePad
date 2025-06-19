@@ -16,12 +16,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,8 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -58,7 +58,7 @@ import com.mshdabiola.designsystem.R as Rd
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier, // Add default modifier
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
@@ -84,15 +84,19 @@ internal fun MainScreen(
 
     onDeleteAllTrash: () -> Unit = {},
 
-    ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+) {
+    val scrollBehavior = if ((mainState as? MainState.Success)?.selectState != null) {
+        TopAppBarDefaults.pinnedScrollBehavior()
+    } else {
+        TopAppBarDefaults.enterAlwaysScrollBehavior()
+    }
 
-    val state = rememberLazyListState()
-    TrackScrollJank(scrollableState = state, stateName = "topic:screen")
+    val gridState = rememberLazyStaggeredGridState()
+    TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
 
     when (mainState) {
         is MainState.Loading -> {
-            LoadingState()
+            LoadingState(modifier = modifier) // Pass modifier
         }
 
         is MainState.Success -> {
@@ -105,13 +109,16 @@ internal fun MainScreen(
             }
             Scaffold(
                 modifier = modifier
+                    .fillMaxSize()
                     .testTag("main:list")
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MainTopBar(
+                        scrollBehavior = scrollBehavior,
                         noteDisplayCategory = mainState.noteDisplayCategory,
                         isGrid = mainState.isGrid,
                         selectState = mainState.selectState,
+                        labelName = mainState.labelName,
                         onDisplayModeChange = onDisplayModeChange,
                         onHamburgerMenuClick = onHamburgerMenuClick,
                         onClearSelection = onClearSelection,
@@ -127,22 +134,19 @@ internal fun MainScreen(
                         onLabelNameChange = onLabelNameChange,
                         onDeleteLabel = onDeleteLabel,
                         onDeleteAllTrash = onDeleteAllTrash,
-
-                        )
+                    )
                 },
-
-                ) { paddingValues ->
-
+            ) { paddingValues ->
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier
-                        .padding(paddingValues)
-                        .padding(16.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    state = gridState,
+                    contentPadding = paddingValues,
                     columns = StaggeredGridCells.Fixed(if (mainState.isGrid) 2 else 1),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalItemSpacing = 8.dp,
-
-                    ) {
-//
+                ) {
                     if (mainState.unPinNotePads.isEmpty() && mainState.pinNotePads.isEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             EmptyState(noteDisplayCategory = mainState.noteDisplayCategory)
@@ -151,13 +155,14 @@ internal fun MainScreen(
                     if (mainState.pinNotePads.isNotEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
                                 text = stringResource(Rd.string.modules_designsystem_pin),
                             )
                         }
                     }
                     noteItems(
-                        modifier = Modifier,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = animatedContentScope,
                         items = mainState.pinNotePads.toImmutableList(),
@@ -169,13 +174,14 @@ internal fun MainScreen(
                     if (mainState.pinNotePads.isNotEmpty() && mainState.unPinNotePads.isNotEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp), // Add some padding for the section title
                                 text = stringResource(Rd.string.modules_designsystem_other),
                             )
                         }
                     }
                     noteItems(
-                        modifier = Modifier,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = animatedContentScope,
                         items = mainState.unPinNotePads.toImmutableList(),
@@ -207,12 +213,14 @@ internal fun MainScreenPreview() {
             NotePad(id = 6, title = "Unpinned Note 2", detail = "Content 4"),
             NotePad(
                 id = 7,
-                title = "Unpinned Note 1", detail = "Content 3",
+                title = "Unpinned Note 1",
+                detail = "Content 3",
             ),
             NotePad(id = 8, title = "Unpinned Note 2", detail = "Content 4"),
             NotePad(
                 id = 9,
-                title = "Unpinned Note 1", detail = "Content 3",
+                title = "Unpinned Note 1",
+                detail = "Content 3",
             ),
             NotePad(id = 10, title = "Unpinned Note 2", detail = "Content 4"),
             NotePad(id = 11, title = "Unpinned Note 1", detail = "Content 3"),
@@ -296,7 +304,7 @@ fun LazyStaggeredGridScope.noteItems(
                     sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
                     animatedVisibilityScope = animatedContentScope,
 
-                    ),
+                ),
                 isSelect = setOfSelected.contains(note.id),
                 notePad = note,
                 onCardClick = onNoteClick,
