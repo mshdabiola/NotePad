@@ -1,18 +1,16 @@
 package com.mshdabiola.search
 
-import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NotificationUiState
 
 sealed class SearchState {
     data object Loading : SearchState()
+
     data class Success(
-        val notePads: List<NotePad> = emptyList(),
-        val noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
-        val setOfSelected: Set<Long> = emptySet(),
-        val notificationUiState: NotificationUiState? = null,
+        val searches: List<NotePad> = emptyList(),
+        val types: List<SearchSort.Type> = emptyList(),
+        val color: List<SearchSort.Color> = emptyList(),
+        val label: List<SearchSort.Label> = emptyList(),
+        val searchSort: SearchSort? = null,
 
     ) : SearchState()
-
-    //    data class Error(val message: String) : MainStateN()
 }
