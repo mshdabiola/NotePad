@@ -7,12 +7,21 @@ import com.mshdabiola.model.NotificationUiState
 sealed class MainState {
     data object Loading : MainState()
     data class Success(
-        val notePads: List<NotePad> = emptyList(),
+        val isGrid: Boolean = true,
+        val labelName: String = "",
+        val pinNotePads: List<NotePad> = emptyList(),
+        val unPinNotePads: List<NotePad> = emptyList(),
         val noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
-        val setOfSelected: Set<Long> = emptySet(),
-        val notificationUiState: NotificationUiState? = null,
-
+        val selectState: SelectState? = null,
     ) : MainState()
 
     //    data class Error(val message: String) : MainStateN()
 }
+
+data class SelectState(
+    val colorIndex: Int = -1,
+    val isAllPin: Boolean = false,
+    val setOfSelected: Set<Long> = emptySet(),
+    val notificationUiState: NotificationUiState? = null,
+
+)
