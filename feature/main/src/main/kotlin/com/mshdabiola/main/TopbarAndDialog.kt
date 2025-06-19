@@ -1,75 +1,37 @@
-
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.clearText
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarScrollBehavior
-import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopSearchBar
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -77,142 +39,149 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mshdabiola.designsystem.component.NoteLoadingWheel
-import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.main.LabelBox
-import com.mshdabiola.main.SearchSort
-import com.mshdabiola.main.SearchState
-import com.mshdabiola.main.noteItems
+import com.mshdabiola.main.SelectState
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainTopAppBar(
-    isGrid: Boolean = false,
-    navigateToSearch: () -> Unit = {},
-    onNavigate: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    onToggleGrid: () -> Unit = {},
-) {
-    TopAppBar(
-        modifier = Modifier,
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clickable { navigateToSearch() }
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .padding(end = 16.dp)
-                    .clip(
-                        RoundedCornerShape(
-                            topEnd = 50f,
-                            topStart = 50f,
-                            bottomEnd = 50f,
-                            bottomStart = 50f,
-                        ),
-                    )
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
-            ) {
-                IconButton(onClick = onNavigate) {
-                    Icon(
-                        imageVector = NoteIcon.Menu,
-                        contentDescription = "menu",
-                    )
-                }
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(Rd.string.modules_designsystem_search_note),
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
-                IconButton(onClick = { onToggleGrid() }) {
-                    if (!isGrid) {
-                        Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
-                    } else {
-                        Icon(imageVector = NoteIcon.ViewAgenda, contentDescription = "column")
-                    }
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
-        ),
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Composable
-fun NewTopMainAppBar(
+fun MainTopBar(
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-    searchQuery: TextFieldState = rememberTextFieldState(),
-    searchState: SearchState = SearchState.Loading,
+    noteDisplayCategory: NoteDisplayCategory,
     isGrid: Boolean = false,
-    scrollBehavior: SearchBarScrollBehavior? = null,
-    onNavigateIcon: () -> Unit = {},
-    onToggleGrid: () -> Unit = {},
-    onSetSearch: (SearchSort?) -> Unit = {},
-    onNoteClick: (Long) -> Unit = {},
-    onExpandSearch: (Boolean) -> Unit = {},
+    selectState: SelectState? = null,
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    onDisplayModeChange: () -> Unit = {},
+    onHamburgerMenuClick: () -> Unit = {},
+
+    onClearSelection: () -> Unit = {},
+    onPinNotes: () -> Unit = {},
+    onNotificationClick: () -> Unit = {},
+    onSelectColor: () -> Unit = {},
+    onLabelNotes: () -> Unit = {},
+    onArchive: () -> Unit = {},
+    onDeleteNotes: () -> Unit = {},
+    onShareNote: () -> Unit = {},
+    onCopyNote: () -> Unit = {},
+
+    onSearchClick: () -> Unit = {},
+    onLabelNameChange: () -> Unit = {},
+    onDeleteLabel: () -> Unit = {},
+
+    onDeleteAllTrash: () -> Unit = {},
 
 ) {
-    val searchBarState = rememberSearchBarState(initialValue = SearchBarValue.Collapsed)
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = searchBarState.currentValue) {
-        onExpandSearch(searchBarState.currentValue == SearchBarValue.Expanded)
+    val navigationAction: @Composable () -> Unit = {
+        if (selectState != null) {
+            IconButton(onClick = onClearSelection) {
+                Icon(imageVector = NoteIcon.Clear, contentDescription = "clear note")
+            }
+        } else {
+            IconButton(onClick = onHamburgerMenuClick) {
+                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
+            }
+        }
     }
+    val actions: @Composable RowScope.() -> Unit =
+        {
+            if (selectState != null) {
+                var showDropDown by remember {
+                    mutableStateOf(false)
+                }
 
-    val inputField =
-        @Composable {
-            SearchBarDefaults.InputField(
-                modifier = Modifier,
-                searchBarState = searchBarState,
-                textFieldState = searchQuery,
-                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text(stringResource(Rd.string.modules_designsystem_search_note)) },
-                leadingIcon = {
-                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                        IconButton(
-                            onClick = { scope.launch { searchBarState.animateToCollapsed() } },
-                        ) {
-                            Icon(NoteIcon.ArrowBack, contentDescription = "Back")
-                        }
-                    } else {
-                        IconButton(
-                            onClick = onNavigateIcon,
-                        ) {
-                            Icon(NoteIcon.Menu, contentDescription = "menu")
+                IconButton(
+                    modifier = Modifier.testTag("main:pin"),
+                    onClick = onPinNotes,
+                ) {
+                    Icon(
+                        imageVector = if (selectState.isAllPin) NoteIcon.PushPinD else NoteIcon.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                        contentDescription = "pin note",
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.testTag("main:notification"),
+                    onClick = onNotificationClick,
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.Notification,
+                        contentDescription = "notification",
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.testTag("main:color"),
+                    onClick = onSelectColor,
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.ColorLens,
+                        contentDescription = "color",
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.testTag("main:label"),
+                    onClick = onLabelNotes,
+                ) {
+                    Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
+                }
+                Box {
+                    IconButton(
+                        modifier = Modifier.testTag("main:more"),
+                        onClick = { showDropDown = true },
+                    ) {
+                        Icon(NoteIcon.MoreVert, contentDescription = "more")
+                    }
+                    DropdownMenu(
+                        expanded = showDropDown,
+                        onDismissRequest = { showDropDown = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
+                            onClick = {
+                                showDropDown = false
+                                onArchive()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
+                            onClick = {
+                                showDropDown = false
+                                onDeleteNotes()
+                            },
+                        )
+                        if (selectState.setOfSelected.size == 1) {
+                            DropdownMenuItem(
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
+                                onClick = {
+                                    showDropDown = false
+                                    onCopyNote()
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
+                                onClick = {
+                                    showDropDown = false
+                                    onShareNote()
+                                },
+                            )
                         }
                     }
-                },
-                trailingIcon = {
-                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                        IconButton(
-                            onClick = { searchQuery.clearText() },
-                        ) {
-                            Icon(NoteIcon.Clear, contentDescription = "clear")
-                        }
-                    } else {
-                        IconButton(onClick = { onToggleGrid() }) {
+                }
+            } else {
+                when (noteDisplayCategory.noteType) {
+                    NoteType.NOTE -> {
+                        IconButton(onClick = { onDisplayModeChange() }) {
                             if (!isGrid) {
                                 Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
                             } else {
@@ -223,608 +192,117 @@ fun NewTopMainAppBar(
                             }
                         }
                     }
-                },
-            )
-        }
 
-    TopSearchBar(
-        modifier = modifier,
-        state = searchBarState,
-        inputField = inputField,
-        scrollBehavior = scrollBehavior,
-    )
-    ExpandedFullScreenSearchBar(
-        state = searchBarState,
-        inputField = inputField,
-    ) {
-        when (searchState) {
-            is SearchState.Loading -> {
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    NoteLoadingWheel("")
-                }
-            }
-
-            is SearchState.Success -> {
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier
-                        .padding(16.dp),
-                    columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp,
-
-                ) {
-                    if (searchQuery.text.isNotBlank() && searchState.searches.isEmpty()) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            Column(
-                                Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                Icon(imageVector = NoteIcon.Search, contentDescription = "search")
-                                Text(text = stringResource(Rd.string.modules_designsystem_no_result))
-                            }
-                        }
-                    }
-                    if (searchState.searches.isEmpty() && searchQuery.text.isBlank()) {
-                        if (searchState.types.isNotEmpty()) {
-                            item(span = StaggeredGridItemSpan.FullLine) {
-                                LabelBox(
-                                    title = stringResource(Rd.string.modules_designsystem_types),
-                                    searchState.types,
-                                    onItemClick = onSetSearch,
-                                )
-                            }
-                        }
-
-                        if (searchState.label.isNotEmpty()) {
-                            item(span = StaggeredGridItemSpan.FullLine) {
-                                LabelBox(
-                                    title = stringResource(Rd.string.modules_designsystem_labels),
-                                    searchState.label,
-                                    onItemClick = onSetSearch,
-                                )
-                            }
-                        }
-                        if (searchState.color.isNotEmpty()) {
-                            item(span = StaggeredGridItemSpan.FullLine) {
-                                Text(text = stringResource(Rd.string.modules_designsystem_colors))
-                            }
-
-                            item(span = StaggeredGridItemSpan.FullLine) {
-                                FlowRow(
-                                    verticalArrangement = Arrangement.spacedBy(4.dp),
-
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                ) {
-                                    searchState.color.forEach { color ->
-                                        Surface(
-                                            onClick = {
-                                                onSetSearch(color)
-                                            },
-                                            shape = CircleShape,
-                                            color = if (color.colorIndex == -1) Color.White else NoteIcon.noteColors[color.colorIndex],
-                                            modifier = Modifier
-                                                .width(40.dp)
-                                                .aspectRatio(1f),
-
-                                        ) {
-                                            if (color.colorIndex == -1) {
-                                                Icon(
-                                                    imageVector = NoteIcon.FormatColorReset,
-                                                    contentDescription = "done",
-                                                    tint = Color.Gray,
-                                                    modifier = Modifier.padding(4.dp),
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    noteItems(
-                        modifier = Modifier,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                        items = searchState.searches,
-                        onNoteClick = onNoteClick,
-                        onSelectedCard = {},
-                        setOfSelected = emptySet(),
-                        sharedName = "search",
-                    )
-                }
-            }
-        }
-
-//        SearchResults(
-//            onResultClick = {
-//                result - & gt;
-//                textFieldState.setTextAndPlaceCursorAtEnd(result)
-//                scope.launch { searchBarState.animateToCollapsed() }
-//            }
-//        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Preview
-@Composable
-fun NewTopMainAppBarPreview() {
-    SharedTransitionLayout {
-        AnimatedVisibility(true) {
-            NewTopMainAppBar(
-                modifier = Modifier,
-                sharedTransitionScope = this@SharedTransitionLayout,
-                animatedContentScope = this,
-
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchTopBar(
-    modifier: Modifier = Modifier,
-    state: TextFieldState = rememberTextFieldState(),
-    toggleSearch: () -> Unit = {},
-) {
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    LaunchedEffect(key1 = Unit) {
-        focusRequester.requestFocus()
-    }
-
-    TopAppBar(
-        modifier = modifier,
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    state.clearText()
-                    toggleSearch()
-                },
-            ) {
-                Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
-            }
-        },
-        title = {
-            NoteTextField(
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .fillMaxWidth(),
-                state = state,
-                placeholder = "Search",
-                textStyle = MaterialTheme.typography.bodyLarge,
-                trailingIcon = {
-                    if (state.text.isNotBlank()) {
-                        IconButton(onClick = { state.clearText() }) {
+                    NoteType.REMINDER -> {
+                        IconButton(onClick = onSearchClick) {
                             Icon(
-                                imageVector = NoteIcon.Clear,
-                                contentDescription = stringResource(Rd.string.modules_designsystem_delete),
+                                imageVector = NoteIcon.Search,
+                                contentDescription = "search",
+                            )
+                        }
+                        IconButton(onClick = { onDisplayModeChange() }) {
+                            if (!isGrid) {
+                                Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
+                            } else {
+                                Icon(
+                                    imageVector = NoteIcon.ViewAgenda,
+                                    contentDescription = "column",
+                                )
+                            }
+                        }
+                    }
+
+                    NoteType.LABEL -> {
+                        var showDropDown by remember {
+                            mutableStateOf(false)
+                        }
+
+                        IconButton(onClick = onSearchClick) {
+                            Icon(
+                                imageVector = NoteIcon.Search,
+                                contentDescription = "search",
+                            )
+                        }
+
+                        Box {
+                            IconButton(onClick = { showDropDown = true }) {
+                                Icon(NoteIcon.MoreVert, contentDescription = "more")
+                            }
+                            DropdownMenu(
+                                expanded = showDropDown,
+                                onDismissRequest = { showDropDown = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
+                                    onClick = {
+                                        showDropDown = false
+                                        onLabelNameChange()
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_label)) },
+                                    onClick = {
+                                        showDropDown = false
+                                        onDeleteLabel()
+                                    },
+                                )
+                            }
+                        }
+                    }
+
+                    NoteType.TRASH -> {
+                        var showDropDown by remember {
+                            mutableStateOf(false)
+                        }
+                        Box {
+                            IconButton(onClick = { showDropDown = true }) {
+                                Icon(NoteIcon.MoreVert, contentDescription = "more")
+                            }
+                            DropdownMenu(
+                                expanded = showDropDown,
+                                onDismissRequest = { showDropDown = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(Rd.string.modules_designsystem_empty_trash)) },
+                                    onClick = {
+                                        showDropDown = false
+                                        onDeleteAllTrash()
+                                    },
+                                )
+                            }
+                        }
+                    }
+
+                    NoteType.ARCHIVE -> {
+                        IconButton(onClick = onSearchClick) {
+                            Icon(
+                                imageVector = NoteIcon.Search,
+                                contentDescription = "search",
                             )
                         }
                     }
-                },
-            )
-        },
-    )
-}
+                }
+            }
+        }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SelectTopBar(
-    selectNumber: Int = 0,
-    isAllPin: Boolean = false,
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-    onClear: () -> Unit = {},
-    onPin: () -> Unit = {},
-    onNoti: () -> Unit = {},
-    onColor: () -> Unit = {},
-    onLabel: () -> Unit = {},
-    onArchive: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onSend: () -> Unit = {},
-    onCopy: () -> Unit = {},
-
-) {
-    var showDropDown by remember {
-        mutableStateOf(false)
+    val label = if (selectState != null) {
+        selectState.setOfSelected.size.toString()
+    } else {
+        when (noteDisplayCategory.noteType) {
+            NoteType.NOTE -> "Note"
+            NoteType.REMINDER -> "Reminder"
+            NoteType.LABEL -> "Label"
+            NoteType.TRASH -> "Trash"
+            NoteType.ARCHIVE -> "Archive"
+        }
     }
+
     TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = onClear) {
-                Icon(imageVector = NoteIcon.Clear, contentDescription = "clear note")
-            }
-        },
-        title = {
-            Text(text = "$selectNumber")
-        },
-        actions = {
-            IconButton(
-                modifier = Modifier.testTag("main:pin"),
-                onClick = onPin,
-            ) {
-                Icon(
-                    imageVector = if (isAllPin) NoteIcon.PushPin else NoteIcon.PushPinD, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
-                    contentDescription = "pin note",
-                )
-            }
-            IconButton(
-                modifier = Modifier.testTag("main:notification"),
-                onClick = onNoti,
-            ) {
-                Icon(
-                    imageVector = NoteIcon.Notification,
-                    contentDescription = "notification",
-                )
-            }
-            IconButton(
-                modifier = Modifier.testTag("main:color"),
-                onClick = onColor,
-            ) {
-                Icon(
-                    imageVector = NoteIcon.ColorLens,
-                    contentDescription = "color",
-                )
-            }
-            IconButton(
-                modifier = Modifier.testTag("main:label"),
-                onClick = onLabel,
-            ) {
-                Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
-            }
-            Box {
-                IconButton(
-                    modifier = Modifier.testTag("main:more"),
-                    onClick = { showDropDown = true },
-                ) {
-                    Icon(NoteIcon.MoreVert, contentDescription = "more")
-                }
-                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(Rd.string.modules_designsystem_archive)) },
-                        onClick = {
-                            showDropDown = false
-                            onArchive()
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
-                        onClick = {
-                            showDropDown = false
-                            onDelete()
-                        },
-                    )
-                    if (selectNumber == 1) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
-                            onClick = {
-                                showDropDown = false
-                                onCopy()
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
-                            onClick = {
-                                showDropDown = false
-                                onSend()
-                            },
-                        )
-                    }
-                }
-            }
-        },
+        modifier = modifier,
         scrollBehavior = scrollBehavior,
-
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun SelectTopAppBarPreview() {
-    SelectTopBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LabelTopAppBar(
-    label: String = "label",
-    onNavigate: () -> Unit = {},
-    onSearch: () -> Unit = {},
-    onRenameLabel: () -> Unit = {},
-    onDeleteLabel: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-    var showDropDown by remember {
-        mutableStateOf(false)
-    }
-
-    TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = onNavigate) {
-                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
-            }
-        },
+        navigationIcon = navigationAction,
         title = { Text(text = label) },
-        actions = {
-            IconButton(onClick = onSearch) {
-                Icon(
-                    imageVector = NoteIcon.Search,
-                    contentDescription = "search",
-                )
-            }
-
-            Box {
-                IconButton(onClick = { showDropDown = true }) {
-                    Icon(NoteIcon.MoreVert, contentDescription = "more")
-                }
-                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
-                        onClick = {
-                            showDropDown = false
-                            onRenameLabel()
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_label)) },
-                        onClick = {
-                            showDropDown = false
-                            onDeleteLabel()
-                        },
-                    )
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
-
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun LabelTopAppBarPreview() {
-    LabelTopAppBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ArchiveTopAppBar(
-    name: String = "Archive",
-    onNavigate: () -> Unit = {},
-    onSearch: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-//    var showDropDown by remember {
-//        mutableStateOf(false)
-//    }
-
-    TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = onNavigate) {
-                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
-            }
-        },
-        title = { Text(text = name) },
-        actions = {
-            IconButton(onClick = onSearch) {
-                Icon(
-                    imageVector = NoteIcon.Search,
-                    contentDescription = "search",
-                )
-            }
-        },
-        scrollBehavior = scrollBehavior,
-
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun ArchiveTopAppBarPreview() {
-    ArchiveTopAppBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TrashTopAppBar(
-    onNavigate: () -> Unit = {},
-    onEmptyTrash: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-    var showDropDown by remember {
-        mutableStateOf(false)
-    }
-
-    TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = onNavigate) {
-                Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
-            }
-        },
-        title = { Text(text = stringResource(Rd.string.modules_designsystem_trash)) },
-        actions = {
-            Box {
-                IconButton(onClick = { showDropDown = true }) {
-                    Icon(NoteIcon.MoreVert, contentDescription = "more")
-                }
-                DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(Rd.string.modules_designsystem_empty_trash)) },
-                        onClick = {
-                            showDropDown = false
-                            onEmptyTrash()
-                        },
-                    )
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
-
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun TrashTopAppBarPreview() {
-    TrashTopAppBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun MainTopAppBarPreview() {
-    MainTopAppBar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RenameLabelAlertDialog(
-    show: Boolean = false,
-    label: String = "Label",
-    onDismissRequest: () -> Unit = {},
-    onChangeName: (String) -> Unit = {},
-) {
-    var name by remember(label) {
-        mutableStateOf(label)
-    }
-
-    AnimatedVisibility(visible = show) {
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(id = Rd.string.modules_designsystem_rename_label)) },
-            text = {
-                TextField(value = name, onValueChange = { name = it })
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        onDismissRequest()
-                        onChangeName(name)
-                    },
-                ) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_rename))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
-                }
-            },
-        )
-    }
-}
-
-@Preview
-@Composable
-fun RenameLabelPreview() {
-    RenameLabelAlertDialog(show = true)
-}
-
-@Composable
-fun DeleteLabelAlertDialog(
-    show: Boolean = false,
-    onDismissRequest: () -> Unit = {},
-    onDelete: () -> Unit = {},
-) {
-    AnimatedVisibility(visible = show) {
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
-            text = {
-                Text(text = stringResource(Rd.string.modules_designsystem_rename_details))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDismissRequest()
-                        onDelete()
-                    },
-                ) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_cancel))
-                }
-            },
-        )
-    }
-}
-
-@Preview
-@Composable
-fun DeleteLabelPreview() {
-    DeleteLabelAlertDialog(show = true)
-}
-
-@Composable
-fun NoteBottomBar(modifier: Modifier = Modifier) {
-    BottomAppBar(
-        actions = {
-            IconButton(
-                modifier = Modifier.testTag("main:check"),
-                onClick = { },
-            ) {
-                Icon(
-                    imageVector = NoteIcon.CheckBox,
-                    contentDescription = "add note check",
-                )
-            }
-
-            IconButton(
-                modifier = Modifier.testTag("main:draw"),
-                onClick = {
-                },
-            ) {
-                Icon(
-                    imageVector = NoteIcon.Brush,
-                    contentDescription = "add note drawing",
-                )
-            }
-
-            IconButton(
-                modifier = Modifier.testTag("main:voice"),
-                onClick = {
-                },
-            ) {
-                Icon(
-                    imageVector = NoteIcon.KeyboardVoice,
-                    contentDescription = "add note voice",
-                )
-            }
-
-            IconButton(
-                modifier = Modifier.testTag("main:image"),
-                onClick = {
-                },
-            ) {
-                Icon(
-                    imageVector = NoteIcon.Image,
-                    contentDescription = "add note image",
-                )
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.testTag("main:float"),
-                onClick = { },
-                containerColor = MaterialTheme.colorScheme.primary,
-                elevation = FloatingActionButtonDefaults.elevation(),
-            ) {
-                Icon(imageVector = NoteIcon.Add, contentDescription = "add note")
-            }
-        },
+        actions = actions,
     )
 }
 
