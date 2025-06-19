@@ -44,7 +44,7 @@
     <string name="modules_designsystem_dialog_delete_forever_content">
         This note will be permanently deleted.
     </string>
-    <string name="modules_designsystem_search_note">Search note</string>
+    <string name="modules_designsystem_search_note">Search your note</string>
     <string name="modules_designsystem_rename">Rename</string>
     <string name="modules_designsystem_cancel">Cancel</string>
     <string name="modules_designsystem_take_image">Take image</string>
