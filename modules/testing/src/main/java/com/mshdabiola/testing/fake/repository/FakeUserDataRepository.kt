@@ -48,6 +48,10 @@ class FakeUserDataRepository @Inject constructor(
     }
 
     override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
-        userPreferencesRepository.setMainData(noteDisplayCategory)
+        userPreferencesRepository.setNoteDisplayCategory(noteDisplayCategory)
+    }
+
+    override suspend fun toggleGrid() {
+        TODO("Not yet implemented")
     }
 }
