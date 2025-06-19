@@ -128,7 +128,7 @@ fun MainNavigation(
                         )
                     },
                     label = { Text(text = it.label) },
-                    selected = currentMainArg.labelId == it.id,
+                    selected = currentMainArg.noteType == NoteType.LABEL && currentMainArg.labelId == it.id,
                     onClick = { onNavigation(NoteDisplayCategory(it.id)) },
                 )
             }
