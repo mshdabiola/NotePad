@@ -158,6 +158,7 @@ sealed interface SharedActivityUiState {
             shouldHideOnboarding = false,
             contrast = Contrast.High,
             noteDisplayCategory = NoteDisplayCategory(),
+            isGrid = false,
         ),
         val notepad: NotePad = NotePad(),
         val labels: List<Label> = emptyList(),

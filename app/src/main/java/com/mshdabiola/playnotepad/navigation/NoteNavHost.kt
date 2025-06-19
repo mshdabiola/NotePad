@@ -49,6 +49,7 @@ fun NoteNavHost(
                 onOpenDrawer = {
                     appState.openDrawer()
                 },
+                navigateToSearch = {},
             )
             detailScreen(
                 modifier = Modifier,
