@@ -21,7 +21,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.mshdabiola.main.DeleteForeverDialog
 import com.mshdabiola.main.DeleteLabelAlertDialog
+import com.mshdabiola.main.EmptyTrashDialog
 import com.mshdabiola.main.MainScreen
 import com.mshdabiola.main.MainState
 import com.mshdabiola.main.MainViewModel
@@ -73,6 +75,12 @@ fun NavGraphBuilder.mainScreen(
         var showDeleteLabel by remember {
             mutableStateOf(false)
         }
+        var showDeleteForever by remember {
+            mutableStateOf(false)
+        }
+        var showEmptyTrash by remember {
+            mutableStateOf(false)
+        }
         val context = LocalContext.current
 
         MainScreen(
@@ -105,10 +113,12 @@ fun NavGraphBuilder.mainScreen(
             },
             onLabelNameChange = { showRenameLabel = true },
             onDeleteLabel = { showDeleteLabel = true },
-            onDeleteAllTrash = mainViewModel::onDeleteAllTrash,
+            onDeleteAllTrash = { showEmptyTrash = true },
             onHamburgerMenuClick = onOpenDrawer,
             onSearchClick = navigateToSearch,
             onDisplayModeChange = mainViewModel::onDisplayModeChange,
+            onRestore = mainViewModel::onRestore,
+            onDeletedForever = { showDeleteForever = true },
         )
 
         NotificationDialogNew(
@@ -138,6 +148,17 @@ fun NavGraphBuilder.mainScreen(
             show = showDeleteLabel,
             onDismissRequest = { showDeleteLabel = false },
             onDelete = mainViewModel::deleteLabel,
+        )
+        DeleteForeverDialog(
+            show = showDeleteForever,
+            onDismissRequest = { showDeleteForever = false },
+            onDelete = mainViewModel::onDeleteForever,
+        )
+
+        EmptyTrashDialog(
+            show = showEmptyTrash,
+            onDismissRequest = { showEmptyTrash = false },
+            onDelete = mainViewModel::onDeleteAllTrash,
         )
     }
 }
