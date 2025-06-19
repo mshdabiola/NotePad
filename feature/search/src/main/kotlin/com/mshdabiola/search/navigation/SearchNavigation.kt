@@ -7,12 +7,14 @@ package com.mshdabiola.search.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
-import com.mshdabiola.search.MainRoute
+import com.mshdabiola.search.SearchViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
 
 fun NavController.navigateToMain(
@@ -35,7 +37,7 @@ fun NavGraphBuilder.mainScreen(
         route = FullMainRoute,
     ) {
         FirebaseScreenLog(screen = "main_screen")
-
-
+        val searchViewModel: SearchViewModel = hiltViewModel()
+        val searchState = searchViewModel.searchState.collectAsStateWithLifecycle()
     }
 }
