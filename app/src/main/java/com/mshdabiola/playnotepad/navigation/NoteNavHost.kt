@@ -78,6 +78,7 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
+                navigateToDetail = { navController.navigateToDetail(DetailArg(it)) },
 
             )
         }
