@@ -29,6 +29,7 @@ fun NavGraphBuilder.search(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     onBack: () -> Unit,
+    navigateToDetail: (Long) -> Unit = {},
 
 ) {
     composable(
@@ -45,6 +46,7 @@ fun NavGraphBuilder.search(
             searchQuery = searchViewModel.searchQuery,
             onBack = onBack,
             onSetSearch = searchViewModel::onSetSearch,
+            onNoteClick = navigateToDetail,
 
         )
     }
