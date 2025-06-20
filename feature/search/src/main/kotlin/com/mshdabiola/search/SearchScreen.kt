@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,6 +63,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
 
@@ -81,6 +83,7 @@ internal fun SharedTransitionScope.SearchScreen(
     isGrid: Boolean = false,
     onBack: () -> Unit = {},
     onSetSearch: (SearchSort?) -> Unit = {},
+    onNoteClick: (Long) -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -165,6 +168,16 @@ internal fun SharedTransitionScope.SearchScreen(
                             }
                         }
                     }
+                    items(items = searchState.searches, key = { it.id }) { notepad ->
+                        NoteCard(
+                            modifier = Modifier,
+                            animatedVisibilityScope = animatedContentScope,
+                            notePad = notepad,
+                            onCardClick = onNoteClick,
+                            onLongClick = {},
+                            isSelect = false,
+                        )
+                    }
                 }
             }
 
@@ -224,16 +237,16 @@ internal fun NewSearchScreenPreview() {
                         SearchSort.Type(1),
                         SearchSort.Type(2),
                         SearchSort.Type(3),
-                        SearchSort.Type(0),
-                        SearchSort.Type(0),
+                        SearchSort.Type(4),
+                        SearchSort.Type(5),
                     ),
                     label = listOf(
-                        SearchSort.Label("Java", iconIndex = 1, 3),
-                        SearchSort.Label("Python", iconIndex = 1, 3),
-                        SearchSort.Label("C Sharp", iconIndex = 1, 3),
-                        SearchSort.Label("JavaScript", iconIndex = 1, 3),
-                        SearchSort.Label("Java", iconIndex = 1, 3),
-                        SearchSort.Label("Java", iconIndex = 1, 3),
+                        SearchSort.Label("Java", iconIndex = 6, 3),
+                        SearchSort.Label("Python", iconIndex = 6, 3),
+                        SearchSort.Label("C Sharp", iconIndex = 6, 3),
+                        SearchSort.Label("JavaScript", iconIndex = 6, 3),
+                        SearchSort.Label("Java", iconIndex = 6, 3),
+                        SearchSort.Label("Java", iconIndex = 6, 3),
 
                     ),
                     color = listOf(
