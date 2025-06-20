@@ -38,9 +38,8 @@ fun NavGraphBuilder.search(
         val searchViewModel: SearchViewModel = hiltViewModel()
         val searchState = searchViewModel.searchState.collectAsStateWithLifecycle()
 
-        SearchScreen(
+        sharedTransitionScope.SearchScreen(
             modifier = modifier,
-            sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = this,
             searchState = searchState.value,
             searchQuery = searchViewModel.searchQuery,
