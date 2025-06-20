@@ -12,7 +12,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CircleShape
@@ -61,7 +59,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.TrackScrollJank
@@ -79,8 +76,7 @@ internal fun SharedTransitionScope.SearchScreen(
     modifier: Modifier = Modifier,
     animatedContentScope: AnimatedVisibilityScope,
     searchQuery: TextFieldState = rememberTextFieldState(),
-    searchState: SearchState = SearchState.Loading,
-    isGrid: Boolean = false,
+    searchState: SearchState = SearchState.Select(),
     onBack: () -> Unit = {},
     onSetSearch: (SearchSort?) -> Unit = {},
     onNoteClick: (Long) -> Unit = {},
@@ -105,20 +101,29 @@ internal fun SharedTransitionScope.SearchScreen(
                         placeholder = { Text(stringResource(Rd.string.modules_designsystem_search_note)) },
 
                         trailingIcon = {
-                            IconButton(
-                                onClick = { searchQuery.clearText() },
-                            ) {
-                                Icon(NoteIcon.Clear, contentDescription = "clear")
+                            if (searchQuery.text.isNotBlank()) {
+                                IconButton(
+                                    onClick = {
+                                        onSetSearch(null)
+
+                                        searchQuery.clearText()
+                                    },
+                                ) {
+                                    Icon(NoteIcon.Clear, contentDescription = "clear")
+                                }
                             }
                         },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = true),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Search,
+                            showKeyboardOnFocus = true,
+                        ),
                         modifier = Modifier.fillMaxWidth(),
 
                     )
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ),
                 subtitle = {},
                 titleHorizontalAlignment = Alignment.CenterHorizontally,
@@ -134,49 +139,37 @@ internal fun SharedTransitionScope.SearchScreen(
     ) { paddingValues ->
 
         when (searchState) {
-            is SearchState.Loading -> {
-                Box(
-                    Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    NoteLoadingWheel("")
-                }
-            }
-
             is SearchState.Success -> {
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    state = gridState,
-                    contentPadding = paddingValues,
-                    columns = StaggeredGridCells.Fixed(if (searchState.isGrid) 2 else 1),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp,
-                ) {
-                    if (searchQuery.text.isNotBlank() && searchState.searches.isEmpty()) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            Column(
-                                Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                Icon(imageVector = NoteIcon.Search, contentDescription = "search")
-                                Text(text = stringResource(Rd.string.modules_designsystem_no_result))
-                            }
-                        }
+                if (searchQuery.text.isNotBlank() && searchState.searches.isEmpty()) {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(imageVector = NoteIcon.Search, contentDescription = "search")
+                        Text(text = stringResource(Rd.string.modules_designsystem_no_result))
                     }
-                    items(items = searchState.searches, key = { it.id }) { notepad ->
-                        NoteCard(
-                            modifier = Modifier,
-                            animatedVisibilityScope = animatedContentScope,
-                            notePad = notepad,
-                            onCardClick = onNoteClick,
-                            onLongClick = {},
-                            isSelect = false,
-                        )
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        state = gridState,
+                        contentPadding = paddingValues,
+                        columns = StaggeredGridCells.Fixed(if (searchState.isGrid) 2 else 1),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalItemSpacing = 8.dp,
+                    ) {
+                        items(items = searchState.searches, key = { it.id }) { notepad ->
+                            NoteCard(
+                                modifier = Modifier,
+                                animatedVisibilityScope = animatedContentScope,
+                                notePad = notepad,
+                                onCardClick = onNoteClick,
+                                onLongClick = {},
+                                isSelect = false,
+                            )
+                        }
                     }
                 }
             }
@@ -186,7 +179,7 @@ internal fun SharedTransitionScope.SearchScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(horizontal = 16.dp),
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     if (searchState.types.isNotEmpty()) {
@@ -310,6 +303,7 @@ fun LabelBox(
                             name = searchSort.name,
                         )
                     }
+
                     is SearchSort.Type -> {
                         SearchLabel(
                             modifier = Modifier.clickable { onItemClick(searchSort) },

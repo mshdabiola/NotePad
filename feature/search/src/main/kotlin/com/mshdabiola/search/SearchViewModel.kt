@@ -2,10 +2,8 @@ package com.mshdabiola.search
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NotePad
@@ -25,9 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class SearchViewModel
 @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val notepadRepository: INotePadRepository,
-    private val alarmManager: IAlarmManager,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
@@ -74,10 +70,11 @@ internal class SearchViewModel
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = SearchState.Loading,
+            initialValue = onBlankSearch(emptyList()),
         )
 
     fun onSetSearch(searchSort: SearchSort?) {
+        this.searchSort.value = searchSort
     }
 
     private fun onBlankSearch(notepads: List<NotePad>): SearchState.Select {
@@ -96,8 +93,11 @@ internal class SearchViewModel
             .map { SearchSort.Label(it.label, 6, it.id) }
 
         val backgrounds = notepads
-            .map { it.background }
+            .map {
+                it.color
+            }
             .distinct()
+            .sorted()
             .map { SearchSort.Color(it) }
 
         return SearchState.Select(
