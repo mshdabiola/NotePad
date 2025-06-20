@@ -83,9 +83,8 @@ fun NavGraphBuilder.mainScreen(
         }
         val context = LocalContext.current
 
-        MainScreen(
+        sharedTransitionScope.MainScreen(
             modifier = modifier,
-            sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = this,
             mainState = mainState.value,
             navigateToNoteEditor = navigateToDetail,
