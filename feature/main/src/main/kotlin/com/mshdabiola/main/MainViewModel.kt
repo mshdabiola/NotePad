@@ -105,7 +105,7 @@ internal class MainViewModel
         var colorIndex = -1
         if (setOfSelected.size == 1) {
             val note = getAllNotePad().single { it.id == setOfSelected.first() }
-            colorIndex = note.background
+            colorIndex = note.color
             notificationUiState = note.notification
         }
 
