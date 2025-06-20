@@ -3,7 +3,6 @@ package com.mshdabiola.search
 import com.mshdabiola.model.NotePad
 
 sealed class SearchState {
-    data object Loading : SearchState()
 
     data class Select(
 
