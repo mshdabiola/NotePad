@@ -5,7 +5,7 @@
 package com.mshdabiola.main
 
 import MainTopBar
-import NoteCard
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -46,21 +45,19 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.TrackScrollJank
-import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainScreen(
+internal fun SharedTransitionScope.MainScreen(
     modifier: Modifier = Modifier, // Add default modifier
-    sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
     navigateToNoteEditor: (Long) -> Unit = {},
@@ -167,14 +164,17 @@ internal fun MainScreen(
                             )
                         }
                     }
-                    noteItems(
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                        items = mainState.pinNotePads.toImmutableList(),
-                        onNoteClick = onNoteClick,
-                        onSelectedCard = onNoteSelected,
-                        setOfSelected = mainState.selectState?.setOfSelected ?: emptySet(),
-                    )
+
+                    items(items = mainState.pinNotePads, key = { it.id }) { notepad ->
+                        NoteCard(
+                            modifier = Modifier,
+                            animatedVisibilityScope = animatedContentScope,
+                            notePad = notepad,
+                            onCardClick = onNoteClick,
+                            onLongClick = onNoteSelected,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.id) ?: false,
+                        )
+                    }
 
                     if (mainState.pinNotePads.isNotEmpty() && mainState.unPinNotePads.isNotEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
@@ -186,20 +186,23 @@ internal fun MainScreen(
                             )
                         }
                     }
-                    noteItems(
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                        items = mainState.unPinNotePads.toImmutableList(),
-                        onNoteClick = onNoteClick,
-                        onSelectedCard = onNoteSelected,
-                        setOfSelected = mainState.selectState?.setOfSelected ?: emptySet(),
-                    )
+                    items(items = mainState.unPinNotePads, key = { it.id }) { notepad ->
+                        NoteCard(
+                            modifier = Modifier,
+                            animatedVisibilityScope = animatedContentScope,
+                            notePad = notepad,
+                            onCardClick = onNoteClick,
+                            onLongClick = onNoteSelected,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.id) ?: false,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@SuppressLint("UnusedSharedTransitionModifierParameter")
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -238,7 +241,6 @@ internal fun MainScreenPreview() {
         AnimatedVisibility(visible = true) {
             MainScreen(
                 modifier = Modifier.fillMaxSize(),
-                sharedTransitionScope = this@SharedTransitionScope,
                 animatedContentScope = this,
                 mainState = mainState,
             )
@@ -286,38 +288,37 @@ private fun EmptyState(
         )
     }
 }
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-fun LazyStaggeredGridScope.noteItems(
-    modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-    items: List<NotePad>,
-    setOfSelected: Set<Long>,
-    onNoteClick: (Long) -> Unit,
-    onSelectedCard: (Long) -> Unit,
-    sharedName: String = "note",
-) = items(
-    items = items,
-    key = { it.id },
-    itemContent = { note ->
-        val analyticsHelper = LocalAnalyticsHelper.current
-
-        with(sharedTransitionScope) {
-            NoteCard(
-                modifier = modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
-                    animatedVisibilityScope = animatedContentScope,
-
-                ),
-                isSelect = setOfSelected.contains(note.id),
-                notePad = note,
-                onCardClick = onNoteClick,
-                onLongClick = onSelectedCard,
-            )
-        }
-    },
-)
+//
+// @OptIn(ExperimentalSharedTransitionApi::class)
+// fun LazyStaggeredGridScope.noteItems(
+//    modifier: Modifier = Modifier,
+//    sharedTransitionScope: SharedTransitionScope,
+//    animatedContentScope: AnimatedVisibilityScope,
+//    items: List<NotePad>,
+//    setOfSelected: Set<Long>,
+//    onNoteClick: (Long) -> Unit,
+//    onSelectedCard: (Long) -> Unit,
+//    sharedName: String = "note",
+// ) = items(
+//    items = items,
+//    key = { it.id },
+//    itemContent = { note ->
+//
+//        with(sharedTransitionScope) {
+//            NoteCard(
+//                modifier = modifier.sharedBounds(
+//                    sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
+//                    animatedVisibilityScope = animatedContentScope,
+//
+//                ),
+//                isSelect = setOfSelected.contains(note.id),
+//                notePad = note,
+//                onCardClick = onNoteClick,
+//                onLongClick = onSelectedCard,
+//            )
+//        }
+//    },
+// )
 
 @Composable
 fun RenameLabelAlertDialog(
