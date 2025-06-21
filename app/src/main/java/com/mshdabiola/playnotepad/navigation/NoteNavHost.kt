@@ -8,6 +8,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.navigation.compose.NavHost
 import com.mshdabiola.about.aboutScreen
 import com.mshdabiola.detail.navigation.DetailArg
@@ -35,6 +36,7 @@ fun NoteNavHost(
     onShowSnackbar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val resources = LocalResources.current
     val navController = appState.navController
     SharedTransitionLayout(modifier = modifier) {
         NavHost(
@@ -58,7 +60,20 @@ fun NoteNavHost(
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
                 navigateToGallery = { id, index, total, currentPath -> navController.navigateToGallery(GalleryArg(id, index, total, currentPath)) },
-                navigateToDrawing = navController::navigateToDrawing,
+                navigateToDrawing = { noteId, image ->
+                    val width = resources.displayMetrics.widthPixels
+                    val height = resources.displayMetrics.heightPixels
+                    val density = resources.displayMetrics.density
+                    navController.navigateToDrawing(
+                        com.mshdabiola.drawing.DrawingArgs(
+                            noteId,
+                            image,
+                            width,
+                            height,
+                            density,
+                        ),
+                    )
+                },
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
             )
             gallery(
