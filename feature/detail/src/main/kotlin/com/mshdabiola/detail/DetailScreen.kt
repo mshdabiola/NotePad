@@ -121,7 +121,7 @@ fun SharedTransitionScope.EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long, Int, Int, String) -> Unit = { _, _,_,_ -> },
+    navigateToGallery: (Long, Int, Int, String) -> Unit = { _, _, _, _ -> },
     navigateToDrawing: (Long) -> Unit = {},
 ) {
     var expandCheck by remember {
@@ -265,7 +265,7 @@ fun SharedTransitionScope.EditScreen(
                                                 if (it.isDrawing) {
                                                     navigateToDrawing(it.id)
                                                 } else {
-                                                    navigateToGallery(notepad.id, index,imageList.size,it.path)
+                                                    navigateToGallery(notepad.id, index, imageList.size, it.path)
                                                 }
                                             }
                                             .sharedElement(
