@@ -4,12 +4,9 @@
 
 package com.mshdabiola.detail
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -59,7 +56,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,11 +76,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ShareCompat
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
@@ -93,222 +85,23 @@ import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
-import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
-import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.myFormat
-import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
-import java.io.File
+import kotlinx.datetime.LocalDateTime
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun DetailRoute(
-    onShowSnackbar: suspend (String, String?) -> Boolean,
-    onBack: () -> Unit,
+fun SharedTransitionScope.EditScreen(
     modifier: Modifier = Modifier,
-    editViewModel: DetailViewModel = hiltViewModel(),
-    navigateToGallery: (Long) -> Unit,
-    navigateToDrawing: (Long, Long) -> Unit,
-    navigateToSelectLevel: (Set<Long>) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-
-) {
-    val note = editViewModel.note.collectAsStateWithLifecycle().value
-    var showModalState by remember {
-        mutableStateOf(false)
-    }
-    var noteModalState by remember {
-        mutableStateOf(false)
-    }
-    var noteficationModalState by remember {
-        mutableStateOf(false)
-    }
-    var colorModalState by remember {
-        mutableStateOf(false)
-    }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    val notificationPermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = {
-            if (it) {
-                noteficationModalState = true
-            }
-        },
-    )
-    val context = LocalContext.current
-//    LaunchedEffect(key1 = editViewModel.navigateToDrawing, block = {
-//        if (editViewModel.navigateToDrawing) {
-//            navigateToDrawing(editViewModel.notePadUiState.note.id, null)
-//            editViewModel.navigateToDrawing = false
-//        }
-//    })
-    FirebaseScreenLog(screen = "edit_screen")
-
-    EditScreen(
-        modifier = modifier,
-        notepad = note,
-        title = editViewModel.title,
-        content = editViewModel.content,
-//        onTitleChange = editViewModel::onTitleChange,
-//        onSubjectChange = editViewModel::onDetailChange,
-        onBackClick = onBack,
-        onCheckChange = editViewModel::onCheckChange,
-        onCheckDelete = editViewModel::onCheckDelete,
-        onCheck = editViewModel::onCheck,
-        addItem = editViewModel::addCheck,
-        playVoice = editViewModel::playMusic,
-        pauseVoice = editViewModel::pause,
-        moreOptions = {
-//            coroutineScope.launch { modalState.show() }
-            showModalState = true
-        },
-        noteOption = { noteModalState = true },
-        unCheckAllItems = editViewModel::unCheckAllItems,
-        deleteCheckItems = editViewModel::deleteCheckedItems,
-        hideCheckBoxes = editViewModel::hideCheckBoxes,
-        pinNote = editViewModel::pinNote,
-        onLabel = {
-            navigateToSelectLevel(
-                setOf(
-                    editViewModel.note.value.id,
-                ),
-            )
-        },
-        onColorClick = { colorModalState = true },
-        onNotification = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
-            ) {
-                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                noteficationModalState = true
-            }
-        },
-        showNotificationDialog = {
-            showDialog = true
-        },
-        onArchive = editViewModel::onArchive,
-        deleteVoiceNote = editViewModel::deleteVoiceNote,
-        navigateToGallery = navigateToGallery,
-        navigateToDrawing = { navigateToDrawing(editViewModel.note.value.id, it) },
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
-
-    )
-    AddBottomSheet2(
-        show = showModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        isNoteCheck = note.isCheck,
-        saveImage = editViewModel::saveImage,
-        saveVoice = editViewModel::saveVoice,
-        getPhotoUri = editViewModel::getPhotoUri,
-        changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = {
-            val id = editViewModel.insertNewDrawing()
-            navigateToDrawing(editViewModel.note.value.id, id)
-        },
-        onDismiss = { showModalState = false },
-        isVoiceSupport = supportVoice(),
-    )
-//
-    val images = note.images.map {
-        val file = File(it.path)
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-        uri
-    }
-
-    val send = {
-        val intent = ShareCompat.IntentBuilder(context)
-            .setText(note.title)
-            .setSubject(note.detail)
-            .setChooserTitle("From Notepad")
-
-        if (images.isNotEmpty()) intent.setType("image/*") else intent.setType("text/*")
-        images.forEach {
-            intent.setStream(it)
-        }
-
-        context.startActivity(Intent(intent.createChooserIntent()))
-    }
-    NoteOptionBottomSheet(
-        show = noteModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        onLabel = {
-            navigateToSelectLevel(
-                setOf(
-                    editViewModel.note.value.id,
-                ),
-            )
-        },
-        onDelete = editViewModel::onDelete,
-        onCopy = editViewModel::copyNote,
-        onSendNote = send,
-        onDismissRequest = { noteModalState = false },
-    )
-    ColorAndImageBottomSheet(
-        show = colorModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        onColorClick = editViewModel::onColorChange,
-        onImageClick = editViewModel::onImageChange,
-        onDismissRequest = { colorModalState = false },
-    )
-//
-    NotificationBottomSheet(
-        show = noteficationModalState,
-        onAlarm = editViewModel::setAlarm,
-        showDialog = { showDialog = true },
-        currentColor = note.color,
-        currentImage = note.background,
-
-    ) { noteficationModalState = false }
-//
-    NotificationDialogNew(
-        initState = editViewModel.notificationUiState,
-        showDialog = showDialog,
-//        dateDialogUiData = dateDialogUiData.value,
-        onDismissRequest = { showDialog = false },
-        isEdit = false,
-        onSetAlarm = {},
-        onDeleteAlarm = { },
-//        onSetAlarm = editViewModel::setAlarm,
-    )
-//
-//    TimeDialog(
-//        state = editViewModel.timePicker,
-//        showDialog = dateDialogUiData.value.showTimeDialog,
-//        onDismissRequest = editViewModel::hideTime,
-//        onSetTime = editViewModel::onSetTime,
-//    )
-//    DateDialog(
-//        state = editViewModel.datePicker,
-//        showDialog = dateDialogUiData.value.showDateDialog,
-//        onDismissRequest = editViewModel::hideDate,
-//        onSetDate = editViewModel::onSetDate,
-//    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Composable
-fun EditScreen(
-    modifier: Modifier = Modifier,
+    id: Long = 0L,
     notepad: NotePad,
     title: TextFieldState,
     content: TextFieldState,
-//    onTitleChange: (String) -> Unit = {},
-//    onSubjectChange: (String) -> Unit = {},
+    animatedContentScope: AnimatedVisibilityScope,
     onBackClick: () -> Unit = {},
     onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
@@ -330,8 +123,6 @@ fun EditScreen(
     deleteVoiceNote: (Int) -> Unit = {},
     navigateToGallery: (Long) -> Unit = {},
     navigateToDrawing: (Long) -> Unit = {},
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
 ) {
     var expandCheck by remember {
         mutableStateOf(false)
@@ -387,334 +178,362 @@ fun EditScreen(
         },
     )
 
-    with(sharedTransitionScope) {
-        Scaffold(
-            containerColor = bg,
-            modifier = modifier
-                .sharedBounds(
-                    sharedContentState = rememberSharedContentState("note${notepad.id}"),
-                    animatedVisibilityScope = animatedContentScope,
-                )
-                .drawBehind {
-                    if (painter != null) {
-                        with(painter) {
-                            draw(size)
-                        }
+    Scaffold(
+        containerColor = bg,
+        modifier = modifier
+            .sharedBounds(
+                sharedContentState = rememberSharedContentState("note_${notepad.id}"),
+                animatedVisibilityScope = animatedContentScope,
+            )
+            .drawBehind {
+                if (painter != null) {
+                    with(painter) {
+                        draw(size)
+                    }
+                }
+            },
+        topBar = {
+            TopAppBar(
+                title = { },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                navigationIcon = {
+                    IconButton(
+                        modifier = Modifier.testTag("detail:back"),
+                        onClick = { onBackClick() },
+                    ) {
+                        Icon(
+                            imageVector = NoteIcon.ArrowBack,
+                            contentDescription = "back",
+                        )
                     }
                 },
-            topBar = {
-                TopAppBar(
-                    title = { },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                    navigationIcon = {
-                        IconButton(
-                            modifier = Modifier.testTag("detail:back"),
-                            onClick = { onBackClick() },
-                        ) {
-                            Icon(
-                                imageVector = NoteIcon.ArrowBack,
-                                contentDescription = "back",
-                            )
-                        }
-                    },
 
-                    actions = {
-                        IconButton(onClick = { pinNote() }) {
-                            Icon(
-                                modifier = Modifier.testTag("detail:pin"),
+                actions = {
+                    IconButton(onClick = { pinNote() }) {
+                        Icon(
+                            modifier = Modifier.testTag("detail:pin"),
 
-                                imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
-                                contentDescription = "pin",
-                            )
-                        }
-                        IconButton(onClick = { onNotification() }) {
-                            Icon(
-                                modifier = Modifier.testTag("detail:notification"),
+                            imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
+                            contentDescription = "pin",
+                        )
+                    }
+                    IconButton(onClick = { onNotification() }) {
+                        Icon(
+                            modifier = Modifier.testTag("detail:notification"),
 
-                                imageVector = NoteIcon.NotificationAdd,
-                                contentDescription = "notification",
-                            )
-                        }
-                        IconButton(onClick = { onArchive() }) {
-                            Icon(
-                                modifier = Modifier.testTag("detail:archive"),
+                            imageVector = NoteIcon.NotificationAdd,
+                            contentDescription = "notification",
+                        )
+                    }
+                    IconButton(onClick = { onArchive() }) {
+                        Icon(
+                            modifier = Modifier.testTag("detail:archive"),
 
-                                imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
-                                contentDescription = "archive",
-                            )
-                        }
-                    },
-                )
-            },
+                            imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
+                            contentDescription = "archive",
+                        )
+                    }
+                },
+            )
+        },
 
-        ) { paddingValues ->
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxHeight(),
+    ) { paddingValues ->
+        Column(
+            Modifier
+                .padding(paddingValues)
+                .fillMaxHeight(),
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("detail:list"),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("detail:list"),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    if (notepad.images.isNotEmpty()) {
-                        item(images) {
-                            images.forEach { imageList ->
-                                Row(
-                                    modifier = Modifier
-                                        .testTag("detail:images")
-                                        .fillMaxWidth()
-                                        .height(200.dp),
-                                ) {
-                                    imageList.forEach {
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .clickable {
-                                                    if (it.isDrawing) {
-                                                        navigateToDrawing(it.id)
-                                                    } else {
-                                                        navigateToGallery(notepad.id)
-                                                    }
+                if (notepad.images.isNotEmpty()) {
+                    item(images) {
+                        images.forEach { imageList ->
+                            Row(
+                                modifier = Modifier
+                                    .testTag("detail:images")
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                            ) {
+                                imageList.forEach {
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .clickable {
+                                                if (it.isDrawing) {
+                                                    navigateToDrawing(it.id)
+                                                } else {
+                                                    navigateToGallery(notepad.id)
                                                 }
-                                                .weight(1f)
-                                                .height(200.dp),
-                                            model = it.path,
-                                            contentDescription = "note image",
-                                            contentScale = ContentScale.Crop,
-                                        )
-                                    }
+                                            }
+                                            .weight(1f)
+                                            .height(200.dp),
+                                        model = it.path,
+                                        contentDescription = "note image",
+                                        contentScale = ContentScale.Crop,
+                                    )
                                 }
                             }
                         }
                     }
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            NoteTextField(
-                                state = title,
-                                placeholder = stringResource(Rd.string.modules_designsystem_title),
-                                imeAction = ImeAction.Next,
-                                modifier = Modifier
-                                    .padding(0.dp)
-                                    .weight(1f)
-                                    .testTag("detail:title"),
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        NoteTextField(
+                            state = title,
+                            placeholder = stringResource(Rd.string.modules_designsystem_title),
+                            imeAction = ImeAction.Next,
+                            modifier = Modifier
+                                .padding(0.dp)
+                                .weight(1f)
+                                .testTag("detail:title"),
 
-                            )
-                            if (notepad.isCheck) {
-                                Box {
-                                    IconButton(
-                                        modifier = Modifier.testTag("detail:morecheck"),
-                                        onClick = { expandCheck = true },
-                                    ) {
-                                        Icon(
-                                            imageVector = NoteIcon.MoreVert,
-                                            contentDescription = "",
-                                        )
-                                    }
-                                    DropdownMenu(
-                                        expanded = expandCheck,
-                                        onDismissRequest = { expandCheck = false },
-                                    ) {
+                        )
+                        if (notepad.isCheck) {
+                            Box {
+                                IconButton(
+                                    modifier = Modifier.testTag("detail:morecheck"),
+                                    onClick = { expandCheck = true },
+                                ) {
+                                    Icon(
+                                        imageVector = NoteIcon.MoreVert,
+                                        contentDescription = "",
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = expandCheck,
+                                    onDismissRequest = { expandCheck = false },
+                                ) {
+                                    DropdownMenuItem(
+                                        modifier = Modifier.testTag("detail:hidecheck"),
+                                        text = { Text(text = stringResource(Rd.string.modules_designsystem_hide_checkboxes)) },
+                                        onClick = {
+                                            hideCheckBoxes()
+                                            expandCheck = false
+                                        },
+                                    )
+                                    if (checkNote.isNotEmpty()) {
                                         DropdownMenuItem(
-                                            modifier = Modifier.testTag("detail:hidecheck"),
-                                            text = { Text(text = stringResource(Rd.string.modules_designsystem_hide_checkboxes)) },
+                                            modifier = Modifier.testTag("detail:uncheckall"),
+                                            text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
                                             onClick = {
-                                                hideCheckBoxes()
+                                                unCheckAllItems()
                                                 expandCheck = false
                                             },
                                         )
-                                        if (checkNote.isNotEmpty()) {
-                                            DropdownMenuItem(
-                                                modifier = Modifier.testTag("detail:uncheckall"),
-                                                text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
-                                                onClick = {
-                                                    unCheckAllItems()
-                                                    expandCheck = false
-                                                },
-                                            )
-                                            DropdownMenuItem(
-                                                modifier = Modifier.testTag("detail:deletecheck"),
-                                                text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_checked_items)) },
-                                                onClick = {
-                                                    deleteCheckItems()
-                                                    expandCheck = false
-                                                },
-                                            )
-                                        }
+                                        DropdownMenuItem(
+                                            modifier = Modifier.testTag("detail:deletecheck"),
+                                            text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_checked_items)) },
+                                            onClick = {
+                                                deleteCheckItems()
+                                                expandCheck = false
+                                            },
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-                    if (!notepad.isCheck) {
-                        item {
-                            NoteTextField(
-                                state = content,
-                                placeholder = stringResource(Rd.string.modules_designsystem_subject),
-                                imeAction = ImeAction.None,
-                                keyboardAction = { subjectFocus.freeFocus() },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .imePadding()
-                                    .focusRequester(subjectFocus)
-                                    .testTag("detail:content"),
+                }
+                if (!notepad.isCheck) {
+                    item {
+                        NoteTextField(
+                            state = content,
+                            placeholder = stringResource(Rd.string.modules_designsystem_subject),
+                            imeAction = ImeAction.None,
+                            keyboardAction = { subjectFocus.freeFocus() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .imePadding()
+                                .focusRequester(subjectFocus)
+                                .testTag("detail:content"),
 
-                            )
+                        )
+                    }
+                }
+                if (notepad.isCheck) {
+                    items(notCheckNote, key = { it.id }) {
+                        NoteCheck(
+                            noteCheckUiState = it,
+                            onCheckChange = onCheckChange,
+                            onCheckDelete = onCheckDelete,
+                            onCheck = onCheck,
+                            onNextCheck = addItem,
+                        )
+                    }
+
+                    item {
+                        TextButton(onClick = addItem) {
+                            Icon(imageVector = NoteIcon.Add, contentDescription = "")
+
+                            Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
                         }
                     }
-                    if (notepad.isCheck) {
-                        items(notCheckNote, key = { it.id }) {
+
+                    if (checkNote.isNotEmpty()) {
+                        item {
+                            TextButton(onClick = { showCheckNote = !showCheckNote }) {
+                                Icon(
+                                    imageVector = if (showCheckNote) NoteIcon.More else NoteIcon.Less,
+                                    contentDescription = "",
+                                )
+                                Text(
+                                    text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
+                    }
+
+                    if (showCheckNote) {
+                        items(checkNote, key = { it.id }) {
                             NoteCheck(
                                 noteCheckUiState = it,
                                 onCheckChange = onCheckChange,
                                 onCheckDelete = onCheckDelete,
                                 onCheck = onCheck,
+                                strickText = true,
                                 onNextCheck = addItem,
                             )
                         }
-
-                        item {
-                            TextButton(onClick = addItem) {
-                                Icon(imageVector = NoteIcon.Add, contentDescription = "")
-
-                                Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
-                            }
-                        }
-
-                        if (checkNote.isNotEmpty()) {
-                            item {
-                                TextButton(onClick = { showCheckNote = !showCheckNote }) {
-                                    Icon(
-                                        imageVector = if (showCheckNote)NoteIcon.More else NoteIcon.Less,
-                                        contentDescription = "",
-                                    )
-                                    Text(
-                                        text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                }
-                            }
-                        }
-
-                        if (showCheckNote) {
-                            items(checkNote, key = { it.id }) {
-                                NoteCheck(
-                                    noteCheckUiState = it,
-                                    onCheckChange = onCheckChange,
-                                    onCheckDelete = onCheckDelete,
-                                    onCheck = onCheck,
-                                    strickText = true,
-                                    onNextCheck = addItem,
-                                )
-                            }
-                        }
                     }
-                    itemsIndexed(items = notepad.voices, key = { _, item -> item.id }) { index, item ->
-                        NoteVoicePlayer(
-                            item,
-                            playVoice = { playVoice(index) },
-                            pauseVoice = pauseVoice,
-                            delete = { deleteVoiceNote(index) },
-                            color = sColor,
-                        )
-                    }
-                    items(items = notepad.uris, key = { it.id }) {
-                        NoteUri(uriState = it, sColor)
-                    }
-                    item {
-                        FlowLayout2(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            verticalSpacing = 8.dp,
-                        ) {
-                            notepad.notification?.let {
-                                ReminderCard(
-                                    notification = it,
-                                    color = sColor,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    onClick = showNotificationDialog,
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                            notepad.labels.forEach {
-                                LabelCard(
-                                    name = it.label,
-                                    color = sColor,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    onClick = onLabel,
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                            if (notepad.background > -1 && notepad.color > -1) {
-                                Box(
-                                    modifier = Modifier
-                                        .clickable { onColorClick() }
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .border(1.dp, Color.Gray, CircleShape)
-                                        .size(30.dp),
+                }
+                itemsIndexed(items = notepad.voices, key = { _, item -> item.id }) { index, item ->
+                    NoteVoicePlayer(
+                        item,
+                        playVoice = { playVoice(index) },
+                        pauseVoice = pauseVoice,
+                        delete = { deleteVoiceNote(index) },
+                        color = sColor,
+                    )
+                }
+                items(items = notepad.uris, key = { it.id }) {
+                    NoteUri(uriState = it, sColor)
+                }
+                item {
+                    FlowLayout2(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalSpacing = 8.dp,
+                    ) {
+                        notepad.notification?.let {
+                            ReminderCard(
+                                notification = it,
+                                color = sColor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                onClick = showNotificationDialog,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        notepad.labels.forEach {
+                            LabelCard(
+                                name = it.label,
+                                color = sColor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                onClick = onLabel,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        if (notepad.background > -1 && notepad.color > -1) {
+                            Box(
+                                modifier = Modifier
+                                    .clickable { onColorClick() }
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .border(1.dp, Color.Gray, CircleShape)
+                                    .size(30.dp),
 
-                                )
-                            }
+                            )
                         }
                     }
+                }
 //                item {
 //                    AsyncImage(modifier = Modifier.size(200.dp), model = "https://icon.horse/icon/fb.com", contentDescription = "")
 //                }
-                }
+            }
 
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        modifier = Modifier.testTag("detail:more"),
-                        onClick = { moreOptions() },
-                    ) {
-                        Icon(
-                            imageVector = NoteIcon.AddBox,
-                            contentDescription = "more note",
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.testTag("detail:colors"),
-                        onClick = { onColorClick() },
-                    ) {
-                        Icon(
-                            imageVector = NoteIcon.ColorLens,
-                            contentDescription = "colors",
-                        )
-                    }
-                    Row(
-                        Modifier
-                            .weight(1f)
-                            .padding(end = 32.dp),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDate.myFormat()}",
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.testTag("detail:options"),
-                        onClick = { noteOption() },
-                    ) {
-                        Icon(
-                            imageVector = NoteIcon.MoreVert,
-                            contentDescription = "note options",
-                        )
-                    }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    modifier = Modifier.testTag("detail:more"),
+                    onClick = { moreOptions() },
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.AddBox,
+                        contentDescription = "more note",
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.testTag("detail:colors"),
+                    onClick = { onColorClick() },
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.ColorLens,
+                        contentDescription = "colors",
+                    )
+                }
+                Row(
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 32.dp),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDate.myFormat()}",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.testTag("detail:options"),
+                    onClick = { noteOption() },
+                ) {
+                    Icon(
+                        imageVector = NoteIcon.MoreVert,
+                        contentDescription = "note options",
+                    )
                 }
             }
         }
     }
 }
 
+@SuppressLint("UnusedSharedTransitionModifierParameter")
 @Preview
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun DetailScreenPreview() {
-//    DetailScreen()
+fun EditScreenPreview() {
+    MaterialTheme {
+        SharedTransitionScope {
+            AnimatedVisibility(true) {
+                EditScreen(
+                    notepad = NotePad(
+                        id = 1L,
+                        title = "Sample Note",
+                        detail = "This is a sample note content.",
+                        editDate = LocalDateTime(2023, 1, 15, 10, 30),
+                        isCheck = false,
+                        color = 0,
+                        background = -1,
+                        isPin = false,
+                        focus = false,
+                        notification = null,
+                        noteType = NoteType.NOTE,
+                        images = emptyList(),
+                        voices = emptyList(),
+                        checks = emptyList(),
+                        labels = emptyList(),
+                        uris = emptyList(),
+                    ),
+                    title = TextFieldState("Sample Title"),
+                    content = TextFieldState("Sample Content"),
+                    animatedContentScope = this,
+                )
+            }
+        }
+    }
 }
 
 @Composable
