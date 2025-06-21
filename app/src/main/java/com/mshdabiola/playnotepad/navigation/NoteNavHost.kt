@@ -16,7 +16,7 @@ import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.drawing.drawingScreen
 import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.gallery.GalleryArg
-import com.mshdabiola.gallery.galleryScreen
+import com.mshdabiola.gallery.gallery
 import com.mshdabiola.gallery.navigateToGallery
 import com.mshdabiola.labelscreen.labelScreen
 import com.mshdabiola.main.navigation.FullMainRoute
@@ -57,11 +57,11 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
-                navigateToGallery = { id, index -> navController.navigateToGallery(GalleryArg(id, index)) },
+                navigateToGallery = { id, index,total,currentPath -> navController.navigateToGallery(GalleryArg(id, index,total,currentPath)) },
                 navigateToDrawing = navController::navigateToDrawing,
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
             )
-            galleryScreen(
+            gallery(
                 onBack = navController::popBackStack,
                 sharedTransitionScope = this@SharedTransitionLayout,
             )

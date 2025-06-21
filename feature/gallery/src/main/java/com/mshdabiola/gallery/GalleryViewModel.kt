@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.model.NoteImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -36,7 +37,17 @@ class GalleryViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = GalleryUiState(),
+            initialValue = GalleryUiState(
+                initIndex = galleryArg.index,
+                images = List(galleryArg.total) {
+                    NoteImage(
+                        id = it.toLong(),
+                        path = galleryArg.currentPath,
+                        isDrawing = false,
+                    )
+                }
+
+            ),
         )
 
     suspend fun onImage(path: String) {

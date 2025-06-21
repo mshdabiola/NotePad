@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ShareCompat
@@ -21,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.galleryScreen(
+fun NavGraphBuilder.gallery(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
@@ -34,9 +33,9 @@ fun NavGraphBuilder.galleryScreen(
             galleryUiState.value.images.size
         }
 
-        LaunchedEffect(galleryUiState.value.initIndex) {
-            pagerState.scrollToPage(galleryUiState.value.initIndex)
-        }
+//        LaunchedEffect(galleryUiState.value.initIndex) {
+//            pagerState.scrollToPage(galleryUiState.value.initIndex)
+//        }
 
         val context = LocalContext.current
         val onSend = {
