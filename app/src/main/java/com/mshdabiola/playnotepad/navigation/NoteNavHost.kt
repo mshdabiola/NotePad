@@ -56,7 +56,6 @@ fun NoteNavHost(
             detailScreen(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
-                onShowSnackbar = onShowSnackbar,
                 onBack = navController::popBackStack,
                 navigateToGallery = { navController.navigateToGallery(GalleryArg(it)) },
                 navigateToDrawing = navController::navigateToDrawing,
@@ -64,6 +63,7 @@ fun NoteNavHost(
             )
             galleryScreen(
                 onBack = navController::popBackStack,
+                sharedTransitionScope = this@SharedTransitionLayout,
             )
             aboutScreen(onBack = navController::popBackStack)
             labelScreen(onBack = navController::popBackStack)
