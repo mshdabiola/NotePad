@@ -4,5 +4,5 @@ import com.mshdabiola.model.NoteImage
 
 data class GalleryUiState(
     val images: List<NoteImage> = emptyList(),
-    val currentIndex: Int = 0,
+    val initIndex: Int = 0,
 )

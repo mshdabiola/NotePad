@@ -20,14 +20,16 @@ class GalleryViewModel @Inject constructor(
     private val imageToText: ImageToText,
 ) : ViewModel() {
 
-    private val id = savedStateHandle.toRoute<GalleryArg>().id
+    private val galleryArg = savedStateHandle.toRoute<GalleryArg>()
     val galleryUiState = notepadRepository
-        .getOneNotePad(id)
+        .getOneNotePad(galleryArg.id)
         .mapLatest { note ->
             GalleryUiState(
+                initIndex = galleryArg.index,
                 images = note
                     ?.images
                     ?.filter { !it.isDrawing }
+                    ?.reversed()
                     ?: emptyList(),
             )
         }
@@ -46,7 +48,7 @@ class GalleryViewModel @Inject constructor(
                 e.printStackTrace()
                 ""
             }
-            var note = notepadRepository.getOneNotePad(id).first()!!
+            var note = notepadRepository.getOneNotePad(galleryArg.id).first()!!
             note =
                 note.copy(detail = "${note.detail}\n$text")
             notepadRepository.upsert(note)

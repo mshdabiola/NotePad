@@ -3,4 +3,4 @@ package com.mshdabiola.gallery
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GalleryArg(val id: Long)
+data class GalleryArg(val id: Long, val index: Int)
