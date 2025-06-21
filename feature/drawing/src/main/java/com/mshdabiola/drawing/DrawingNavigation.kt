@@ -53,8 +53,8 @@ fun NavGraphBuilder.drawingScreen(
     }
 }
 
-fun NavController.navigateToDrawing(noteId: Long, imageId: Long) {
-    navigate(DrawingArgs(noteId, imageId))
+fun NavController.navigateToDrawing(drawingArgs: DrawingArgs) {
+    navigate(drawingArgs)
 }
 
 @Serializable
