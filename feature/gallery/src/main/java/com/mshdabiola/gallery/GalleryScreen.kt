@@ -39,7 +39,7 @@ import com.mshdabiola.designsystem.R as Rd
 @Composable
 fun SharedTransitionScope.GalleryScreen(
     galleryUiState: GalleryUiState,
-    pagerState: PagerState = rememberPagerState() { 2 },
+    pagerState: PagerState,
     animatedContentScope: AnimatedVisibilityScope,
     onBack: () -> Unit = {},
     onToText: (String) -> Unit = {},
@@ -71,7 +71,7 @@ fun SharedTransitionScope.GalleryScreen(
                     ZoomableAsyncImage(
                         modifier = Modifier
                             .sharedElement(
-                                sharedContentState = rememberSharedContentState("image_${image.id}"),
+                                sharedContentState = rememberSharedContentState("image_$it"),
                                 animatedVisibilityScope = animatedContentScope,
                             )
                             .fillMaxSize(),

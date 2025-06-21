@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ShareCompat
@@ -29,9 +30,14 @@ fun NavGraphBuilder.galleryScreen(
         FirebaseScreenLog(screen = "gallery_screen")
         val viewModel = hiltViewModel<GalleryViewModel>()
         val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
-        val pagerState = rememberPagerState(galleryUiState.value.currentIndex) {
+        val pagerState = rememberPagerState(galleryUiState.value.initIndex) {
             galleryUiState.value.images.size
         }
+
+        LaunchedEffect(galleryUiState.value.initIndex) {
+            pagerState.scrollToPage(galleryUiState.value.initIndex)
+        }
+
         val context = LocalContext.current
         val onSend = {
             val index = pagerState.currentPage
@@ -65,6 +71,7 @@ fun NavGraphBuilder.galleryScreen(
         }
         sharedTransitionScope.GalleryScreen(
             animatedContentScope = this,
+            pagerState = pagerState,
             galleryUiState = galleryUiState.value,
             onBack = onBack,
             onToText = {
