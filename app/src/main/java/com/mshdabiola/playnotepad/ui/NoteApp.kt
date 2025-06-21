@@ -36,6 +36,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -49,6 +50,7 @@ import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
+import com.mshdabiola.drawing.DrawingArgs
 import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
@@ -74,6 +76,7 @@ fun NoteApp(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
+    val resources = LocalResources.current
 
     NoteBackground(modifier = modifier) {
         NoteGradientBackground(
@@ -157,12 +160,21 @@ fun NoteApp(
                                     showImage = true
                                 },
                                 onAddDrawNote = {
+                                    val width = resources.displayMetrics.widthPixels
+                                    val height = resources.displayMetrics.heightPixels
+                                    val density = resources.displayMetrics.density
+
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewDrawing()
                                         appState.navController.navigateToDetail(DetailArg(id.first, -1, -1))
                                         appState.navController.navigateToDrawing(
-                                            id.first,
-                                            id.second,
+                                            DrawingArgs(
+                                                id.first,
+                                                id.second,
+                                                width,
+                                                height,
+                                                density,
+                                            ),
                                         )
                                     }
                                 },
