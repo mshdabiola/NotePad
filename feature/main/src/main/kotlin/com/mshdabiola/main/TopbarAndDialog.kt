@@ -350,28 +350,30 @@ fun MainTopBar(
         scrollBehavior = scrollBehavior,
         navigationIcon = navigationAction,
         title = {
-            if (noteDisplayCategory.noteType == NoteType.NOTE) {
-                OutlinedCard(
-                    onClick = onSearchClick,
-                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                ) {
-                    Box(
-                        modifier = Modifier.padding(
-                            horizontal = 64.dp,
-
-                            vertical = 4.dp,
-                        ),
-                        contentAlignment = Alignment.Center,
+            when {
+                selectState != null -> {}
+                noteDisplayCategory.noteType == NoteType.NOTE -> {
+                    OutlinedCard(
+                        onClick = onSearchClick,
+                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                     ) {
-                        Text(
-                            style = MaterialTheme.typography.labelLarge,
+                        Box(
+                            modifier = Modifier.padding(
+                                horizontal = 64.dp,
 
-                            text = stringResource(Rd.string.modules_designsystem_search_note),
-                        )
+                                vertical = 4.dp,
+                            ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                style = MaterialTheme.typography.labelLarge,
+
+                                text = stringResource(Rd.string.modules_designsystem_search_note),
+                            )
+                        }
                     }
                 }
-            } else {
-                Text(text = label)
+                else -> Text(text = label)
             }
         },
         subtitle = {},
