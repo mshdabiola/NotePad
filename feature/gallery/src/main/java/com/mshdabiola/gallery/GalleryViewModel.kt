@@ -45,7 +45,7 @@ class GalleryViewModel @Inject constructor(
                         path = galleryArg.currentPath,
                         isDrawing = false,
                     )
-                }
+                },
 
             ),
         )
