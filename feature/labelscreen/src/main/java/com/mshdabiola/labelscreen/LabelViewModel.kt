@@ -1,9 +1,7 @@
 package com.mshdabiola.labelscreen
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,12 +14,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,10 +28,8 @@ class LabelViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-
     private val labelArg = savedStateHandle.toRoute<LabelArg>()
     private val newLabel = MutableStateFlow(LabelState())
-
 
     val labels = labelRepository
         .getAllLabels()
@@ -51,19 +44,21 @@ class LabelViewModel @Inject constructor(
             isEditMode = labelArg.isEditMode,
         )
     }
-
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = LabelUiState(),
         )
 
-
-    fun save(index: Int) {
+    fun onAddNew(index: Int) {
         viewModelScope.launch {
-            labelRepository.upsert(listOf(labelUiState.value.labels[index].toLabel()))
+            if (index == -1) {
+                newLabel.value = LabelState()
+                labelRepository.upsert(listOf(labelUiState.value.newLabel.toLabel()))
+            } else {
+                labelRepository.upsert(listOf(labelUiState.value.labels[index].toLabel()))
+            }
         }
-
     }
 
     fun onDelete(id: Long) {
@@ -71,17 +66,8 @@ class LabelViewModel @Inject constructor(
             val noteDisplayCategory = userDataRepository.userData.first().noteDisplayCategory
             if (noteDisplayCategory.noteType == NoteType.LABEL && noteDisplayCategory.labelId == id) {
                 userDataRepository.setMainData(NoteDisplayCategory())
-
             }
             labelRepository.delete(id)
         }
     }
-
-    fun onAddNew() {
-        viewModelScope.launch {
-            newLabel.value = LabelState()
-            labelRepository.upsert(listOf(labelUiState.value.newLabel.toLabel()))
-        }
-    }
-
 }
