@@ -1,8 +1,7 @@
 package com.mshdabiola.selectlabelscreen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.state.ToggleableState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -13,8 +12,13 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,40 +29,63 @@ class LabelViewModel @Inject constructor(
     private val notePadRepository: INotePadRepository,
 ) : ViewModel() {
 
-    var labelScreenUiState by mutableStateOf(LabelScreenUiState())
-
-    private var list: List<LabelUiState> = emptyList()
     private val labelsArgs = savedStateHandle.toRoute<LabelsArgs>()
     private val ids = labelsArgs.ids.split(",")
         .map { it.toLong() }
         .toSet()
 
-    init {
-        viewModelScope.launch {
-        }
-        viewModelScope.launch {
-            updateList()
-        }
-    }
+    private val notePadLabels = notePadRepository
+        .getNotePadsByIds(ids)
+        .mapLatest { note -> note.map { it.labels } }
+    private val labels = labelRepository
+        .getAllLabels()
+    private val initLabelState = LabelUiState()
 
-    fun onCheckClick(id: Long) {
-        val labels = labelScreenUiState.labels.toMutableList()
-        val index = labels.indexOfFirst { it.id == id }
+    @OptIn(FlowPreview::class)
+    val labelUiState = combine(
+        snapshotFlow { initLabelState.labelQuery.text }
+            .debounce(500),
+        notePadLabels,
+        labels,
+    ) { query, notePadLabels, labels ->
+        val labelsCount = notePadLabels
+            .flatten().groupingBy { it.id }.eachCount()
+        val labelStates = labels.map {
+            val state = when (labelsCount[it.id]) {
+                ids.size -> ToggleableState.On
+                null -> ToggleableState.Off
+                else -> ToggleableState.Indeterminate
+            }
+            LabelState(it.id, it.label, state)
+        }
+        var showAddLabel = false
+        val list = if (query.isBlank()) {
+            labelStates
+        } else {
+            showAddLabel = labels.any { it.label == query }
+            labelStates.filter { it.label.contains(query) }
+        }
+
+        LabelUiState(list, initLabelState.labelQuery, showAddLabel)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = initLabelState,
+        )
+
+    fun onCheckClick(index: Int) {
+        val labels = labelUiState.value.labels
         var label = labels[index]
 
         if (label.toggleableState == ToggleableState.Off || label.toggleableState == ToggleableState.Indeterminate) {
             label = label.copy(toggleableState = ToggleableState.On)
-            labels[index] = label
-            labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
-
             val labelsList = ids.map { NoteLabel(noteId = it, labelId = label.id) }
             viewModelScope.launch {
                 labelRepository.upsertNoteLabel(labelsList)
             }
         } else {
             label = label.copy(toggleableState = ToggleableState.Off)
-            labels[index] = label
-            labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
 
             viewModelScope.launch {
                 labelRepository.deleteNoteLabel(ids, label.id)
@@ -66,57 +93,65 @@ class LabelViewModel @Inject constructor(
         }
     }
 
-    fun onSearchChange(text: String) {
-        if (text.isBlank()) {
-            labelScreenUiState =
-                labelScreenUiState.copy(
-                    editText = text,
-                )
-            viewModelScope.launch {
-                updateList()
-            }
-        } else {
-            val labels = list.filter { it.label.contains(text) }
-
-            val haveSameText = list.any { it.label == text }
-            labelScreenUiState =
-                labelScreenUiState.copy(
-                    editText = text,
-                    labels = labels.toImmutableList(),
-                    showAddLabel = haveSameText.not(),
-                )
-        }
-    }
-
-    private suspend fun updateList() {
-        val labelsCount = ids.map {
-            notePadRepository.getOneNotePad(it).first()!!.labels
-        }
-            .flatten().groupingBy { it.id }.eachCount()
-
-        val labels = labelRepository.getAllLabels().first().map {
-            val state = when (labelsCount[it.id]) {
-                ids.size -> ToggleableState.On
-                null -> ToggleableState.Off
-                else -> ToggleableState.Indeterminate
-            }
-            it.toLabelUiState().copy(toggleableState = state)
-        }
-        list = labels
-
-        labelScreenUiState = labelScreenUiState.copy(
-            showAddLabel = false,
-            labels = labels.toImmutableList(),
-            editText = "",
-        )
-    }
+//    fun onSearchChange(text: String) {
+//        if (text.isBlank()) {
+//            labelScreenUiState =
+//                labelScreenUiState.copy(
+//                    editText = text,
+//                )
+//            viewModelScope.launch {
+//                updateList()
+//            }
+//        } else {
+//            val labels = list.filter { it.label.contains(text) }
+//
+//            val haveSameText = list.any { it.label == text }
+//            labelScreenUiState =
+//                labelScreenUiState.copy(
+//                    editText = text,
+//                    labels = labels.toImmutableList(),
+//                    showAddLabel = haveSameText.not(),
+//                )
+//        }
+//    }
+//
+//    private suspend fun updateList() {
+//        val labelsCount = ids.map {
+//            notePadRepository.getOneNotePad(it).first()!!.labels
+//        }
+//            .flatten().groupingBy { it.id }.eachCount()
+//
+//        val labels = labelRepository.getAllLabels().first().map {
+//            val state = when (labelsCount[it.id]) {
+//                ids.size -> ToggleableState.On
+//                null -> ToggleableState.Off
+//                else -> ToggleableState.Indeterminate
+//            }
+//            it.toLabelUiState().copy(toggleableState = state)
+//        }
+//        list = labels
+//
+//        labelScreenUiState = labelScreenUiState.copy(
+//            showAddLabel = false,
+//            labels = labels.toImmutableList(),
+//            editText = "",
+//        )
+//    }
 
     fun onCreateLabel() {
         viewModelScope.launch {
-            val id = (list.lastOrNull()?.id ?: -1) + 1
-            labelRepository.upsert(listOf(Label(id, labelScreenUiState.editText)))
-            updateList()
-            onCheckClick(id)
+            val size = labels.first().size
+            val ids = labelRepository.upsert(
+                listOf(
+                    Label(
+                        -1,
+                        labelUiState.value.labelQuery.text.toString(),
+                    ),
+                ),
+            )
+            println("labels ids $ids")
+            labelUiState.value.labelQuery.clearText()
+            onCheckClick(size)
         }
     }
 }
