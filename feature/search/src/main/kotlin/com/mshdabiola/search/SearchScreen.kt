@@ -79,7 +79,7 @@ internal fun SharedTransitionScope.SearchScreen(
     searchState: SearchState = SearchState.Select(),
     onBack: () -> Unit = {},
     onSetSearch: (SearchSort?) -> Unit = {},
-    onNoteClick: (Long) -> Unit = {},
+    onNoteClick: (Long, Int, Int) -> Unit = { _, _, _ -> },
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 

@@ -57,7 +57,7 @@ fun SharedTransitionScope.NoteCard(
     notePad: NotePad,
     isSelect: Boolean = false,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onCardClick: (Long) -> Unit = {},
+    onCardClick: (Long, Int, Int) -> Unit = { _, _, _ -> },
     onLongClick: (Long) -> Unit = {},
     type: String = "note",
 ) {
@@ -102,8 +102,8 @@ fun SharedTransitionScope.NoteCard(
                 animatedVisibilityScope = animatedVisibilityScope,
             )
             .combinedClickable(
-                onClick = { notePad.id.let { onCardClick(it) } },
-                onLongClick = { notePad.id.let { onLongClick(it) } },
+                onClick = { onCardClick(notePad.id, notePad.color, notePad.background) },
+                onLongClick = { onLongClick(notePad.id) },
             ),
         border = if (isSelect) {
             BorderStroke(3.dp, Color.Blue)

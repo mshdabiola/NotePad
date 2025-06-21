@@ -44,7 +44,7 @@ fun NavGraphBuilder.mainScreen(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     onShowSnack: suspend (String, String?) -> Boolean,
-    navigateToDetail: (Long) -> Unit,
+    navigateToDetail: (Long, Int, Int) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
     onOpenDrawer: () -> Unit,
     navigateToSearch: () -> Unit,

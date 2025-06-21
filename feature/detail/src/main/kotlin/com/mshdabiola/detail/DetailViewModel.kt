@@ -54,6 +54,7 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
+    val detailArg = savedStateHandle.toRoute<DetailArg>()
     val notificationUiState = NotificationUiState(
         currentDateTime = LocalDateTime(2026, 6, 16, 22, 1),
         currentInterval = NotificationInterval.Daily(
@@ -62,14 +63,20 @@ class DetailViewModel @Inject constructor(
         currentPlace = NotificationPlace.Home,
 
     )
-    private val currentNoteId = MutableStateFlow(savedStateHandle.toRoute<DetailArg>().id)
+    private val currentNoteId = MutableStateFlow(detailArg.id)
 
     private val currentNote = currentNoteId
         .flatMapLatest { ll ->
             notePadRepository
                 .getOneNotePad(ll)
         }
-    private val initState = DetailState()
+    private val initState = DetailState(
+        notePad = NotePad(
+            id = detailArg.id,
+            color = detailArg.colorIndex,
+            background = detailArg.background,
+        ),
+    )
 
     private var initTitle = false
     val detailState = combine(

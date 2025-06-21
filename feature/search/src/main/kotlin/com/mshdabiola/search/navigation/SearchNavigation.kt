@@ -29,7 +29,7 @@ fun NavGraphBuilder.search(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     onBack: () -> Unit,
-    navigateToDetail: (Long) -> Unit = {},
+    navigateToDetail: (Long, Int, Int) -> Unit = { _, _, _ -> },
 
 ) {
     composable(

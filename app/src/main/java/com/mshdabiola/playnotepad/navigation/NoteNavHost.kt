@@ -46,7 +46,7 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onShowSnack = onShowSnackbar,
-                navigateToDetail = { navController.navigateToDetail(DetailArg(it)) },
+                navigateToDetail = { id, colorIndex, background -> navController.navigateToDetail(DetailArg(id, colorIndex, background)) },
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
                 onOpenDrawer = {
                     appState.openDrawer()
@@ -78,7 +78,7 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
-                navigateToDetail = { navController.navigateToDetail(DetailArg(it)) },
+                navigateToDetail = { id, colorIndex, background -> navController.navigateToDetail(DetailArg(id, colorIndex, background)) },
 
             )
         }

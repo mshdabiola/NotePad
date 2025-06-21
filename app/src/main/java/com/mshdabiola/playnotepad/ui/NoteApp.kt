@@ -141,7 +141,7 @@ fun NoteApp(
                                 onAddNewNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewNote()
-                                        appState.navController.navigateToDetail(DetailArg(id))
+                                        appState.navController.navigateToDetail(DetailArg(id, -1, -1))
                                     }
                                 },
                                 onAddVoiceNote = {
@@ -150,7 +150,7 @@ fun NoteApp(
                                 onAddCheckNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewCheckNote()
-                                        appState.navController.navigateToDetail(DetailArg(id))
+                                        appState.navController.navigateToDetail(DetailArg(id, -1, -1))
                                     }
                                 },
                                 onAddImageNote = {
@@ -159,7 +159,7 @@ fun NoteApp(
                                 onAddDrawNote = {
                                     appState.coroutineScope.launch {
                                         val id = viewModel.insertNewDrawing()
-                                        appState.navController.navigateToDetail(DetailArg(id.first))
+                                        appState.navController.navigateToDetail(DetailArg(id.first, -1, -1))
                                         appState.navController.navigateToDrawing(
                                             id.first,
                                             id.second,
@@ -201,7 +201,7 @@ fun NoteApp(
                 output = { uri, text ->
                     appState.coroutineScope.launch {
                         val id = viewModel.insertNewAudioNote(uri, text)
-                        appState.navController.navigateToDetail(DetailArg(id))
+                        appState.navController.navigateToDetail(DetailArg(id, -1, -1))
                     }
                 },
 
@@ -213,7 +213,7 @@ fun NoteApp(
                 saveImage = {
                     appState.coroutineScope.launch {
                         val id = viewModel.insertNewImageNote(it)
-                        appState.navController.navigateToDetail(DetailArg(id))
+                        appState.navController.navigateToDetail(DetailArg(id, -1, -1))
                     }
                 },
             )
