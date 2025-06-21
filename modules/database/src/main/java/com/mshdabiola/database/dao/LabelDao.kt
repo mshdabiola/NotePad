@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LabelDao {
     @Upsert
-    suspend fun upsert(labelEntity: List<LabelEntity>)
+    suspend fun upsert(labelEntity: List<LabelEntity>): List<Long>
 
     @Query("DELETE FROM label_table WHERE id = :id")
     suspend fun delete(id: Long)
