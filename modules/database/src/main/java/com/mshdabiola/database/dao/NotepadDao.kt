@@ -24,4 +24,8 @@ interface NotepadDao {
     @Transaction
     @Query("SELECT * FROM note_table WHERE id = :noteId")
     fun getOneNotePad(noteId: Long): Flow<NotePadEntity?>
+
+    @Transaction
+    @Query("SELECT * FROM note_table WHERE id IN (:ids)") // Use IN operator and match parameter name
+    fun getByIds(ids: Set<Long>): Flow<List<NotePadEntity>> // Define a return type
 }
