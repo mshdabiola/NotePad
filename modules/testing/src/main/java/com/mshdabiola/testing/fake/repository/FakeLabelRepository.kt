@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FakeLabelRepository @Inject constructor() : ILabelRepository {
-    override suspend fun upsert(labels: List<Label>) {
+    override suspend fun upsert(labels: List<Label>): List<Long> {
     }
 
     override suspend fun upsertNoteLabel(notelabels: List<NoteLabel>) {
