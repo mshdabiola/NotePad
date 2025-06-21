@@ -3,12 +3,17 @@ package com.mshdabiola.labelscreen
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,41 +25,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.ui.FirebaseScreenLog
-import kotlinx.collections.immutable.toImmutableList
 import com.mshdabiola.designsystem.R as Rd
-
-@Composable
-fun LabelScreen(onBack: () -> Unit, labelViewModel: LabelViewModel = hiltViewModel()) {
-    FirebaseScreenLog(screen = "label_screen")
-    LabelScreen(
-        labelScreenUiState = labelViewModel.labelScreenUiState,
-        onBack = onBack,
-        onLabelChange = labelViewModel::onLabelChange,
-        onDelete = labelViewModel::onDelete,
-        onAddLabelChange = labelViewModel::onAddLabelChange,
-        onAddLabelDone = labelViewModel::onAddLabelDone,
-        onAddDelete = labelViewModel::onAddDeleteValue,
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelScreen(
-    labelScreenUiState: LabelScreenUiState,
+    labelUiState: LabelUiState,
     onBack: () -> Unit = {},
-    onLabelChange: (String, Long) -> Unit = { _, _ -> },
     onDelete: (Long) -> Unit = {},
-    onAddLabelChange: (String) -> Unit = {},
-    onAddLabelDone: () -> Unit = {},
-    onAddDelete: () -> Unit = {},
+    onAdd: (Int) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -74,30 +59,47 @@ fun LabelScreen(
         LazyColumn(Modifier.padding(paddingValues)) {
             item {
                 EditLabelTextField(
-                    value = labelScreenUiState.editText,
-                    isEditMode = labelScreenUiState.isEditMode,
-                    errorOccur = labelScreenUiState.errorOccur,
-                    onValueChange = onAddLabelChange,
-                    onAddLabelDone = onAddLabelDone,
-                    onAddDelete = onAddDelete,
+                    labelState = labelUiState.newLabel,
+                    isEditMode = labelUiState.isEditMode,
+                    onAdd = { onAdd(-1) },
                 )
             }
 
-            items(labelScreenUiState.labels, key = { it.id }) {
-                LabelTextField(it, onLabelChange, onDelete)
+            itemsIndexed(labelUiState.labels, key = { index, item -> item.id }) { index, item ->
+                LabelTextField(
+                    labelState = item,
+                    onAdd = { onAdd(index) },
+                    onDelete = { onDelete(item.id) },
+
+                )
             }
         }
     }
 }
 
+@Preview
+@Composable
+fun LabelScreenPreview() {
+    val labelUiState = LabelUiState(
+        labels = listOf(
+            LabelState(1, TextFieldState("Java")),
+            LabelState(2, TextFieldState("Kotlin")),
+            LabelState(3, TextFieldState("Python")),
+            LabelState(4, TextFieldState("C sharper")),
+            LabelState(5, TextFieldState("JavaScript")),
+
+        ),
+        newLabel = LabelState(-1, TextFieldState("new")),
+        isEditMode = false,
+    )
+    LabelScreen(labelUiState = labelUiState, onBack = {}, onDelete = {}, onAdd = {})
+}
+
 @Composable
 fun EditLabelTextField(
-    value: String,
-    isEditMode: Boolean,
-    errorOccur: Boolean,
-    onValueChange: (String) -> Unit,
-    onAddLabelDone: () -> Unit,
-    onAddDelete: () -> Unit,
+    labelState: LabelState,
+    isEditMode: Boolean = false,
+    onAdd: () -> Unit = { },
 ) {
     val focusRequester by remember {
         mutableStateOf(FocusRequester())
@@ -118,22 +120,21 @@ fun EditLabelTextField(
             }
         },
     )
-    NoteTextField(
+    TextField(
         modifier =
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { isFocus = it.isFocused },
-        text = value,
-        onTextChange = onValueChange,
-        placeholder = stringResource(Rd.string.modules_designsystem_create_new_label),
-        supportingText = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "",
-        isError = errorOccur,
+        state = labelState.label,
+        placeholder = { Text(stringResource(Rd.string.modules_designsystem_create_new_label)) },
+//        supportingText = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "",
+//        isError = errorOccur,
         leadingIcon = {
             if (isFocus) {
                 IconButton(
                     onClick = {
-                        onAddDelete()
+                        labelState.label.clearText()
                         focusRequester.freeFocus()
                     },
                 ) {
@@ -144,19 +145,30 @@ fun EditLabelTextField(
             }
         },
         trailingIcon = {
-            IconButton(onClick = { onAddLabelDone() }) {
-                Icon(imageVector = NoteIcon.Done, contentDescription = "add")
+            if (labelState.label.text.isNotBlank()) {
+                IconButton(onClick = { onAdd() }) {
+                    Icon(imageVector = NoteIcon.Done, contentDescription = "add")
+                }
             }
         },
-        keyboardAction = { onAddLabelDone() },
-        imeAction = ImeAction.Done,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        onKeyboardAction = {
+            onAdd()
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
     )
 }
 
 @Composable
 fun LabelTextField(
-    labelUiState: LabelUiState,
-    onValue: (String, Long) -> Unit = { _, _ -> },
+    labelState: LabelState,
+    onAdd: () -> Unit = { },
     onDelete: (Long) -> Unit = {},
 ) {
     val focusRequester by remember {
@@ -166,49 +178,49 @@ fun LabelTextField(
         mutableStateOf(false)
     }
     val focusManager = LocalFocusManager.current
-    NoteTextField(
+    TextField(
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { focusState -> isFocus = focusState.isFocused },
-        text = labelUiState.label,
-        onTextChange = { onValue(it, labelUiState.id) },
+        state = labelState.label,
         leadingIcon = {
             if (isFocus) {
-                IconButton(onClick = { onDelete(labelUiState.id) }) {
-                    Icon(imageVector = NoteIcon.Delete, contentDescription = "add")
+                IconButton(onClick = { onDelete(labelState.id) }) {
+                    Icon(imageVector = NoteIcon.Delete, contentDescription = "delete")
                 }
             } else {
-                Icon(imageVector = NoteIcon.Label, contentDescription = "add")
+                Icon(imageVector = NoteIcon.Label, contentDescription = "label")
             }
         },
         trailingIcon = {
             if (isFocus) {
-                IconButton(onClick = { focusManager.clearFocus() }) {
-                    Icon(imageVector = NoteIcon.Done, contentDescription = "add")
+                if (labelState.label.text.isNotBlank()) {
+                    IconButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            onAdd()
+                        },
+                    ) {
+                        Icon(imageVector = NoteIcon.Done, contentDescription = "add")
+                    }
                 }
             } else {
                 IconButton(onClick = { focusRequester.requestFocus() }) {
-                    Icon(imageVector = NoteIcon.Edit, contentDescription = "add")
+                    Icon(imageVector = NoteIcon.Edit, contentDescription = "edit")
                 }
             }
         },
-        imeAction = ImeAction.Done,
-        keyboardAction = { focusManager.clearFocus() },
-    )
-}
-
-@Preview
-@Composable
-fun LabelScreenPreview() {
-    LabelScreen(
-        labelScreenUiState =
-        LabelScreenUiState(
-            labels = listOf(
-                LabelUiState(id = 124L, label = "Tabatha"),
-                LabelUiState(id = 3724L, label = "Vicent"),
-                LabelUiState(id = 1958L, label = "Isabelle"),
-            ).toImmutableList(),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        onKeyboardAction = {
+            focusManager.clearFocus()
+            onAdd()
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
         ),
     )
 }

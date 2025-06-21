@@ -4,14 +4,12 @@ import androidx.compose.foundation.text.input.TextFieldState
 import com.mshdabiola.model.Label
 
 data class LabelState(
-    val id: Long=-1,
-    val label: TextFieldState= TextFieldState(),
+    val id: Long = -1,
+    val label: TextFieldState = TextFieldState(),
 )
 
 fun Label.toLabelState() = LabelState(this.id, TextFieldState(this.label))
-fun LabelState.toLabel() = Label(id, label.toString())
-
-
+fun LabelState.toLabel() = Label(id, label.text.toString())
 
 data class LabelUiState(
     val labels: List<LabelState> = emptyList(),
