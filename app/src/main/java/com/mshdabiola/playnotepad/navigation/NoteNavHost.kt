@@ -57,7 +57,7 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
-                navigateToGallery = { navController.navigateToGallery(GalleryArg(it)) },
+                navigateToGallery = { id, index -> navController.navigateToGallery(GalleryArg(id, index)) },
                 navigateToDrawing = navController::navigateToDrawing,
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
             )
