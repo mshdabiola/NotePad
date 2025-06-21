@@ -18,7 +18,7 @@ import com.mshdabiola.drawing.navigateToDrawing
 import com.mshdabiola.gallery.GalleryArg
 import com.mshdabiola.gallery.gallery
 import com.mshdabiola.gallery.navigateToGallery
-import com.mshdabiola.labelscreen.labelScreen
+import com.mshdabiola.labelscreen.label
 import com.mshdabiola.main.navigation.FullMainRoute
 import com.mshdabiola.main.navigation.mainScreen
 import com.mshdabiola.playnotepad.ui.NoteAppState
@@ -57,7 +57,7 @@ fun NoteNavHost(
                 modifier = Modifier,
                 sharedTransitionScope = this@SharedTransitionLayout,
                 onBack = navController::popBackStack,
-                navigateToGallery = { id, index,total,currentPath -> navController.navigateToGallery(GalleryArg(id, index,total,currentPath)) },
+                navigateToGallery = { id, index, total, currentPath -> navController.navigateToGallery(GalleryArg(id, index, total, currentPath)) },
                 navigateToDrawing = navController::navigateToDrawing,
                 navigateToSelectLevel = appState.navController::navigateToSelectLabel,
             )
@@ -66,7 +66,7 @@ fun NoteNavHost(
                 sharedTransitionScope = this@SharedTransitionLayout,
             )
             aboutScreen(onBack = navController::popBackStack)
-            labelScreen(onBack = navController::popBackStack)
+            label(onBack = navController::popBackStack)
             selectLabelScreen(onBack = navController::popBackStack)
             drawingScreen(onBack = navController::popBackStack)
             settingScreen(
