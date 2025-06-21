@@ -20,8 +20,8 @@ internal class LabelRepository
     private val noteLabelDao: NoteLabelDao,
 ) : ILabelRepository {
 
-    override suspend fun upsert(labels: List<Label>) = withContext(Dispatchers.IO) {
-        labelDao.upsert(labels.map { it.toLabelEntity() })
+    override suspend fun upsert(labels: List<Label>): List<Long> = withContext(Dispatchers.IO) {
+        return@withContext labelDao.upsert(labels.map { it.toLabelEntity() })
     }
 
     override suspend fun upsertNoteLabel(notelabels: List<NoteLabel>) {

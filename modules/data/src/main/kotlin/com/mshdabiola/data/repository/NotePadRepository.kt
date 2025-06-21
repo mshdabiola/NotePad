@@ -127,6 +127,10 @@ internal class NotePadRepository
     override fun getNotePads() = notePadDao
         .getListOfNotePad().map { entities -> entities.map { transform(it.toNotePad()) } }
 
+    override fun getNotePadsByIds(ids: Set<Long>): Flow<List<NotePad>> {
+        return notePadDao.getByIds(ids).map { entities -> entities.map { transform(it.toNotePad()) } }
+    }
+
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
     override fun getOneNotePad(id: Long): Flow<NotePad?> {

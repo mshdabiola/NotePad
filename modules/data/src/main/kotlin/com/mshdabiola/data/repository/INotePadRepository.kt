@@ -17,6 +17,7 @@ interface INotePadRepository {
 
     fun getNotePadsWithMainData(noteDisplayCategory: NoteDisplayCategory): Flow<List<NotePad>>
     fun getNotePads(): Flow<List<NotePad>>
+    fun getNotePadsByIds(ids: Set<Long>): Flow<List<NotePad>>
 
     //    fun getNote() = generalDao.getNote().map { noteEntities -> noteEntities.map { it.toNote() } }
 //
