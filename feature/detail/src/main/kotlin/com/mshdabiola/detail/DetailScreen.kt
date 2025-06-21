@@ -121,7 +121,7 @@ fun SharedTransitionScope.EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long) -> Unit = {},
+    navigateToGallery: (Long, Int) -> Unit = { _, _ -> },
     navigateToDrawing: (Long) -> Unit = {},
 ) {
     var expandCheck by remember {
@@ -258,18 +258,18 @@ fun SharedTransitionScope.EditScreen(
                                     .fillMaxWidth()
                                     .height(200.dp),
                             ) {
-                                imageList.forEach {
+                                imageList.forEachIndexed { index, it ->
                                     AsyncImage(
                                         modifier = Modifier
                                             .clickable {
                                                 if (it.isDrawing) {
                                                     navigateToDrawing(it.id)
                                                 } else {
-                                                    navigateToGallery(notepad.id)
+                                                    navigateToGallery(notepad.id, index)
                                                 }
                                             }
                                             .sharedElement(
-                                                sharedContentState = rememberSharedContentState("image_${it.id}"),
+                                                sharedContentState = rememberSharedContentState("image_$index"),
                                                 animatedVisibilityScope = animatedContentScope,
 
                                             )

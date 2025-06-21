@@ -47,7 +47,7 @@ fun NavController.navigateToDetail(
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.detailScreen(
     onBack: () -> Unit,
-    navigateToGallery: (Long) -> Unit,
+    navigateToGallery: (Long, Int) -> Unit,
     navigateToDrawing: (Long, Long) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
