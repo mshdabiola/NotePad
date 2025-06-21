@@ -268,6 +268,11 @@ fun SharedTransitionScope.EditScreen(
                                                     navigateToGallery(notepad.id)
                                                 }
                                             }
+                                            .sharedElement(
+                                                sharedContentState = rememberSharedContentState("image_${it.id}"),
+                                                animatedVisibilityScope = animatedContentScope,
+
+                                            )
                                             .weight(1f)
                                             .height(200.dp),
                                         model = it.path,

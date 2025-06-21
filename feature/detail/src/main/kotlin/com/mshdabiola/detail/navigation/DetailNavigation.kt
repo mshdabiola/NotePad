@@ -46,7 +46,6 @@ fun NavController.navigateToDetail(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.detailScreen(
-    onShowSnackbar: suspend (String, String?) -> Boolean,
     onBack: () -> Unit,
     navigateToGallery: (Long) -> Unit,
     navigateToDrawing: (Long, Long) -> Unit,
