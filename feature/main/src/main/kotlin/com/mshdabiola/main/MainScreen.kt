@@ -60,7 +60,7 @@ internal fun SharedTransitionScope.MainScreen(
     modifier: Modifier = Modifier, // Add default modifier
     animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
-    navigateToNoteEditor: (Long) -> Unit = {},
+    navigateToNoteEditor: (Long, Int, Int) -> Unit = { _, _, _ -> },
     onNoteSelected: (Long) -> Unit = {},
 
     onDisplayModeChange: () -> Unit = {},
@@ -100,11 +100,11 @@ internal fun SharedTransitionScope.MainScreen(
         }
 
         is MainState.Success -> {
-            val onNoteClick: (Long) -> Unit = {
+            val onNoteClick: (Long, Int, Int) -> Unit = { id, colorIndex, background ->
                 if (mainState.selectState != null) {
-                    onNoteSelected(it)
+                    onNoteSelected(id)
                 } else {
-                    navigateToNoteEditor(it)
+                    navigateToNoteEditor(id, colorIndex, background)
                 }
             }
             Scaffold(
