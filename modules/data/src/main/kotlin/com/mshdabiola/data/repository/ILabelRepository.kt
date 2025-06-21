@@ -5,7 +5,7 @@ import com.mshdabiola.model.NoteLabel
 import kotlinx.coroutines.flow.Flow
 
 interface ILabelRepository {
-    suspend fun upsert(labels: List<Label>)
+    suspend fun upsert(labels: List<Label>): List<Long>
     suspend fun upsertNoteLabel(notelabels: List<NoteLabel>)
     fun getNoteLabel(id: Long): Flow<List<NoteLabel>>
 
