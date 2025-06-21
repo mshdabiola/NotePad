@@ -6,11 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.INotePadRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,21 +21,21 @@ class GalleryViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val id = savedStateHandle.toRoute<GalleryArg>().id
-
-    private val _galleryUiState = MutableStateFlow(GalleryUiState())
-    val galleryUiState = _galleryUiState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            notepadRepository.getOneNotePad(id)
-                .mapNotNull { it }
-                .collectLatest { notepad ->
-                    _galleryUiState.value = GalleryUiState(
-                        images = notepad.images.filter { !it.isDrawing },
-                    )
-                }
+    val galleryUiState = notepadRepository
+        .getOneNotePad(id)
+        .mapLatest { note ->
+            GalleryUiState(
+                images = note
+                    ?.images
+                    ?.filter { !it.isDrawing }
+                    ?: emptyList(),
+            )
         }
-    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = GalleryUiState(),
+        )
 
     suspend fun onImage(path: String) {
         try {

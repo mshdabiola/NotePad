@@ -1,14 +1,17 @@
 package com.mshdabiola.gallery
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,101 +22,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.app.ShareCompat
-import androidx.core.content.FileProvider
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.ui.FirebaseScreenLog
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.mshdabiola.model.NoteImage
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
-import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun GalleryScreen(
-    viewModel: GalleryViewModel = hiltViewModel(),
-    onBack: () -> Unit = {},
-) {
-    val coroutineScope = rememberCoroutineScope()
-    FirebaseScreenLog(screen = "gallery_screen")
-    val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
-    GalleryScreen(
-        galleryUiState = galleryUiState.value,
-        onBack = onBack,
-        onDelete = viewModel::deleteImage,
-        onToText = {
-            coroutineScope.launch {
-                viewModel.onImage(it)
-                onBack()
-            }
-        },
-    )
-}
-
-@Composable
-fun GalleryScreen(
+fun SharedTransitionScope.GalleryScreen(
     galleryUiState: GalleryUiState,
+    pagerState: PagerState = rememberPagerState() { 2 },
+    animatedContentScope: AnimatedVisibilityScope,
     onBack: () -> Unit = {},
-    onDelete: (Long) -> Unit = {},
     onToText: (String) -> Unit = {},
+    onSend: () -> Unit = {},
+    onCopy: () -> Unit = {},
+    delete: () -> Unit = {},
 ) {
-    val pagerState = rememberPagerState() {
-        galleryUiState.images.size
-    }
-//    var currIndex = remember(pagerState.currentPage) {
-//        pa
-//    }
-    LaunchedEffect(key1 = galleryUiState.currentIndex, block = {
-        if (galleryUiState.images.isNotEmpty()) {
-            delay(1000)
-            pagerState.animateScrollToPage(page = galleryUiState.currentIndex)
-        }
-    })
-    val context = LocalContext.current
-    val onSend = {
-        val index = pagerState.currentPage
-        val image = galleryUiState.images[index]
-
-        val file = File(image.path)
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-        val intent = ShareCompat.IntentBuilder(context)
-            .setType("image/*")
-            .setStream(uri)
-            .setChooserTitle("NotePad")
-            .createChooserIntent()
-
-        context.startActivity(intent)
-    }
-    val onCopy = {
-        val index = pagerState.currentPage
-        val image = galleryUiState.images[index]
-        val file = File(image.path)
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-
-        val content = context.contentResolver
-        val clip = ClipData.newUri(content, "image", uri)
-        val c = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        c.setPrimaryClip(clip)
-    }
-    val delete = {
-        val index = pagerState.currentPage
-        val image = galleryUiState.images[index]
-        onDelete(image.id)
-    }
-
     Scaffold(
         topBar = {
             GalleryTopAppBar(
@@ -136,7 +69,12 @@ fun GalleryScreen(
                 // / currIndex=it
                 if (image != null) {
                     ZoomableAsyncImage(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState("image_${image.id}"),
+                                animatedVisibilityScope = animatedContentScope,
+                            )
+                            .fillMaxSize(),
                         model = image.path,
                         contentDescription = "",
                         alignment = Alignment.Center,
@@ -148,10 +86,26 @@ fun GalleryScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+@SuppressLint("UnusedSharedTransitionModifierParameter")
 @Preview
 @Composable
 fun GalleryScreenPreview() {
-    GalleryScreen(galleryUiState = GalleryUiState(), onDelete = {})
+    SharedTransitionScope {
+        AnimatedVisibility(true) {
+            GalleryScreen(
+                animatedContentScope = this,
+                galleryUiState = GalleryUiState(
+                    images = listOf(
+                        NoteImage(id = 1),
+                        NoteImage(id = 1),
+                    ),
+
+                ),
+                pagerState = rememberPagerState(1) { 2 },
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
