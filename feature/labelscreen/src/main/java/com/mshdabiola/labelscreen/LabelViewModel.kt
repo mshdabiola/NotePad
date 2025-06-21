@@ -11,10 +11,18 @@ import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.ILabelRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,69 +33,55 @@ class LabelViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-    var labelScreenUiState by mutableStateOf(LabelScreenUiState())
+
     private val labelArg = savedStateHandle.toRoute<LabelArg>()
+    private val newLabel = MutableStateFlow(LabelState())
 
-    init {
 
-        viewModelScope.launch {
+    val labels = labelRepository
+        .getAllLabels()
 
-            val list =
-                labelRepository.getOneLabelList().map { it.toLabelUiState() }.toImmutableList()
-
-            labelScreenUiState =
-                labelScreenUiState.copy(labels = list, isEditMode = labelArg.isEditMode)
-        }
-        viewModelScope.launch {
-            snapshotFlow { labelScreenUiState }
-                .map { it.labels }
-                .collectLatest { labelUiStates ->
-                    labelRepository.upsert(labelUiStates.map { it.toLabel() })
-                }
-        }
+    val labelUiState = combine(
+        labels,
+        newLabel,
+    ) { labels, newLabel ->
+        LabelUiState(
+            labels = labels.map { it.toLabelState() }.toImmutableList(),
+            newLabel = newLabel,
+            isEditMode = labelArg.isEditMode,
+        )
     }
 
-    fun onLabelChange(value: String, id: Long) {
-        val labels = labelScreenUiState.labels.toMutableList()
-        val index = labels.indexOfFirst { it.id == id }
-        val labelUiState = labels[index].copy(label = value)
-        labels[index] = labelUiState
-        labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = LabelUiState(),
+        )
+
+
+    fun save(index: Int) {
+        viewModelScope.launch {
+            labelRepository.upsert(listOf(labelUiState.value.labels[index].toLabel()))
+        }
+
     }
 
     fun onDelete(id: Long) {
-        val labels = labelScreenUiState.labels.toMutableList()
-        val index = labels.indexOfFirst { it.id == id }
-        labels.removeAt(index)
-        labelScreenUiState = labelScreenUiState.copy(labels = labels.toImmutableList())
         viewModelScope.launch {
-            userDataRepository.setMainData(NoteDisplayCategory())
+            val noteDisplayCategory = userDataRepository.userData.first().noteDisplayCategory
+            if (noteDisplayCategory.noteType == NoteType.LABEL && noteDisplayCategory.labelId == id) {
+                userDataRepository.setMainData(NoteDisplayCategory())
+
+            }
             labelRepository.delete(id)
         }
     }
 
-    fun onAddLabelChange(value: String) {
-        labelScreenUiState = labelScreenUiState.copy(editText = value)
-    }
-
-    fun onAddLabelDone() {
-        val labels = labelScreenUiState.labels.toMutableList()
-
-        labelScreenUiState = if (labels.any { it.label == labelScreenUiState.editText }) {
-            labelScreenUiState.copy(errorOccur = true)
-        } else {
-            val nextId = (labels.lastOrNull()?.id ?: 0) + 1
-            val labelUiState = LabelUiState(id = nextId, label = labelScreenUiState.editText)
-            labels.add(labelUiState)
-            labelScreenUiState.copy(
-                labels = labels.toImmutableList(),
-                editText = "",
-                errorOccur = false,
-            )
+    fun onAddNew() {
+        viewModelScope.launch {
+            newLabel.value = LabelState()
+            labelRepository.upsert(listOf(labelUiState.value.newLabel.toLabel()))
         }
     }
 
-    fun onAddDeleteValue() {
-        labelScreenUiState = labelScreenUiState.copy(editText = "")
-    }
 }

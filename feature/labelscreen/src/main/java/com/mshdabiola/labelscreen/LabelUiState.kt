@@ -1,11 +1,20 @@
 package com.mshdabiola.labelscreen
 
+import androidx.compose.foundation.text.input.TextFieldState
 import com.mshdabiola.model.Label
 
-data class LabelUiState(
-    val id: Long,
-    val label: String,
+data class LabelState(
+    val id: Long=-1,
+    val label: TextFieldState= TextFieldState(),
 )
 
-fun Label.toLabelUiState() = LabelUiState(this.id, this.label)
-fun LabelUiState.toLabel() = Label(id, label)
+fun Label.toLabelState() = LabelState(this.id, TextFieldState(this.label))
+fun LabelState.toLabel() = Label(id, label.toString())
+
+
+
+data class LabelUiState(
+    val labels: List<LabelState> = emptyList(),
+    val newLabel: LabelState = LabelState(-1, TextFieldState()),
+    val isEditMode: Boolean = false,
+)
