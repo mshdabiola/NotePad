@@ -16,7 +16,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -62,7 +61,7 @@ class LabelViewModel @Inject constructor(
         val list = if (query.isBlank()) {
             labelStates
         } else {
-            showAddLabel = labels.any { it.label == query }
+            showAddLabel = labels.any { it.label != query }
             labelStates.filter { it.label.contains(query) }
         }
 
@@ -140,18 +139,19 @@ class LabelViewModel @Inject constructor(
 
     fun onCreateLabel() {
         viewModelScope.launch {
-            val size = labels.first().size
-            val ids = labelRepository.upsert(
+            val label = Label(
+                -1,
+                labelUiState.value.labelQuery.text.toString(),
+            )
+            labelUiState.value.labelQuery.clearText()
+
+            val noteIds = labelRepository.upsert(
                 listOf(
-                    Label(
-                        -1,
-                        labelUiState.value.labelQuery.text.toString(),
-                    ),
+                    label,
                 ),
             )
-            println("labels ids $ids")
-            labelUiState.value.labelQuery.clearText()
-            onCheckClick(size)
+            val labelsList = ids.map { NoteLabel(noteId = it, labelId = noteIds[0]) }
+            labelRepository.upsertNoteLabel(labelsList)
         }
     }
 }
