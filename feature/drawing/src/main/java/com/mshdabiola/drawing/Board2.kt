@@ -14,14 +14,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Delete // Assuming you might use this later
 import androidx.compose.material.icons.filled.Minimize
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -29,6 +32,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 enum class DrawingTool {
     DRAW,    // For freehand drawing
     ERASE,   // For "erasing" by drawing with background color
@@ -41,8 +45,14 @@ enum class DrawingTool {
  * @property path The Path object representing the stroke.
  * @property color The color of the stroke.
  * @property strokeWidth The width of the stroke.
+ * @property isSelected Whether this path is currently selected.
  */
-data class DrawingPath(val path: Path, val color: Color, val strokeWidth: Float)
+data class DrawingPath(
+    val path: Path,
+    val color: Color,
+    val strokeWidth: Float,
+    var isSelected: Boolean = false // Added for selection highlighting
+)
 
 /**
  * The main screen composable for the drawing application.
@@ -50,26 +60,22 @@ data class DrawingPath(val path: Path, val color: Color, val strokeWidth: Float)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingScreen() {
-    // State to hold all the drawn paths
     val drawingPaths = remember { mutableStateListOf<DrawingPath>() }
-
-    // State for the currently selected drawing tool
     var currentTool by remember { mutableStateOf(DrawingTool.DRAW) }
-
-    // State for the currently selected drawing color
     var currentColor by remember { mutableStateOf(Color.Black) }
-
-    // State for the current stroke width
     var currentStrokeWidth by remember { mutableStateOf(10f) }
-
-    // State for the current path being drawn (for continuous drawing)
     var currentPath by remember { mutableStateOf(Path()) }
-
-    // State for the start point of a drag gesture (used for drawing and selection)
     var startDragPoint by remember { mutableStateOf(Offset.Unspecified) }
+    var selectionRect by remember { mutableStateOf<Rect?>(null) } // Changed to Rect for easier intersection checks
 
-    // State for the current selection rectangle (for the SELECT tool)
-    var selectionRect by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
+    // Function to clear all current selections
+    fun clearPathSelections() {
+        drawingPaths.forEachIndexed { index, path ->
+            if (path.isSelected) {
+                drawingPaths[index] = path.copy(isSelected = false)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -82,7 +88,6 @@ fun DrawingScreen() {
             )
         },
         bottomBar = {
-            // Toolbar for selecting drawing tools and properties
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,10 +96,15 @@ fun DrawingScreen() {
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Draw Tool Button
                 IconToggleButton(
                     checked = currentTool == DrawingTool.DRAW,
-                    onCheckedChange = { if (it) currentTool = DrawingTool.DRAW }
+                    onCheckedChange = {
+                        if (it) {
+                            currentTool = DrawingTool.DRAW
+                            clearPathSelections() // Clear selection when switching to draw
+                            selectionRect = null
+                        }
+                    }
                 ) {
                     Icon(
                         Icons.Filled.Create,
@@ -102,81 +112,85 @@ fun DrawingScreen() {
                         tint = if (currentTool == DrawingTool.DRAW) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
-                // Erase Tool Button
                 IconToggleButton(
                     checked = currentTool == DrawingTool.ERASE,
-                    onCheckedChange = { if (it) currentTool = DrawingTool.ERASE }
+                    onCheckedChange = {
+                        if (it) {
+                            currentTool = DrawingTool.ERASE
+                            clearPathSelections() // Clear selection when switching to erase
+                            selectionRect = null
+                        }
+                    }
                 ) {
                     Icon(
-                        Icons.Filled.Minimize, // Using Minimize for erase, could be a custom icon
+                        Icons.Filled.Minimize,
                         contentDescription = "Erase Tool",
                         tint = if (currentTool == DrawingTool.ERASE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
-                // Selection Tool Button
                 IconToggleButton(
                     checked = currentTool == DrawingTool.SELECT,
                     onCheckedChange = { if (it) currentTool = DrawingTool.SELECT }
                 ) {
                     Icon(
-                        Icons.Filled.SelectAll, // Using SelectAll for selection
+                        Icons.Filled.SelectAll,
                         contentDescription = "Selection Tool",
                         tint = if (currentTool == DrawingTool.SELECT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
-                // Color Picker Button
                 ColorPickerButton(
                     selectedColor = currentColor,
                     onColorSelected = { color -> currentColor = color }
                 )
-
-                // Stroke Width Slider
                 Slider(
                     value = currentStrokeWidth,
                     onValueChange = { currentStrokeWidth = it },
-                    valueRange = 1f..50f, // Define min and max stroke width
+                    valueRange = 1f..50f,
                     modifier = Modifier.width(120.dp)
                 )
-
-                // Clear Canvas Button
                 IconButton(onClick = {
                     drawingPaths.clear()
-                    selectionRect = null // Also clear any active selection
+                    selectionRect = null
+                    clearPathSelections() // Ensure isSelected flags are also cleared
                 }) {
                     Icon(Icons.Filled.Clear, contentDescription = "Clear Canvas")
                 }
             }
         }
     ) { paddingValues ->
-        // Drawing Canvas
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White) // Background color of the canvas
-                .pointerInput(currentTool) { // Key the pointerInput to currentTool for recomposition
+                .background(Color.White)
+                .pointerInput(currentTool) {
                     detectDragGestures(
                         onDragStart = { offset ->
                             startDragPoint = offset
-                            currentPath = Path().apply { moveTo(offset.x, offset.y) }
-                            selectionRect = null // Clear selection when new drawing/erase starts
+                            if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
+                                currentPath = Path().apply { moveTo(offset.x, offset.y) }
+                                clearPathSelections() // Clear selection when starting to draw/erase
+                                selectionRect = null
+                            } else if (currentTool == DrawingTool.SELECT) {
+                                // If not clicking on an already selected path, clear previous selections
+                                val clickedOnSelectedPath = drawingPaths.any {
+                                    it.isSelected && it.path.getBounds().contains(offset)
+                                }
+                                if (!clickedOnSelectedPath) {
+                                    clearPathSelections()
+                                }
+                                selectionRect = Rect(offset, offset) // Initialize selection rect
+                            }
                         },
-                        onDrag = { change, dragAmount ->
-                            val newX = startDragPoint.x + dragAmount.x
-                            val newY = startDragPoint.y + dragAmount.y
-
+                        onDrag = { change, _ -> // dragAmount not directly used for SELECT as we use change.position
                             when (currentTool) {
                                 DrawingTool.DRAW, DrawingTool.ERASE -> {
                                     currentPath.lineTo(change.position.x, change.position.y)
                                 }
                                 DrawingTool.SELECT -> {
-                                    selectionRect = Pair(startDragPoint, change.position)
+                                    selectionRect = Rect(startDragPoint, change.position)
                                 }
                             }
-                            // Consume the change to prevent other gestures from interfering
                             change.consume()
                         },
                         onDragEnd = {
@@ -185,66 +199,82 @@ fun DrawingScreen() {
                                     drawingPaths.add(DrawingPath(currentPath, currentColor, currentStrokeWidth))
                                 }
                                 DrawingTool.ERASE -> {
-                                    // When erasing, we add a path with the background color
-                                    // This simulates erasing by drawing over
                                     drawingPaths.add(DrawingPath(currentPath, Color.White, currentStrokeWidth))
                                 }
                                 DrawingTool.SELECT -> {
-                                    // Selection is visual, nothing permanent added to drawingPaths
+                                    selectionRect?.let { rect ->
+                                        // It's important to normalize the rect so topLeft is actually top-left
+                                        val normalizedRect = Rect(
+                                            left = minOf(rect.left, rect.right),
+                                            top = minOf(rect.top, rect.bottom),
+                                            right = maxOf(rect.left, rect.right),
+                                            bottom = maxOf(rect.top, rect.bottom)
+                                        )
+                                        drawingPaths.forEachIndexed { index, drawingPath ->
+                                            // Check if path bounds overlap with the selection rectangle
+                                            // Path.getBounds() gives the bounding box of the path.
+                                            // We use intersects for a more accurate check than just contains.
+                                            if (normalizedRect.overlaps(drawingPath.path.getBounds())) {
+                                                drawingPaths[index] = drawingPath.copy(isSelected = true)
+                                            }
+                                            // else { // Optionally deselect if not in current rect, if that's the desired behavior
+                                            //    if (drawingPaths[index].isSelected) drawingPaths[index] = drawingPath.copy(isSelected = false)
+                                            // }
+                                        }
+                                    }
+                                    // Keep selectionRect visible until a new action clears it
                                 }
+                            }
+                            // Reset currentPath for next drawing operation only if it was a drawing tool
+                            if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
+                                currentPath = Path() // Prepare for next path
                             }
                         }
                     )
                 }
         ) {
-            // Draw all existing paths
             drawingPaths.forEach { drawingPath ->
                 drawPath(
                     path = drawingPath.path,
                     color = drawingPath.color,
                     style = Stroke(width = drawingPath.strokeWidth)
                 )
+                // Highlight selected paths
+                if (drawingPath.isSelected) {
+                    drawPath(
+                        path = drawingPath.path,
+                        color = Color.Red.copy(alpha = 0.7f), // Highlight color
+                        style = Stroke(width = drawingPath.strokeWidth + 4.dp.toPx()) // Slightly thicker
+                    )
+                }
             }
 
-            // Draw the current path being drawn (for visual feedback during drag)
             if (currentTool == DrawingTool.DRAW) {
-                drawPath(
-                    path = currentPath,
-                    color = currentColor,
-                    style = Stroke(width = currentStrokeWidth)
-                )
+                drawPath(path = currentPath, color = currentColor, style = Stroke(width = currentStrokeWidth))
             } else if (currentTool == DrawingTool.ERASE) {
-                // When erasing, draw the current path with the background color
-                // and a larger stroke for a more effective erase
-                drawPath(
-                    path = currentPath,
-                    color = Color.White, // Use canvas background color for erasing
-                    style = Stroke(width = currentStrokeWidth * 1.5f) // Make erase wider
-                )
+                drawPath(path = currentPath, color = Color.White, style = Stroke(width = currentStrokeWidth * 1.5f))
             }
 
-            // Draw the selection rectangle if active
-            selectionRect?.let { (start, end) ->
+            selectionRect?.let { rect ->
+                // Normalize the rect for consistent drawing regardless of drag direction
+                val normalizedRect = Rect(
+                    left = minOf(rect.left, rect.right),
+                    top = minOf(rect.top, rect.bottom),
+                    right = maxOf(rect.left, rect.right),
+                    bottom = maxOf(rect.top, rect.bottom)
+                )
                 drawRect(
-                    color = Color.Blue.copy(alpha = 0.5f), // Semi-transparent blue
-                    topLeft = Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
-                    size = Size(
-                        width = (end.x - start.x).coerceAtLeast(0f).coerceAtMost(size.width),
-                        height = (end.y - start.y).coerceAtLeast(0f).coerceAtMost(size.height)
-                    ),
-                    style = Stroke(width = 2.dp.toPx()),
+                    color = Color.Blue.copy(alpha = 0.3f),
+                    topLeft = normalizedRect.topLeft,
+                    size = normalizedRect.size,
+                    style = Stroke(width = 2.dp.toPx())
                 )
             }
         }
     }
 }
 
-/**
- * A simple composable for selecting colors.
- *
- * @param selectedColor The currently selected color.
- * @param onColorSelected Callback when a new color is selected.
- */
+
 @Composable
 fun ColorPickerButton(
     selectedColor: Color,
@@ -256,7 +286,7 @@ fun ColorPickerButton(
         Icon(
             Icons.Filled.ColorLens,
             contentDescription = "Select Color",
-            tint = selectedColor
+            tint = selectedColor // Display the currently selected drawing color
         )
     }
 
@@ -281,7 +311,12 @@ fun ColorPickerButton(
                                         .size(40.dp)
                                         .padding(4.dp)
                                         .background(color, RoundedCornerShape(8.dp))
-                                        .border(2.dp, if (selectedColor == color) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))
+                                        .border(
+                                            2.dp,
+                                            // Highlight the border if this color is the currently selected drawing color
+                                            if (selectedColor == color) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                            RoundedCornerShape(8.dp)
+                                        )
                                         .clickable {
                                             onColorSelected(color)
                                             showDialog = false
@@ -301,12 +336,9 @@ fun ColorPickerButton(
     }
 }
 
-/**
- * Preview for the DrawingScreen.
- */
+
 @Preview(showBackground = true)
 @Composable
 fun DrawingScreenPreview2() {
-        DrawingScreen()
-
+    DrawingScreen()
 }
