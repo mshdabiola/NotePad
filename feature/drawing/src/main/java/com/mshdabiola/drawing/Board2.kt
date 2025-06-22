@@ -33,7 +33,7 @@ import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawingScreen(controller: NewDrawingController = remember { NewDrawingController() }) {
+fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingController() }) {
     // All state is now held within the controller.
     // We access it via controller.propertyName
 
@@ -51,7 +51,9 @@ fun DrawingScreen(controller: NewDrawingController = remember { NewDrawingContro
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .navigationBarsPadding()
+
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
@@ -126,10 +128,9 @@ fun DrawingScreen(controller: NewDrawingController = remember { NewDrawingContro
             }
 
             // Draw current drawing/erasing path (the one actively being drawn)
-            if ((controller.currentTool == DrawingTool.DRAW || controller.currentTool == DrawingTool.ERASE) &&
-                !controller.currentPath.isEmpty) {
+            if (controller.currentTool == DrawingTool.DRAW) {
                 drawPath(
-                    path = controller.currentPath,
+                    path = controller.currentPath.path,
                     color = if (controller.currentTool == DrawingTool.DRAW) controller.currentColor else Color.White,
                     style = Stroke(width = controller.currentStrokeWidth)
                 )
@@ -230,6 +231,6 @@ fun ColorPickerButton(
 @Composable
 fun DrawingScreenPreview2() {
     MaterialTheme {
-        DrawingScreen(remember { NewDrawingController() }) // Pass a remembered controller for preview
+        DrawingScreen2(remember { NewDrawingController() }) // Pass a remembered controller for preview
     }
 }
