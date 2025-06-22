@@ -42,6 +42,12 @@ data class DrawingPath(
 
 class NewDrawingController {
     val drawingPaths = mutableStateListOf<DrawingPath>()
+        private set
+    var canUndo by mutableStateOf( drawingPaths.isNotEmpty())
+    var redo = mutableStateListOf<DrawingPath>()
+        private set
+    var canRedo by mutableStateOf(redo.isNotEmpty())
+
     var currentTool by mutableStateOf(DrawingTool.DRAW)
     var currentColor by mutableStateOf(Color.Black)
     var currentStrokeWidth by mutableFloatStateOf(10f)
@@ -55,12 +61,32 @@ class NewDrawingController {
     var selectionRect by mutableStateOf<Rect?>(null) // Visual cue for selection drag
     var collectiveSelectedPathsBounds by mutableStateOf<Rect?>(null) // Highlight for all selected
 
+
+    fun redo(){
+        if (canRedo) {
+            val lastIndex = redo.lastIndex
+            drawingPaths.add(redo.removeAt(lastIndex))
+        }
+        setRedoUndo()
+    }
+
+    fun undo(){
+        if (canUndo) {
+            val lastIndex = drawingPaths.lastIndex
+            redo.add(drawingPaths.removeAt(lastIndex))
+        }
+        setRedoUndo()
+    }
     fun clearCanvas() {
         drawingPaths.clear()
         selectionRect = null
         clearPathSelections() // This also nullifies collectiveSelectedPathsBounds
     }
 
+    private fun setRedoUndo(){
+        canUndo = drawingPaths.isNotEmpty()
+        canRedo = redo.isNotEmpty()
+    }
     fun clearPathSelections() {
         var didDeselect = false
         drawingPaths.forEachIndexed { index, path ->
@@ -135,7 +161,7 @@ class NewDrawingController {
 
                 val index = drawingPaths.indexOfFirst { it.paths.any { rect2.contains(it) } }
                 if (index != -1) {
-                    drawingPaths.removeAt(index)
+                  redo.add(  drawingPaths.removeAt(index))
                 }
 
             }
@@ -145,6 +171,7 @@ class NewDrawingController {
             }
         }
 
+        setRedoUndo()
         change.consume()
     }
 
@@ -157,6 +184,10 @@ class NewDrawingController {
 
                     drawingPaths.add(
                         currentPath,
+                    )
+                    currentPath= DrawingPath(
+                        color = currentColor,
+                        strokeWidth = currentStrokeWidth,
                     )
                 }
             }
@@ -191,6 +222,7 @@ class NewDrawingController {
                 selectionRect = null // Clear the visual drag selection rectangle
             }
         }
+        setRedoUndo()
 
     }
 
