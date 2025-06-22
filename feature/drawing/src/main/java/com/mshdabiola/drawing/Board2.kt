@@ -5,7 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Redo
@@ -14,12 +23,23 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Minimize
-import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.filled.Undo
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,60 +86,64 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
             )
         },
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
+            DrawingBar2(
+                controller = controller
+            )
 
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconToggleButton(
-                    checked = controller.currentTool == DrawingTool.DRAW,
-                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.DRAW) }
-                ) {
-                    Icon(
-                        Icons.Filled.Create,
-                        contentDescription = "Draw Tool",
-                        tint = if (controller.currentTool == DrawingTool.DRAW) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconToggleButton(
-                    checked = controller.currentTool == DrawingTool.ERASE,
-                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.ERASE) }
-                ) {
-                    Icon(
-                        Icons.Filled.Minimize,
-                        contentDescription = "Erase Tool",
-                        tint = if (controller.currentTool == DrawingTool.ERASE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconToggleButton(
-                    checked = controller.currentTool == DrawingTool.SELECT,
-                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.SELECT) }
-                ) {
-                    Icon(
-                        Icons.Filled.SelectAll,
-                        contentDescription = "Selection Tool",
-                        tint = if (controller.currentTool == DrawingTool.SELECT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                ColorPickerButton( // This Composable can remain as is or be adapted
-                    selectedColor = controller.currentColor,
-                    onColorSelected = { color -> controller.currentColor = color }
-                )
-                Slider(
-                    value = controller.currentStrokeWidth,
-                    onValueChange = { controller.currentStrokeWidth = it },
-                    valueRange = 1f..50f,
-                    modifier = Modifier.width(100.dp)
-                )
-                IconButton(onClick = { controller.clearCanvas() }) {
-                    Icon(Icons.Filled.Clear, contentDescription = "Clear Canvas")
-                }
-            }
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .navigationBarsPadding()
+//
+//                .background(MaterialTheme.colorScheme.surfaceVariant)
+//                    .padding(8.dp),
+//                horizontalArrangement = Arrangement.SpaceAround,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                IconToggleButton(
+//                    checked = controller.currentTool == DrawingTool.DRAW,
+//                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.DRAW) }
+//                ) {
+//                    Icon(
+//                        Icons.Filled.Create,
+//                        contentDescription = "Draw Tool",
+//                        tint = if (controller.currentTool == DrawingTool.DRAW) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+//                IconToggleButton(
+//                    checked = controller.currentTool == DrawingTool.ERASE,
+//                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.ERASE) }
+//                ) {
+//                    Icon(
+//                        Icons.Filled.Minimize,
+//                        contentDescription = "Erase Tool",
+//                        tint = if (controller.currentTool == DrawingTool.ERASE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+//                IconToggleButton(
+//                    checked = controller.currentTool == DrawingTool.SELECT,
+//                    onCheckedChange = { if (it) controller.setDrawingTool(DrawingTool.SELECT) }
+//                ) {
+//                    Icon(
+//                        Icons.Filled.SelectAll,
+//                        contentDescription = "Selection Tool",
+//                        tint = if (controller.currentTool == DrawingTool.SELECT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+////                ColorPickerButton( // This Composable can remain as is or be adapted
+////                    selectedColor = controller.currentColor,
+////                    onColorSelected = { color -> controller.currentColor = color }
+////                )
+//                Slider(
+//                    value = controller.currentStrokeWidth,
+//                    onValueChange = { controller.currentStrokeWidth = it },
+//                    valueRange = 1f..50f,
+//                    modifier = Modifier.width(100.dp)
+//                )
+//                IconButton(onClick = { controller.clearCanvas() }) {
+//                    Icon(Icons.Filled.Clear, contentDescription = "Clear Canvas")
+//                }
+//            }
         }
     ) { paddingValues ->
         Canvas(
@@ -141,7 +165,7 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
                 drawPath(
                     path = drawingPath.path,
                     color = drawingPath.color,
-                    style = Stroke(width = drawingPath.strokeWidth)
+                    style = drawingPath.strokeWidth
                 )
             }
 
@@ -149,8 +173,8 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
             if (controller.currentTool == DrawingTool.DRAW) {
                 drawPath(
                     path = controller.currentPath.path,
-                    color = if (controller.currentTool == DrawingTool.DRAW) controller.currentColor else Color.White,
-                    style = Stroke(width = controller.currentStrokeWidth)
+                    color = controller.currentPath.color,
+                    style = controller.currentPath.strokeWidth
                 )
             }
 
