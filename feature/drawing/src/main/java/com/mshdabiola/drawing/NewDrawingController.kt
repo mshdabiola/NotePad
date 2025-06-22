@@ -27,12 +27,13 @@ data class DrawingPath(
     val strokeWidth: Float = 10f,
     var isSelected: Boolean = false,
 ) {
-    val path = Path().apply {
-        paths.forEachIndexed { index, offset ->
-            if (index > 0) {
-                this.lineTo(offset.x, offset.y)
-            } else {
-                this.moveTo(offset.x, offset.y)
+    val path by lazy {
+        Path().apply {
+            if (paths.isNotEmpty()) {
+                moveTo(paths.first().x, paths.first().y)
+                paths.drop(1).forEach { offset ->
+                    lineTo(offset.x, offset.y)
+                }
             }
         }
     }
