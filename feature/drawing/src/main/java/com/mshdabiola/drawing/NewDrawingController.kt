@@ -1,6 +1,8 @@
 package com.mshdabiola.drawing
 
+import android.graphics.RectF
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +10,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.input.pointer.PointerInputChange
 import kotlin.math.max
 import kotlin.math.min
@@ -19,18 +22,34 @@ enum class DrawingTool {
 }
 
 data class DrawingPath(
-    val path: Path,
-    val color: Color,
-    val strokeWidth: Float,
+    val paths: List<Offset> = emptyList(),
+    val color: Color = Color.Black,
+    val strokeWidth: Float = 10f,
     var isSelected: Boolean = false,
-)
+) {
+    val path = Path().apply {
+        paths.forEachIndexed { index, offset ->
+            if (index > 0) {
+                this.lineTo(offset.x, offset.y)
+            } else {
+                this.moveTo(offset.x, offset.y)
+            }
+        }
+    }
+
+}
 
 class NewDrawingController {
     val drawingPaths = mutableStateListOf<DrawingPath>()
     var currentTool by mutableStateOf(DrawingTool.DRAW)
     var currentColor by mutableStateOf(Color.Black)
-    var currentStrokeWidth by mutableStateOf(10f)
-    var currentPath by mutableStateOf(Path()) // For ongoing drawing/erasing
+    var currentStrokeWidth by mutableFloatStateOf(10f)
+    var currentPath by mutableStateOf(
+        DrawingPath(
+            color = currentColor,
+            strokeWidth = currentStrokeWidth,
+        ),
+    ) // For ongoing drawing/erasing
     var startDragPoint by mutableStateOf(Offset.Unspecified)
     var selectionRect by mutableStateOf<Rect?>(null) // Visual cue for selection drag
     var collectiveSelectedPathsBounds by mutableStateOf<Rect?>(null) // Highlight for all selected
@@ -79,7 +98,11 @@ class NewDrawingController {
     fun onDragStart(offset: Offset) {
         startDragPoint = offset
         if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
-            currentPath = Path().apply { moveTo(offset.x, offset.y) } // Reset for new line
+            currentPath = DrawingPath(
+                color = currentColor,
+                strokeWidth = currentStrokeWidth,
+            )
+            // Path().apply { moveTo(offset.x, offset.y) } // Reset for new line
             if (drawingPaths.any { it.isSelected }) {
                 clearPathSelections()
             }
@@ -95,50 +118,50 @@ class NewDrawingController {
 
     fun onDrag(change: PointerInputChange, dragAmount: Offset) {
         when (currentTool) {
-            DrawingTool.DRAW, DrawingTool.ERASE -> {
-                currentPath.lineTo(change.position.x, change.position.y)
+            DrawingTool.DRAW -> {
+                val newPath = currentPath.paths + change.position
+                currentPath = currentPath.copy(paths = newPath)
+            }
+
+            DrawingTool.ERASE -> {
+                val end = change.position
+
+
+                val rect2 = Rect( minOf(startDragPoint.x, end.x),
+                    minOf(end.y, startDragPoint.y),
+                    maxOf(startDragPoint.x, end.x),
+                    maxOf(end.y, startDragPoint.y),)
+
+                val index = drawingPaths.indexOfFirst { it.paths.any { rect2.contains(it) } }
+                if (index != -1) {
+                    drawingPaths.removeAt(index)
+                }
+
             }
 
             DrawingTool.SELECT -> {
                 selectionRect = Rect(startDragPoint, change.position)
             }
         }
+
         change.consume()
     }
 
     fun onDragEnd() {
         when (currentTool) {
             DrawingTool.DRAW -> {
-                if (!currentPath.isEmpty) {
+                if (currentPath.paths.isNotEmpty()) {
                     // Create a *new* Path object from the segments of currentPath
                     // and add that to the list.
-                    val pathToSave = Path()
-                    pathToSave.addPath(currentPath) // Copies the path segments
 
                     drawingPaths.add(
-                        DrawingPath(
-                            path = pathToSave, // Add the copied path
-                            color = currentColor,
-                            strokeWidth = currentStrokeWidth,
-                        ),
+                        currentPath,
                     )
                 }
             }
 
             DrawingTool.ERASE -> {
-                if (!currentPath.isEmpty) {
-                    // Create a *new* Path object from the segments of currentPath
-                    val pathToSave = Path()
-                    pathToSave.addPath(currentPath) // Copies the path segments
 
-                    drawingPaths.add(
-                        DrawingPath(
-                            path = pathToSave, // Add the copied path
-                            color = Color.White, // Eraser color (background)
-                            strokeWidth = currentStrokeWidth,
-                        ),
-                    )
-                }
             }
 
             DrawingTool.SELECT -> {
@@ -167,10 +190,7 @@ class NewDrawingController {
                 selectionRect = null // Clear the visual drag selection rectangle
             }
         }
-        // Reset current path for DRAW and ERASE tools after adding it or if it was empty
-        if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
-            currentPath = Path() // This creates a new, empty Path for the next drawing operation
-        }
+
     }
 
     fun setDrawingTool(tool: DrawingTool) {
