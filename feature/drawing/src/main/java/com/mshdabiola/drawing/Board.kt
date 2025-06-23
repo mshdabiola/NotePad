@@ -49,12 +49,12 @@ fun Board(
         //  drawPath(cPath,Color.Black)
         p2.forEach {
             drawPath(
-                color = drawingController.colors[it.second.color].copy(alpha = it.second.colorAlpha),
+                color =colors[it.second.color].copy(alpha = it.second.colorAlpha),
                 path = it.first,
                 style = Stroke(
                     width = (it.second.lineWidth.dp).roundToPx().toFloat(),
-                    cap = drawingController.lineCaps[it.second.lineCap],
-                    join = drawingController.lineJoins[it.second.lineJoin],
+                    cap = lineCaps[it.second.lineCap],
+                    join = lineJoins[it.second.lineJoin],
                 ),
                 blendMode = DrawScope.DefaultBlendMode,
             )
