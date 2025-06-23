@@ -4,11 +4,11 @@
 
 package com.mshdabiola.data.di
 
-import com.mshdabiola.data.repository.DrawingPathRepository
-import com.mshdabiola.data.repository.IDrawingPathRepository
 import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.INoteDrawingRepository
 import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.LabelRepository
+import com.mshdabiola.data.repository.NoteDrawingRepository
 import com.mshdabiola.data.repository.NotePadRepository
 import com.mshdabiola.data.repository.OfflineFirstUserDataRepository
 import com.mshdabiola.data.repository.UserDataRepository
@@ -35,8 +35,8 @@ abstract class DataModule {
 
     @Binds
     internal abstract fun bindsDrawingPathRepository(
-        drawingPathRepository: DrawingPathRepository,
-    ): IDrawingPathRepository
+        drawingPathRepository: NoteDrawingRepository,
+    ): INoteDrawingRepository
 
     @Binds
     internal abstract fun bindsLabelRepository(
