@@ -14,6 +14,8 @@ data class NotePadEntity(
     val voices: List<NoteVoiceEntity>,
     @Relation(parentColumn = "id", entityColumn = "noteId")
     val checks: List<NoteCheckEntity>,
+    @Relation(parentColumn = "id", entityColumn = "note_id")
+    val drawings: List<NoteDrawingEntity>,
 
     @Relation(entity = NoteLabelEntity::class, parentColumn = "id", entityColumn = "noteId")
     val labels: List<FullLabel>,
