@@ -5,7 +5,6 @@
 plugins {
     id("mshdabiola.android.library")
     id("mshdabiola.android.library.compose")
-    alias(libs.plugins.kotlin.serialization)
 
 }
 
@@ -27,7 +26,6 @@ dependencies {
     api(libs.coil.kt.compose)
     implementation(libs.kotlinx.datetime)
 
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.activity.compose)
 
 
