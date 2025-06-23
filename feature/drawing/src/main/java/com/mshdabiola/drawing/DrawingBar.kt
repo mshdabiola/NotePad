@@ -64,7 +64,8 @@ fun DrawingBar2(
             lineCapIndex = 0,
             lineWidth =  with(density){
                 4.dp.roundToPx()
-            }
+            },
+            isPen = true
         ))
     }
 
@@ -75,7 +76,8 @@ fun DrawingBar2(
             lineCapIndex = 0,
             lineWidth = with(density){
                 8.dp.roundToPx()
-            }
+            },
+            isPen = false
         ))
     }
 
@@ -86,7 +88,8 @@ fun DrawingBar2(
             lineCapIndex = 1,
             lineWidth =  with(density){
                 8.dp.roundToPx()
-            }
+            },
+            isPen = false
         ))
     }
 
@@ -96,7 +99,7 @@ fun DrawingBar2(
         }
     })
 
-    val pagerState = rememberPagerState {
+    val pagerState = rememberPagerState(1) {
         4
     }
     val coroutineScope = rememberCoroutineScope()
