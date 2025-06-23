@@ -25,9 +25,7 @@ interface INotePadRepository {
 
     suspend fun deleteTrashType()
 
-    suspend fun deleteNotePad(notePads: List<NotePad>)
-
-    suspend fun delete(notePads: List<NotePad>)
+    suspend fun delete(ids: Set<Long>)
 
     fun timeToString(time: LocalTime): String
     fun dateToString(date: LocalDate): String

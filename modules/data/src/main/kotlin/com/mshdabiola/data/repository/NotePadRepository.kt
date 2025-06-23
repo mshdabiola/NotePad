@@ -11,12 +11,12 @@ import com.mshdabiola.data.model.toNotePad
 import com.mshdabiola.data.model.toNoteVoiceEntity
 import com.mshdabiola.database.dao.NoteCheckDao
 import com.mshdabiola.database.dao.NoteDao
+import com.mshdabiola.database.dao.NoteDrawingDao
 import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.dao.NotificationDao
-import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.NoteLabelEntity
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
@@ -24,7 +24,6 @@ import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -45,7 +44,7 @@ internal class NotePadRepository
     private val noteLabelDao: NoteLabelDao,
     private val noteVoiceDao: NoteVoiceDao,
     private val notePadDao: NotepadDao,
-    private val pathDao: PathDao,
+    private val noteDrawingDao: NoteDrawingDao,
     private val notificationDao: NotificationDao,
     private val contentManager: IContentManager,
 ) : INotePadRepository {
@@ -68,6 +67,8 @@ internal class NotePadRepository
         noteVoiceDao.addVoice(notePad.voices.map { it.copy(noteId = id).toNoteVoiceEntity() })
 
         noteImageDao.upsert(notePad.images.map { it.copy(noteId = id).toNoteImageEntity() })
+
+        noteDrawingDao.upserts(notePad.drawing.map { it.toEntity() })
 
         noteLabelDao.upsert(notePad.labels.map { NoteLabelEntity(id, it.id) })
 
@@ -145,40 +146,13 @@ internal class NotePadRepository
     }
 
     override suspend fun deleteTrashType() = withContext(Dispatchers.IO) {
-        val list = getNotePadsWithMainData(NoteDisplayCategory(NoteType.TRASH.index)).first()
-
-        delete(list)
+        noteDao.deleteTrash(NoteType.TRASH)
     }
 
-    override suspend fun deleteNotePad(notePads: List<NotePad>) = withContext(Dispatchers.IO) {
-        delete(notePads)
-    }
-
-    override suspend fun delete(notePads: List<NotePad>) {
-        notePads.forEach {
-            val id = it.id
-            noteDao.delete(id)
-            if (it.images.isNotEmpty()) {
-                noteImageDao.deleteByNoteId(id)
-            }
-            if (it.labels.isNotEmpty()) {
-                noteLabelDao.deleteByNoteId(id)
-            }
-            if (it.voices.isNotEmpty()) {
-                noteVoiceDao.deleteVoiceByNoteId(id)
-            }
-            if (it.checks.isNotEmpty()) {
-                noteCheckDao.deleteByNoteId(id)
-            }
+    override suspend fun delete(ids: Set<Long>) {
+        withContext(Dispatchers.IO) {
+            noteDao.delete(ids)
         }
-
-        notePads
-            .filter { it -> it.images.any { it.isDrawing } }
-            .map { it -> it.images.filter { it.isDrawing } }
-            .flatten()
-            .forEach {
-                pathDao.delete(it.id)
-            }
     }
 
     override fun timeToString(time: LocalTime): String {
