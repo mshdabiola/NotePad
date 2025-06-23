@@ -8,6 +8,7 @@ import androidx.room.migration.AutoMigrationSpec
 import com.mshdabiola.database.dao.LabelDao
 import com.mshdabiola.database.dao.NoteCheckDao
 import com.mshdabiola.database.dao.NoteDao
+import com.mshdabiola.database.dao.NoteDrawingDao
 import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
@@ -17,6 +18,7 @@ import com.mshdabiola.database.dao.PathDao
 import com.mshdabiola.database.model.DrawPathEntity
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
+import com.mshdabiola.database.model.NoteDrawingEntity
 import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NoteLabelEntity
@@ -33,6 +35,7 @@ import com.mshdabiola.database.model.NotificationEntity
         LabelEntity::class,
         DrawPathEntity::class,
         NotificationEntity::class,
+        NoteDrawingEntity::class,
 
     ],
     version = 5,
@@ -63,6 +66,8 @@ abstract class NoteDatabase : RoomDatabase() {
     abstract fun getPath(): PathDao
 
     abstract fun getNotification(): NotificationDao
+
+    abstract fun getNoteDrawingDao(): NoteDrawingDao
 
     @DeleteColumn(tableName = "note_image_table", columnName = "imageName")
     class Migrate2to3 : AutoMigrationSpec
