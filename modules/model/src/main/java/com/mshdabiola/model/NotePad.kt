@@ -19,6 +19,7 @@ data class NotePad(
     val checks: List<NoteCheck> = emptyList(),
     val labels: List<Label> = emptyList(),
     val uris: List<NoteUri> = emptyList(),
+    val drawing: List<NoteDrawing> = emptyList(),
 
 ) {
     fun toString2(): String {
