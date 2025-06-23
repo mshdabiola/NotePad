@@ -1,80 +1,164 @@
 package com.mshdabiola.drawing
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.model.Coordinate
-import com.mshdabiola.model.MODE
-import com.mshdabiola.model.PathData
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun Board(
     modifier: Modifier = Modifier,
-    drawingController: DrawingController = rememberDrawingController(),
+    controller: DrawingController = remember { DrawingController() },
 ) {
-    val onPointChange = { offset: Offset, mode: MODE ->
-        drawingController.setPathData(offset.x, offset.y, mode)
-    }
-
-    val p2 = remember(drawingController.unCompletePathData.value) {
-        drawingController.getPathAndData()
-    }
-
     Canvas(
         modifier = modifier
-            .pointerInput(Unit) {
+            .fillMaxSize()
+            .background(Color.White)
+            .pointerInput(controller.currentTool) { // Re-key on tool if necessary
                 detectDragGestures(
-                    onDragStart = { onPointChange(it, MODE.DOWN) },
-                    onDrag = { change, _ -> onPointChange(change.position, MODE.MOVE) },
-                    onDragEnd = { onPointChange(Offset.Zero, MODE.UP) },
+                    onDragStart = { offset -> controller.onDragStart(offset) },
+                    onDrag = { change, dragAmount -> controller.onDrag(change, dragAmount) },
+                    onDragEnd = { controller.onDragEnd() },
+                    onDragCancel = { /* Optional: Handle cancellation */ },
                 )
             },
-//            .dragMotionEvent(
-//                onDragStart = { onPointChange(it.position, MODE.DOWN) },
-//                onDrag = { onPointChange(it.position, MODE.MOVE) },
-//                onDragEnd = { onPointChange(Offset.Zero, MODE.UP) }
-//            )
     ) {
-        //  drawPath(cPath,Color.Black)
-        p2.forEach {
-            drawPath(
-                color =colors[it.second.color].copy(alpha = it.second.colorAlpha),
-                path = it.first,
-                style = Stroke(
-                    width = (it.second.lineWidth.dp).roundToPx().toFloat(),
-                    cap = lineCaps[it.second.lineCap],
-                    join = lineJoins[it.second.lineJoin],
-                ),
-                blendMode = DrawScope.DefaultBlendMode,
+        // Draw existing paths
+        controller.drawingPaths.forEach { drawingPath ->
+
+            if (drawingPath.drawingProperties.isPen) {
+                val points = drawingPath.paths // You'll need to add this to NewDrawingController
+
+                if (points.size > 1) {
+                    val maxStrokeWidthPx = drawingPath.strokeWidth.width
+                    val taperSegments = 30 // How many of the last segments to taper
+                    val minStrokeFactor = 0.1f // How thin the line can get (e.g., 10% of max width)
+
+                    for (i in 0 until points.size - 1) {
+                        val startPoint = points[i]
+                        val endPoint = points[i + 1]
+
+                        // Calculate current segment's position from the end of the path
+                        val segmentsFromEnd = points.size - 1 - i
+                        val currentStrokeWidthPx = if (segmentsFromEnd <= taperSegments) {
+                            // Apply tapering
+                            val taperFactor = (segmentsFromEnd - 1).toFloat() / taperSegments.toFloat()
+                            // Ensure stroke width doesn't go below a minimum, and interpolate
+                            max(maxStrokeWidthPx * minStrokeFactor, maxStrokeWidthPx * taperFactor)
+                        } else {
+                            maxStrokeWidthPx // Full width for segments not being tapered
+                        }
+                        // Ensure we don't go to zero if not intended
+                        val finalWidth = max(1f, currentStrokeWidthPx)
+
+                        // Draw each segment as a line
+                        // For smoother curves with varying width, you'd typically draw quadratic/cubic Beziers
+                        // between triplets/quadruplets of points, adjusting control points and width.
+                        // For simplicity, we draw lines here.
+                        drawLine(
+                            color = drawingPath.color,
+                            start = startPoint,
+                            end = endPoint,
+                            strokeWidth = finalWidth,
+                            cap = drawingPath.strokeWidth.cap, // Use cap from original stroke
+                            // pathEffect = controller.currentPath.strokeWidth.pathEffect // If any
+                        )
+                    }
+                }
+            } else {
+                drawPath(
+                    path = drawingPath.path,
+                    color = drawingPath.color,
+                    style = drawingPath.strokeWidth,
+                )
+            }
+        }
+
+        // Draw current drawing/erasing path (the one actively being drawn)
+        if (controller.currentTool == DrawingTool.DRAW) {
+            if (controller.currentDrawingProperties.isPen) {
+                val points =
+                    controller.currentPath.paths // You'll need to add this to NewDrawingController
+
+                if (points.size > 1) {
+                    val maxStrokeWidthPx = controller.currentPath.strokeWidth.width
+                    val taperSegments = 25 // How many of the last segments to taper
+                    val minStrokeFactor = 0.1f // How thin the line can get (e.g., 10% of max width)
+
+                    for (i in 0 until points.size - 1) {
+                        val startPoint = points[i]
+                        val endPoint = points[i + 1]
+
+                        // Calculate current segment's position from the end of the path
+                        val segmentsFromEnd = points.size - 1 - i
+                        val currentStrokeWidthPx = if (segmentsFromEnd <= taperSegments) {
+                            // Apply tapering
+                            val taperFactor = (segmentsFromEnd - 1).toFloat() / taperSegments.toFloat()
+                            // Ensure stroke width doesn't go below a minimum, and interpolate
+                            max(maxStrokeWidthPx * minStrokeFactor, maxStrokeWidthPx * taperFactor)
+                        } else {
+                            maxStrokeWidthPx // Full width for segments not being tapered
+                        }
+                        // Ensure we don't go to zero if not intended
+                        val finalWidth = max(1f, currentStrokeWidthPx)
+
+                        // Draw each segment as a line
+                        // For smoother curves with varying width, you'd typically draw quadratic/cubic Beziers
+                        // between triplets/quadruplets of points, adjusting control points and width.
+                        // For simplicity, we draw lines here.
+                        drawLine(
+                            color = controller.currentPath.color,
+                            start = startPoint,
+                            end = endPoint,
+                            strokeWidth = finalWidth,
+                            cap = controller.currentPath.strokeWidth.cap, // Use cap from original stroke
+                            // pathEffect = controller.currentPath.strokeWidth.pathEffect // If any
+                        )
+                    }
+                }
+            } else {
+                drawPath(
+                    path = controller.currentPath.path,
+                    color = controller.currentPath.color,
+                    style = controller.currentPath.strokeWidth,
+                )
+            }
+        }
+
+        // Draw the visual selection rectangle during drag (for SELECT tool)
+        controller.selectionRect?.let { rect ->
+            val normalizedRect = androidx.compose.ui.geometry.Rect(
+                // Explicitly use compose.ui.geometry.Rect
+                left = min(rect.left, rect.right),
+                top = min(rect.top, rect.bottom),
+                right = max(rect.left, rect.right),
+                bottom = max(rect.top, rect.bottom),
+            )
+            drawRect(
+                color = Color.Blue.copy(alpha = 0.3f),
+                topLeft = normalizedRect.topLeft,
+                size = normalizedRect.size,
+                style = Stroke(width = 1.dp.toPx()),
             )
         }
-    }
-}
 
-@SuppressLint("MutableCollectionMutableState")
-@Preview(showBackground = true)
-@Composable
-fun CanvasPreview() {
-    val controller = rememberDrawingController()
-
-    controller.setPathData(mapOf(PathData() to listOf(Coordinate.Zero, Coordinate(500f, 500f))))
-    controller.color = 1
-
-    Column {
-        Board(
-            modifier = Modifier.fillMaxSize(),
-            drawingController = controller,
-        )
+        // Draw the collective bounding box for ALL selected paths
+        controller.collectiveSelectedPathsBounds?.let { bounds ->
+            drawRect(
+                color = Color.Magenta.copy(alpha = 0.5f),
+                topLeft = bounds.topLeft,
+                size = bounds.size,
+                style = Stroke(width = 2.dp.toPx()),
+            )
+        }
     }
 }

@@ -28,7 +28,7 @@ import com.mshdabiola.designsystem.R as Rd
 @Composable
 fun DrawingScreen(
     onBackk: () -> Unit = {},
-    controller: DrawingController = rememberDrawingController(),
+    controller: DrawingController = remember { DrawingController() },
     drawingUiState: DrawingUiState = DrawingUiState(),
     onDeleteImage: () -> Unit = {},
     onCopy: () -> Unit = {},
@@ -56,13 +56,13 @@ fun DrawingScreen(
 
                 actions = {
                     IconButton(
-                        enabled = controller.canUndo.value,
+                        enabled = controller.canUndo,
                         onClick = { controller.undo() },
                     ) {
                         Icon(imageVector = NoteIcon.Undo, contentDescription = "redo")
                     }
                     IconButton(
-                        enabled = controller.canRedo.value,
+                        enabled = controller.canRedo,
                         onClick = { controller.redo() },
                     ) {
                         Icon(imageVector = NoteIcon.Redo, contentDescription = "redo")
@@ -122,7 +122,7 @@ fun DrawingScreen(
         Box(Modifier.padding(paddingValues)) {
             Board(
                 modifier = Modifier.fillMaxSize(),
-                drawingController = controller,
+                controller = controller,
             )
         }
     }
