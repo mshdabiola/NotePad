@@ -1,12 +1,12 @@
 package com.mshdabiola.database.model
 
-import androidx.annotation.Px
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "note_drawing_table",
+@Entity(
+    tableName = "note_drawing_table",
     foreignKeys = [
         ForeignKey(
             entity = NoteEntity::class,
@@ -15,12 +15,11 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    )
+)
 data class NoteDrawingEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long?,
     @ColumnInfo(name = "note_id", index = true)
     val noteId: Long,
-    val properties: String?,
     val paths: String?,
 )

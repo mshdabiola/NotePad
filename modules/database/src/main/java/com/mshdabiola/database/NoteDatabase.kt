@@ -3,6 +3,7 @@ package com.mshdabiola.database
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.mshdabiola.database.dao.LabelDao
@@ -14,8 +15,6 @@ import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.database.dao.NoteVoiceDao
 import com.mshdabiola.database.dao.NotepadDao
 import com.mshdabiola.database.dao.NotificationDao
-import com.mshdabiola.database.dao.PathDao
-import com.mshdabiola.database.model.DrawPathEntity
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteDrawingEntity
@@ -33,7 +32,6 @@ import com.mshdabiola.database.model.NotificationEntity
         NoteCheckEntity::class,
         NoteLabelEntity::class,
         LabelEntity::class,
-        DrawPathEntity::class,
         NotificationEntity::class,
         NoteDrawingEntity::class,
 
@@ -63,8 +61,6 @@ abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun getNotePadDao(): NotepadDao
 
-    abstract fun getPath(): PathDao
-
     abstract fun getNotification(): NotificationDao
 
     abstract fun getNoteDrawingDao(): NoteDrawingDao
@@ -75,6 +71,9 @@ abstract class NoteDatabase : RoomDatabase() {
     @DeleteColumn(tableName = "note_image_table", columnName = "imageName")
     class Migrate3to4 : AutoMigrationSpec
 
+    @DeleteTable(tableName = "path_table")
+    @DeleteColumn(tableName = "note_image_table", columnName = "timestamp")
+    @DeleteColumn(tableName = "note_image_table", columnName = "isDrawing")
     @DeleteColumn(tableName = "note_table", columnName = "interval")
     @DeleteColumn(tableName = "note_table", columnName = "reminder")
     class Migrate4to5 : AutoMigrationSpec
