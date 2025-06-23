@@ -1,21 +1,22 @@
 package com.mshdabiola.drawing
 
-import android.annotation.SuppressLint
-import android.graphics.RectF
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerInputChange
 import com.mshdabiola.model.Coordinate
-import com.mshdabiola.model.DRAW_MODE
-import com.mshdabiola.model.MODE
 import com.mshdabiola.model.PathData
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableMap
+import kotlin.math.max
+import kotlin.math.min
 
 typealias ImmutablePath = ImmutableMap<PathData, List<Coordinate>>
 
@@ -34,201 +35,241 @@ val colors = arrayOf(
     Color(0xFFF50057),
     Color(0xFFFF3D00),
 
-    )
+)
 
 val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Square)
 val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 
-@SuppressLint("MutableCollectionMutableState")
-class DrawingController {
+enum class DrawingTool {
+    DRAW,
+    ERASE,
+    SELECT,
+}
+data class DrawingProperties(
+    val colorIndex: Int = 0,
+    val lineWidth: Int = 8,
+    val lineCapIndex: Int = 0,
+    val lineJoinIndex: Int = 0,
+    val colorAlphaIndex: Float = 1f,
+    val isPen: Boolean = true,
+)
 
-    var lineWidth = 8
-    var lineCap = 0
-    private var lineJoin = 0
-    var color = 1
-    var draw_mode = DRAW_MODE.PEN
-    var colorAlpha = 1f
-
-    private var _unCompletePathData =
-        mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
-    val unCompletePathData: State<ImmutablePath> = _unCompletePathData
-
-    private var _completePathData =
-        mutableStateOf(emptyMap<PathData, List<Coordinate>>().toImmutableMap())
-    val completePathData: State<ImmutablePath> = _completePathData
-
-    private val redoPaths = HashMap<PathData, List<Coordinate>>()
-    private val _canUndo = mutableStateOf(false)
-    val canUndo: State<Boolean> = _canUndo
-
-    private val _canRedo = mutableStateOf(false)
-    val canRedo: State<Boolean> = _canRedo
-
-    fun getColor(index: Int) = colors[index]
-
-    private var xx = 0f
-    private var yy = 0f
-    var pathData = PathData()
-    fun setPathData(x: Float, y: Float, mode: MODE) {
-        when (draw_mode) {
-            DRAW_MODE.ERASE -> {
-                when (mode) {
-                    MODE.DOWN -> {
-                        xx = x
-                        yy = y
-                    }
-
-                    MODE.MOVE -> {
-                        val rect = RectF(minOf(xx, x), minOf(y, yy), maxOf(xx, x), maxOf(y, yy))
-                        val paths = _unCompletePathData.value.toMutableMap()
-                        val path =
-                            paths.filter { entry -> entry.value.any { rect.contains(it.x, it.y) } }
-                        if (path.isNotEmpty()) {
-                            path.forEach { p ->
-                                paths.remove(p.key)
-                                redoPaths[p.key] = p.value
-                            }
-                            // rearrange id
-                            val newPaths = HashMap<PathData, List<Coordinate>>()
-                            paths
-                                .toList()
-                                .forEachIndexed { index, pair ->
-                                    val newdata = pair.first.copy(id = index)
-                                    newPaths[newdata] = pair.second
-                                }
-
-                            _unCompletePathData.value = newPaths.toImmutableMap()
-                        }
-                    }
-
-                    MODE.UP -> {
-                        setCompleteList()
-                    }
-                }
-            }
-
-            else -> {
-                when (mode) {
-                    MODE.DOWN -> {
-                        val id = _unCompletePathData.value.keys.size
-                        pathData = PathData(
-                            id = id,
-                            color = color,
-                            lineWidth = lineWidth,
-                            lineCap = lineCap,
-                            lineJoin = lineJoin,
-                            colorAlpha = colorAlpha,
-                        )
-                        //  id++
-                        val paths2 = _unCompletePathData.value.toMutableMap()
-                        val list = emptyList<Coordinate>().toMutableList()
-
-                        list.add(Coordinate(x, y))
-                        paths2[pathData] = list
-                        _unCompletePathData.value = paths2.toImmutableMap()
-                    }
-
-                    MODE.MOVE -> {
-                        val paths2 = _unCompletePathData.value.toMutableMap()
-                        val list = paths2[pathData]!!.toMutableList()
-
-                        list.add(Coordinate(x, y))
-                        paths2[pathData] = list
-                        _unCompletePathData.value = paths2.toImmutableMap()
-                    }
-
-                    MODE.UP -> {
-                        // save data
-                        setCompleteList()
-                    }
+data class DrawingPath(
+    val paths: List<Offset> = emptyList(),
+    val drawingProperties: DrawingProperties = DrawingProperties(),
+    val id: Int = 0,
+    var isSelected: Boolean = false,
+) {
+    val path by lazy {
+        Path().apply {
+            if (paths.isNotEmpty()) {
+                moveTo(paths.first().x, paths.first().y)
+                paths.drop(1).forEach { offset ->
+                    lineTo(offset.x, offset.y)
                 }
             }
         }
-        setDoUnDo()
+    }
+    val color by lazy {
+        colors[drawingProperties.colorIndex].copy(alpha = drawingProperties.colorAlphaIndex)
     }
 
-    fun setPathData(pathDatas: Map<PathData, List<Coordinate>>) {
-        val paths = _unCompletePathData.value.toMutableMap()
-        paths.putAll(pathDatas)
-        //  id = pathDatas.size
-        _unCompletePathData.value = paths.toImmutableMap()
-        _completePathData.value = paths.toImmutableMap()
-    }
-
-    fun undo() {
-        if (canUndo.value) {
-            val paths = _unCompletePathData.value.toMutableMap()
-            val lastKey = paths.keys.last()
-            redoPaths[lastKey] = paths.remove(lastKey)!!
-            _unCompletePathData.value = paths.toImmutableMap()
-            setDoUnDo()
-        }
-    }
-
-    private fun setDoUnDo() {
-        _canUndo.value = _unCompletePathData.value.isNotEmpty()
-        _canRedo.value = redoPaths.isNotEmpty()
-
-        // save data
-        setCompleteList()
-    }
-
-    fun redo() {
-        if (canRedo.value) {
-            val paths = _unCompletePathData.value.toMutableMap()
-            val lastKey = redoPaths.keys.last()
-            paths[lastKey] = redoPaths.remove(lastKey)!!
-            _unCompletePathData.value = paths.toImmutableMap()
-
-            setDoUnDo()
-            // listOfPathData.value.add(redoPaths.removeLast())
-        }
-    }
-
-    fun getPathAndData(): List<Pair<Path, PathData>> {
-        var prevOff = Coordinate.Zero
-
-        val p = _unCompletePathData
-            .value
-            .toSortedMap(comparator = compareBy { it.id })
-            .map {
-                val yPath = Path()
-                it.value.forEachIndexed { index, offset ->
-                    prevOff = if (index == 0) {
-                        yPath.moveTo(offset.x, offset.y)
-                        offset
-                    } else {
-                        yPath.quadraticBezierTo(
-                            prevOff.x,
-                            prevOff.y,
-                            (prevOff.x + offset.x) / 2,
-                            (prevOff.y + offset.y) / 2,
-                        )
-                        offset
-                    }
-                }
-                Pair(yPath, it.key)
-            }
-        return p
-    }
-
-    fun clearPath() {
-        val paths = _unCompletePathData.value.toMutableMap()
-        paths.clear()
-        redoPaths.clear()
-        _unCompletePathData.value = paths.toImmutableMap()
-        setDoUnDo()
-        // save data
-    }
-
-    private fun setCompleteList() {
-        _completePathData.value = unCompletePathData.value
+    val strokeWidth by lazy {
+        Stroke(
+            width = drawingProperties.lineWidth.toFloat(),
+            cap = lineCaps[drawingProperties.lineCapIndex],
+            join = lineJoins[drawingProperties.lineJoinIndex],
+        )
     }
 }
 
-@Composable
-fun rememberDrawingController(): DrawingController {
-    return remember {
-        DrawingController()
+class DrawingController {
+    val drawingPaths = mutableStateListOf<DrawingPath>()
+
+    // private set
+    var canUndo by mutableStateOf(drawingPaths.isNotEmpty())
+    var redo = mutableStateListOf<DrawingPath>()
+        private set
+    var canRedo by mutableStateOf(redo.isNotEmpty())
+
+    var currentTool by mutableStateOf(DrawingTool.DRAW)
+    var currentDrawingProperties by mutableStateOf(DrawingProperties())
+    var currentPath by mutableStateOf(
+        DrawingPath(
+            //            id = 0,
+        ),
+    ) // For ongoing drawing/erasing
+    var startDragPoint by mutableStateOf(Offset.Unspecified)
+    var selectionRect by mutableStateOf<Rect?>(null) // Visual cue for selection drag
+    var collectiveSelectedPathsBounds by mutableStateOf<Rect?>(null) // Highlight for all selected
+
+    fun redo() {
+        if (canRedo) {
+            val lastIndex = redo.lastIndex
+            drawingPaths.add(redo.removeAt(lastIndex))
+        }
+        setRedoUndo()
+    }
+
+    fun undo() {
+        if (canUndo) {
+            val lastIndex = drawingPaths.lastIndex
+            redo.add(drawingPaths.removeAt(lastIndex))
+        }
+        setRedoUndo()
+    }
+    fun clearCanvas() {
+        drawingPaths.clear()
+        selectionRect = null
+        clearPathSelections() // This also nullifies collectiveSelectedPathsBounds
+    }
+
+    private fun setRedoUndo() {
+        canUndo = drawingPaths.isNotEmpty()
+        canRedo = redo.isNotEmpty()
+    }
+    fun clearPathSelections() {
+        var didDeselect = false
+        drawingPaths.forEachIndexed { index, path ->
+            if (path.isSelected) {
+                drawingPaths[index] = path.copy(isSelected = false)
+                didDeselect = true
+            }
+        }
+        if (didDeselect) {
+            collectiveSelectedPathsBounds = null
+        }
+    }
+
+    fun updateCollectiveSelectedBounds() {
+        val selected = drawingPaths.filter { it.isSelected }
+        if (selected.isEmpty()) {
+            collectiveSelectedPathsBounds = null
+            return
+        }
+
+        var newBounds: Rect? = null
+        selected.forEach { drawingPath ->
+            val pathBounds = drawingPath.path.getBounds()
+            newBounds = newBounds?.let { current ->
+                Rect(
+                    left = min(current.left, pathBounds.left),
+                    top = min(current.top, pathBounds.top),
+                    right = max(current.right, pathBounds.right),
+                    bottom = max(current.bottom, pathBounds.bottom),
+                )
+            } ?: pathBounds
+        }
+        collectiveSelectedPathsBounds = newBounds
+    }
+
+    fun onDragStart(offset: Offset) {
+        startDragPoint = offset
+        if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
+            currentPath = DrawingPath(
+                drawingProperties = currentDrawingProperties,
+            )
+            // Path().apply { moveTo(offset.x, offset.y) } // Reset for new line
+            if (drawingPaths.any { it.isSelected }) {
+                clearPathSelections()
+            }
+            selectionRect = null
+        } else if (currentTool == DrawingTool.SELECT) {
+            val clickedOnSelectedArea = collectiveSelectedPathsBounds?.contains(offset) ?: false
+            if (!clickedOnSelectedArea) {
+                clearPathSelections()
+            }
+            selectionRect = Rect(offset, offset)
+        }
+    }
+
+    fun onDrag(change: PointerInputChange, dragAmount: Offset) {
+        when (currentTool) {
+            DrawingTool.DRAW -> {
+                val newPath = currentPath.paths + change.position
+                currentPath = currentPath.copy(paths = newPath)
+            }
+
+            DrawingTool.ERASE -> {
+                val end = change.position
+
+                val rect2 = Rect(
+                    minOf(startDragPoint.x, end.x),
+                    minOf(end.y, startDragPoint.y),
+                    maxOf(startDragPoint.x, end.x),
+                    maxOf(end.y, startDragPoint.y),
+                )
+
+                val index = drawingPaths.indexOfFirst { it.paths.any { rect2.contains(it) } }
+                if (index != -1) {
+                    redo.add(drawingPaths.removeAt(index))
+                }
+            }
+
+            DrawingTool.SELECT -> {
+                selectionRect = Rect(startDragPoint, change.position)
+            }
+        }
+
+        setRedoUndo()
+        change.consume()
+    }
+
+    fun onDragEnd() {
+        when (currentTool) {
+            DrawingTool.DRAW -> {
+                if (currentPath.paths.isNotEmpty()) {
+                    // Create a *new* Path object from the segments of currentPath
+                    // and add that to the list.
+
+                    drawingPaths.add(
+                        currentPath,
+                    )
+                    currentPath = DrawingPath(
+                        drawingProperties = currentDrawingProperties,
+                    )
+                }
+            }
+
+            DrawingTool.ERASE -> {
+            }
+
+            DrawingTool.SELECT -> {
+                var anySelectedThisDrag = false
+                selectionRect?.let { rect ->
+                    val normalizedRect = Rect(
+                        left = min(rect.left, rect.right),
+                        top = min(rect.top, rect.bottom),
+                        right = max(rect.left, rect.right),
+                        bottom = max(rect.top, rect.bottom),
+                    )
+                    drawingPaths.forEachIndexed { index, drawingPath ->
+                        if (normalizedRect.overlaps(drawingPath.path.getBounds())) {
+                            if (!drawingPaths[index].isSelected) {
+                                drawingPaths[index] = drawingPath.copy(isSelected = true)
+                            }
+                            anySelectedThisDrag = true
+                        }
+                    }
+                }
+                if (anySelectedThisDrag || drawingPaths.any { it.isSelected }) {
+                    updateCollectiveSelectedBounds()
+                } else {
+                    collectiveSelectedPathsBounds = null
+                }
+                selectionRect = null // Clear the visual drag selection rectangle
+            }
+        }
+        setRedoUndo()
+    }
+
+    fun setDrawingTool(tool: DrawingTool) {
+        currentTool = tool
+        if (tool == DrawingTool.DRAW || tool == DrawingTool.ERASE) {
+            clearPathSelections()
+            selectionRect = null
+        }
+        // For SELECT tool, we don't immediately clear selections when the tool is chosen,
+        // selection clearing happens on drag start outside an existing selection.
     }
 }

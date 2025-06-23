@@ -41,56 +41,61 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.model.DRAW_MODE
 import com.mshdabiola.ui.FlowLayout2
 import kotlinx.coroutines.launch
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DrawingBar2(
+fun DrawingBar(
     modifier: Modifier = Modifier,
-    controller: NewDrawingController = remember { NewDrawingController() }
+    controller: DrawingController = remember { DrawingController() },
 
 ) {
-    val density =LocalDensity.current
+    val density = LocalDensity.current
     var isUp by remember {
         mutableStateOf(false)
     }
     var penProperties by remember {
-        mutableStateOf(DrawingProperties(
-            colorIndex = 1,
-            colorAlphaIndex = 1f,
-            lineCapIndex = 0,
-            lineWidth =  with(density){
-                4.dp.roundToPx()
-            },
-            isPen = true
-        ))
+        mutableStateOf(
+            DrawingProperties(
+                colorIndex = 1,
+                colorAlphaIndex = 1f,
+                lineCapIndex = 0,
+                lineWidth = with(density) {
+                    4.dp.roundToPx()
+                },
+                isPen = true,
+            ),
+        )
     }
 
     var markProperties by remember {
-        mutableStateOf(DrawingProperties(
-            colorIndex = 2,
-            colorAlphaIndex = 1f,
-            lineCapIndex = 0,
-            lineWidth = with(density){
-                8.dp.roundToPx()
-            },
-            isPen = false
-        ))
+        mutableStateOf(
+            DrawingProperties(
+                colorIndex = 2,
+                colorAlphaIndex = 1f,
+                lineCapIndex = 0,
+                lineWidth = with(density) {
+                    8.dp.roundToPx()
+                },
+                isPen = false,
+            ),
+        )
     }
 
     var crayonProperties by remember {
-        mutableStateOf(DrawingProperties(
-            colorIndex = 3,
-            colorAlphaIndex = 0.5f,
-            lineCapIndex = 1,
-            lineWidth =  with(density){
-                8.dp.roundToPx()
-            },
-            isPen = false
-        ))
+        mutableStateOf(
+            DrawingProperties(
+                colorIndex = 3,
+                colorAlphaIndex = 0.5f,
+                lineCapIndex = 1,
+                lineWidth = with(density) {
+                    8.dp.roundToPx()
+                },
+                isPen = false,
+            ),
+        )
     }
 
     LaunchedEffect(key1 = controller.drawingPaths, block = {
@@ -264,7 +269,6 @@ fun DrawingBar2(
                     when (index) {
 //
                         0 -> {
-
                         }
 
                         1 -> {
@@ -274,51 +278,51 @@ fun DrawingBar2(
                         }
 
                         2 -> {
-                            ColorAndWidth2(
+                            ColorAndWidth(
                                 colors = colors,
                                 currentColor = penProperties.colorIndex,
                                 currentWidth = penProperties.lineWidth,
                                 onColorClick = {
-                                    penProperties=penProperties.copy(colorIndex = it)
-                                    controller.currentDrawingProperties=penProperties
+                                    penProperties = penProperties.copy(colorIndex = it)
+                                    controller.currentDrawingProperties = penProperties
                                 },
                                 onlineClick = {
-                                    penProperties=penProperties.copy(lineWidth = it)
-                                    controller.currentDrawingProperties=penProperties
+                                    penProperties = penProperties.copy(lineWidth = it)
+                                    controller.currentDrawingProperties = penProperties
                                 },
                             )
                         }
 
                         3 -> {
-                            ColorAndWidth2(
+                            ColorAndWidth(
                                 colors = colors,
                                 currentColor = markProperties.colorIndex,
                                 currentWidth = markProperties.lineWidth,
                                 weight = 2,
                                 onColorClick = {
-                                    markProperties=markProperties.copy(colorIndex = it)
-                                    controller.currentDrawingProperties=markProperties
+                                    markProperties = markProperties.copy(colorIndex = it)
+                                    controller.currentDrawingProperties = markProperties
                                 },
                                 onlineClick = {
-                                    markProperties=markProperties.copy(lineWidth = it)
-                                    controller.currentDrawingProperties=markProperties
+                                    markProperties = markProperties.copy(lineWidth = it)
+                                    controller.currentDrawingProperties = markProperties
                                 },
                             )
                         }
 
                         else -> {
-                            ColorAndWidth2(
+                            ColorAndWidth(
                                 colors = colors,
                                 currentColor = crayonProperties.colorIndex,
                                 currentWidth = crayonProperties.lineWidth,
                                 weight = 2,
                                 onColorClick = {
-                                    crayonProperties=crayonProperties.copy(colorIndex = it)
-                                    controller.currentDrawingProperties=crayonProperties
+                                    crayonProperties = crayonProperties.copy(colorIndex = it)
+                                    controller.currentDrawingProperties = crayonProperties
                                 },
                                 onlineClick = {
-                                    crayonProperties=crayonProperties.copy(lineWidth = it)
-                                    controller.currentDrawingProperties=crayonProperties
+                                    crayonProperties = crayonProperties.copy(lineWidth = it)
+                                    controller.currentDrawingProperties = crayonProperties
                                 },
                             )
                         }
@@ -328,332 +332,11 @@ fun DrawingBar2(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
-fun DrawingBarPreview2() {
-    DrawingBar2()
-}
-
-@Composable
-fun ColorAndWidth2(
-    colors: Array<Color>,
-    currentColor: Int,
-    currentWidth: Int,
-    weight: Int = 1,
-    onColorClick: (Int) -> Unit = {},
-    onlineClick: (Int) -> Unit = {},
-) {
-    Column {
-        FlowLayout2(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            verticalSpacing = 8.dp,
-        ) {
-            colors.forEachIndexed { index, color ->
-                Box(
-                    modifier = Modifier
-                        .clickable {
-                            onColorClick(index)
-                        }
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(if (index == currentColor) 34.dp else 30.dp),
-
-                    )
-                Spacer(modifier = Modifier.width(16.dp))
-            }
-        }
-
-        val context = LocalDensity.current
-        Row(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
-
-            ) {
-            repeat(10) {
-                val currentWidthPx = with(context){
-                    val num=((it + 1) * weight*4)
-                    num.dp.roundToPx()
-                }
-                Box(
-                    modifier = Modifier
-                        .clickable {
-
-                            onlineClick(currentWidthPx)
-
-
-                        }
-                        .clip(CircleShape)
-                        .border(
-                            1.dp,
-                            if (currentWidthPx == currentWidth) Color.Gray else Color.Transparent,
-                            CircleShape,
-                        )
-                        .size(30.dp),
-
-                    ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .clip(CircleShape)
-                                .background(Color.Black)
-                                .align(Alignment.Center)
-                                .padding(2.dp)
-                                .size(((it + 1) * 2).dp),
-
-                        )
-                }
-            }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun DrawingBar(
-    modifier: Modifier = Modifier,
-    controller: DrawingController = rememberDrawingController(),
-
-) {
-    var isUp by remember {
-        mutableStateOf(false)
-    }
-    var penColor by remember {
-        mutableStateOf(controller.color)
-    }
-    var markColor by remember {
-        mutableStateOf(0)
-    }
-    var crayonColor by remember {
-        mutableStateOf(0)
-    }
-
-    var penWidth by remember {
-        mutableStateOf((controller.lineWidth / 4) - 1)
-    }
-    var markWidth by remember {
-        mutableStateOf(4)
-    }
-    var crayonWidth by remember {
-        mutableStateOf(4)
-    }
-
-    LaunchedEffect(key1 = controller.unCompletePathData.value, block = {
-        if (isUp) {
-            isUp = false
-        }
-    })
-
-    val pagerState = rememberPagerState {
-        4
-    }
-    val coroutineScope = rememberCoroutineScope()
-    Surface(modifier) {
-        Column {
-            TabRow(
-                selectedTabIndex = pagerState.currentPage,
-            ) {
-                Tab(
-                    selected = pagerState.currentPage == 0,
-                    onClick = {
-                        controller.draw_mode = DRAW_MODE.ERASE
-                        isUp = if (pagerState.currentPage == 0) {
-                            !isUp
-                        } else {
-                            false
-                        }
-
-                        coroutineScope.launch { pagerState.animateScrollToPage(0) }
-                    },
-                ) {
-                    Box(Modifier.padding(4.dp)) {
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser),
-                            contentDescription = "eraser",
-                            tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray,
-                        )
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser_tiny),
-                            contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray,
-                        )
-                    }
-                }
-                Tab(
-                    selected = pagerState.currentPage == 1,
-                    onClick = {
-                        controller.draw_mode = DRAW_MODE.PEN
-                        controller.colorAlpha = 1f
-                        controller.lineCap = 0
-                        controller.lineWidth = (penWidth + 1) * 4
-                        controller.color = penColor
-                        isUp = if (pagerState.currentPage == 1) {
-                            !isUp
-                        } else {
-                            true
-                        }
-                        coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                    },
-                ) {
-                    Box(Modifier.padding(4.dp)) {
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen),
-                            contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray,
-                        )
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen_cap),
-                            contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 1) controller.getColor(penColor) else Color.Gray,
-                        )
-                    }
-                }
-
-                Tab(
-                    selected = pagerState.currentPage == 2,
-                    unselectedContentColor = Color.Gray,
-                    onClick = {
-                        controller.draw_mode = DRAW_MODE.MARKER
-                        controller.colorAlpha = 1f
-                        controller.lineCap = 0
-                        controller.lineWidth = (markWidth + 1) * 8
-                        controller.color = markColor
-                        isUp = if (pagerState.currentPage == 2) {
-                            !isUp
-                        } else {
-                            true
-                        }
-                        coroutineScope.launch { pagerState.animateScrollToPage(2) }
-                    },
-                ) {
-                    Box(Modifier.padding(4.dp)) {
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_markerr),
-                            contentDescription = "marker",
-                            tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray,
-                        )
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_marker_cap),
-                            contentDescription = "marker",
-                            tint = if (pagerState.currentPage == 2) controller.getColor(markColor) else Color.Gray,
-                        )
-                    }
-                }
-                Tab(
-                    selected = pagerState.currentPage == 3,
-                    unselectedContentColor = Color.Gray,
-                    onClick = {
-                        controller.draw_mode = DRAW_MODE.CRAYON
-                        controller.colorAlpha = 0.5f
-                        controller.lineCap = 1
-                        controller.lineWidth = (crayonWidth + 1) * 8
-                        controller.color = crayonColor
-                        isUp = if (pagerState.currentPage == 3) {
-                            !isUp
-                        } else {
-                            true
-                        }
-                        coroutineScope.launch { pagerState.animateScrollToPage(3) }
-                    },
-                ) {
-                    Box(Modifier.padding(4.dp)) {
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_crayon),
-                            contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
-                        )
-                        Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_crayon_cap),
-                            contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) controller.getColor(crayonColor) else Color.Gray,
-                        )
-                    }
-                }
-            }
-//        IconButton(
-//            modifier = Modifier.align(Alignment.CenterHorizontally),
-//            onClick = { isUp = !isUp }) {
-//            Icon(
-//                imageVector = if (!isUp) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-//                contentDescription = ""
-//            )
-//        }
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .animateContentSize(),
-            ) { index ->
-                if (isUp) {
-                    when (index) {
-//
-
-                        0 -> {
-                            TextButton(onClick = { controller.clearPath() }) {
-                                Text(text = stringResource(Rd.string.modules_designsystem_clear_canvas))
-                            }
-                        }
-
-                        1 -> {
-                            ColorAndWidth(
-                                colors =colors,
-                                currentColor = penColor,
-                                currentWidth = penWidth,
-                                onColorClick = {
-                                    penColor = it
-                                    controller.color = it
-                                },
-                                onlineClick = {
-                                    penWidth = it
-                                    controller.lineWidth = (it + 1) * 4
-                                },
-                            )
-                        }
-
-                        2 -> {
-                            ColorAndWidth(
-                                colors = colors,
-                                currentColor = markColor,
-                                currentWidth = markWidth,
-                                onColorClick = {
-                                    markColor = it
-                                    controller.color = it
-                                },
-                                onlineClick = {
-                                    markWidth = it
-                                    controller.lineWidth = (it + 1) * 8
-                                },
-                            )
-                        }
-
-                        else -> {
-                            ColorAndWidth(
-                                colors = colors,
-                                currentColor = crayonColor,
-                                currentWidth = crayonWidth,
-                                onColorClick = {
-                                    crayonColor = it
-                                    controller.color = it
-                                },
-                                onlineClick = {
-                                    crayonWidth = it
-                                    controller.lineWidth = (it + 1) * 8
-                                },
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+fun DrawingBarPreview() {
+    DrawingBar()
 }
 
 @Composable
@@ -661,6 +344,7 @@ fun ColorAndWidth(
     colors: Array<Color>,
     currentColor: Int,
     currentWidth: Int,
+    weight: Int = 1,
     onColorClick: (Int) -> Unit = {},
     onlineClick: (Int) -> Unit = {},
 ) {
@@ -686,6 +370,7 @@ fun ColorAndWidth(
             }
         }
 
+        val context = LocalDensity.current
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)
@@ -695,15 +380,19 @@ fun ColorAndWidth(
 
         ) {
             repeat(10) {
+                val currentWidthPx = with(context) {
+                    val num = ((it + 1) * weight * 4)
+                    num.dp.roundToPx()
+                }
                 Box(
                     modifier = Modifier
                         .clickable {
-                            onlineClick(it)
+                            onlineClick(currentWidthPx)
                         }
                         .clip(CircleShape)
                         .border(
                             1.dp,
-                            if (it == currentWidth) Color.Gray else Color.Transparent,
+                            if (currentWidthPx == currentWidth) Color.Gray else Color.Transparent,
                             CircleShape,
                         )
                         .size(30.dp),
@@ -723,10 +412,4 @@ fun ColorAndWidth(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DrawingBarPreview() {
-    DrawingBar()
 }

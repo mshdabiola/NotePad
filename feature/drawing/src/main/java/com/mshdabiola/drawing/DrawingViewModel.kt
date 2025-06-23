@@ -43,29 +43,13 @@ class DrawingViewModel @Inject constructor(
 
     val controller = DrawingController()
 
-    val drawingPath = drawingPathRepository
-        .getAll(imageID)
-        .map { toPathMap(it) }
-    private var isInit = false
-
     @OptIn(FlowPreview::class)
     val drawingState = combine(
-        drawingPath,
-        snapshotFlow { controller.completePathData.value }
+        snapshotFlow { controller.drawingPaths }
             .debounce(500),
-    ) { pathMapSource, pathDataScreen ->
-        if (!isInit) {
-            isInit = true
-            controller.setPathData(pathMapSource)
-        }
-        val path = if (isInit && pathMapSource != pathDataScreen) {
-            saveImage2(pathDataScreen).await()
-        } else {
-            null
-        }
-        DrawingUiState(
-            filePath = path,
-        )
+    ) { pathMapSource ->
+
+        DrawingUiState()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
