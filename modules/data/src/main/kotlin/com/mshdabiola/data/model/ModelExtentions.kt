@@ -1,20 +1,21 @@
 package com.mshdabiola.data.model
 
-import com.mshdabiola.database.model.DrawPathEntity
 import com.mshdabiola.database.model.FullLabel
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
+import com.mshdabiola.database.model.NoteDrawingEntity
 import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NoteLabelEntity
 import com.mshdabiola.database.model.NotePadEntity
 import com.mshdabiola.database.model.NoteVoiceEntity
 import com.mshdabiola.database.model.NotificationEntity
-import com.mshdabiola.model.DrawPath
+import com.mshdabiola.model.Converter
 import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NoteLabel
 import com.mshdabiola.model.NotePad
@@ -28,9 +29,22 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-fun DrawPathEntity.toDrawPath() = DrawPath(imageId, pathId, color, width, join, alpha, cap, paths)
-fun DrawPath.toDrawPathEntity() =
-    DrawPathEntity(imageId, pathId, color, width, join, alpha, cap, paths)
+fun NoteDrawingEntity.toDrawing(): NoteDrawing {
+    return NoteDrawing(
+        id = id!!,
+        noteId = noteId,
+        drawingPaths = paths?.let { Converter.toPath(it) } ?: emptyList(),
+
+    )
+}
+
+fun NoteDrawing.toEntity(): NoteDrawingEntity {
+    return NoteDrawingEntity(
+        id = id.check(),
+        noteId = noteId,
+        paths = Converter.pathToString(drawingPaths),
+    )
+}
 
 fun LabelEntity.toLabel() = Label(id!!, name)
 fun Label.toLabelEntity() = LabelEntity(id.check(), label)
@@ -69,9 +83,9 @@ fun NoteEntity.toNote() = Note(
     noteType,
 )
 
-fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId, isDrawing, timestamp)
+fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId)
 fun NoteImageEntity.toNoteImage() =
-    NoteImage(id = id, noteId = noteId, isDrawing = isDrawing, timestamp = timestamp)
+    NoteImage(id = id, noteId = noteId)
 
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
