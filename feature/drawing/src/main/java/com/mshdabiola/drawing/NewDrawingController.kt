@@ -23,6 +23,7 @@ data class DrawingProperties(
     val lineCapIndex: Int = 0,
     val lineJoinIndex: Int = 0,
     val colorAlphaIndex: Float = 1f,
+    val isPen: Boolean = true,
 )
 
 data class DrawingPath(
