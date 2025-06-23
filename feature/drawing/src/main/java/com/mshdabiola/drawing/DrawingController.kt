@@ -36,7 +36,7 @@ val colors = arrayOf(
 
     )
 
-val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Round)
+val lineCaps = arrayOf(StrokeCap.Round, StrokeCap.Butt, StrokeCap.Square)
 val lineJoins = arrayOf(StrokeJoin.Round, StrokeJoin.Bevel, StrokeJoin.Miter)
 
 @SuppressLint("MutableCollectionMutableState")
