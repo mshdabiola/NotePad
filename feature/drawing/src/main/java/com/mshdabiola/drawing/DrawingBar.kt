@@ -99,8 +99,8 @@ fun DrawingBar2(
         }
     })
 
-    val pagerState = rememberPagerState(1) {
-        4
+    val pagerState = rememberPagerState(2) {
+        5
     }
     val coroutineScope = rememberCoroutineScope()
     Surface(modifier) {
@@ -111,7 +111,7 @@ fun DrawingBar2(
                 Tab(
                     selected = pagerState.currentPage == 0,
                     onClick = {
-                        controller.setDrawingTool(DrawingTool.ERASE)
+                        controller.setDrawingTool(DrawingTool.SELECT)
                         isUp = if (pagerState.currentPage == 0) {
                             !isUp
                         } else {
@@ -123,13 +123,13 @@ fun DrawingBar2(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser),
-                            contentDescription = "eraser",
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_ink_selection),
+                            contentDescription = "select",
                             tint = if (pagerState.currentPage == 0) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser_tiny),
-                            contentDescription = "pen",
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_ink_selection_color),
+                            contentDescription = "select",
                             tint = if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Gray,
                         )
                     }
@@ -137,36 +137,34 @@ fun DrawingBar2(
                 Tab(
                     selected = pagerState.currentPage == 1,
                     onClick = {
-                        controller.currentDrawingProperties = penProperties
-                        controller.setDrawingTool(DrawingTool.DRAW)
+                        controller.setDrawingTool(DrawingTool.ERASE)
                         isUp = if (pagerState.currentPage == 1) {
                             !isUp
                         } else {
-                            true
+                            false
                         }
+
                         coroutineScope.launch { pagerState.animateScrollToPage(1) }
                     },
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen),
-                            contentDescription = "pen",
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser),
+                            contentDescription = "eraser",
                             tint = if (pagerState.currentPage == 1) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen_cap),
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_eraser_tiny),
                             contentDescription = "pen",
-                            tint = if (pagerState.currentPage == 1) colors[penProperties.colorIndex] else Color.Gray,
+                            tint = if (pagerState.currentPage == 1) MaterialTheme.colorScheme.primary else Color.Gray,
                         )
                     }
                 }
 
                 Tab(
                     selected = pagerState.currentPage == 2,
-                    unselectedContentColor = Color.Gray,
                     onClick = {
-                        controller.currentDrawingProperties = markProperties
-
+                        controller.currentDrawingProperties = penProperties
                         controller.setDrawingTool(DrawingTool.DRAW)
                         isUp = if (pagerState.currentPage == 2) {
                             !isUp
@@ -178,22 +176,23 @@ fun DrawingBar2(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_markerr),
-                            contentDescription = "marker",
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen),
+                            contentDescription = "pen",
                             tint = if (pagerState.currentPage == 2) Color.DarkGray else Color.Gray,
                         )
                         Icon(
-                            painter = painterResource(id = Rd.drawable.modules_designsystem_marker_cap),
-                            contentDescription = "marker",
-                            tint = if (pagerState.currentPage == 2) colors[markProperties.colorIndex] else Color.Gray,
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_pen_cap),
+                            contentDescription = "pen",
+                            tint = if (pagerState.currentPage == 2) colors[penProperties.colorIndex] else Color.Gray,
                         )
                     }
                 }
+
                 Tab(
                     selected = pagerState.currentPage == 3,
                     unselectedContentColor = Color.Gray,
                     onClick = {
-                        controller.currentDrawingProperties = crayonProperties
+                        controller.currentDrawingProperties = markProperties
 
                         controller.setDrawingTool(DrawingTool.DRAW)
                         isUp = if (pagerState.currentPage == 3) {
@@ -206,14 +205,42 @@ fun DrawingBar2(
                 ) {
                     Box(Modifier.padding(4.dp)) {
                         Icon(
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_markerr),
+                            contentDescription = "marker",
+                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
+                        )
+                        Icon(
+                            painter = painterResource(id = Rd.drawable.modules_designsystem_marker_cap),
+                            contentDescription = "marker",
+                            tint = if (pagerState.currentPage == 3) colors[markProperties.colorIndex] else Color.Gray,
+                        )
+                    }
+                }
+                Tab(
+                    selected = pagerState.currentPage == 4,
+                    unselectedContentColor = Color.Gray,
+                    onClick = {
+                        controller.currentDrawingProperties = crayonProperties
+
+                        controller.setDrawingTool(DrawingTool.DRAW)
+                        isUp = if (pagerState.currentPage == 4) {
+                            !isUp
+                        } else {
+                            true
+                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(4) }
+                    },
+                ) {
+                    Box(Modifier.padding(4.dp)) {
+                        Icon(
                             painter = painterResource(id = Rd.drawable.modules_designsystem_crayon),
                             contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) Color.DarkGray else Color.Gray,
+                            tint = if (pagerState.currentPage == 4) Color.DarkGray else Color.Gray,
                         )
                         Icon(
                             painter = painterResource(id = Rd.drawable.modules_designsystem_crayon_cap),
                             contentDescription = "crayon",
-                            tint = if (pagerState.currentPage == 3) colors[crayonProperties.colorIndex] else Color.Gray,
+                            tint = if (pagerState.currentPage == 4) colors[crayonProperties.colorIndex] else Color.Gray,
                         )
                     }
                 }
@@ -236,14 +263,17 @@ fun DrawingBar2(
                 if (isUp) {
                     when (index) {
 //
-
                         0 -> {
+
+                        }
+
+                        1 -> {
                             TextButton(onClick = { controller.clearCanvas() }) {
                                 Text(text = stringResource(Rd.string.modules_designsystem_clear_canvas))
                             }
                         }
 
-                        1 -> {
+                        2 -> {
                             ColorAndWidth2(
                                 colors = colors,
                                 currentColor = penProperties.colorIndex,
@@ -259,7 +289,7 @@ fun DrawingBar2(
                             )
                         }
 
-                        2 -> {
+                        3 -> {
                             ColorAndWidth2(
                                 colors = colors,
                                 currentColor = markProperties.colorIndex,
