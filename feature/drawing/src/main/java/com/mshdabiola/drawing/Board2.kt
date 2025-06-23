@@ -67,27 +67,29 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
                 title = { Text("Compose Drawing App") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
                 actions = {
                     IconButton(
                         enabled = controller.canRedo,
-                        onClick = { controller.redo() }) {
+                        onClick = { controller.redo() },
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.Redo, contentDescription = "Redo")
                     }
                     IconButton(
                         enabled = controller.canUndo,
-                        onClick = { controller.undo() }) {
+                        onClick = { controller.undo() },
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Undo")
                     }
 
 
-                }
+                },
             )
         },
         bottomBar = {
             DrawingBar2(
-                controller = controller
+                controller = controller,
             )
 
 //            Row(
@@ -144,7 +146,7 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
 //                    Icon(Icons.Filled.Clear, contentDescription = "Clear Canvas")
 //                }
 //            }
-        }
+        },
     ) { paddingValues ->
         Canvas(
             modifier = Modifier
@@ -156,41 +158,138 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
                         onDragStart = { offset -> controller.onDragStart(offset) },
                         onDrag = { change, dragAmount -> controller.onDrag(change, dragAmount) },
                         onDragEnd = { controller.onDragEnd() },
-                        onDragCancel = { /* Optional: Handle cancellation */ }
+                        onDragCancel = { /* Optional: Handle cancellation */ },
                     )
-                }
+                },
         ) {
             // Draw existing paths
             controller.drawingPaths.forEach { drawingPath ->
+
+                if (drawingPath.drawingProperties.isPen){
+                    val points =drawingPath.paths // You'll need to add this to NewDrawingController
+
+                    if (points.size > 1) {
+                        val maxStrokeWidthPx = drawingPath.strokeWidth.width
+                        val taperSegments = 30 // How many of the last segments to taper
+                        val minStrokeFactor = 0.1f // How thin the line can get (e.g., 10% of max width)
+
+                        for (i in 0 until points.size - 1) {
+                            val startPoint = points[i]
+                            val endPoint = points[i + 1]
+
+                            // Calculate current segment's position from the end of the path
+                            val segmentsFromEnd = points.size - 1 - i
+                            val currentStrokeWidthPx = if (segmentsFromEnd <= taperSegments) {
+                                // Apply tapering
+                                val taperFactor = (segmentsFromEnd - 1).toFloat() / taperSegments.toFloat()
+                                // Ensure stroke width doesn't go below a minimum, and interpolate
+                                max(maxStrokeWidthPx * minStrokeFactor, maxStrokeWidthPx * taperFactor)
+
+                            } else {
+                                maxStrokeWidthPx // Full width for segments not being tapered
+                            }
+                            // Ensure we don't go to zero if not intended
+                            val finalWidth = max(1f, currentStrokeWidthPx)
+
+
+                            // Draw each segment as a line
+                            // For smoother curves with varying width, you'd typically draw quadratic/cubic Beziers
+                            // between triplets/quadruplets of points, adjusting control points and width.
+                            // For simplicity, we draw lines here.
+                            drawLine(
+                                color = drawingPath.color,
+                                start = startPoint,
+                                end = endPoint,
+                                strokeWidth = finalWidth,
+                                cap = drawingPath.strokeWidth.cap, // Use cap from original stroke
+                                // pathEffect = controller.currentPath.strokeWidth.pathEffect // If any
+                            )
+                        }
+                    }
+                }
+                else {
+
                 drawPath(
                     path = drawingPath.path,
                     color = drawingPath.color,
-                    style = drawingPath.strokeWidth
+                    style = drawingPath.strokeWidth,
                 )
+                }
             }
+
+
+
 
             // Draw current drawing/erasing path (the one actively being drawn)
             if (controller.currentTool == DrawingTool.DRAW) {
-                drawPath(
-                    path = controller.currentPath.path,
-                    color = controller.currentPath.color,
-                    style = controller.currentPath.strokeWidth
-                )
+
+                if (controller.currentDrawingProperties.isPen){
+                    val points =
+                        controller.currentPath.paths // You'll need to add this to NewDrawingController
+
+                    if (points.size > 1) {
+                        val maxStrokeWidthPx = controller.currentPath.strokeWidth.width
+                        val taperSegments = 25 // How many of the last segments to taper
+                        val minStrokeFactor = 0.1f // How thin the line can get (e.g., 10% of max width)
+
+                        for (i in 0 until points.size - 1) {
+                            val startPoint = points[i]
+                            val endPoint = points[i + 1]
+
+                            // Calculate current segment's position from the end of the path
+                            val segmentsFromEnd = points.size - 1 - i
+                            val currentStrokeWidthPx = if (segmentsFromEnd <= taperSegments) {
+                                // Apply tapering
+                                val taperFactor = (segmentsFromEnd - 1).toFloat() / taperSegments.toFloat()
+                                // Ensure stroke width doesn't go below a minimum, and interpolate
+                                max(maxStrokeWidthPx * minStrokeFactor, maxStrokeWidthPx * taperFactor)
+
+                            } else {
+                                maxStrokeWidthPx // Full width for segments not being tapered
+                            }
+                            // Ensure we don't go to zero if not intended
+                            val finalWidth = max(1f, currentStrokeWidthPx)
+
+
+                            // Draw each segment as a line
+                            // For smoother curves with varying width, you'd typically draw quadratic/cubic Beziers
+                            // between triplets/quadruplets of points, adjusting control points and width.
+                            // For simplicity, we draw lines here.
+                            drawLine(
+                                color = controller.currentPath.color,
+                                start = startPoint,
+                                end = endPoint,
+                                strokeWidth = finalWidth,
+                                cap = controller.currentPath.strokeWidth.cap, // Use cap from original stroke
+                                // pathEffect = controller.currentPath.strokeWidth.pathEffect // If any
+                            )
+                        }
+                    }
+                }
+                else{
+
+                    drawPath(
+                        path = controller.currentPath.path,
+                        color = controller.currentPath.color,
+                        style = controller.currentPath.strokeWidth,
+                    )
+                }
             }
 
             // Draw the visual selection rectangle during drag (for SELECT tool)
             controller.selectionRect?.let { rect ->
-                val normalizedRect = androidx.compose.ui.geometry.Rect( // Explicitly use compose.ui.geometry.Rect
+                val normalizedRect = androidx.compose.ui.geometry.Rect(
+                    // Explicitly use compose.ui.geometry.Rect
                     left = min(rect.left, rect.right),
                     top = min(rect.top, rect.bottom),
                     right = max(rect.left, rect.right),
-                    bottom = max(rect.top, rect.bottom)
+                    bottom = max(rect.top, rect.bottom),
                 )
                 drawRect(
                     color = Color.Blue.copy(alpha = 0.3f),
                     topLeft = normalizedRect.topLeft,
                     size = normalizedRect.size,
-                    style = Stroke(width = 1.dp.toPx())
+                    style = Stroke(width = 1.dp.toPx()),
                 )
             }
 
@@ -200,7 +299,7 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
                     color = Color.Magenta.copy(alpha = 0.5f),
                     topLeft = bounds.topLeft,
                     size = bounds.size,
-                    style = Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = 2.dp.toPx()),
                 )
             }
         }
@@ -211,7 +310,7 @@ fun DrawingScreen2(controller: NewDrawingController = remember { NewDrawingContr
 @Composable
 fun ColorPickerButton(
     selectedColor: Color,
-    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit,
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -219,7 +318,7 @@ fun ColorPickerButton(
         Icon(
             Icons.Filled.ColorLens,
             contentDescription = "Select Color",
-            tint = selectedColor
+            tint = selectedColor,
         )
     }
 
@@ -231,12 +330,12 @@ fun ColorPickerButton(
                 Column {
                     val colors = listOf(
                         Color.Black, Color.Red, Color.Green, Color.Blue,
-                        Color.Yellow, Color.Cyan, Color.Magenta, Color.Gray
+                        Color.Yellow, Color.Cyan, Color.Magenta, Color.Gray,
                     )
                     colors.chunked(4).forEach { rowColors ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
+                            horizontalArrangement = Arrangement.SpaceAround,
                         ) {
                             rowColors.forEach { color ->
                                 Box(
@@ -247,12 +346,12 @@ fun ColorPickerButton(
                                         .border(
                                             2.dp,
                                             if (selectedColor == color) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                            RoundedCornerShape(8.dp)
+                                            RoundedCornerShape(8.dp),
                                         )
                                         .clickable {
                                             onColorSelected(color)
                                             showDialog = false
-                                        }
+                                        },
                                 )
                             }
                         }
@@ -263,7 +362,7 @@ fun ColorPickerButton(
                 TextButton(onClick = { showDialog = false }) {
                     Text("Close")
                 }
-            }
+            },
         )
     }
 }
