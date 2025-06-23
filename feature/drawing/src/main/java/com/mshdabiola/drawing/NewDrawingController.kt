@@ -1,8 +1,6 @@
 package com.mshdabiola.drawing
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,14 +17,17 @@ enum class DrawingTool {
     ERASE,
     SELECT
 }
-
-data class DrawingPath(
-    val paths: List<Offset> = emptyList(),
+data class DrawingProperties(
     val colorIndex: Int = 0,
     val lineWidth: Int = 8,
     val lineCapIndex: Int = 0,
     val lineJoinIndex: Int = 0,
     val colorAlphaIndex: Float = 1f,
+)
+
+data class DrawingPath(
+    val paths: List<Offset> = emptyList(),
+   val  drawingProperties: DrawingProperties = DrawingProperties(),
     val id: Int = 0,
     var isSelected: Boolean = false,
 ) {
@@ -41,14 +42,14 @@ data class DrawingPath(
         }
     }
     val color by lazy {
-        colors[colorIndex]
+        colors[drawingProperties.colorIndex].copy(alpha = drawingProperties.colorAlphaIndex)
     }
 
     val strokeWidth by lazy {
         Stroke(
-            width = lineWidth.toFloat(),
-            cap = lineCaps[lineCapIndex],
-            join = lineJoins[lineJoinIndex],
+            width = drawingProperties.lineWidth.toFloat(),
+            cap = lineCaps[drawingProperties.lineCapIndex],
+            join = lineJoins[drawingProperties.lineJoinIndex],
         )
     }
 
@@ -56,25 +57,17 @@ data class DrawingPath(
 
 class NewDrawingController {
     val drawingPaths = mutableStateListOf<DrawingPath>()
-        private set
+        //private set
     var canUndo by mutableStateOf( drawingPaths.isNotEmpty())
     var redo = mutableStateListOf<DrawingPath>()
         private set
     var canRedo by mutableStateOf(redo.isNotEmpty())
 
     var currentTool by mutableStateOf(DrawingTool.DRAW)
-    var currentColorIndex by mutableIntStateOf(1)
-    var currentStrokeWidth by mutableIntStateOf(8)
-    var currentLineCapIndex by mutableIntStateOf(0)
-    var currentLineJoinIndex by mutableIntStateOf(0)
+    var currentDrawingProperties by mutableStateOf(DrawingProperties())
     var currentPath by mutableStateOf(
         DrawingPath(
-            colorIndex = currentColorIndex,
-            lineWidth = currentStrokeWidth,
-            lineCapIndex = currentLineCapIndex,
-            lineJoinIndex = currentLineJoinIndex,
-            colorAlphaIndex = 1f,
-//            id = 0,
+        //            id = 0,
         ),
     ) // For ongoing drawing/erasing
     var startDragPoint by mutableStateOf(Offset.Unspecified)
@@ -146,11 +139,7 @@ class NewDrawingController {
         startDragPoint = offset
         if (currentTool == DrawingTool.DRAW || currentTool == DrawingTool.ERASE) {
             currentPath = DrawingPath(
-                colorIndex = currentColorIndex,
-                lineWidth = currentStrokeWidth,
-                lineCapIndex = currentLineCapIndex,
-                lineJoinIndex = currentLineJoinIndex,
-                colorAlphaIndex = 1f,
+                drawingProperties = currentDrawingProperties
             )
             // Path().apply { moveTo(offset.x, offset.y) } // Reset for new line
             if (drawingPaths.any { it.isSelected }) {
@@ -209,11 +198,7 @@ class NewDrawingController {
                         currentPath,
                     )
                     currentPath= DrawingPath(
-                        colorIndex = currentColorIndex,
-                        lineWidth = currentStrokeWidth,
-                        lineCapIndex = currentLineCapIndex,
-                        lineJoinIndex = currentLineJoinIndex,
-                        colorAlphaIndex = 1f,
+                       drawingProperties = currentDrawingProperties,
                     )
                 }
             }
