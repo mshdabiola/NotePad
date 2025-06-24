@@ -26,9 +26,9 @@ internal class NoteDrawingRepository
         }
     }
 
-    override fun get(id: Long): Flow<NoteVisual.NoteDrawing> {
+    override fun get(id: Long): Flow<NoteVisual.NoteDrawing?> {
         return noteDrawingDao.get(id)
-            .map { it.toDrawing() }
+            .map { it?.toDrawing() }
     }
 
     override fun getNoteDrawing(noteId: Long): Flow<List<NoteVisual.NoteDrawing>> {
