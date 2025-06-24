@@ -14,8 +14,8 @@ import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteDisplayCategory
-import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -123,12 +123,12 @@ class SharedActivityViewModel @Inject constructor(
 
             val noteImage = images
                 .map { notePadRepository.saveImage(it) }
-                .map { NoteImage(id = it) }
+                .map { NoteVisual.NoteImage(id = it) }
 
             val notePad = NotePad(
                 title = title1,
                 detail = subject2,
-                images = noteImage,
+                visuals = noteImage,
             )
             val id = notePadRepository.upsert(notePad)
 
@@ -144,7 +144,7 @@ class SharedActivityViewModel @Inject constructor(
 
     suspend fun delete() {
         val success = state.value as SharedActivityUiState.Success
-        notePadRepository.delete(listOf(success.notepad))
+        notePadRepository.delete(setOf(success.notepad.id))
     }
 }
 
