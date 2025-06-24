@@ -2,6 +2,7 @@ package com.mshdabiola.data.repository
 
 import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
+import com.google.protobuf.copy
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.model.toEntity
 import com.mshdabiola.data.model.toNoteCheckEntity
@@ -22,6 +23,7 @@ import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
+import com.mshdabiola.model.NoteVisual
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -66,9 +68,17 @@ internal class NotePadRepository
 
         noteVoiceDao.addVoice(notePad.voices.map { it.copy(noteId = id).toNoteVoiceEntity() })
 
-        noteImageDao.upsert(notePad.images.map { it.copy(noteId = id).toNoteImageEntity() })
+        noteImageDao.upsert(
+            notePad.visuals
+                .filterIsInstance<NoteVisual.NoteImage>()
+                .map { it.copy(noteId = id).toNoteImageEntity() },
+        )
 
-        noteDrawingDao.upserts(notePad.drawing.map { it.toEntity() })
+        noteDrawingDao.upserts(
+            notePad.visuals
+                .filterIsInstance<NoteVisual.NoteDrawing>()
+                .map { it.toEntity() },
+        )
 
         noteLabelDao.upsert(notePad.labels.map { NoteLabelEntity(id, it.id) })
 
@@ -237,7 +247,12 @@ internal class NotePadRepository
     private fun transform(pad: NotePad): NotePad {
         return pad.copy(
 
-            images = pad.images.map { it.copy(path = contentManager.getImagePath(it.id)) },
+            visuals = pad.visuals.map {
+                when (it) {
+                    is NoteVisual.NoteDrawing -> it
+                    is NoteVisual.NoteImage -> it.copy(path = contentManager.getImagePath(it.id))
+                }
+            },
             voices = pad.voices.map {
                 it.copy(
                     voiceName = contentManager.getVoicePath(it.id),
