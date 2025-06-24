@@ -22,6 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.ui.Board
+import com.mshdabiola.ui.DrawingBar
+import com.mshdabiola.ui.DrawingController
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +73,7 @@ fun DrawingScreen(
                     Box {
                         IconButton(
                             onClick = { showDropDown = true },
-                            enabled = drawingUiState.filePath != null,
+                            enabled = drawingUiState.drawings.isNotEmpty(),
                         ) {
                             Icon(NoteIcon.MoreVert, contentDescription = "more")
                         }
