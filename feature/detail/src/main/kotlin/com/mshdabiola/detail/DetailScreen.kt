@@ -124,7 +124,7 @@ fun SharedTransitionScope.EditScreen(
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
     navigateToGallery: (Long, Int, Int, String) -> Unit = { _, _, _, _ -> },
-    navigateToDrawing: (Long) -> Unit = {},
+    navigateToDrawing: (Long?) -> Unit = {},
 ) {
     var expandCheck by remember {
         mutableStateOf(false)
