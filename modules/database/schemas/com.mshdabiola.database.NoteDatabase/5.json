@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "555e729f53b491676284f73ec189e230",
+    "identityHash": "e1b266a42e8c3a642ff1daf2bbd8d7c9",
     "entities": [
       {
         "tableName": "note_table",
@@ -428,7 +428,7 @@
       },
       {
         "tableName": "note_drawing_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `note_id` INTEGER NOT NULL, `properties` TEXT, `paths` TEXT, FOREIGN KEY(`note_id`) REFERENCES `note_table`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `note_id` INTEGER NOT NULL, `paths` TEXT, FOREIGN KEY(`note_id`) REFERENCES `note_table`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -440,11 +440,6 @@
             "columnName": "note_id",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "properties",
-            "columnName": "properties",
-            "affinity": "TEXT"
           },
           {
             "fieldPath": "paths",
@@ -486,7 +481,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '555e729f53b491676284f73ec189e230')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e1b266a42e8c3a642ff1daf2bbd8d7c9')"
     ]
   }
 }
