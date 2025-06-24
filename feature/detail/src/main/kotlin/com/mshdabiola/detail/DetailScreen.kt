@@ -84,7 +84,9 @@ import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
+import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
@@ -165,8 +167,8 @@ fun SharedTransitionScope.EditScreen(
         null
     }
 
-    val images = remember(notepad.images) {
-        notepad.images.reversed().chunked(3)
+    val images = remember(notepad.visuals) {
+        notepad.visuals.reversed().chunked(3)
     }
 
     LaunchedEffect(
@@ -249,7 +251,7 @@ fun SharedTransitionScope.EditScreen(
                     .testTag("detail:list"),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (notepad.images.isNotEmpty()) {
+                if (notepad.visuals.isNotEmpty()) {
                     item(images) {
                         images.forEach { imageList ->
                             Row(
@@ -259,26 +261,42 @@ fun SharedTransitionScope.EditScreen(
                                     .height(200.dp),
                             ) {
                                 imageList.forEachIndexed { index, it ->
-                                    AsyncImage(
-                                        modifier = Modifier
-                                            .clickable {
-                                                if (it.isDrawing) {
-                                                    navigateToDrawing(it.id)
-                                                } else {
-                                                    navigateToGallery(notepad.id, index, imageList.size, it.path)
-                                                }
-                                            }
-                                            .sharedElement(
-                                                sharedContentState = rememberSharedContentState("image_$index"),
-                                                animatedVisibilityScope = animatedContentScope,
+                                    when (it) {
+                                        is NoteVisual.NoteImage -> {
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .clickable {
+                                                        navigateToGallery(notepad.id, index, imageList.size, it.path)
+                                                    }
+                                                    .sharedElement(
+                                                        sharedContentState = rememberSharedContentState("image_$index"),
+                                                        animatedVisibilityScope = animatedContentScope,
 
+                                                    )
+                                                    .weight(1f)
+                                                    .height(200.dp),
+                                                model = it.path,
+                                                contentDescription = "note image",
+                                                contentScale = ContentScale.Crop,
                                             )
-                                            .weight(1f)
-                                            .height(200.dp),
-                                        model = it.path,
-                                        contentDescription = "note image",
-                                        contentScale = ContentScale.Crop,
-                                    )
+                                        }
+                                        is NoteVisual.NoteDrawing -> {
+                                            BoardViewer(
+                                                modifier = Modifier
+                                                    .clickable {
+                                                        navigateToDrawing(it.id)
+                                                    }
+                                                    .sharedElement(
+                                                        sharedContentState = rememberSharedContentState("drwaing_$index"),
+                                                        animatedVisibilityScope = animatedContentScope,
+
+                                                    )
+                                                    .weight(1f)
+                                                    .height(200.dp),
+                                                drawingPaths = it.drawingPaths,
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -526,7 +544,7 @@ fun EditScreenPreview() {
                         focus = false,
                         notification = null,
                         noteType = NoteType.NOTE,
-                        images = emptyList(),
+                        visuals = emptyList(),
                         voices = emptyList(),
                         checks = emptyList(),
                         labels = emptyList(),
