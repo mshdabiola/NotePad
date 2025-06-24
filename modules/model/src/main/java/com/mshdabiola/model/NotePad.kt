@@ -14,12 +14,11 @@ data class NotePad(
     val focus: Boolean = false,
     val notification: NotificationUiState? = null,
     val noteType: NoteType = NoteType.NOTE,
-    val images: List<NoteImage> = emptyList(),
+    val visuals: List<NoteVisual> = emptyList(),
     val voices: List<NoteVoice> = emptyList(),
     val checks: List<NoteCheck> = emptyList(),
     val labels: List<Label> = emptyList(),
     val uris: List<NoteUri> = emptyList(),
-    val drawing: List<NoteDrawing> = emptyList(),
 
 ) {
     fun toString2(): String {
@@ -48,7 +47,7 @@ data class NotePad(
     fun isEmpty(): Boolean {
         val titleIsBlank = title.isBlank()
         val detailIsBlank = detail.isBlank()
-        val emptyImage = images.isEmpty()
+        val emptyImage = visuals.isEmpty()
         val voiceEmpty = voices.isEmpty()
         val checksBlank = checks.all { it.content.isBlank() }
         val checkIsEmpty = checks.isEmpty()
@@ -59,7 +58,7 @@ data class NotePad(
     fun isImageOnly(): Boolean {
         val titleIsBlank = title.isBlank()
         val detailIsBlank = detail.isBlank()
-        val emptyImage = images.isEmpty()
+        val emptyImage = visuals.isEmpty()
         val voiceEmpty = voices.isEmpty()
         val checksBlank = checks.all { it.content.isBlank() }
         val checkIsEmpty = checks.isEmpty()
