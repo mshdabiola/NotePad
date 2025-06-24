@@ -191,13 +191,11 @@ internal class MainViewModel
 
     fun onDeleteForever() {
         val selected = getSelectState().setOfSelected
-        val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
 
         deselectNotes()
 
         viewModelScope.launch {
-            notepadRepository.delete(selectedNotes)
+            notepadRepository.delete(selected)
         }
     }
     fun onRestore() {
@@ -252,16 +250,16 @@ internal class MainViewModel
     }
 
     // Todo("delete empty note")
-    fun deleteEmptyNote() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val emptyList = notepadRepository.getNotePads().first()
-                .filter { it.isEmpty() }
-
-            if (emptyList.isNotEmpty()) {
-                notepadRepository.deleteNotePad(emptyList)
-            }
-        }
-    }
+//    fun deleteEmptyNote() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val emptyList = notepadRepository.getNotePads().first()
+//                .filter { it.isEmpty() }
+//
+//            if (emptyList.isNotEmpty()) {
+//                notepadRepository.deleteNotePad(emptyList)
+//            }
+//        }
+//    }
 
     fun onDisplayModeChange() {
         viewModelScope.launch {
