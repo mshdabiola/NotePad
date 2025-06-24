@@ -54,8 +54,5 @@ fun NavController.navigateToDrawing(drawingArgs: DrawingArgs) {
 @Serializable
 data class DrawingArgs(
     val noteId: Long,
-    val imageId: Long,
-    val width: Int = 0,
-    val height: Int = 0,
-    val density: Float = 0f,
+    val id: Long?,
 )
