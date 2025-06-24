@@ -18,7 +18,7 @@ interface NoteDrawingDao {
     suspend fun delete(id: Long)
 
     @Query("SELECT * FROM note_drawing_table WHERE id = :id")
-    fun get(id: Long): Flow<NoteDrawingEntity>
+    fun get(id: Long): Flow<NoteDrawingEntity?>
 
     @Query("SELECT * FROM note_drawing_table WHERE note_id = :noteId")
     fun getNoteDrawing(noteId: Long): Flow<List<NoteDrawingEntity>>
