@@ -44,6 +44,7 @@ import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.collections.chunked
@@ -89,8 +90,8 @@ fun SharedTransitionScope.NoteCard(
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val images = remember(notePad.images) {
-        notePad.images.reversed().chunked(3)
+    val images = remember(notePad.visuals) {
+        notePad.visuals.reversed().chunked(3)
     }
 
     val de = LocalDensity.current
@@ -134,7 +135,7 @@ fun SharedTransitionScope.NoteCard(
                         size = it
                     },
             ) {
-                if (notePad.images.isNotEmpty()) {
+                if (notePad.visuals.isNotEmpty()) {
                     images.forEach { imageList ->
                         Row(
                             modifier = Modifier
@@ -142,14 +143,26 @@ fun SharedTransitionScope.NoteCard(
                                 .height(100.dp),
                         ) {
                             imageList.forEach {
-                                AsyncImage(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(100.dp),
-                                    model = it.path,
-                                    contentDescription = "",
-                                    contentScale = ContentScale.Crop,
-                                )
+                                when (it) {
+                                    is NoteVisual.NoteImage -> {
+                                        AsyncImage(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(100.dp),
+                                            model = it.path,
+                                            contentDescription = "",
+                                            contentScale = ContentScale.Crop,
+                                        )
+                                    }
+                                    is NoteVisual.NoteDrawing -> {
+                                        BoardViewer(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(100.dp),
+                                            drawingPaths = it.drawingPaths,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
