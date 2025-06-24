@@ -76,17 +76,12 @@ class MainActivityViewModel @Inject constructor(
         )
         return notePadRepository.upsert(notePad)
     }
-    suspend fun insertNewDrawing(): Pair<Long, Long> {
-//        val drawing = NoteVisual.NoteDrawing(
-//        )
-//
-//        val notePad = NotePad(
-//            images = listOf(drawing),
-//        )
-//
-//        val noteId = notePadRepository.upsert(notePad)
+    suspend fun insertNewDrawing(): Long {
+        val notePad = NotePad()
 
-        return Pair(5, 9)
+        val noteId = notePadRepository.upsert(notePad)
+
+        return noteId
     }
     suspend fun insertNewCheckNote(): Long {
         val notePad = NotePad(
