@@ -33,6 +33,7 @@ import com.mshdabiola.detail.DetailViewModel
 import com.mshdabiola.detail.EditScreen
 import com.mshdabiola.detail.NoteOptionBottomSheet
 import com.mshdabiola.detail.NotificationBottomSheet
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.supportVoice
@@ -151,11 +152,12 @@ fun NavGraphBuilder.detailScreen(
             isVoiceSupport = supportVoice(),
         )
 //
-        val images = detailState.notePad.images.map {
-            val file = File(it.path)
-            val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-            uri
-        }
+        val images = detailState.notePad.visuals
+            .filterIsInstance<NoteVisual.NoteImage>().map {
+                val file = File(it.path)
+                val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+                uri
+            }
 
         val send = {
             val intent = ShareCompat.IntentBuilder(context)

@@ -19,10 +19,10 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.NoteCheck
-import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
@@ -285,7 +285,12 @@ class DetailViewModel @Inject constructor(
         val newNotePad = note2.copy(
             id = -1,
             checks = note2.checks.map { it.copy(id = -1) },
-            images = note2.images.map { it.copy(id = -1) },
+            visuals = note2.visuals.map {
+                when (it) {
+                    is NoteVisual.NoteImage -> it.copy(id = -1)
+                    is NoteVisual.NoteDrawing -> it.copy(id = -1)
+                }
+            },
             voices = note2.voices.map { it.copy(id = -1) },
         )
 
@@ -380,14 +385,14 @@ class DetailViewModel @Inject constructor(
     fun saveImage(uri: String) {
         val id = notePadRepository.saveImage(uri)
 
-        val image = NoteImage(
+        val image = NoteVisual.NoteImage(
             id = id,
             path = notePadRepository.getImagePath(id),
         )
 
         val notepad = getNotePad()
 
-        save(notepad.copy(images = notepad.images + image))
+        save(notepad.copy(visuals = notepad.visuals + image))
     }
 
     fun saveVoice(uri: String, text: String) {
@@ -411,13 +416,12 @@ class DetailViewModel @Inject constructor(
 
     fun insertNewDrawing(): Long {
         val id = System.currentTimeMillis()
-        val drawing = NoteImage(
+        val drawing = NoteVisual.NoteImage(
             id = id,
-            isDrawing = true,
             path = notePadRepository.getImagePath(id),
         )
         val notepad = getNotePad()
-        save(notepad.copy(images = notepad.images + drawing))
+        save(notepad.copy(visuals = notepad.visuals + drawing))
 
         return id
     }
