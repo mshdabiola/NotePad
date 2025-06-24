@@ -7,13 +7,18 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.INoteDrawingRepository
 import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.ui.DrawingController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,8 +29,7 @@ class DrawingViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    private val drawingArgs = savedStateHandle.toRoute<DrawingArgs>()
-    private var imageID = drawingArgs.imageId
+    private val detailArgs = MutableStateFlow(savedStateHandle.toRoute<DrawingArgs>())
 
     val controller = DrawingController()
 
@@ -34,20 +38,48 @@ class DrawingViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     val drawingState = combine(
         snapshotFlow { controller.drawingPaths }
-            .debounce(500),
-        drawingRepository.get(imageID),
-    ) { drawingPaths, initDrawingPath ->
+            .debounce(500)
+            .distinctUntilChanged(),
+        detailArgs,
+    ) { drawingPaths, i ->
 
         if (!isInit) {
-            controller.drawingPaths.addAll(initDrawingPath.drawingPaths)
+
+            if (i.id != null) {
+                val path = drawingRepository.get(i.id)
+                    .first()
+                    ?.drawingPaths
+                val drawingPathsMutableList = controller.drawingPaths.toMutableList()
+                drawingPathsMutableList.addAll(path!!)
+                controller.drawingPaths = drawingPathsMutableList
+            } else {
+                val id = drawingRepository.insert(
+                    NoteVisual.NoteDrawing(
+                        id = -1,
+                        drawingPaths = drawingPaths,
+                        noteId = detailArgs.value.noteId,
+                    ),
+                )
+                detailArgs.update {
+                    it.copy(id = id)
+                }
+            }
             isInit = true
         } else {
+
             drawingRepository.insert(
-                initDrawingPath.copy(drawingPaths = drawingPaths),
+                NoteVisual.NoteDrawing(
+                    id = detailArgs.value.id!!,
+                    drawingPaths = drawingPaths,
+                    noteId = detailArgs.value.noteId,
+                ),
             )
+            println("insert $drawingPaths")
         }
 
-        DrawingUiState(drawings = initDrawingPath.drawingPaths)
+        DrawingUiState(
+            drawings = drawingPaths,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -90,6 +122,6 @@ class DrawingViewModel @Inject constructor(
 //    }
 
     suspend fun deleteImage() {
-        drawingRepository.delete(imageID)
+        drawingRepository.delete(detailArgs.value.id!!)
     }
 }
