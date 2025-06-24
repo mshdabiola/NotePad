@@ -188,7 +188,8 @@ class DrawingController2(
                         rotation = (handleInfo.initialTransform.rotation + angleDeltaDeg + 360) % 360,
                     )
                 }
-                TransformHandleType.BOTTOM_RIGHT_SCALE -> {
+                else -> {
+                //TransformHandleType.BOTTOM_RIGHT_SCALE -> {
                     // Pivot for this specific handle is the top-left corner of the base rectangle
                     val scalePivot = selectionData.baseTopLeft
 
@@ -220,7 +221,7 @@ class DrawingController2(
                 // TODO: Implement precise scaling logic for other handles (TOP_LEFT, etc.)
                 // This often involves considering the handle's opposite corner/edge as the pivot
                 // and calculating scale based on the change in projected distance.
-                else -> { /* No specific logic yet for other scale handles */ }
+              //  else -> { /* No specific logic yet for other scale handles */ }
             }
             activeSelectionRectData = selectionData.copy(currentTransform = newTransform)
         }
@@ -254,6 +255,7 @@ class DrawingController2(
                     }
                 }
                 DrawingTool.SELECT -> {
+                    //for activate selection
                     if (startDragPoint != Offset.Unspecified && currentDragEndPoint != Offset.Unspecified &&
                         (startDragPoint - currentDragEndPoint).getDistanceSquared() > (handleScreenSizePx * 0.5f).let { it * it } // Min drag for selection box
                     ) {
@@ -527,16 +529,16 @@ fun DrawScope.drawTransformableSelectionRect(
     handleScreenSizePx: Float, // Apparent size on screen
     rotationHandleScreenOffsetPx: Float, // Apparent offset on screen
 ) {
-    val pivotX = baseTopLeft.x + baseSize.width / 2
-    val pivotY = baseTopLeft.y + baseSize.height / 2
+    val pivotX = baseSize.width / 2
+    val pivotY = baseSize.height / 2
 
     withTransform(
         {
             // Apply transformations for the main rectangle and its handles
-            translate(left = pivotX, top = pivotY)
-            rotate(degrees = transformToApply.rotation)
+//            translate(left = pivotX, top = pivotY)
+            rotate(degrees = transformToApply.rotation,pivot = Offset(pivotX, pivotY))
             scale(scaleX = transformToApply.scale, scaleY = transformToApply.scale)
-            translate(left = -pivotX, top = -pivotY)
+//            translate(left = -pivotX, top = -pivotY)
             // Apply the final offset that ensures baseTopLeft (after scale/rotate around its center) moves to transformToApply.offset
             translate(
                 left = transformToApply.offset.x - baseTopLeft.x,
