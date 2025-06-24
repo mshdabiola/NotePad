@@ -15,10 +15,9 @@ import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
-import com.mshdabiola.model.NoteDrawing
-import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NoteLabel
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
@@ -29,8 +28,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-fun NoteDrawingEntity.toDrawing(): NoteDrawing {
-    return NoteDrawing(
+fun NoteDrawingEntity.toDrawing(): NoteVisual.NoteDrawing {
+    return NoteVisual.NoteDrawing(
         id = id!!,
         noteId = noteId,
         drawingPaths = paths?.let { Converter.toPath(it) } ?: emptyList(),
@@ -38,11 +37,15 @@ fun NoteDrawingEntity.toDrawing(): NoteDrawing {
     )
 }
 
-fun NoteDrawing.toEntity(): NoteDrawingEntity {
+fun NoteVisual.NoteDrawing.toEntity(): NoteDrawingEntity {
     return NoteDrawingEntity(
         id = id.check(),
         noteId = noteId,
-        paths = Converter.pathToString(drawingPaths),
+        paths = if (drawingPaths.isEmpty()) {
+            null
+        } else {
+            Converter.pathToString(drawingPaths)
+        },
     )
 }
 
@@ -83,9 +86,9 @@ fun NoteEntity.toNote() = Note(
     noteType,
 )
 
-fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId)
+fun NoteVisual.NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId)
 fun NoteImageEntity.toNoteImage() =
-    NoteImage(id = id, noteId = noteId)
+    NoteVisual.NoteImage(id = id, noteId = noteId)
 
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
@@ -102,7 +105,8 @@ fun NotePadEntity.toNotePad() = NotePad(
     isPin = noteEntity.isPin,
     notification = notification?.toNotificationUiState(),
     noteType = noteEntity.noteType,
-    images = images.map { it.toNoteImage() },
+    visuals = (images.map { it.toNoteImage() } + drawings.map { it.toDrawing() })
+        .sortedBy { it.key },
     voices = voices.map { it.toNoteVoice() },
     checks = checks.map { it.toNoteCheck() },
     labels = labels.map { it.toLabel() },
