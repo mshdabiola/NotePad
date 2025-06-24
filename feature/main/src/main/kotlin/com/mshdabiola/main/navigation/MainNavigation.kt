@@ -7,7 +7,6 @@ package com.mshdabiola.main.navigation
 import android.content.Intent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +29,6 @@ import com.mshdabiola.main.MainViewModel
 import com.mshdabiola.main.RenameLabelAlertDialog
 import com.mshdabiola.ui.ColorDialog
 import com.mshdabiola.ui.NotificationDialogNew
-import kotlinx.coroutines.delay
 
 fun NavController.navigateToMain(
     navOptions: NavOptions = androidx.navigation.navOptions { },
@@ -55,13 +53,13 @@ fun NavGraphBuilder.mainScreen(
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
-        LaunchedEffect(
-            key1 = Unit,
-            block = {
-                delay(2000)
-                mainViewModel.deleteEmptyNote()
-            },
-        )
+//        LaunchedEffect(
+//            key1 = Unit,
+//            block = {
+//                delay(2000)
+//                mainViewModel.deleteEmptyNote()
+//            },
+//        )
 
         var showDialog by remember {
             mutableStateOf(false)
