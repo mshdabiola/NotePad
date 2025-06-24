@@ -1,4 +1,4 @@
-package com.mshdabiola.drawing
+package com.mshdabiola.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -13,12 +13,10 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerInputChange
 import com.mshdabiola.model.Coordinate
-import com.mshdabiola.model.PathData
-import kotlinx.collections.immutable.ImmutableMap
+import com.mshdabiola.model.DrawingPath
+import com.mshdabiola.model.DrawingProperties
 import kotlin.math.max
 import kotlin.math.min
-
-typealias ImmutablePath = ImmutableMap<PathData, List<Coordinate>>
 
 val colors = arrayOf(
     Color.Black,
@@ -45,43 +43,28 @@ enum class DrawingTool {
     ERASE,
     SELECT,
 }
-data class DrawingProperties(
-    val colorIndex: Int = 0,
-    val lineWidth: Int = 8,
-    val lineCapIndex: Int = 0,
-    val lineJoinIndex: Int = 0,
-    val colorAlphaIndex: Float = 1f,
-    val isPen: Boolean = true,
-)
 
-data class DrawingPath(
-    val paths: List<Offset> = emptyList(),
-    val drawingProperties: DrawingProperties = DrawingProperties(),
-    val id: Int = 0,
-    var isSelected: Boolean = false,
-) {
-    val path by lazy {
-        Path().apply {
-            if (paths.isNotEmpty()) {
-                moveTo(paths.first().x, paths.first().y)
-                paths.drop(1).forEach { offset ->
-                    lineTo(offset.x, offset.y)
-                }
+val DrawingPath.paths
+    get() = this.coordinates.map { Offset(it.x, it.y) }
+val DrawingPath.path
+    get() = Path().apply {
+        if (paths.isNotEmpty()) {
+            moveTo(paths.first().x, paths.first().y)
+            paths.drop(1).forEach { offset ->
+                lineTo(offset.x, offset.y)
             }
         }
     }
-    val color by lazy {
-        colors[drawingProperties.colorIndex].copy(alpha = drawingProperties.colorAlphaIndex)
-    }
 
-    val strokeWidth by lazy {
-        Stroke(
-            width = drawingProperties.lineWidth.toFloat(),
-            cap = lineCaps[drawingProperties.lineCapIndex],
-            join = lineJoins[drawingProperties.lineJoinIndex],
-        )
-    }
-}
+val DrawingPath.color
+    get() = colors[drawingProperties.colorIndex].copy(alpha = drawingProperties.colorAlphaIndex)
+
+val DrawingPath.strokeWidth
+    get() = Stroke(
+        width = drawingProperties.lineWidth.toFloat(),
+        cap = lineCaps[drawingProperties.lineCapIndex],
+        join = lineJoins[drawingProperties.lineJoinIndex],
+    )
 
 class DrawingController {
     val drawingPaths = mutableStateListOf<DrawingPath>()
@@ -118,6 +101,7 @@ class DrawingController {
         }
         setRedoUndo()
     }
+
     fun clearCanvas() {
         drawingPaths.clear()
         selectionRect = null
@@ -128,6 +112,7 @@ class DrawingController {
         canUndo = drawingPaths.isNotEmpty()
         canRedo = redo.isNotEmpty()
     }
+
     fun clearPathSelections() {
         var didDeselect = false
         drawingPaths.forEachIndexed { index, path ->
@@ -187,7 +172,7 @@ class DrawingController {
         when (currentTool) {
             DrawingTool.DRAW -> {
                 val newPath = currentPath.paths + change.position
-                currentPath = currentPath.copy(paths = newPath)
+                currentPath = currentPath.copy(coordinates = newPath.map { Coordinate(it.x, it.y) })
             }
 
             DrawingTool.ERASE -> {
