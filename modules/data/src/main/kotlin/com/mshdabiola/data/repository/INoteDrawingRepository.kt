@@ -8,7 +8,7 @@ interface INoteDrawingRepository {
 
     suspend fun delete(id: Long)
 
-    fun get(id: Long): Flow<NoteVisual.NoteDrawing>
+    fun get(id: Long): Flow<NoteVisual.NoteDrawing?>
 
     fun getNoteDrawing(noteId: Long): Flow<List<NoteVisual.NoteDrawing>>
 }
