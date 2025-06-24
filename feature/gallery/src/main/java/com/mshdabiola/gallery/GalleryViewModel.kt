@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.INotePadRepository
-import com.mshdabiola.model.NoteImage
+import com.mshdabiola.model.NoteVisual
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -28,8 +28,8 @@ class GalleryViewModel @Inject constructor(
             GalleryUiState(
                 initIndex = galleryArg.index,
                 images = note
-                    ?.images
-                    ?.filter { !it.isDrawing }
+                    ?.visuals
+                    ?.filterIsInstance<NoteVisual.NoteImage>()
                     ?.reversed()
                     ?: emptyList(),
             )
@@ -40,10 +40,9 @@ class GalleryViewModel @Inject constructor(
             initialValue = GalleryUiState(
                 initIndex = galleryArg.index,
                 images = List(galleryArg.total) {
-                    NoteImage(
+                    NoteVisual.NoteImage(
                         id = it.toLong(),
                         path = galleryArg.currentPath,
-                        isDrawing = false,
                     )
                 },
 
