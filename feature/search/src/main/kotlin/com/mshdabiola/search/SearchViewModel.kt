@@ -8,6 +8,7 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
+import com.mshdabiola.model.NoteVisual
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,9 +128,9 @@ internal class SearchViewModel
                         when (searchSort.index) {
                             0 -> notepads.filter { it.notification != null }
                             1 -> notepads.filter { it.isCheck }
-                            2 -> notepads.filter { it.images.isNotEmpty() }
+                            2 -> notepads.filter { it.visuals.filterIsInstance<NoteVisual.NoteImage>().isNotEmpty() }
                             3 -> notepads.filter { it.voices.isNotEmpty() }
-                            4 -> notepads.filter { it.images.any { it.isDrawing } }
+                            4 -> notepads.filter { it.visuals.any { it is NoteVisual.NoteDrawing } }
                             5 -> notepads.filter { it.uris.isNotEmpty() }
                             else -> notepads
                         }
