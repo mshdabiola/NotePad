@@ -11,8 +11,8 @@ import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteDisplayCategory
-import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,28 +67,26 @@ class MainActivityViewModel @Inject constructor(
     suspend fun insertNewImageNote(uri: String): Long {
         val id = notePadRepository.saveImage(uri)
 
-        val image = NoteImage(
+        val image = NoteVisual.NoteImage(
             id = id,
         )
 
         val notePad = NotePad(
-            images = listOf(image),
+            visuals = listOf(image),
         )
         return notePadRepository.upsert(notePad)
     }
     suspend fun insertNewDrawing(): Pair<Long, Long> {
-        val drawing = NoteImage(
-            id = System.currentTimeMillis(),
-            isDrawing = true,
-        )
+//        val drawing = NoteVisual.NoteDrawing(
+//        )
+//
+//        val notePad = NotePad(
+//            images = listOf(drawing),
+//        )
+//
+//        val noteId = notePadRepository.upsert(notePad)
 
-        val notePad = NotePad(
-            images = listOf(drawing),
-        )
-
-        val noteId = notePadRepository.upsert(notePad)
-
-        return Pair(noteId, drawing.id)
+        return Pair(5, 9)
     }
     suspend fun insertNewCheckNote(): Long {
         val notePad = NotePad(
@@ -106,12 +104,12 @@ class MainActivityViewModel @Inject constructor(
         println("images $images, title $title, subject $subject")
         val noteImage = images
             .map { notePadRepository.saveImage(it) }
-            .map { NoteImage(id = it) }
+            .map { NoteVisual.NoteImage(id = it) }
 
         val notePad = NotePad(
             title = title,
             detail = subject,
-            images = noteImage,
+            visuals = noteImage,
         )
         return notePadRepository.upsert(notePad)
     }

@@ -55,7 +55,9 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
+import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.ThemeBrand
+import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.LabelCard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -242,24 +244,36 @@ fun ActionEditScreen(
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (success.notepad.images.isNotEmpty()) {
+            if (success.notepad.visuals.isNotEmpty()) {
                 item {
                     Box {
-                        success.notepad.images.reversed().chunked(3).forEach { imageList ->
+                        success.notepad.visuals.reversed().chunked(3).forEach { imageList ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(200.dp),
                             ) {
                                 imageList.forEach {
-                                    AsyncImage(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(200.dp),
-                                        model = it.path,
-                                        contentDescription = "",
-                                        contentScale = ContentScale.Crop,
-                                    )
+                                    when (it) {
+                                        is NoteVisual.NoteImage -> {
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(200.dp),
+                                                model = it.path,
+                                                contentDescription = "",
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                        }
+                                        is NoteVisual.NoteDrawing -> {
+                                            BoardViewer(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(200.dp),
+                                                it.drawingPaths,
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
