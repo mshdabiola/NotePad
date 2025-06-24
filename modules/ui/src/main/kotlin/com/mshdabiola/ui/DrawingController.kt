@@ -1,7 +1,6 @@
 package com.mshdabiola.ui
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -67,11 +66,11 @@ val DrawingPath.strokeWidth
     )
 
 class DrawingController {
-    val drawingPaths = mutableStateListOf<DrawingPath>()
+    var drawingPaths by mutableStateOf(listOf<DrawingPath>())
 
     // private set
     var canUndo by mutableStateOf(drawingPaths.isNotEmpty())
-    var redo = mutableStateListOf<DrawingPath>()
+    var redo by mutableStateOf(listOf<DrawingPath>())
         private set
     var canRedo by mutableStateOf(redo.isNotEmpty())
 
@@ -88,22 +87,34 @@ class DrawingController {
 
     fun redo() {
         if (canRedo) {
+            val drawingPathsMutableList = drawingPaths.toMutableList()
+            val redoMutableList = redo.toMutableList()
             val lastIndex = redo.lastIndex
-            drawingPaths.add(redo.removeAt(lastIndex))
+
+            drawingPathsMutableList.add(redoMutableList.removeAt(lastIndex))
+            redo = redoMutableList
+            drawingPaths = drawingPathsMutableList
         }
         setRedoUndo()
     }
 
     fun undo() {
         if (canUndo) {
+            val drawingPathsMutableList = drawingPaths.toMutableList()
+            val redoMutableList = redo.toMutableList()
             val lastIndex = drawingPaths.lastIndex
-            redo.add(drawingPaths.removeAt(lastIndex))
+            redoMutableList.add(drawingPathsMutableList.removeAt(lastIndex))
+            drawingPaths = drawingPathsMutableList
+            redo = redoMutableList
         }
         setRedoUndo()
     }
 
     fun clearCanvas() {
-        drawingPaths.clear()
+        val drawingPathsMutableList = drawingPaths.toMutableList()
+        val redoMutableList = redo.toMutableList()
+        drawingPathsMutableList.clear()
+        drawingPaths = drawingPathsMutableList
         selectionRect = null
         clearPathSelections() // This also nullifies collectiveSelectedPathsBounds
     }
@@ -117,7 +128,9 @@ class DrawingController {
         var didDeselect = false
         drawingPaths.forEachIndexed { index, path ->
             if (path.isSelected) {
-                drawingPaths[index] = path.copy(isSelected = false)
+                val drawingPathsMutableList = drawingPaths.toMutableList()
+                drawingPathsMutableList[index] = path.copy(isSelected = false)
+                drawingPaths = drawingPathsMutableList
                 didDeselect = true
             }
         }
@@ -187,7 +200,11 @@ class DrawingController {
 
                 val index = drawingPaths.indexOfFirst { it.paths.any { rect2.contains(it) } }
                 if (index != -1) {
-                    redo.add(drawingPaths.removeAt(index))
+                    val drawingPathsMutableList = drawingPaths.toMutableList()
+                    val redoMutableList = redo.toMutableList()
+                    redoMutableList.add(drawingPathsMutableList.removeAt(index))
+                    drawingPaths = drawingPathsMutableList
+                    redo = redoMutableList
                 }
             }
 
@@ -206,10 +223,11 @@ class DrawingController {
                 if (currentPath.paths.isNotEmpty()) {
                     // Create a *new* Path object from the segments of currentPath
                     // and add that to the list.
-
-                    drawingPaths.add(
+                    val drawingPathsMutableList = drawingPaths.toMutableList()
+                    drawingPathsMutableList.add(
                         currentPath,
                     )
+                    drawingPaths = drawingPathsMutableList
                     currentPath = DrawingPath(
                         drawingProperties = currentDrawingProperties,
                     )
@@ -231,7 +249,9 @@ class DrawingController {
                     drawingPaths.forEachIndexed { index, drawingPath ->
                         if (normalizedRect.overlaps(drawingPath.path.getBounds())) {
                             if (!drawingPaths[index].isSelected) {
-                                drawingPaths[index] = drawingPath.copy(isSelected = true)
+                                val drawingPathsMutableList = drawingPaths.toMutableList()
+                                drawingPathsMutableList[index] = drawingPath.copy(isSelected = true)
+                                drawingPaths = drawingPathsMutableList
                             }
                             anySelectedThisDrag = true
                         }
