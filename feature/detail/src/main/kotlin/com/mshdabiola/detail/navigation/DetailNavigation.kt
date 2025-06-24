@@ -49,7 +49,7 @@ fun NavController.navigateToDetail(
 fun NavGraphBuilder.detailScreen(
     onBack: () -> Unit,
     navigateToGallery: (Long, Int, Int, String) -> Unit,
-    navigateToDrawing: (Long, Long) -> Unit,
+    navigateToDrawing: (Long, Long?) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier.Companion,
@@ -145,8 +145,7 @@ fun NavGraphBuilder.detailScreen(
             getPhotoUri = editViewModel::getPhotoUri,
             changeToCheckBoxes = editViewModel::changeToCheckBoxes,
             onDrawing = {
-                val id = editViewModel.insertNewDrawing()
-                navigateToDrawing(detailState.notePad.id, id)
+                navigateToDrawing(detailState.notePad.id, null)
             },
             onDismiss = { showModalState = false },
             isVoiceSupport = supportVoice(),
