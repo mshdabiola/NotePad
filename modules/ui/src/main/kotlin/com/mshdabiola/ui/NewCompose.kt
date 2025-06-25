@@ -1,22 +1,26 @@
+// import androidx.compose.runtime.getValue // Redundant if using `by` delegate
+// import androidx.compose.runtime.setValue // Redundant if using `by` delegate
 import android.util.Log
-import androidx.compose.foundation.background // Corrected: Direct import for Modifier.background
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-// import androidx.compose.runtime.getValue // Redundant if using `by` delegate
-// import androidx.compose.runtime.setValue // Redundant if using `by` delegate
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -28,7 +32,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
@@ -179,166 +182,161 @@ fun ResizableRectangleWithHandlesPreview() {
     }
 }
 
-// Removed the custom Modifier.background extension as it's not strictly necessary
-// and could potentially cause confusion if not implemented carefully.
-// The standard androidx.compose.foundation.background works fine.
-
-
-/**
- * A composable that demonstrates a rotatable and draggable element with a dedicated rotation handle.
- *
- * This element does NOT interact with the DrawingScreen's drawingElements. It's a separate example.
- */
 @Composable
-fun RotatableElementWithHandle() {
-    // Rotation angle of the element in degrees
-    var rotationAngle by remember { mutableStateOf(0f) }
-    // Center position of the element in pixels
-    var elementPosition by remember { mutableStateOf(Offset(500f, 500f)) } // Adjusted initial position
-    val elementSize = 150.dp // Size of the main element
-
-    val handleRadius = 12.dp // Radius of the rotation handle circle
-    val handleVisualSize = handleRadius * 2 // Diameter for the handle Box
-    val handleDistanceFromElementCenter = 100.dp // Distance of the handle from the element's center
+fun UnifiedManipulableBox() {
+    var boxOffset by remember {
+        mutableStateOf(
+            Offset(
+                100f,
+                100f,
+            ),
+        )
+    } // Top-left of the entire rotated composable
+    var boxRotation by remember { mutableStateOf(0f) } // Rotation in degrees
+    val boxWidth = 200.dp // Fixed size for this example, can be made stateful for scaling
+    val boxHeight = 150.dp
 
     val density = LocalDensity.current
-    val elementSizePx = with(density) { elementSize.toPx() }
-    val handleRadiusPx = with(density) { handleRadius.toPx() }
-    val handleDistanceFromElementCenterPx = with(density) { handleDistanceFromElementCenter.toPx() }
+    val boxWidthPx = with(density) { boxWidth.toPx() }
+    val boxHeightPx = with(density) { boxHeight.toPx() }
 
-    // State to store the absolute position of the handle's top-left corner
-    // This will be used to convert local pointer events to global for rotation calculation
-    var handleAbsoluteOffset by remember { mutableStateOf(Offset.Zero) }
+    // Center of the box in its own local coordinate system (before rotation and offset)
+    val localBoxCenter = Offset(boxWidthPx / 2, boxHeightPx / 2)
 
-    // State to store the initial angle of the pointer relative to element center on drag start (in radians)
-    var initialPointerAngleRad by remember { mutableStateOf(0f) }
-    // State to store the element's rotation at the start of the drag (in radians)
-    var initialElementRotationRad by remember { mutableStateOf(0f) }
+    // Handle properties
+    val handleRadius = 12.dp
+    val handleVisualSize = handleRadius * 2
+    // Position the handle above the center of the box, in the box's local coordinates
+    val localHandleCenterYOffset =
+        -(boxHeightPx / 2) - with(density) { 30.dp.toPx() } // 30.dp above the box
+    val localHandleCenter = Offset(localBoxCenter.x, localBoxCenter.y + localHandleCenterYOffset)
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // --- Draggable Element ---
+    // This outer Box is what gets offset and rotated
+    Box(
+        modifier = Modifier
+            .offset { IntOffset(boxOffset.x.roundToInt(), boxOffset.y.roundToInt()) }
+            .graphicsLayer(
+                rotationZ = boxRotation,
+                // transformOrigin is by default Center, which is what we want for this box
+                // assuming its content (the innerBox) is centered or defines its own pivot.
+                // More accurately, the rotation pivot is the center of *this* Box's bounds.
+            ),
+    ) {
+        // This inner Box defines the visual content and its size
+        // It's positioned at (0,0) within the rotated parent
         Box(
             modifier = Modifier
-                .offset {
-                    // Position the element based on its center
-                    IntOffset(
-                        (elementPosition.x - elementSizePx / 2).roundToInt(),
-                        (elementPosition.y - elementSizePx / 2).roundToInt(),
-                    )
-                }
-                .size(elementSize)
-                .graphicsLayer(
-                    rotationZ = rotationAngle,
-                    transformOrigin = TransformOrigin(0.5f, 0.5f) // Ensure rotation is around its center
-                )
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
-                .pointerInput(Unit) {
+                .size(boxWidth, boxHeight) // The visible content
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+                .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        elementPosition += dragAmount
-                        // Log.d("RotationDebug", "Element dragged. New ElementPos: $elementPosition") // Re-enable for debugging
+
+                        // dragAmount is in the coordinate system of *this* Box's parent
+                        // (the outer, rotated Box).
+                        // To apply it to boxOffset (screen space), we need to rotate
+                        // this dragAmount by the current boxRotation.
+
+                        val angleRad = Math.toRadians(boxRotation.toDouble())
+                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
+                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
+
+                        boxOffset += Offset(rotatedDx.toFloat(), rotatedDy.toFloat())
+                        Log.d("UnifiedBox", "Box Dragged: offset $boxOffset")
                     }
                 },
         ) {
-            // Content of your rotatable element
             Text(
-                "Rotate Me!",
-                modifier = Modifier.align(Alignment.Center),
-                color = MaterialTheme.colorScheme.onPrimary
+                "Drag Me",
+                Modifier.align(Alignment.Center),
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
 
-        // --- Rotation Handle ---
-        // Calculate the handle's desired center position based on element's center and its current rotation
-        // The handle itself moves with the rotated element for intuitive interaction
-        val currentRotationRadForHandle = Math.toRadians(rotationAngle.toDouble()) // Use element's current rotation
-        val handleRelativeOffsetX = cos(currentRotationRadForHandle) * handleDistanceFromElementCenterPx
-        val handleRelativeOffsetY = sin(currentRotationRadForHandle) * handleDistanceFromElementCenterPx
-
-        // This is the calculated CENTER of the handle in absolute screen coordinates
-        val handleCenterXAbsolute = elementPosition.x + handleRelativeOffsetX.toFloat()
-        val handleCenterYAbsolute = elementPosition.y + handleRelativeOffsetY.toFloat()
-
+        // Rotation Handle - positioned relative to the innerBox's coordinate system (0,0 is top-left of innerBox)
         Box(
             modifier = Modifier
-                .offset { // This offset is for the TOP-LEFT corner of the handle's Box
+                // Offset the handle so its center aligns with localHandleCenter
+                .offset {
                     IntOffset(
-                        (handleCenterXAbsolute - handleRadiusPx).roundToInt(),
-                        (handleCenterYAbsolute - handleRadiusPx).roundToInt(),
+                        (localHandleCenter.x - with(density) { handleRadius.toPx() }).roundToInt(),
+                        (localHandleCenter.y - with(density) { handleRadius.toPx() }).roundToInt(),
                     )
                 }
-                .size(handleVisualSize) // Diameter
+                .size(handleVisualSize)
                 .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                .border(1.dp, Color.White, CircleShape) // White border for contrast
-                .onGloballyPositioned { coordinates ->
-                    // Capture the absolute offset of the handle's top-left corner
-                    handleAbsoluteOffset = coordinates.positionInWindow()
-                }
-                .pointerInput(elementPosition) { // Key to elementPosition as handle position depends on it
+                .pointerInput(Unit) { // Pointer input for ROTATING the WHOLE BOX
+                    var lastPointerAngle =
+                        0f // Angle of pointer relative to box center at drag start/last drag
+
                     detectDragGestures(
                         onDragStart = { startOffset ->
-                            // Convert startOffset (relative to handle) to absolute screen position
-                            val absolutePointerStart = handleAbsoluteOffset + startOffset
+                            // Convert startOffset (local to handle) to be relative to the outer box's center
+                            // 1. Handle's center in outer box's local coords: localHandleCenter
+                            // 2. Pointer position in handle's local coords: startOffset
+                            // 3. Pointer position in outer box's local coords:
+                            //    localHandleCenter - handleCenterToHandleTopLeft + startOffset
+                            val handleCenterToHandleTopLeft = Offset(
+                                with(density) { handleRadius.toPx() },
+                                with(density) { handleRadius.toPx() },
+                            )
+                            val pointerRelativeToOuterBoxOrigin =
+                                localHandleCenter - handleCenterToHandleTopLeft + startOffset
 
-                            // Calculate the initial vector from element's center to the absolute pointer start
-                            val initialVectorX = absolutePointerStart.x - elementPosition.x
-                            val initialVectorY = absolutePointerStart.y - elementPosition.y
-
-                            initialPointerAngleRad = atan2(initialVectorY, initialVectorX)
-                            initialElementRotationRad = Math.toRadians(rotationAngle.toDouble()).toFloat() // Store current element rotation in radians
-
-                            // Log.d("RotationDebug", "Handle DRAG START. Initial Element Rotation: $initialElementRotationRad, Initial Pointer Angle: $initialPointerAngleRad") // Re-enable for debugging
+                            val vectorX = pointerRelativeToOuterBoxOrigin.x - localBoxCenter.x
+                            val vectorY = pointerRelativeToOuterBoxOrigin.y - localBoxCenter.y
+                            lastPointerAngle =
+                                Math.toDegrees(atan2(vectorY, vectorX).toDouble()).toFloat()
                         },
-                        onDrag = { change, _ ->
+                        onDrag = { change, dragAmount -> // dragAmount local to handle
                             change.consume()
 
-                            // Convert change.position (relative to handle) to absolute screen position
-                            val currentAbsolutePointer = handleAbsoluteOffset + change.position
+                            // Pointer's current position relative to handle's top-left: change.position
+                            // We need pointer's current position relative to the outer box's center (localBoxCenter)
+                            val handleCenterToHandleTopLeft = Offset(
+                                with(density) { handleRadius.toPx() },
+                                with(density) { handleRadius.toPx() },
+                            )
+                            val pointerRelativeToOuterBoxOrigin =
+                                localHandleCenter - handleCenterToHandleTopLeft + change.position
 
-                            // Calculate the current vector from element's center to the absolute current pointer
-                            val currentVectorX = currentAbsolutePointer.x - elementPosition.x
-                            val currentVectorY = currentAbsolutePointer.y - elementPosition.y
 
-                            val currentAngleRad = atan2(currentVectorY, currentVectorX)
+                            val currentVectorX =
+                                pointerRelativeToOuterBoxOrigin.x - localBoxCenter.x
+                            val currentVectorY =
+                                pointerRelativeToOuterBoxOrigin.y - localBoxCenter.y
+                            val currentPointerAngle =
+                                Math.toDegrees(atan2(currentVectorY, currentVectorX).toDouble())
+                                    .toFloat()
 
-                            // Calculate the change in angle relative to the initial pointer angle
-                            val deltaAngleRad = currentAngleRad - initialPointerAngleRad
+                            val diff = currentPointerAngle - lastPointerAngle
+                            boxRotation += diff
+                            lastPointerAngle = currentPointerAngle // Update for next delta
 
-                            // Apply this delta to the element's initial rotation
-                            var newRotationRad = initialElementRotationRad + deltaAngleRad
-                            var newRotationDeg = Math.toDegrees(newRotationRad.toDouble()).toFloat()
-
-                            // Normalize angle to 0-360 degrees (optional, keeps value cleaner)
-                            while (newRotationDeg < 0f) newRotationDeg += 360f
-                            newRotationDeg %= 360f
-
-                            rotationAngle = newRotationDeg
-
-                            // Log.d("RotationDebug", "DRAG Event: Current Angle Rad: $currentAngleRad, New Rotation Angle: $newRotationDeg") // Re-enable for debugging
-                        },
-                        onDragEnd = {
-                            // Log.d("RotationDebug", "Handle DRAG END") // Re-enable for debugging
+                            Log.d("UnifiedBox", "Handle Dragged: rotation $boxRotation")
                         },
                     )
                 },
         ) {
             Icon(
                 Icons.Filled.Refresh,
-                contentDescription = "Rotate Handle",
+                contentDescription = "Rotate",
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .size(handleVisualSize * 0.6f), // Adjust icon size to fit handle
+                    .padding(2.dp),
                 tint = MaterialTheme.colorScheme.onSecondary,
             )
         }
     }
 }
 
-@Preview(showBackground = true, name = "Rotatable Element")
+@Preview(showBackground = true,)
 @Composable
-fun RotatableElementWithHandlePreview() {
+fun UnifiedManipulableBoxPreview() {
     MaterialTheme {
-        RotatableElementWithHandle()
+        Box(modifier = Modifier.fillMaxSize()) { // Provide a parent for context
+            UnifiedManipulableBox()
+        }
     }
 }
