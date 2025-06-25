@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -45,17 +46,18 @@ enum class HandlePosition {
 fun ResizableRectangleWithHandles() {
     var rectWidth by remember { mutableStateOf(200.dp) }
     var rectHeight by remember { mutableStateOf(200.dp) }
-    var rectOffsetX by remember { mutableStateOf(50f) } // Offset in pixels for positioning
-    var rectOffsetY by remember { mutableStateOf(50f) } // Offset in pixels for positioning
+    // Position of the top-left corner of the rectangle in pixels
+    var rectOffsetX by remember { mutableStateOf(50f) }
+    var rectOffsetY by remember { mutableStateOf(50f) }
 
     val handleSize = 24.dp
-    // CORRECT USAGE OF toPx
-    val handleSizePx = with(LocalDensity.current) { handleSize.toPx() }
+    val density = LocalDensity.current
+    val handleSizePx = with(density) { handleSize.toPx() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit) { // Optional: Allow dragging the main rectangle
+            .pointerInput(Unit) { // Allow dragging the main rectangle
                 detectDragGestures { change, dragAmount ->
                     change.consume()
                     rectOffsetX += dragAmount.x
@@ -73,196 +75,101 @@ fun ResizableRectangleWithHandles() {
 
         // Scaling Handles
         HandlePosition.values().forEach { position ->
-            val currentDensity = LocalDensity.current // Capture density for use in lambdas if needed
-            val (alignment, dragLogic) = getHandleProperties(
-                position = position,
-                currentWidth = rectWidth,
-                currentHeight = rectHeight,
-                onSizeChange = { dw, dh ->
-                    val newWidth = (rectWidth + dw).coerceAtLeast(handleSize * 2) // Min size
-                    val newHeight = (rectHeight + dh).coerceAtLeast(handleSize * 2) // Min size
-
-                    // Adjust offset based on which handle is dragged to keep the opposite side fixed
-                    // CORRECT USAGE OF toPx (implicitly via Dp.toPx() extension within Density scope)
-                    with(currentDensity) { // Ensure Density is in scope for toPx
-                        when (position) {
-                            HandlePosition.TopLeft -> {
-                                rectOffsetX += (rectWidth - newWidth).toPx()
-                                rectOffsetY += (rectHeight - newHeight).toPx()
-                            }
-
-                            HandlePosition.TopCenter -> {
-                                rectOffsetY += (rectHeight - newHeight).toPx()
-                            }
-
-                            HandlePosition.TopRight -> {
-                                rectOffsetY += (rectHeight - newHeight).toPx()
-                            }
-
-                            HandlePosition.CenterLeft -> {
-                                rectOffsetX += (rectWidth - newWidth).toPx()
-                            }
-
-                            HandlePosition.CenterRight -> { /* No offset change for width */
-                            }
-
-                            HandlePosition.BottomLeft -> {
-                                rectOffsetX += (rectWidth - newWidth).toPx()
-                            }
-
-                            HandlePosition.BottomCenter -> { /* No offset change for height */
-                            }
-
-                            HandlePosition.BottomRight -> { /* No offset change */
-                            }
-                        }
+            // Calculate the absolute top-left offset for each handle
+            val handleOffset = with(density) {
+                Offset(
+                    x = rectOffsetX + when (position) {
+                        HandlePosition.TopLeft, HandlePosition.BottomLeft, HandlePosition.CenterLeft -> -handleSizePx / 2
+                        HandlePosition.TopCenter, HandlePosition.BottomCenter -> rectWidth.toPx() / 2 - handleSizePx / 2
+                        HandlePosition.TopRight, HandlePosition.BottomRight, HandlePosition.CenterRight -> rectWidth.toPx() - handleSizePx / 2
+                    },
+                    y = rectOffsetY + when (position) {
+                        HandlePosition.TopLeft, HandlePosition.TopCenter, HandlePosition.TopRight -> -handleSizePx / 2
+                        HandlePosition.CenterLeft, HandlePosition.CenterRight -> rectHeight.toPx() / 2 - handleSizePx / 2
+                        HandlePosition.BottomLeft, HandlePosition.BottomCenter, HandlePosition.BottomRight -> rectHeight.toPx() - handleSizePx / 2
                     }
-                    rectWidth = newWidth
-                    rectHeight = newHeight
-                },
-                handleSizePx = handleSizePx, // Pass the already converted px value
-                density = currentDensity, // Pass density explicitly
-            )
+                )
+            }
 
             DraggableHandle(
                 modifier = Modifier
-                    .offset { // This offset is for the handle relative to the main rectangle's top-left
-                        IntOffset(
-                            rectOffsetX.roundToInt(),
-                            rectOffsetY.roundToInt(),
-                        )
-                    }
-//                    .align(alignment) // Align within the rectangle's conceptual bounds
-                    .offset { // Further offset the handle to be on the edge/corner
-                        val (xOff, yOff) = when (position) {
-                            HandlePosition.TopLeft -> IntOffset(
-                                -handleSizePx.roundToInt() / 2,
-                                -handleSizePx.roundToInt() / 2,
-                            )
-
-                            HandlePosition.TopCenter -> IntOffset(0, -handleSizePx.roundToInt() / 2)
-                            HandlePosition.TopRight -> IntOffset(
-                                handleSizePx.roundToInt() / 2,
-                                -handleSizePx.roundToInt() / 2,
-                            )
-
-                            HandlePosition.CenterLeft -> IntOffset(
-                                -handleSizePx.roundToInt() / 2,
-                                0,
-                            )
-
-                            HandlePosition.CenterRight -> IntOffset(
-                                handleSizePx.roundToInt() / 2,
-                                0,
-                            )
-
-                            HandlePosition.BottomLeft -> IntOffset(
-                                -handleSizePx.roundToInt() / 2,
-                                handleSizePx.roundToInt() / 2,
-                            )
-
-                            HandlePosition.BottomCenter -> IntOffset(
-                                0,
-                                handleSizePx.roundToInt() / 2,
-                            )
-
-                            HandlePosition.BottomRight -> IntOffset(
-                                handleSizePx.roundToInt() / 2,
-                                handleSizePx.roundToInt() / 2,
-                            )
-                        }
-
-                        // Adjust for rectangle size for correct corner/edge placement
-                        // CORRECT USAGE OF toPx (implicitly via Dp.toPx() extension within Density scope)
-                        with(currentDensity) { // Ensure Density is in scope for toPx
-                            IntOffset(
-                                xOff + when (position) {
-                                    HandlePosition.TopRight, HandlePosition.CenterRight, HandlePosition.BottomRight -> rectWidth.toPx()
-                                        .roundToInt() - handleSizePx.toInt()
-
-                                    HandlePosition.TopCenter, HandlePosition.BottomCenter -> (rectWidth.toPx() / 2).roundToInt() - handleSizePx.toInt() / 2
-                                    else -> 0
-                                },//- (if (position == HandlePosition.TopCenter || position == HandlePosition.BottomCenter) handleSizePx.roundToInt() / 2 else 0), // Center horizontal middle handles
-                                yOff + when (position) {
-                                    HandlePosition.BottomLeft, HandlePosition.BottomCenter, HandlePosition.BottomRight -> (rectHeight.toPx()
-                                        .roundToInt() - handleSizePx.toInt())
-
-                                    HandlePosition.CenterLeft, HandlePosition.CenterRight -> (rectHeight.toPx() / 2).roundToInt() - handleSizePx.toInt() / 2
-                                    else -> 0
-                                }, //- (if (position == HandlePosition.CenterLeft || position == HandlePosition.CenterRight) handleSizePx.roundToInt() / 2 else 0), // Center vertical middle handles
-                            )
-                        }
-                    }
+                    .offset { IntOffset(handleOffset.x.roundToInt(), handleOffset.y.roundToInt()) }
                     .size(handleSize),
-                onDrag = dragLogic,
+                onDrag = { dragAmountPx ->
+                    // Convert dragAmount (Px) to Dp
+                    val dxDp = with(density) { dragAmountPx.x.toDp() }
+                    val dyDp = with(density) { dragAmountPx.y.toDp() }
+
+                    // Apply the drag to the rectangle's size and position
+                    when (position) {
+                        HandlePosition.TopLeft -> {
+                            rectWidth -= dxDp
+                            rectHeight -= dyDp
+                            rectOffsetX += dragAmountPx.x
+                            rectOffsetY += dragAmountPx.y
+                        }
+                        HandlePosition.TopCenter -> {
+                            rectHeight -= dyDp
+                            rectOffsetY += dragAmountPx.y
+                        }
+                        HandlePosition.TopRight -> {
+                            rectWidth += dxDp
+                            rectHeight -= dyDp
+                            rectOffsetY += dragAmountPx.y
+                        }
+                        HandlePosition.CenterLeft -> {
+                            rectWidth -= dxDp
+                            rectOffsetX += dragAmountPx.x
+                        }
+                        HandlePosition.CenterRight -> {
+                            rectWidth += dxDp
+                        }
+                        HandlePosition.BottomLeft -> {
+                            rectWidth -= dxDp
+                            rectHeight += dyDp
+                            rectOffsetX += dragAmountPx.x
+                        }
+                        HandlePosition.BottomCenter -> {
+                            rectHeight += dyDp
+                        }
+                        HandlePosition.BottomRight -> {
+                            rectWidth += dxDp
+                            rectHeight += dyDp
+                        }
+                    }
+
+                    // Ensure minimum size
+                    rectWidth = rectWidth.coerceAtLeast(handleSize * 2)
+                    rectHeight = rectHeight.coerceAtLeast(handleSize * 2)
+                },
             )
         }
     }
 }
 
+/**
+ * A generic draggable handle.
+ */
 @Composable
 fun DraggableHandle(
     modifier: Modifier = Modifier,
-    onDrag: (dragAmount: Offset) -> Unit,
+    onDrag: (dragAmount: Offset) -> Unit, // dragAmount is in pixels
 ) {
-    Button(
-        onClick = { /* Handles are for dragging, not clicking */ },
-        shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+    Box(
         modifier = modifier
+            .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(2.dp))
+            .border(1.dp, Color.White, RoundedCornerShape(2.dp))
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    onDrag(dragAmount)
+                    onDrag(dragAmount) // Pass drag amount in pixels
                 }
-            }
-            .padding(0.dp), // Remove default button padding if any
+            },
     ) {
-        // No text or icon needed for small handles
+        // No content needed, it's just a visual box for the handle
     }
 }
 
-// Modified to explicitly take Density
-fun getHandleProperties(
-    position: HandlePosition,
-    currentWidth: Dp,
-    currentHeight: Dp,
-    onSizeChange: (dw: Dp, dh: Dp) -> Unit,
-    handleSizePx: Float, // Already in Px
-    density: androidx.compose.ui.unit.Density, // Explicitly pass Density
-): Pair<Alignment, (Offset) -> Unit> {
-    // val currentWidthPx = with(density) { currentWidth.toPx() } // Not strictly needed here anymore
-    // val currentHeightPx = with(density) { currentHeight.toPx() } // Not strictly needed here anymore
-
-    val alignment: Alignment = when (position) {
-        HandlePosition.TopLeft -> Alignment.TopStart
-        HandlePosition.TopCenter -> Alignment.TopCenter
-        HandlePosition.TopRight -> Alignment.TopEnd
-        HandlePosition.CenterLeft -> Alignment.CenterStart
-        HandlePosition.CenterRight -> Alignment.CenterEnd
-        HandlePosition.BottomLeft -> Alignment.BottomStart
-        HandlePosition.BottomCenter -> Alignment.BottomCenter
-        HandlePosition.BottomRight -> Alignment.BottomEnd
-    }
-
-    val dragLogic: (Offset) -> Unit = { dragAmount ->
-        // CORRECT USAGE OF toDp (implicitly via Float.toDp() extension within Density scope)
-        val dxDp = with(density) { dragAmount.x.toDp() }
-        val dyDp = with(density) { dragAmount.y.toDp() }
-
-        when (position) {
-            HandlePosition.TopLeft -> onSizeChange(-dxDp, -dyDp)
-            HandlePosition.TopCenter -> onSizeChange(0.dp, -dyDp)
-            HandlePosition.TopRight -> onSizeChange(dxDp, -dyDp)
-            HandlePosition.CenterLeft -> onSizeChange(-dxDp, 0.dp)
-            HandlePosition.CenterRight -> onSizeChange(dxDp, 0.dp)
-            HandlePosition.BottomLeft -> onSizeChange(-dxDp, dyDp)
-            HandlePosition.BottomCenter -> onSizeChange(0.dp, dyDp)
-            HandlePosition.BottomRight -> onSizeChange(dxDp, dyDp)
-        }
-    }
-    return Pair(alignment, dragLogic)
-}
 
 @Preview(showBackground = true)
 @Composable
