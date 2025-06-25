@@ -5,17 +5,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -32,18 +40,148 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toIntSize
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 enum class HandlePosition {
-    TopLeft, TopCenter, TopRight,
-    CenterLeft, CenterRight,
-    BottomLeft, BottomCenter, BottomRight
+    TopLeft, TopCenter, TopRight, CenterLeft, CenterRight, BottomLeft, BottomCenter, BottomRight
 }
+@Composable
+fun ResizableRectangleWithHandles2() {
+    val density = LocalDensity.current
+    with(density) {
+
+        var rectangle by remember {
+            mutableStateOf(
+                Rect(Offset(20f, 20f), Size(400f, 470f)),
+            )
+        }
+        var rotationAngle by remember { mutableStateOf(0f) } // State to hold the rotation angle
+        val handleSize = 24.dp
+
+        Box(Modifier.fillMaxSize()) {
+
+            Column(
+                modifier = Modifier
+                    .offset(rectangle.topLeft.x.toDp(), rectangle.topLeft.y.toDp())
+                    // Apply rotation here
+                    .graphicsLayer {
+                        rotationZ = rotationAngle
+                        // You might need to adjust the pivot point for rotation
+                        // For a column, rotation happens around its top-left by default.
+                        // To rotate around the center of the rectangle, you'd need more complex calculations
+                        // involving `transformOrigin`. For simplicity, we'll rotate around the default pivot.
+                    }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.CenterHorizontally)
+                        .background(Color.Blue, CircleShape)
+                        // Add pointerInput to detect drag for rotation
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                // Calculate the angle based on drag amount
+                                // This is a simplified approach, a more accurate rotation
+                                // would involve calculating the angle relative to the center of the rectangle.
+                                // For basic rotation, a linear mapping to drag amount can work.
+                                val rotationSensitivity = 0.5f // Adjust this value to control rotation speed
+                                rotationAngle += dragAmount.x * rotationSensitivity
+                            }
+                        }
+
+                ) {
+                    Icon(
+                        Icons.Filled.Refresh,
+                        contentDescription = "Rotate handler",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(2.dp),
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                    )
+                }
+                HorizontalDivider(
+                    modifier = Modifier
+                        .height(handleSize / 2)
+                        .width(2.dp),
+                )
+                Box(
+                    modifier = Modifier
+                        .size(
+                            rectangle.width.toDp() + handleSize,
+                            rectangle.height.toDp() + handleSize,
+                        )
+                        .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                rectangle = rectangle.translate(dragAmount.x, dragAmount.y)
+                            }
+                        },
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(
+                                rectangle.width.toDp(),
+                                rectangle.height.toDp(),
+                            )
+                            .align(Alignment.Center)
+                            .border(4.dp, Color.Blue),
+
+                        )
+                    // Draggable handles remain the same
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.TopStart),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.TopCenter),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.TopEnd),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.CenterStart),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.CenterEnd),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.BottomStart),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.BottomCenter),
+                    ) { }
+                    DraggableHandle(
+                        modifier = Modifier
+                            .size(handleSize)
+                            .align(Alignment.BottomEnd),
+                    ) { }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ResizableRectangleWithHandles() {
@@ -71,7 +209,12 @@ fun ResizableRectangleWithHandles() {
         // The Resizable Rectangle
         Box(
             modifier = Modifier
-                .offset { IntOffset(rectOffsetX.roundToInt(), rectOffsetY.roundToInt()) }
+                .offset {
+                    IntOffset(
+                        rectOffsetX.roundToInt(),
+                        rectOffsetY.roundToInt(),
+                    )
+                }
                 .size(rectWidth, rectHeight)
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)), // Semi-transparent
         )
@@ -90,13 +233,18 @@ fun ResizableRectangleWithHandles() {
                         HandlePosition.TopLeft, HandlePosition.TopCenter, HandlePosition.TopRight -> -handleSizePx / 2
                         HandlePosition.CenterLeft, HandlePosition.CenterRight -> rectHeight.toPx() / 2 - handleSizePx / 2
                         HandlePosition.BottomLeft, HandlePosition.BottomCenter, HandlePosition.BottomRight -> rectHeight.toPx() - handleSizePx / 2
-                    }
+                    },
                 )
             }
 
             DraggableHandle(
                 modifier = Modifier
-                    .offset { IntOffset(handleOffset.x.roundToInt(), handleOffset.y.roundToInt()) }
+                    .offset {
+                        IntOffset(
+                            handleOffset.x.roundToInt(),
+                            handleOffset.y.roundToInt(),
+                        )
+                    }
                     .size(handleSize),
                 onDrag = { dragAmountPx ->
                     // Convert dragAmount (Px) to Dp
@@ -111,30 +259,37 @@ fun ResizableRectangleWithHandles() {
                             rectOffsetX += dragAmountPx.x
                             rectOffsetY += dragAmountPx.y
                         }
+
                         HandlePosition.TopCenter -> {
                             rectHeight -= dyDp
                             rectOffsetY += dragAmountPx.y
                         }
+
                         HandlePosition.TopRight -> {
                             rectWidth += dxDp
                             rectHeight -= dyDp
                             rectOffsetY += dragAmountPx.y
                         }
+
                         HandlePosition.CenterLeft -> {
                             rectWidth -= dxDp
                             rectOffsetX += dragAmountPx.x
                         }
+
                         HandlePosition.CenterRight -> {
                             rectWidth += dxDp
                         }
+
                         HandlePosition.BottomLeft -> {
                             rectWidth -= dxDp
                             rectHeight += dyDp
                             rectOffsetX += dragAmountPx.x
                         }
+
                         HandlePosition.BottomCenter -> {
                             rectHeight += dyDp
                         }
+
                         HandlePosition.BottomRight -> {
                             rectWidth += dxDp
                             rectHeight += dyDp
@@ -160,7 +315,7 @@ fun DraggableHandle(
 ) {
     Box(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(2.dp))
+            .background(Color.Blue, RoundedCornerShape(2.dp))
             .border(1.dp, Color.White, RoundedCornerShape(2.dp))
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
@@ -178,7 +333,7 @@ fun DraggableHandle(
 @Composable
 fun ResizableRectangleWithHandlesPreview() {
     MaterialTheme { // MaterialTheme provides LocalDensity implicitly
-        ResizableRectangleWithHandles()
+        ResizableRectangleWithHandles2()
     }
 }
 
@@ -192,6 +347,7 @@ fun UnifiedManipulableBox() {
             ),
         )
     } // Top-left of the entire rotated composable
+    var lastPointerAngle by remember { mutableStateOf(0f) } // Rotation in degrees
     var boxRotation by remember { mutableStateOf(0f) } // Rotation in degrees
     val boxWidth = 200.dp // Fixed size for this example, can be made stateful for scaling
     val boxHeight = 150.dp
@@ -267,8 +423,6 @@ fun UnifiedManipulableBox() {
                 .size(handleVisualSize)
                 .background(MaterialTheme.colorScheme.secondary, CircleShape)
                 .pointerInput(Unit) { // Pointer input for ROTATING the WHOLE BOX
-                    var lastPointerAngle =
-                        0f // Angle of pointer relative to box center at drag start/last drag
 
                     detectDragGestures(
                         onDragStart = { startOffset ->
@@ -331,7 +485,7 @@ fun UnifiedManipulableBox() {
     }
 }
 
-@Preview(showBackground = true,)
+@Preview(showBackground = true)
 @Composable
 fun UnifiedManipulableBoxPreview() {
     MaterialTheme {
