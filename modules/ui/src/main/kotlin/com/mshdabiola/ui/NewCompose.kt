@@ -54,7 +54,6 @@ enum class HandlePosition {
     TopLeft, TopCenter, TopRight, CenterLeft, CenterRight, BottomLeft, BottomCenter, BottomRight
 }
 
-
 @Composable
 fun ResizableRectangleWithHandles2() {
     val density = LocalDensity.current
@@ -65,103 +64,35 @@ fun ResizableRectangleWithHandles2() {
                 Rect(Offset(100f, 100f), Size(400f, 470f)), // Initial position and size
             )
         }
-        var boxRotation by remember { mutableStateOf(0f) } // State for rotation
-        var lastPointerAngle by remember { mutableStateOf(0f) } // Used for rotation calculation
 
         val handleSize = 24.dp
-        val minSize = 50.0F // Minimum size for the rectangle
+        val applyResizing = { dragAmount: Offset,
+                              hResize: Boolean,
+                              vResize: Boolean,
+                              fromTop: Boolean,
+                              fromLeft: Boolean ->
+
+        }
 
         Box(Modifier.fillMaxSize()) {
 
-            Column(
-                modifier = Modifier
-                    .offset { IntOffset(rectangle.topLeft.x.roundToInt(), rectangle.topLeft.y.roundToInt()) }
-                    .graphicsLayer(
-                        rotationZ = boxRotation,
-                    )
-            ) {
 
-                val rectangleCenterXInColumn = (rectangle.width +handleSize.toPx())/2
-                val rectangleCenterYInColumn = (rectangle.width +(handleSize*3).toPx())/2
-
-                // Rotation Handle
-                Box(
-                    modifier = Modifier
-                        .size(handleSize)
-                        .align(Alignment.CenterHorizontally)
-                        .background(Color.Blue, CircleShape)
-                        .pointerInput(Unit) { // Pointer input for ROTATING the WHOLE Column
-                            val columnCenter = Offset(rectangleCenterXInColumn, rectangleCenterYInColumn)
-
-                            detectDragGestures(
-                                onDragStart = { startOffset ->
-                                    // startOffset is relative to the top-left of this rotation handle.
-                                    // Convert it to be relative to the center of the rectangle within the Column.
-                                    val handleOffsetInColumn = Offset(
-                                        rectangleCenterXInColumn - handleSize.toPx() / 2, // X-pos of handle's top-left in column
-                                        0f // Y-pos of handle's top-left in column
-                                    )
-                                    val pointerRelativeToColumnCenter = (handleOffsetInColumn + startOffset) - columnCenter
-
-                                    lastPointerAngle = Math.toDegrees(atan2(
-                                        pointerRelativeToColumnCenter.y.toDouble(),
-                                        pointerRelativeToColumnCenter.x.toDouble()
-                                    )).toFloat()
-                                },
-                                onDrag = { change, _ -> // dragAmount is local to handle, but we need position for angle
-                                    change.consume()
-
-                                    val handleOffsetInColumn = Offset(
-                                        rectangleCenterXInColumn - handleSize.toPx() / 2,
-                                        0f
-                                    )
-                                    val pointerRelativeToColumnCenter = (handleOffsetInColumn + change.position) - columnCenter
-
-                                    val currentPointerAngle = Math.toDegrees(atan2(
-                                        pointerRelativeToColumnCenter.y.toDouble(),
-                                        pointerRelativeToColumnCenter.x.toDouble()
-                                    )).toFloat()
-
-                                    val diff = currentPointerAngle - lastPointerAngle
-                                    boxRotation += diff
-                                    lastPointerAngle = currentPointerAngle // Update for next delta
-                                }
-                            )
-                        }
-
-                ) {
-                    Icon(
-                        Icons.Filled.Refresh,
-                        contentDescription = "Rotate handler",
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(2.dp),
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                    )
-                }
-                HorizontalDivider(
-                    modifier = Modifier
-                        .height(handleSize / 2)
-                        .width(2.dp),
-                )
                 Box(
                     modifier = Modifier
                         .size(
                             rectangle.width.toDp() + handleSize,
                             rectangle.height.toDp() + handleSize,
                         )
+                        .offset { IntOffset(rectangle.topLeft.x.roundToInt(), rectangle.topLeft.y.roundToInt()) }
+
                         .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX (now rotated)
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-
-                                val angleRad = Math.toRadians(boxRotation.toDouble())
-                                val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-                                val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                                rectangle = rectangle.translate(rotatedDx.toFloat(), rotatedDy.toFloat())
+                                rectangle = rectangle.translate(dragAmount.x,dragAmount.y)
                             }
                         },
-                ) {
+                )
+                {
                     Box(
                         modifier = Modifier
                             .size(
@@ -179,21 +110,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopStart),
                     ) { dragAmount ->
-                        // The anchor point for top-left scaling is the bottom-right corner.
-                        val anchorX = rectangle.right
-                        val anchorY = rectangle.bottom
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newWidth = (rectangle.width - rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newHeight = (rectangle.height - rotatedDy).coerceAtLeast(minSize.toDouble())
-
-                        val newLeft = anchorX - newWidth
-                        val newTop = anchorY - newHeight
-
-                        rectangle = Rect(newLeft.toFloat(), newTop.toFloat(), anchorX, anchorY)
+                        applyResizing(dragAmount, true, true, true, true)
                     }
                     // Top-Center handle
                     DraggableHandle(
@@ -201,16 +118,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopCenter),
                     ) { dragAmount ->
-                        // The anchor point for top-center scaling is the bottom side.
-                        val anchorY = rectangle.bottom
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newHeight = (rectangle.height - rotatedDy).coerceAtLeast(minSize.toDouble())
-                        val newTop = anchorY - newHeight
-
-                        rectangle = Rect(rectangle.left, newTop.toFloat(), rectangle.right, anchorY)
+                        applyResizing(dragAmount, false, true, true, false) // Only vertical resize
                     }
                     // Top-End handle
                     DraggableHandle(
@@ -218,21 +126,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopEnd),
                     ) { dragAmount ->
-                        // The anchor point for top-end scaling is the bottom-left corner.
-                        val anchorX = rectangle.left
-                        val anchorY = rectangle.bottom
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newWidth = (rectangle.width + rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newHeight = (rectangle.height - rotatedDy).coerceAtLeast(minSize.toDouble())
-
-                        val newTop = anchorY - newHeight
-                        val newRight = anchorX + newWidth
-
-                        rectangle = Rect(anchorX, newTop.toFloat(), newRight.toFloat(), anchorY)
+                        applyResizing(dragAmount, true, true, true, false)
                     }
                     // Center-Start handle
                     DraggableHandle(
@@ -240,16 +134,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.CenterStart),
                     ) { dragAmount ->
-                        // The anchor point for center-start scaling is the right side.
-                        val anchorX = rectangle.right
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-
-                        val newWidth = (rectangle.width - rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newLeft = anchorX - newWidth
-
-                        rectangle = Rect(newLeft.toFloat(), rectangle.top, anchorX, rectangle.bottom)
+                        applyResizing(dragAmount, true, false, false, true) // Only horizontal resize
                     }
                     // Center-End handle
                     DraggableHandle(
@@ -257,16 +142,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.CenterEnd),
                     ) { dragAmount ->
-                        // The anchor point for center-end scaling is the left side.
-                        val anchorX = rectangle.left
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-
-                        val newWidth = (rectangle.width + rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newRight = anchorX + newWidth
-
-                        rectangle = Rect(anchorX, rectangle.top, newRight.toFloat(), rectangle.bottom)
+                        applyResizing(dragAmount, true, false, false, false) // Only horizontal resize
                     }
                     // Bottom-Start handle
                     DraggableHandle(
@@ -274,21 +150,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomStart),
                     ) { dragAmount ->
-                        // The anchor point for bottom-start scaling is the top-right corner.
-                        val anchorX = rectangle.right
-                        val anchorY = rectangle.top
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newWidth = (rectangle.width - rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newHeight = (rectangle.height + rotatedDy).coerceAtLeast(minSize.toDouble())
-
-                        val newLeft = anchorX - newWidth
-                        val newBottom = anchorY + newHeight
-
-                        rectangle = Rect(newLeft.toFloat(), anchorY, anchorX, newBottom.toFloat())
+                        applyResizing(dragAmount, true, true, false, true)
                     }
                     // Bottom-Center handle
                     DraggableHandle(
@@ -296,16 +158,7 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomCenter),
                     ) { dragAmount ->
-                        // The anchor point for bottom-center scaling is the top side.
-                        val anchorY = rectangle.top
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newHeight = (rectangle.height + rotatedDy).coerceAtLeast(minSize.toDouble())
-                        val newBottom = anchorY + newHeight
-
-                        rectangle = Rect(rectangle.left, anchorY, rectangle.right, newBottom.toFloat())
+                        applyResizing(dragAmount, false, true, false, false) // Only vertical resize
                     }
                     // Bottom-End handle
                     DraggableHandle(
@@ -313,29 +166,13 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomEnd),
                     ) { dragAmount ->
-                        // The anchor point for bottom-end scaling is the top-left corner.
-                        val anchorX = rectangle.left
-                        val anchorY = rectangle.top
-
-                        val angleRad = Math.toRadians(boxRotation.toDouble())
-                        val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
-                        val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
-
-                        val newWidth = (rectangle.width + rotatedDx).coerceAtLeast(minSize.toDouble())
-                        val newHeight = (rectangle.height + rotatedDy).coerceAtLeast(minSize.toDouble())
-
-                        val newRight = anchorX + newWidth
-                        val newBottom = anchorY + newHeight
-
-                        rectangle = Rect(anchorX, anchorY, newRight.toFloat(), newBottom.toFloat())
+                        applyResizing(dragAmount, true, true, false, false)
                     }
                 }
-            }
+
         }
     }
 }
-
-
 @Composable
 fun DraggableHandle(
     modifier: Modifier = Modifier,
