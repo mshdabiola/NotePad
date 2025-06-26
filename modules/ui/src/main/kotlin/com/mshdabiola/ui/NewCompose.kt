@@ -54,6 +54,7 @@ enum class HandlePosition {
     TopLeft, TopCenter, TopRight, CenterLeft, CenterRight, BottomLeft, BottomCenter, BottomRight
 }
 
+
 @Composable
 fun ResizableRectangleWithHandles2() {
     val density = LocalDensity.current
@@ -61,10 +62,12 @@ fun ResizableRectangleWithHandles2() {
 
         var rectangle by remember {
             mutableStateOf(
-                Rect(Offset(20f, 20f), Size(400f, 470f)),
+                Rect(Offset(100f, 100f), Size(400f, 470f)), // Initial position and size
             )
         }
-        var rotationAngle by remember { mutableStateOf(0f) }
+        var boxRotation by remember { mutableStateOf(0f) } // State for rotation
+        var lastPointerAngle by remember { mutableStateOf(0f) } // Used for rotation calculation
+
         val handleSize = 24.dp
         val minSize = 50f // Minimum size for the rectangle
 
@@ -72,22 +75,58 @@ fun ResizableRectangleWithHandles2() {
 
             Column(
                 modifier = Modifier
-                    .offset(rectangle.topLeft.x.toDp(), rectangle.topLeft.y.toDp())
-                    .graphicsLayer {
-                        rotationZ = rotationAngle
-                    }
+                    .offset { IntOffset(rectangle.topLeft.x.roundToInt(), rectangle.topLeft.y.roundToInt()) }
+                    .graphicsLayer(
+                        rotationZ = boxRotation,
+                    )
             ) {
+
+                val rectangleCenterXInColumn = (rectangle.width +handleSize.toPx())/2
+                val rectangleCenterYInColumn = (rectangle.width +(handleSize*3).toPx())/2
+
+                // Rotation Handle
                 Box(
                     modifier = Modifier
                         .size(handleSize)
                         .align(Alignment.CenterHorizontally)
                         .background(Color.Blue, CircleShape)
-                        .pointerInput(Unit) {
-                            detectDragGestures { change, dragAmount ->
-                                change.consume()
-                                val rotationSensitivity = 0.5f
-                                rotationAngle += dragAmount.x * rotationSensitivity
-                            }
+                        .pointerInput(Unit) { // Pointer input for ROTATING the WHOLE Column
+                            val columnCenter = Offset(rectangleCenterXInColumn, rectangleCenterYInColumn)
+
+                            detectDragGestures(
+                                onDragStart = { startOffset ->
+                                    // startOffset is relative to the top-left of this rotation handle.
+                                    // Convert it to be relative to the center of the rectangle within the Column.
+                                    val handleOffsetInColumn = Offset(
+                                        rectangleCenterXInColumn - handleSize.toPx() / 2, // X-pos of handle's top-left in column
+                                        0f // Y-pos of handle's top-left in column
+                                    )
+                                    val pointerRelativeToColumnCenter = (handleOffsetInColumn + startOffset) - columnCenter
+
+                                    lastPointerAngle = Math.toDegrees(atan2(
+                                        pointerRelativeToColumnCenter.y.toDouble(),
+                                        pointerRelativeToColumnCenter.x.toDouble()
+                                    )).toFloat()
+                                },
+                                onDrag = { change, _ -> // dragAmount is local to handle, but we need position for angle
+                                    change.consume()
+
+                                    val handleOffsetInColumn = Offset(
+                                        rectangleCenterXInColumn - handleSize.toPx() / 2,
+                                        0f
+                                    )
+                                    val pointerRelativeToColumnCenter = (handleOffsetInColumn + change.position) - columnCenter
+
+                                    val currentPointerAngle = Math.toDegrees(atan2(
+                                        pointerRelativeToColumnCenter.y.toDouble(),
+                                        pointerRelativeToColumnCenter.x.toDouble()
+                                    )).toFloat()
+
+                                    val diff = currentPointerAngle - lastPointerAngle
+                                    boxRotation += diff
+                                    lastPointerAngle = currentPointerAngle // Update for next delta
+                                }
+                            )
                         }
 
                 ) {
@@ -111,10 +150,15 @@ fun ResizableRectangleWithHandles2() {
                             rectangle.width.toDp() + handleSize,
                             rectangle.height.toDp() + handleSize,
                         )
-                        .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX
+                        .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX (now rotated)
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-                                rectangle = rectangle.translate(dragAmount.x, dragAmount.y)
+
+                                val angleRad = Math.toRadians(boxRotation.toDouble())
+                                val rotatedDx = dragAmount.x * cos(angleRad) - dragAmount.y * sin(angleRad)
+                                val rotatedDy = dragAmount.x * sin(angleRad) + dragAmount.y * cos(angleRad)
+
+                                rectangle = rectangle.translate(rotatedDx.toFloat(), rotatedDy.toFloat())
                             }
                         },
                 ) {
@@ -241,132 +285,6 @@ fun ResizableRectangleWithHandles2() {
     }
 }
 
-
-@Composable
-fun ResizableRectangleWithHandles() {
-    var rectWidth by remember { mutableStateOf(200.dp) }
-    var rectHeight by remember { mutableStateOf(200.dp) }
-    // Position of the top-left corner of the rectangle in pixels
-    var rectOffsetX by remember { mutableStateOf(50f) }
-    var rectOffsetY by remember { mutableStateOf(50f) }
-
-    val handleSize = 24.dp
-    val density = LocalDensity.current
-    val handleSizePx = with(density) { handleSize.toPx() }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) { // Allow dragging the main rectangle
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    rectOffsetX += dragAmount.x
-                    rectOffsetY += dragAmount.y
-                }
-            },
-    ) {
-        // The Resizable Rectangle
-        Box(
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        rectOffsetX.roundToInt(),
-                        rectOffsetY.roundToInt(),
-                    )
-                }
-                .size(rectWidth, rectHeight)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)), // Semi-transparent
-        )
-
-        // Scaling Handles
-        HandlePosition.values().forEach { position ->
-            // Calculate the absolute top-left offset for each handle
-            val handleOffset = with(density) {
-                Offset(
-                    x = rectOffsetX + when (position) {
-                        HandlePosition.TopLeft, HandlePosition.BottomLeft, HandlePosition.CenterLeft -> -handleSizePx / 2
-                        HandlePosition.TopCenter, HandlePosition.BottomCenter -> rectWidth.toPx() / 2 - handleSizePx / 2
-                        HandlePosition.TopRight, HandlePosition.BottomRight, HandlePosition.CenterRight -> rectWidth.toPx() - handleSizePx / 2
-                    },
-                    y = rectOffsetY + when (position) {
-                        HandlePosition.TopLeft, HandlePosition.TopCenter, HandlePosition.TopRight -> -handleSizePx / 2
-                        HandlePosition.CenterLeft, HandlePosition.CenterRight -> rectHeight.toPx() / 2 - handleSizePx / 2
-                        HandlePosition.BottomLeft, HandlePosition.BottomCenter, HandlePosition.BottomRight -> rectHeight.toPx() - handleSizePx / 2
-                    },
-                )
-            }
-
-            DraggableHandle(
-                modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            handleOffset.x.roundToInt(),
-                            handleOffset.y.roundToInt(),
-                        )
-                    }
-                    .size(handleSize),
-                onDrag = { dragAmountPx ->
-                    // Convert dragAmount (Px) to Dp
-                    val dxDp = with(density) { dragAmountPx.x.toDp() }
-                    val dyDp = with(density) { dragAmountPx.y.toDp() }
-
-                    // Apply the drag to the rectangle's size and position
-                    when (position) {
-                        HandlePosition.TopLeft -> {
-                            rectWidth -= dxDp
-                            rectHeight -= dyDp
-                            rectOffsetX += dragAmountPx.x
-                            rectOffsetY += dragAmountPx.y
-                        }
-
-                        HandlePosition.TopCenter -> {
-                            rectHeight -= dyDp
-                            rectOffsetY += dragAmountPx.y
-                        }
-
-                        HandlePosition.TopRight -> {
-                            rectWidth += dxDp
-                            rectHeight -= dyDp
-                            rectOffsetY += dragAmountPx.y
-                        }
-
-                        HandlePosition.CenterLeft -> {
-                            rectWidth -= dxDp
-                            rectOffsetX += dragAmountPx.x
-                        }
-
-                        HandlePosition.CenterRight -> {
-                            rectWidth += dxDp
-                        }
-
-                        HandlePosition.BottomLeft -> {
-                            rectWidth -= dxDp
-                            rectHeight += dyDp
-                            rectOffsetX += dragAmountPx.x
-                        }
-
-                        HandlePosition.BottomCenter -> {
-                            rectHeight += dyDp
-                        }
-
-                        HandlePosition.BottomRight -> {
-                            rectWidth += dxDp
-                            rectHeight += dyDp
-                        }
-                    }
-
-                    // Ensure minimum size
-                    rectWidth = rectWidth.coerceAtLeast(handleSize * 2)
-                    rectHeight = rectHeight.coerceAtLeast(handleSize * 2)
-                },
-            )
-        }
-    }
-}
-
-/**
- * A generic draggable handle.
- */
 @Composable
 fun DraggableHandle(
     modifier: Modifier = Modifier,
@@ -386,7 +304,6 @@ fun DraggableHandle(
         // No content needed, it's just a visual box for the handle
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
