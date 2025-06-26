@@ -46,12 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toIntSize
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 enum class HandlePosition {
     TopLeft, TopCenter, TopRight, CenterLeft, CenterRight, BottomLeft, BottomCenter, BottomRight
 }
+
 @Composable
 fun ResizableRectangleWithHandles2() {
     val density = LocalDensity.current
@@ -62,21 +64,17 @@ fun ResizableRectangleWithHandles2() {
                 Rect(Offset(20f, 20f), Size(400f, 470f)),
             )
         }
-        var rotationAngle by remember { mutableStateOf(0f) } // State to hold the rotation angle
+        var rotationAngle by remember { mutableStateOf(0f) }
         val handleSize = 24.dp
+        val minSize = 50f // Minimum size for the rectangle
 
         Box(Modifier.fillMaxSize()) {
 
             Column(
                 modifier = Modifier
                     .offset(rectangle.topLeft.x.toDp(), rectangle.topLeft.y.toDp())
-                    // Apply rotation here
                     .graphicsLayer {
                         rotationZ = rotationAngle
-                        // You might need to adjust the pivot point for rotation
-                        // For a column, rotation happens around its top-left by default.
-                        // To rotate around the center of the rectangle, you'd need more complex calculations
-                        // involving `transformOrigin`. For simplicity, we'll rotate around the default pivot.
                     }
             ) {
                 Box(
@@ -84,15 +82,10 @@ fun ResizableRectangleWithHandles2() {
                         .size(handleSize)
                         .align(Alignment.CenterHorizontally)
                         .background(Color.Blue, CircleShape)
-                        // Add pointerInput to detect drag for rotation
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-                                // Calculate the angle based on drag amount
-                                // This is a simplified approach, a more accurate rotation
-                                // would involve calculating the angle relative to the center of the rectangle.
-                                // For basic rotation, a linear mapping to drag amount can work.
-                                val rotationSensitivity = 0.5f // Adjust this value to control rotation speed
+                                val rotationSensitivity = 0.5f
                                 rotationAngle += dragAmount.x * rotationSensitivity
                             }
                         }
@@ -135,47 +128,113 @@ fun ResizableRectangleWithHandles2() {
                             .border(4.dp, Color.Blue),
 
                         )
-                    // Draggable handles remain the same
+
+                    // Top-Left handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.TopStart),
-                    ) { }
+                    ) { dragAmount ->
+                        val newLeft = rectangle.left + dragAmount.x
+                        val newTop = rectangle.top + dragAmount.y
+                        val newWidth = max(minSize, rectangle.width - dragAmount.x)
+                        val newHeight = max(minSize, rectangle.height - dragAmount.y)
+                        rectangle = Rect(
+                            offset = Offset(newLeft, newTop),
+                            size = Size(newWidth, newHeight)
+                        )
+                    }
+                    // Top-Center handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.TopCenter),
-                    ) { }
+                    ) { dragAmount ->
+                        val newTop = rectangle.top + dragAmount.y
+                        val newHeight = max(minSize, rectangle.height - dragAmount.y)
+                        rectangle = Rect(
+                            offset = Offset(rectangle.left, newTop),
+                            size = Size(rectangle.width, newHeight)
+                        )
+                    }
+                    // Top-End handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.TopEnd),
-                    ) { }
+                    ) { dragAmount ->
+                        val newTop = rectangle.top + dragAmount.y
+                        val newWidth = max(minSize, rectangle.width + dragAmount.x)
+                        val newHeight = max(minSize, rectangle.height - dragAmount.y)
+                        rectangle = Rect(
+                            offset = Offset(rectangle.left, newTop),
+                            size = Size(newWidth, newHeight)
+                        )
+                    }
+                    // Center-Start handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.CenterStart),
-                    ) { }
+                    ) { dragAmount ->
+                        val newLeft = rectangle.left + dragAmount.x
+                        val newWidth = max(minSize, rectangle.width - dragAmount.x)
+                        rectangle = Rect(
+                            offset = Offset(newLeft, rectangle.top),
+                            size = Size(newWidth, rectangle.height)
+                        )
+                    }
+                    // Center-End handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.CenterEnd),
-                    ) { }
+                    ) { dragAmount ->
+                        val newWidth = max(minSize, rectangle.width + dragAmount.x)
+                        rectangle = Rect(
+                            offset = rectangle.topLeft,
+                            size = Size(newWidth, rectangle.height)
+                        )
+                    }
+                    // Bottom-Start handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.BottomStart),
-                    ) { }
+                    ) { dragAmount ->
+                        val newLeft = rectangle.left + dragAmount.x
+                        val newWidth = max(minSize, rectangle.width - dragAmount.x)
+                        val newHeight = max(minSize, rectangle.height + dragAmount.y)
+                        rectangle = Rect(
+                            offset = Offset(newLeft, rectangle.top),
+                            size = Size(newWidth, newHeight)
+                        )
+                    }
+                    // Bottom-Center handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.BottomCenter),
-                    ) { }
+                    ) { dragAmount ->
+                        val newHeight = max(minSize, rectangle.height + dragAmount.y)
+                        rectangle = Rect(
+                            offset = rectangle.topLeft,
+                            size = Size(rectangle.width, newHeight)
+                        )
+                    }
+                    // Bottom-End handle
                     DraggableHandle(
                         modifier = Modifier
                             .size(handleSize)
                             .align(Alignment.BottomEnd),
-                    ) { }
+                    ) { dragAmount ->
+                        val newWidth = max(minSize, rectangle.width + dragAmount.x)
+                        val newHeight = max(minSize, rectangle.height + dragAmount.y)
+                        rectangle = Rect(
+                            offset = rectangle.topLeft,
+                            size = Size(newWidth, newHeight)
+                        )
+                    }
                 }
             }
         }
