@@ -5,22 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,31 +23,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toIntSize
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sin
-
-enum class HandlePosition {
-    TopLeft, TopCenter, TopRight, CenterLeft, CenterRight, BottomLeft, BottomCenter, BottomRight
-}
 
 @Composable
 fun ResizableRectangleWithHandles2() {
@@ -66,113 +50,121 @@ fun ResizableRectangleWithHandles2() {
         }
 
         val handleSize = 24.dp
-        val applyResizing = { dragAmount: Offset,
-                              hResize: Boolean,
-                              vResize: Boolean,
-                              fromTop: Boolean,
-                              fromLeft: Boolean ->
-
-        }
 
         Box(Modifier.fillMaxSize()) {
-
-
+            Box(
+                modifier = Modifier
+                    .size(
+                        rectangle.width.toDp() + handleSize,
+                        rectangle.height.toDp() + handleSize,
+                    )
+                    .offset { IntOffset(rectangle.topLeft.x.roundToInt(), rectangle.topLeft.y.roundToInt()) }
+                    .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX (now rotated)
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            rectangle = rectangle.translate(dragAmount.x, dragAmount.y)
+                        }
+                    },
+            ) {
                 Box(
                     modifier = Modifier
                         .size(
-                            rectangle.width.toDp() + handleSize,
-                            rectangle.height.toDp() + handleSize,
+                            rectangle.width.toDp(),
+                            rectangle.height.toDp(),
                         )
-                        .offset { IntOffset(rectangle.topLeft.x.roundToInt(), rectangle.topLeft.y.roundToInt()) }
-
-                        .pointerInput(Unit) { // Pointer input for translating the WHOLE BOX (now rotated)
-                            detectDragGestures { change, dragAmount ->
-                                change.consume()
-                                rectangle = rectangle.translate(dragAmount.x,dragAmount.y)
-                            }
-                        },
+                        .align(Alignment.Center)
+                        .border(4.dp, Color.Blue),
                 )
-                {
-                    Box(
-                        modifier = Modifier
-                            .size(
-                                rectangle.width.toDp(),
-                                rectangle.height.toDp(),
-                            )
-                            .align(Alignment.Center)
-                            .border(4.dp, Color.Blue),
 
-                        )
-
-                    // Top-Left handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.TopStart),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, true, true, true)
-                    }
-                    // Top-Center handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.TopCenter),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, false, true, true, false) // Only vertical resize
-                    }
-                    // Top-End handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.TopEnd),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, true, true, false)
-                    }
-                    // Center-Start handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.CenterStart),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, false, false, true) // Only horizontal resize
-                    }
-                    // Center-End handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.CenterEnd),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, false, false, false) // Only horizontal resize
-                    }
-                    // Bottom-Start handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.BottomStart),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, true, false, true)
-                    }
-                    // Bottom-Center handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.BottomCenter),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, false, true, false, false) // Only vertical resize
-                    }
-                    // Bottom-End handle
-                    DraggableHandle(
-                        modifier = Modifier
-                            .size(handleSize)
-                            .align(Alignment.BottomEnd),
-                    ) { dragAmount ->
-                        applyResizing(dragAmount, true, true, false, false)
-                    }
+                // Top-Left handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.TopStart),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width - 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newHeight = (rectangle.height - 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
                 }
-
+                // Top-Center handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.TopCenter),
+                ) { dragAmount ->
+                    val newHeight = (rectangle.height - 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.topLeft.x, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(rectangle.width, newHeight))
+                }
+                // Top-End handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.TopEnd),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width + 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newHeight = (rectangle.height - 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                }
+                // Center-Start handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.CenterStart),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width - 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.topLeft.y)
+                    rectangle = Rect(newTopLeft, Size(newWidth, rectangle.height))
+                }
+                // Center-End handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.CenterEnd),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width + 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.topLeft.y)
+                    rectangle = Rect(newTopLeft, Size(newWidth, rectangle.height))
+                }
+                // Bottom-Start handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.BottomStart),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width - 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newHeight = (rectangle.height + 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                }
+                // Bottom-Center handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.BottomCenter),
+                ) { dragAmount ->
+                    val newHeight = (rectangle.height + 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.topLeft.x, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(rectangle.width, newHeight))
+                }
+                // Bottom-End handle
+                DraggableHandle(
+                    modifier = Modifier
+                        .size(handleSize)
+                        .align(Alignment.BottomEnd),
+                ) { dragAmount ->
+                    val newWidth = (rectangle.width + 2 * dragAmount.x).coerceAtLeast(0f)
+                    val newHeight = (rectangle.height + 2 * dragAmount.y).coerceAtLeast(0f)
+                    val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.center.y - newHeight / 2)
+                    rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                }
+            }
         }
     }
 }
+
 @Composable
 fun DraggableHandle(
     modifier: Modifier = Modifier,
