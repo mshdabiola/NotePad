@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +47,7 @@ fun ResizableRectangleWithHandles2() {
                 Rect(Offset(200f, 200f), Size(200f, 200f)), // Initial position and size
             )
         }
-        var rotationAngle by remember { mutableStateOf(0f) } // Added for rotation
+        var rotationAngle by remember { mutableFloatStateOf(0f) } // Added for rotation
 
         val handleSize = 24.dp
         val handleSizePx = handleSize.toPx()
@@ -55,7 +56,7 @@ fun ResizableRectangleWithHandles2() {
         // This needs to be relative to the Box that will be rotated.
         // Since the Box's top-left is at (0,0) before offset, the pivot is its center.
         val rotationPivotX = (rectangle.width + handleSizePx) / 2f
-        val rotationPivotY = (rectangle.height + handleSizePx) / 2f
+        val rotationPivotY = (rectangle.height + handleSizePx.times(2.5f)) / 2f
 
         Box(Modifier.fillMaxSize()) {
             // Rotation Handle Column
@@ -107,7 +108,7 @@ fun ResizableRectangleWithHandles2() {
                                 rotationAngle += angleDiff
                             }
                         }
-                        .background(Color.Green, CircleShape), // Changed color for distinction
+                        .background(Color.Blue, CircleShape), // Changed color for distinction
                 ) {
                     Icon(
                         Icons.Filled.Refresh,
@@ -121,7 +122,7 @@ fun ResizableRectangleWithHandles2() {
                 VerticalDivider(
                     modifier = Modifier.height(handleSize / 2),
                     thickness = 4.dp,
-                    color = Color.Green, // Changed color for distinction
+                    color = Color.Blue, // Changed color for distinction
                 )
             Box(
                 modifier = Modifier
