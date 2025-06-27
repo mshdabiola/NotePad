@@ -16,6 +16,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -40,7 +43,10 @@ import kotlin.math.atan2
 import kotlin.math.roundToInt
 
 @Composable
-fun ResizableRectangleWithHandles2() {
+fun ResizableRectangleWithHandles2(
+    rectangle: MutableState<Rect>,
+    rotationAngle: MutableState<Float>,
+) {
     val density = LocalDensity.current
     val configuration = LocalWindowInfo.current // Added
     val screenWidthDp = configuration.containerSize.width
@@ -50,34 +56,29 @@ fun ResizableRectangleWithHandles2() {
         val screenWidthPx = screenWidthDp// Added
         val screenHeightPx = screenHeightDp // Added
 
-        var rectangle by remember {
-            mutableStateOf(
-                Rect(Offset(200f, 200f), Size(200f, 200f)), // Initial position and size
-            )
-        }
-        var rotationAngle by remember { mutableFloatStateOf(0f) }
+     
 
         val handleSize = 24.dp
         val handleSizePx = handleSize.toPx()
         val minDimensionPx = handleSizePx * 2 // Minimum size: 2 times handle size
 
-        val rotationPivotX = (rectangle.width + handleSizePx) / 2f
-        val rotationPivotY = (rectangle.height + handleSizePx.times(2.5f)) / 2f
+        val rotationPivotX = (rectangle.value.width + handleSizePx) / 2f
+        val rotationPivotY = (rectangle.value.height + handleSizePx.times(2.5f)) / 2f
 
         Box(Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
                     .offset {
                         IntOffset(
-                            rectangle.topLeft.x.roundToInt(),
-                            rectangle.topLeft.y.roundToInt(),
+                            rectangle.value.topLeft.x.roundToInt(),
+                            rectangle.value.topLeft.y.roundToInt(),
                         )
                     }
                     .graphicsLayer(
-                        rotationZ = rotationAngle,
+                        rotationZ = rotationAngle.value,
                         transformOrigin = TransformOrigin(
-                            rotationPivotX / (rectangle.width + handleSizePx),
-                            rotationPivotY / (rectangle.height + handleSizePx),
+                            rotationPivotX / (rectangle.value.width + handleSizePx),
+                            rotationPivotY / (rectangle.value.height + handleSizePx),
                         ),
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,15 +89,15 @@ fun ResizableRectangleWithHandles2() {
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-                                val rectCenterX = rectangle.center.x
-                                val rectCenterY = rectangle.center.y
+                                val rectCenterX = rectangle.value.center.x
+                                val rectCenterY = rectangle.value.center.y
                                 val prevPos = change.previousPosition - Offset(rectCenterX, rectCenterY)
                                 val currentPos = change.position - Offset(rectCenterX, rectCenterY)
                                 val prevAngle = atan2(prevPos.y, prevPos.x)
                                 val currentAngle = atan2(currentPos.y, currentPos.x)
                                 val angleDiff =
                                     Math.toDegrees((currentAngle - prevAngle).toDouble()).toFloat()
-                                rotationAngle += angleDiff
+                                rotationAngle.value += angleDiff
                             }
                         }
                         .background(Color.Blue, CircleShape),
@@ -118,13 +119,13 @@ fun ResizableRectangleWithHandles2() {
                 Box(
                     modifier = Modifier
                         .size(
-                            (rectangle.width.toDp() + handleSize), // Constrain outer box too
-                            (rectangle.height.toDp() + handleSize)// Constrain outer box too
+                            (rectangle.value.width.toDp() + handleSize), // Constrain outer box too
+                            (rectangle.value.height.toDp() + handleSize)// Constrain outer box too
                         )
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-                                rectangle = rectangle.translate(dragAmount.x, dragAmount.y)
+                                rectangle.value = rectangle.value.translate(dragAmount.x, dragAmount.y)
                             }
                         },
                 )
@@ -132,8 +133,8 @@ fun ResizableRectangleWithHandles2() {
                     Box(
                         modifier = Modifier
                             .size(
-                                rectangle.width.toDp(),
-                                rectangle.height.toDp(),
+                                rectangle.value.width.toDp(),
+                                rectangle.value.height.toDp(),
                             )
                             .align(Alignment.Center)
                             .border(4.dp, Color.Blue),
@@ -145,15 +146,15 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopStart),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width - 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width - 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newHeight = (rectangle.height - 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height - 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
                         val newTopLeft = Offset(
-                            rectangle.center.x - newWidth / 2,
-                            rectangle.center.y - newHeight / 2,
+                            rectangle.value.center.x - newWidth / 2,
+                            rectangle.value.center.y - newHeight / 2,
                         )
-                        rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, newHeight))
                     }
                     // Top-Center handle
                     DraggableHandle(
@@ -161,10 +162,10 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopCenter),
                     ) { dragAmount ->
-                        val newHeight = (rectangle.height - 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height - 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
-                        val newTopLeft = Offset(rectangle.topLeft.x, rectangle.center.y - newHeight / 2)
-                        rectangle = Rect(newTopLeft, Size(rectangle.width.coerceIn(minDimensionPx, screenWidthPx - handleSizePx), newHeight))
+                        val newTopLeft = Offset(rectangle.value.topLeft.x, rectangle.value.center.y - newHeight / 2)
+                        rectangle.value = Rect(newTopLeft, Size(rectangle.value.width.coerceIn(minDimensionPx, screenWidthPx - handleSizePx), newHeight))
                     }
                     // Top-End handle
                     DraggableHandle(
@@ -172,15 +173,15 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.TopEnd),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width + 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width + 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newHeight = (rectangle.height - 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height - 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
                         val newTopLeft = Offset(
-                            rectangle.center.x - newWidth / 2,
-                            rectangle.center.y - newHeight / 2,
+                            rectangle.value.center.x - newWidth / 2,
+                            rectangle.value.center.y - newHeight / 2,
                         )
-                        rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, newHeight))
                     }
                     // Center-Start handle
                     DraggableHandle(
@@ -188,10 +189,10 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.CenterStart),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width - 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width - 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.topLeft.y)
-                        rectangle = Rect(newTopLeft, Size(newWidth, rectangle.height.coerceIn(minDimensionPx, screenHeightPx - handleSizePx)))
+                        val newTopLeft = Offset(rectangle.value.center.x - newWidth / 2, rectangle.value.topLeft.y)
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, rectangle.value.height.coerceIn(minDimensionPx, screenHeightPx - handleSizePx)))
                     }
                     // Center-End handle
                     DraggableHandle(
@@ -199,10 +200,10 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.CenterEnd),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width + 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width + 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newTopLeft = Offset(rectangle.center.x - newWidth / 2, rectangle.topLeft.y)
-                        rectangle = Rect(newTopLeft, Size(newWidth, rectangle.height.coerceIn(minDimensionPx, screenHeightPx - handleSizePx)))
+                        val newTopLeft = Offset(rectangle.value.center.x - newWidth / 2, rectangle.value.topLeft.y)
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, rectangle.value.height.coerceIn(minDimensionPx, screenHeightPx - handleSizePx)))
                     }
                     // Bottom-Start handle
                     DraggableHandle(
@@ -210,15 +211,15 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomStart),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width - 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width - 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newHeight = (rectangle.height + 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height + 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
                         val newTopLeft = Offset(
-                            rectangle.center.x - newWidth / 2,
-                            rectangle.center.y - newHeight / 2,
+                            rectangle.value.center.x - newWidth / 2,
+                            rectangle.value.center.y - newHeight / 2,
                         )
-                        rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, newHeight))
                     }
                     // Bottom-Center handle
                     DraggableHandle(
@@ -226,10 +227,10 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomCenter),
                     ) { dragAmount ->
-                        val newHeight = (rectangle.height + 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height + 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
-                        val newTopLeft = Offset(rectangle.topLeft.x, rectangle.center.y - newHeight / 2)
-                        rectangle = Rect(newTopLeft, Size(rectangle.width.coerceIn(minDimensionPx, screenWidthPx - handleSizePx), newHeight))
+                        val newTopLeft = Offset(rectangle.value.topLeft.x, rectangle.value.center.y - newHeight / 2)
+                        rectangle.value = Rect(newTopLeft, Size(rectangle.value.width.coerceIn(minDimensionPx, screenWidthPx - handleSizePx), newHeight))
                     }
                     // Bottom-End handle
                     DraggableHandle(
@@ -237,15 +238,15 @@ fun ResizableRectangleWithHandles2() {
                             .size(handleSize)
                             .align(Alignment.BottomEnd),
                     ) { dragAmount ->
-                        val newWidth = (rectangle.width + 2 * dragAmount.x)
+                        val newWidth = (rectangle.value.width + 2 * dragAmount.x)
                             .coerceIn(minDimensionPx, screenWidthPx - handleSizePx) // Apply constraint
-                        val newHeight = (rectangle.height + 2 * dragAmount.y)
+                        val newHeight = (rectangle.value.height + 2 * dragAmount.y)
                             .coerceIn(minDimensionPx, screenHeightPx - handleSizePx.times(2.5f)) // Apply constraint
                         val newTopLeft = Offset(
-                            rectangle.center.x - newWidth / 2,
-                            rectangle.center.y - newHeight / 2,
+                            rectangle.value.center.x - newWidth / 2,
+                            rectangle.value.center.y - newHeight / 2,
                         )
-                        rectangle = Rect(newTopLeft, Size(newWidth, newHeight))
+                        rectangle.value = Rect(newTopLeft, Size(newWidth, newHeight))
                     }
                 }
             }
@@ -277,7 +278,13 @@ fun DraggableHandle(
 @Preview(showBackground = true)
 @Composable
 fun ResizableRectangleWithHandlesPreview() {
+    val rectangle = remember { mutableStateOf(Rect(0f, 0f, 100f, 100f)) }
+    val rotationAngle = remember { mutableFloatStateOf(0f) }
+
     MaterialTheme { // MaterialTheme provides LocalDensity implicitly
-        ResizableRectangleWithHandles2()
+        ResizableRectangleWithHandles2(
+            rectangle = rectangle,
+            rotationAngle = rotationAngle,
+        )
     }
 }
