@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration // Added
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -41,13 +42,13 @@ import kotlin.math.roundToInt
 @Composable
 fun ResizableRectangleWithHandles2() {
     val density = LocalDensity.current
-    val configuration = LocalConfiguration.current // Added
-    val screenWidthDp = configuration.screenWidthDp.dp // Added
-    val screenHeightDp = configuration.screenHeightDp.dp // Added for height constraint if needed
+    val configuration = LocalWindowInfo.current // Added
+    val screenWidthDp = configuration.containerSize.width
+    val screenHeightDp = configuration.containerSize.height // Added for height constraint if needed
 
     with(density) {
-        val screenWidthPx = screenWidthDp.toPx() // Added
-        val screenHeightPx = screenHeightDp.toPx() // Added
+        val screenWidthPx = screenWidthDp// Added
+        val screenHeightPx = screenHeightDp // Added
 
         var rectangle by remember {
             mutableStateOf(
@@ -117,8 +118,8 @@ fun ResizableRectangleWithHandles2() {
                 Box(
                     modifier = Modifier
                         .size(
-                            (rectangle.width.toDp() + handleSize).coerceAtMost(screenWidthDp), // Constrain outer box too
-                            (rectangle.height.toDp() + handleSize).coerceAtMost(screenHeightDp) // Constrain outer box too
+                            (rectangle.width.toDp() + handleSize), // Constrain outer box too
+                            (rectangle.height.toDp() + handleSize)// Constrain outer box too
                         )
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
