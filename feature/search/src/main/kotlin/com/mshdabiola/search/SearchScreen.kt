@@ -160,7 +160,7 @@ internal fun SharedTransitionScope.SearchScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalItemSpacing = 8.dp,
                     ) {
-                        items(items = searchState.searches, key = { it.id }) { notepad ->
+                        items(items = searchState.searches, key = { it.note.id }) { notepad ->
                             NoteCard(
                                 modifier = Modifier,
                                 animatedVisibilityScope = animatedContentScope,
