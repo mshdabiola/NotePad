@@ -1,7 +1,5 @@
 package com.mshdabiola.ui
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -37,16 +35,13 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteVisual
-import com.mshdabiola.model.NoteVoice
-import kotlinx.collections.immutable.toImmutableList
 import kotlin.collections.chunked
 import kotlin.text.ifEmpty
 import com.mshdabiola.designsystem.R as Rd
@@ -71,18 +66,18 @@ fun SharedTransitionScope.NoteCard(
     val haveVoice by remember(notePad.voices) {
         derivedStateOf { notePad.voices.isNotEmpty() }
     }
-    val bg = if (notePad.background != -1) {
+    val bg = if (notePad.note.background != -1) {
         Color.Transparent
     } else {
-        if (notePad.color != -1) {
-            NoteIcon.noteColors[notePad.color]
+        if (notePad.note.color != -1) {
+            NoteIcon.noteColors[notePad.note.color]
         } else {
             MaterialTheme.colorScheme.background
         }
     }
 
-    val sColor = if (notePad.background != -1) {
-        NoteIcon.background[notePad.background].fgColor
+    val sColor = if (notePad.note.background != -1) {
+        NoteIcon.background[notePad.note.background].fgColor
     } else {
         MaterialTheme.colorScheme.secondaryContainer
     }
@@ -90,8 +85,8 @@ fun SharedTransitionScope.NoteCard(
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val images = remember(notePad.visuals) {
-        notePad.visuals.reversed().chunked(3)
+    val images = remember(notePad.images, notePad.drawings) {
+        notePad.getVisuals().reversed().chunked(3)
     }
 
     val de = LocalDensity.current
@@ -99,12 +94,12 @@ fun SharedTransitionScope.NoteCard(
     OutlinedCard(
         modifier = modifier
             .sharedBounds(
-                sharedContentState = rememberSharedContentState("${type}_${notePad.id}"),
+                sharedContentState = rememberSharedContentState("${type}_${notePad.note.id}"),
                 animatedVisibilityScope = animatedVisibilityScope,
             )
             .combinedClickable(
-                onClick = { onCardClick(notePad.id, notePad.color, notePad.background) },
-                onLongClick = { onLongClick(notePad.id) },
+                onClick = { onCardClick(notePad.note.id, notePad.note.color, notePad.note.background) },
+                onLongClick = { onLongClick(notePad.note.id) },
             ),
         border = if (isSelect) {
             BorderStroke(3.dp, Color.Blue)
@@ -117,9 +112,9 @@ fun SharedTransitionScope.NoteCard(
         colors = CardDefaults.outlinedCardColors(containerColor = bg),
     ) {
         Box {
-            if (notePad.background != -1) {
+            if (notePad.note.background != -1) {
                 Image(
-                    painter = painterResource(id = NoteIcon.background[notePad.background].bg),
+                    painter = painterResource(id = NoteIcon.background[notePad.note.background].bg),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(
@@ -135,7 +130,7 @@ fun SharedTransitionScope.NoteCard(
                         size = it
                     },
             ) {
-                if (notePad.visuals.isNotEmpty()) {
+                if (images.isNotEmpty()) {
                     images.forEach { imageList ->
                         Row(
                             modifier = Modifier
@@ -144,7 +139,7 @@ fun SharedTransitionScope.NoteCard(
                         ) {
                             imageList.forEach {
                                 when (it) {
-                                    is NoteVisual.NoteImage -> {
+                                    is NoteImage -> {
                                         AsyncImage(
                                             modifier = Modifier
                                                 .weight(1f)
@@ -154,7 +149,7 @@ fun SharedTransitionScope.NoteCard(
                                             contentScale = ContentScale.Crop,
                                         )
                                     }
-                                    is NoteVisual.NoteDrawing -> {
+                                    is NoteDrawing -> {
                                         BoardViewer(
                                             modifier = Modifier
                                                 .weight(1f)
@@ -175,20 +170,20 @@ fun SharedTransitionScope.NoteCard(
                             .padding(8.dp),
                     ) {
                         Text(
-                            text = notePad.title.ifEmpty { notePad.detail },
-                            style = if (notePad.title.isNotEmpty()) {
+                            text = notePad.note.title.ifEmpty { notePad.note.detail },
+                            style = if (notePad.note.title.isNotEmpty()) {
                                 MaterialTheme.typography.titleMedium
                             } else {
                                 MaterialTheme.typography.bodyMedium
                             },
                             maxLines = 10,
                         )
-                        if (!notePad.isCheck) {
-                            if (notePad.title.isNotEmpty()) {
-                                if (notePad.detail.isNotEmpty()) {
+                        if (!notePad.note.isCheck) {
+                            if (notePad.note.title.isNotEmpty()) {
+                                if (notePad.note.detail.isNotEmpty()) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = notePad.detail,
+                                        text = notePad.note.detail,
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 10,
 
@@ -250,66 +245,6 @@ fun SharedTransitionScope.NoteCard(
                     }
                 }
             }
-        }
-    }
-}
-
-@SuppressLint("UnusedSharedTransitionModifierParameter")
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true)
-@Composable
-fun NoteCardPreview() {
-    SharedTransitionScope {
-        AnimatedVisibility(visible = true) {
-            NoteCard(
-                notePad = NotePad(
-                    id = 1,
-                    title = "Mandy abiola",
-                    detail = "Lamia moshood",
-                    isCheck = true,
-                    color = 2,
-                    isPin = false,
-                    background = 3,
-//            selected = true,
-
-//            labels = listOf(
-//                "ade",
-//                "food",
-//                "abiola",
-//                "kdlskdflsjfslf",
-//                "klslssljsl",
-//                "alskfk",
-//            ).toImmutableList(),
-                    checks = listOf(
-                        NoteCheck(
-                            id = 2418L,
-                            noteId = 6429L,
-                            content = "Maegan",
-                            isCheck = false,
-                            focus = false,
-                        ),
-                        NoteCheck(
-                            id = 2418L,
-                            noteId = 6429L,
-                            content = "Book",
-                            isCheck = false,
-                            focus = false,
-                        ),
-                    ).toImmutableList(),
-                    voices = listOf(
-                        NoteVoice(
-                            id = 500L,
-                            noteId = 8001L,
-                            voiceName = "Danniel",
-                            length = 1940L,
-                            currentProgress = 179,
-                            isPlaying = false,
-
-                        ),
-                    ).toImmutableList(),
-                ),
-                animatedVisibilityScope = this,
-            )
         }
     }
 }
