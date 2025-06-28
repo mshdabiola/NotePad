@@ -33,7 +33,6 @@ import com.mshdabiola.detail.DetailViewModel
 import com.mshdabiola.detail.EditScreen
 import com.mshdabiola.detail.NoteOptionBottomSheet
 import com.mshdabiola.detail.NotificationBottomSheet
-import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.ui.FirebaseScreenLog
 import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.supportVoice
@@ -111,7 +110,7 @@ fun NavGraphBuilder.detailScreen(
             onLabel = {
                 navigateToSelectLevel(
                     setOf(
-                        detailState.notePad.id,
+                        detailState.notePad.note.id,
                     ),
                 )
             },
@@ -131,28 +130,28 @@ fun NavGraphBuilder.detailScreen(
             onArchive = editViewModel::onArchive,
             deleteVoiceNote = editViewModel::deleteVoiceNote,
             navigateToGallery = navigateToGallery,
-            navigateToDrawing = { navigateToDrawing(detailState.notePad.id, it) },
+            navigateToDrawing = { navigateToDrawing(detailState.notePad.note.id, it) },
             animatedContentScope = this,
 
         )
         AddBottomSheet2(
             show = showModalState,
-            currentColor = detailState.notePad.color,
-            currentImage = detailState.notePad.background,
-            isNoteCheck = detailState.notePad.isCheck,
+            currentColor = detailState.notePad.note.color,
+            currentImage = detailState.notePad.note.background,
+            isNoteCheck = detailState.notePad.note.isCheck,
             saveImage = editViewModel::saveImage,
             saveVoice = editViewModel::saveVoice,
             getPhotoUri = editViewModel::getPhotoUri,
             changeToCheckBoxes = editViewModel::changeToCheckBoxes,
             onDrawing = {
-                navigateToDrawing(detailState.notePad.id, null)
+                navigateToDrawing(detailState.notePad.note.id, null)
             },
             onDismiss = { showModalState = false },
             isVoiceSupport = supportVoice(),
         )
 //
-        val images = detailState.notePad.visuals
-            .filterIsInstance<NoteVisual.NoteImage>().map {
+        val images = detailState.notePad.images
+            .map {
                 val file = File(it.path)
                 val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
                 uri
@@ -160,8 +159,8 @@ fun NavGraphBuilder.detailScreen(
 
         val send = {
             val intent = ShareCompat.IntentBuilder(context)
-                .setText(detailState.notePad.title)
-                .setSubject(detailState.notePad.detail)
+                .setText(detailState.notePad.note.title)
+                .setSubject(detailState.notePad.note.detail)
                 .setChooserTitle("From Notepad")
 
             if (images.isNotEmpty()) intent.setType("image/*") else intent.setType("text/*")
@@ -173,12 +172,12 @@ fun NavGraphBuilder.detailScreen(
         }
         NoteOptionBottomSheet(
             show = noteModalState,
-            currentColor = detailState.notePad.color,
-            currentImage = detailState.notePad.background,
+            currentColor = detailState.notePad.note.color,
+            currentImage = detailState.notePad.note.background,
             onLabel = {
                 navigateToSelectLevel(
                     setOf(
-                        detailState.notePad.id,
+                        detailState.notePad.note.id,
                     ),
                 )
             },
@@ -189,8 +188,8 @@ fun NavGraphBuilder.detailScreen(
         )
         ColorAndImageBottomSheet(
             show = colorModalState,
-            currentColor = detailState.notePad.color,
-            currentImage = detailState.notePad.background,
+            currentColor = detailState.notePad.note.color,
+            currentImage = detailState.notePad.note.background,
             onColorClick = editViewModel::onColorChange,
             onImageClick = editViewModel::onImageChange,
             onDismissRequest = { colorModalState = false },
@@ -200,8 +199,8 @@ fun NavGraphBuilder.detailScreen(
             show = noteficationModalState,
             onAlarm = editViewModel::setAlarm,
             showDialog = { showDialog = true },
-            currentColor = detailState.notePad.color,
-            currentImage = detailState.notePad.background,
+            currentColor = detailState.notePad.note.color,
+            currentImage = detailState.notePad.note.background,
 
         ) { noteficationModalState = false }
 //

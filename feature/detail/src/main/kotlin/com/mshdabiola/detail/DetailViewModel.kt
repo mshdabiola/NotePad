@@ -4,31 +4,29 @@
 
 package com.mshdabiola.detail
 
-import android.annotation.SuppressLint
-import android.media.MediaMetadataRetriever
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.snapshotFlow
-import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IAlarmManager
+import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
-import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.detail.navigation.DetailArg
+import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.domain.GetNoteUseCase
 import com.mshdabiola.model.IntervalEnd
+import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
-import com.mshdabiola.model.NoteUri
-import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
 import com.mshdabiola.model.NotificationUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +38,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
@@ -48,9 +45,11 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val notePadRepository: INotePadRepository,
     private val alarmManager: IAlarmManager,
     private val voicePlayer: INotePlayer,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val addAllNoteUseCase: AddAllNoteUseCase,
+    private val contentManager: IContentManager,
 
 ) : ViewModel() {
 
@@ -67,14 +66,15 @@ class DetailViewModel @Inject constructor(
 
     private val currentNote = currentNoteId
         .flatMapLatest { ll ->
-            notePadRepository
-                .getOneNotePad(ll)
+            getNoteUseCase(ll)
         }
     private val initState = DetailState(
         notePad = NotePad(
-            id = detailArg.id,
-            color = detailArg.colorIndex,
-            background = detailArg.background,
+            note = Note(
+                id = detailArg.id,
+                color = detailArg.colorIndex,
+                background = detailArg.background,
+            ),
         ),
     )
 
@@ -85,25 +85,35 @@ class DetailViewModel @Inject constructor(
         snapshotFlow { initState.detail.text }
             .debounce(200),
         currentNote,
-    ) { title, content, note ->
-        if (note == null) {
-            savNewNote()
+    ) { title, content, notepad ->
+        if (notepad == null) {
+            val id = addAllNoteUseCase(NotePad(note = Note(id = -1)))
+            currentNoteId.update {
+                id
+            }
             initState
         } else {
             if (!initTitle) {
                 initState.title.edit {
-                    append(note.title)
+                    append(notepad.note.title)
                 }
                 initState.detail.edit {
-                    append(note.detail)
+                    append(notepad.note.detail)
                 }
 
                 initTitle = true
             }
-            if (title != note.title || content != note.detail) {
-                save(note.copy(title = title.toString(), detail = content.toString()))
+            if (title != notepad.note.title || content != notepad.note.detail) {
+                addAllNoteUseCase(
+                    notepad.copy(
+                        note = notepad.note.copy(
+                            title = title.toString(),
+                            detail = content.toString(),
+                        ),
+                    ),
+                )
             }
-            initState.copy(notePad = note)
+            initState.copy(notePad = notepad)
         }
     }.stateIn(
         scope = viewModelScope,
@@ -111,84 +121,69 @@ class DetailViewModel @Inject constructor(
         initialValue = initState,
     )
 
-    fun savNewNote() {
-        viewModelScope.launch {
-            val id = notePadRepository.upsert(NotePad(id = -1))
-            currentNoteId.update {
-                id
-            }
-        }
-    }
+//    fun savNewNote() {
+//        viewModelScope.launch {
+//            val id = notePadRepository.upsert(NotePad(id = -1))
+//
+//        }
+//    }
 
     private fun getNotePad(): NotePad {
         return detailState.value.notePad
     }
 
-    private fun save(notepad: NotePad) {
-        viewModelScope.launch {
-            notePadRepository.upsert(notepad)
-        }
-    }
-
-    private suspend fun computeUri(notepad: NotePad) = withContext(Dispatchers.IO) {
-        val regex =
-            "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
-
-        if (notepad.detail.contains(regex.toRegex())) {
-            val uri = notepad.detail.split("\\s".toRegex())
-                .filter { it.trim().matches(regex.toRegex()) }
-                .mapIndexed { index, s ->
-                    val path = s.toUri().authority ?: ""
-                    val icon = "https://icon.horse/icon/$path"
-                    NoteUri(
-                        id = index,
-                        icon = icon,
-                        path = path,
-                        uri = s,
-                    )
-                }
-            // notePadUiState = notePadUiState.copy(uris = uri)
-        }
-    }
+//    private fun save(notepad: NotePad) {
+//        viewModelScope.launch {
+//            notePadRepository.upsert(notepad)
+//        }
+//    }
 
     fun onCheckChange(text: String, id: Long) {
-        val notepad = getNotePad()
-        val noteChecks = notepad.checks.toMutableList()
-        val index = noteChecks.indexOfFirst { it.id == id }
-        val noteCheck = noteChecks[index].copy(content = text)
-        noteChecks[index] = noteCheck
-        save(notepad.copy(checks = noteChecks))
+        viewModelScope.launch {
+            val notepad = getNotePad()
+            val noteChecks = notepad.checks.toMutableList()
+            val index = noteChecks.indexOfFirst { it.id == id }
+            val noteCheck = noteChecks[index].copy(content = text)
+            noteChecks[index] = noteCheck
+            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+        }
     }
 
     fun addCheck() {
-        val notepad = getNotePad()
-        val noteCheck = NoteCheck(isCheck = false)
-        val noteChecks = notepad.checks.toMutableList()
-        noteChecks.add(noteCheck)
-        save(notepad.copy(checks = noteChecks))
+        viewModelScope.launch {
+            val notepad = getNotePad()
+            val noteCheck = NoteCheck(isCheck = false)
+            val noteChecks = notepad.checks.toMutableList()
+            noteChecks.add(noteCheck)
+            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+        }
     }
 
     fun onCheck(check: Boolean, id: Long) {
-        val notepad = getNotePad()
+        viewModelScope.launch {
+            val notepad = getNotePad()
 
-        val noteChecks = notepad.checks.toMutableList()
-        val index = noteChecks.indexOfFirst { it.id == id }
-        val noteCheck = noteChecks[index].copy(isCheck = check)
-        noteChecks[index] = noteCheck
-        println(noteCheck)
-        save(notepad.copy(checks = noteChecks))
+            val noteChecks = notepad.checks.toMutableList()
+            val index = noteChecks.indexOfFirst { it.id == id }
+            val noteCheck = noteChecks[index].copy(isCheck = check)
+            noteChecks[index] = noteCheck
+            println(noteCheck)
+            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+        }
     }
 
     fun onCheckDelete(id: Long) {
-        val notepad = getNotePad()
-
-        val noteChecks = notepad.checks.toMutableList()
-        val index = noteChecks.indexOfFirst { it.id == id }
-        val noteCheck = noteChecks.removeAt(index)
         viewModelScope.launch {
-            notePadRepository.deleteCheckNote(id, noteCheck.noteId)
+            val notepad = getNotePad()
+
+            val noteChecks = notepad.checks.toMutableList()
+            val index = noteChecks.indexOfFirst { it.id == id }
+//            val noteCheck = noteChecks.removeAt(index)
+//            viewModelScope.launch {
+//                notePadRepository.deleteCheckNote(id, noteCheck.noteId)
+//            }
+            addAllNoteUseCase(notepad.copy(checks = noteChecks))
         }
-        save(notepad.copy(checks = noteChecks))
     }
 
     fun changeToCheckBoxes() {
@@ -201,123 +196,128 @@ class DetailViewModel @Inject constructor(
             }
             val notepad = getNotePad()
 
-            save(
+            addAllNoteUseCase(
                 notepad.copy(
-                    detail = "",
+                    note = notepad.note.copy(
+                        detail = "",
+                        isCheck = true,
+                    ),
                     checks = noteChecks,
-                    isCheck = true,
                 ),
             )
         }
     }
 
     fun unCheckAllItems() {
-        val notepad = getNotePad()
+        viewModelScope.launch {
+            val notepad = getNotePad()
 
-        val noteChecks = notepad.checks.map { it.copy(isCheck = false) }
-        save(notepad.copy(checks = noteChecks))
+            val noteChecks = notepad.checks.map { it.copy(isCheck = false) }
+            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+        }
     }
 
     fun deleteCheckedItems() {
-        val notepad = getNotePad()
-
-        val checkNote = notepad.checks.filter { it.isCheck }
-        val notCheckNote = notepad.checks.filter { !it.isCheck }
         viewModelScope.launch {
-            checkNote.forEach {
-                notePadRepository.deleteCheckNote(it.id, it.noteId)
-            }
+            val notepad = getNotePad()
+
+            val checkNote = notepad.checks.filter { it.isCheck }
+            val notCheckNote = notepad.checks.filter { !it.isCheck }
+//            viewModelScope.launch {
+//                checkNote.forEach {
+//                    notePadRepository.deleteCheckNote(it.id, it.noteId)
+//                }
+//            }
+            addAllNoteUseCase(notepad.copy(checks = notCheckNote))
         }
-        save(notepad.copy(checks = notCheckNote))
     }
 
     fun hideCheckBoxes() {
-        val notepad = getNotePad()
-
-        val noteCheck = notepad.checks.joinToString(separator = "\n") { it.content }
-
-        initState.detail.edit {
-            append(noteCheck)
-        }
-
         viewModelScope.launch {
-            notePadRepository.deleteNoteCheckByNoteId(notepad.id)
+            val notepad = getNotePad()
+
+            val noteCheck = notepad.checks.joinToString(separator = "\n") { it.content }
+
+            initState.detail.edit {
+                append(noteCheck)
+            }
+
+            addAllNoteUseCase(
+                notepad.copy(
+                    note = notepad.note.copy(
+                        detail = noteCheck,
+                        isCheck = false,
+                    ),
+                    checks = emptyList(),
+                ),
+            )
         }
-        save(notepad.copy(detail = noteCheck, isCheck = false, checks = emptyList()))
     }
 
     fun pinNote() {
-        val notepad = getNotePad()
+        viewModelScope.launch {
+            val notepad = getNotePad()
 
-        save(notepad.copy(isPin = !notepad.isPin))
+            addAllNoteUseCase(notepad.copy(note = notepad.note.copy(isPin = !notepad.note.isPin)))
+        }
     }
 
     fun onColorChange(index: Int) {
-        val notepad = getNotePad()
-        save(notepad.copy(color = index))
+        viewModelScope.launch {
+            val notepad = getNotePad()
+            addAllNoteUseCase(notepad.copy(note = notepad.note.copy(color = index)))
+        }
     }
 
     fun onImageChange(index: Int) {
-        val notepad = getNotePad()
-        save(notepad.copy(background = index))
+        viewModelScope.launch {
+            val notepad = getNotePad()
+            addAllNoteUseCase(notepad.copy(note = notepad.note.copy(background = index)))
+        }
     }
 
     fun onArchive() {
-        val notepad = getNotePad()
+        viewModelScope.launch {
+            val notepad = getNotePad()
 
-        val newNote = if (notepad.noteType == NoteType.ARCHIVE) {
-            notepad.copy(noteType = NoteType.NOTE)
-        } else {
-            notepad.copy(noteType = NoteType.ARCHIVE)
+            val newNote = if (notepad.note.noteType == NoteType.ARCHIVE) {
+                notepad.copy(note = notepad.note.copy(noteType = NoteType.NOTE))
+            } else {
+                notepad.copy(note = notepad.note.copy(noteType = NoteType.ARCHIVE))
+            }
+
+            addAllNoteUseCase(newNote)
         }
-
-        save(newNote)
     }
 
     fun onDelete() {
-        val notepad = getNotePad()
-        save(notepad.copy(noteType = NoteType.TRASH))
+        viewModelScope.launch {
+            val notepad = getNotePad()
+            addAllNoteUseCase(notepad.copy(note = notepad.note.copy(noteType = NoteType.TRASH)))
+        }
     }
 
     fun copyNote() {
-        val note2 = getNotePad()
+        viewModelScope.launch {
+            val note2 = getNotePad()
 
-        val newNotePad = note2.copy(
-            id = -1,
-            checks = note2.checks.map { it.copy(id = -1) },
-            visuals = note2.visuals.map {
-                when (it) {
-                    is NoteVisual.NoteImage -> it.copy(id = -1)
-                    is NoteVisual.NoteDrawing -> it.copy(id = -1)
-                }
-            },
-            voices = note2.voices.map { it.copy(id = -1) },
-        )
+            val newNotePad = note2.copy(
+                note = note2.note.copy(id = -1),
+            )
 
-        save(newNotePad)
-    }
-
-    @SuppressLint("SuspiciousIndentation")
-    private fun getAudioLength(path: String): Long {
-        val mediaMetadataRetriever = MediaMetadataRetriever()
-
-        mediaMetadataRetriever.setDataSource(path)
-        val time =
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        // Log.e(this::class.simpleName, "$time time")
-        return time?.toLong() ?: 1L
+            addAllNoteUseCase(newNotePad)
+        }
     }
 
     fun deleteVoiceNote(index: Int) {
-        val notepad = getNotePad()
-
-        val voices = notepad.voices.toMutableList()
-        val voice = voices.removeAt(index)
-
         viewModelScope.launch {
-            notePadRepository.deleteVoiceNote(voice.id)
+            val notepad = getNotePad()
+
+            val voices = notepad.voices.toMutableList()
+            val voice = voices.removeAt(index)
+
+            addAllNoteUseCase(notepad.copy(voices = voices))
         }
-        save(notepad.copy(voices = voices))
     }
 
     fun setAlarm() {
@@ -350,8 +350,8 @@ class DetailViewModel @Inject constructor(
     }
 
     fun deleteAlarm() {
-//        val note2 = note.value.copy(reminder = -1, interval = -1)
-//        note.update {
+//        val note2 = notepad.value.copy(reminder = -1, interval = -1)
+//        notepad.update {
 //            note2
 //        }
 //
@@ -361,12 +361,12 @@ class DetailViewModel @Inject constructor(
     }
 
     fun setAlarm(time: Long, interval: Long?) {
-//        val noteN = note.value.copy(
+//        val noteN = notepad.value.copy(
 //            reminder = time,
 //            interval = interval ?: -1,
 //            reminderString = notePadRepository.dateToString(time),
 //        )
-//        note.update {
+//        notepad.update {
 //            noteN
 //        }
 //
@@ -383,47 +383,39 @@ class DetailViewModel @Inject constructor(
     }
 
     fun saveImage(uri: String) {
-        val id = notePadRepository.saveImage(uri)
+        viewModelScope.launch {
+            val id = contentManager.saveImage(uri)
 
-        val image = NoteVisual.NoteImage(
-            id = id,
-            path = notePadRepository.getImagePath(id),
-        )
+            val image = NoteImage(
+                id = id,
+                path = contentManager.getImagePath(id),
+            )
 
-        val notepad = getNotePad()
+            val notepad = getNotePad()
 
-        save(notepad.copy(visuals = notepad.visuals + image))
+            addAllNoteUseCase(notepad.copy(images = notepad.images + image))
+        }
     }
 
     fun saveVoice(uri: String, text: String) {
-        val id = notePadRepository.saveVoice(uri)
+        viewModelScope.launch {
+            val id = contentManager.saveVoice(uri)
 
-        val voice = NoteVoice(
-            id = id,
-            voiceName = notePadRepository.getVoicePath(id),
-        )
-        initState.detail.edit {
-            append(text)
+            val voice = NoteVoice(
+                id = id,
+                voiceName = contentManager.getVoicePath(id),
+            )
+            initState.detail.edit {
+                append(text)
+            }
+
+            val notepad = getNotePad()
+            addAllNoteUseCase(notepad.copy(voices = notepad.voices + voice))
         }
-
-        val notepad = getNotePad()
-        save(notepad.copy(voices = notepad.voices + voice))
     }
 
     fun getPhotoUri(): String {
-        return notePadRepository.getUri()
-    }
-
-    fun insertNewDrawing(): Long {
-        val id = System.currentTimeMillis()
-        val drawing = NoteVisual.NoteImage(
-            id = id,
-            path = notePadRepository.getImagePath(id),
-        )
-        val notepad = getNotePad()
-        save(notepad.copy(visuals = notepad.visuals + drawing))
-
-        return id
+        return contentManager.pictureUri()
     }
 
     private var playJob: Job? = null
@@ -438,7 +430,7 @@ class DetailViewModel @Inject constructor(
 
         if (currentIndex != index) {
             voices = voices.map { it.copy(currentProgress = 0, isPlaying = false) }.toMutableList()
-            save(notepad.copy(voices = voices))
+            // save(notepad.copy(voices = voices))
         }
         currentIndex = index
         playJob = viewModelScope.launch {
@@ -453,12 +445,13 @@ class DetailViewModel @Inject constructor(
                             isPlaying = true,
                         )
 
-                    save(notepad.copy(voices = voices))
+                    //  save(notepad.copy(voices = voices))
                 }
             voices = notepad.voices.toMutableList()
             voices[index] = voiceUiState.copy(currentProgress = 0, isPlaying = false)
-            save(notepad.copy(voices = voices))
+            //  save(notepad.copy(voices = voices))
         }
+        TODO("update voice ui state")
     }
 
     fun pause() {
@@ -468,7 +461,7 @@ class DetailViewModel @Inject constructor(
 
         val voiceUiState = voices[currentIndex]
         voices[currentIndex] = voiceUiState.copy(isPlaying = false)
-        save(notepad.copy(voices = voices))
+//        save(notepad.copy(voices = voices))
         playJob?.cancel()
         voicePlayer.pause()
     }

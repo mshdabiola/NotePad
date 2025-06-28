@@ -4,9 +4,7 @@
 
 package com.mshdabiola.detail
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -81,18 +79,17 @@ import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
-import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.ReminderCard
-import com.mshdabiola.ui.myFormat
 import com.mshdabiola.ui.toTime
-import kotlinx.datetime.LocalDateTime
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -144,47 +141,47 @@ fun SharedTransitionScope.EditScreen(
         mutableStateOf(true)
     }
 
-    val bg = if (notepad.background != -1) {
+    val bg = if (notepad.note.background != -1) {
         Color.Transparent
     } else {
-        if (notepad.color != -1) {
-            NoteIcon.noteColors[notepad.color]
+        if (notepad.note.color != -1) {
+            NoteIcon.noteColors[notepad.note.color]
         } else {
             MaterialTheme.colorScheme.background
         }
     }
-    val color = NoteIcon.noteColors.getOrNull(notepad.color) ?: Color.Transparent
+    val color = NoteIcon.noteColors.getOrNull(notepad.note.color) ?: Color.Transparent
 
-    val sColor = if (notepad.background != -1) {
-        NoteIcon.background[notepad.background].fgColor
+    val sColor = if (notepad.note.background != -1) {
+        NoteIcon.background[notepad.note.background].fgColor
     } else {
         MaterialTheme.colorScheme.secondaryContainer
     }
 
-    val painter = if (notepad.background != -1) {
-        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.background].bg))
+    val painter = if (notepad.note.background != -1) {
+        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.note.background].bg))
     } else {
         null
     }
 
-    val images = remember(notepad.visuals) {
-        notepad.visuals.reversed().chunked(3)
+    val images = remember(notepad.images, notepad.drawings) {
+        notepad.getVisuals().reversed().chunked(3)
     }
 
-    LaunchedEffect(
-        key1 = notepad,
-        block = {
-            if (notepad.focus) {
-                subjectFocus.requestFocus()
-            }
-        },
-    )
+//    LaunchedEffect(
+//        key1 = notepad,
+//        block = {
+//            if (notepad.focus) {
+//                subjectFocus.requestFocus()
+//            }
+//        },
+//    )
 
     Scaffold(
         containerColor = bg,
         modifier = modifier
             .sharedBounds(
-                sharedContentState = rememberSharedContentState("note_${notepad.id}"),
+                sharedContentState = rememberSharedContentState("note_${notepad.note.id}"),
                 animatedVisibilityScope = animatedContentScope,
             )
             .drawBehind {
@@ -215,7 +212,7 @@ fun SharedTransitionScope.EditScreen(
                         Icon(
                             modifier = Modifier.testTag("detail:pin"),
 
-                            imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
+                            imageVector = if (notepad.note.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                             contentDescription = "pin",
                         )
                     }
@@ -231,7 +228,7 @@ fun SharedTransitionScope.EditScreen(
                         Icon(
                             modifier = Modifier.testTag("detail:archive"),
 
-                            imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
+                            imageVector = if (notepad.note.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                             contentDescription = "archive",
                         )
                     }
@@ -251,7 +248,7 @@ fun SharedTransitionScope.EditScreen(
                     .testTag("detail:list"),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (notepad.visuals.isNotEmpty()) {
+                if (images.isNotEmpty()) {
                     item(images) {
                         images.forEach { imageList ->
                             Row(
@@ -262,11 +259,11 @@ fun SharedTransitionScope.EditScreen(
                             ) {
                                 imageList.forEachIndexed { index, it ->
                                     when (it) {
-                                        is NoteVisual.NoteImage -> {
+                                        is NoteImage -> {
                                             AsyncImage(
                                                 modifier = Modifier
                                                     .clickable {
-                                                        navigateToGallery(notepad.id, index, imageList.size, it.path)
+                                                        navigateToGallery(notepad.note.id, index, imageList.size, it.path)
                                                     }
                                                     .sharedElement(
                                                         sharedContentState = rememberSharedContentState("image_$index"),
@@ -280,7 +277,7 @@ fun SharedTransitionScope.EditScreen(
                                                 contentScale = ContentScale.Crop,
                                             )
                                         }
-                                        is NoteVisual.NoteDrawing -> {
+                                        is NoteDrawing -> {
                                             BoardViewer(
                                                 modifier = Modifier
                                                     .clickable {
@@ -317,7 +314,7 @@ fun SharedTransitionScope.EditScreen(
                                 .testTag("detail:title"),
 
                         )
-                        if (notepad.isCheck) {
+                        if (notepad.note.isCheck) {
                             Box {
                                 IconButton(
                                     modifier = Modifier.testTag("detail:morecheck"),
@@ -363,7 +360,7 @@ fun SharedTransitionScope.EditScreen(
                         }
                     }
                 }
-                if (!notepad.isCheck) {
+                if (!notepad.note.isCheck) {
                     item {
                         NoteTextField(
                             state = content,
@@ -379,7 +376,7 @@ fun SharedTransitionScope.EditScreen(
                         )
                     }
                 }
-                if (notepad.isCheck) {
+                if (notepad.note.isCheck) {
                     items(notCheckNote, key = { it.id }) {
                         NoteCheck(
                             noteCheckUiState = it,
@@ -461,7 +458,7 @@ fun SharedTransitionScope.EditScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                         }
-                        if (notepad.background > -1 && notepad.color > -1) {
+                        if (notepad.note.background > -1 && notepad.note.color > -1) {
                             Box(
                                 modifier = Modifier
                                     .clickable { onColorClick() }
@@ -505,7 +502,7 @@ fun SharedTransitionScope.EditScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDate.myFormat()}",
+                        text = "${stringResource(Rd.string.modules_designsystem_edited)} ${"notepad.editDate.myFormat()"}",
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
@@ -518,42 +515,6 @@ fun SharedTransitionScope.EditScreen(
                         contentDescription = "note options",
                     )
                 }
-            }
-        }
-    }
-}
-
-@SuppressLint("UnusedSharedTransitionModifierParameter")
-@Preview
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Composable
-fun EditScreenPreview() {
-    MaterialTheme {
-        SharedTransitionScope {
-            AnimatedVisibility(true) {
-                EditScreen(
-                    notepad = NotePad(
-                        id = 1L,
-                        title = "Sample Note",
-                        detail = "This is a sample note content.",
-                        editDate = LocalDateTime(2023, 1, 15, 10, 30),
-                        isCheck = false,
-                        color = 0,
-                        background = -1,
-                        isPin = false,
-                        focus = false,
-                        notification = null,
-                        noteType = NoteType.NOTE,
-                        visuals = emptyList(),
-                        voices = emptyList(),
-                        checks = emptyList(),
-                        labels = emptyList(),
-                        uris = emptyList(),
-                    ),
-                    title = TextFieldState("Sample Title"),
-                    content = TextFieldState("Sample Content"),
-                    animatedContentScope = this,
-                )
             }
         }
     }
