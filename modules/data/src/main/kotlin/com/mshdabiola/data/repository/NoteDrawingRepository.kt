@@ -1,38 +1,18 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.data.model.toDrawing
-import com.mshdabiola.data.model.toEntity
-import com.mshdabiola.database.dao.NoteDrawingDao
-import com.mshdabiola.model.NoteVisual
-import kotlinx.coroutines.Dispatchers
+import com.mshdabiola.model.NoteDrawing
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-internal class NoteDrawingRepository
-@Inject constructor(
-    private val noteDrawingDao: NoteDrawingDao,
-) : INoteDrawingRepository {
-    override suspend fun insert(noteDrawing: NoteVisual.NoteDrawing): Long {
-        return withContext(Dispatchers.IO) {
-            noteDrawingDao.upsert(noteDrawing.toEntity())
-        }
-    }
+interface NoteDrawingRepository {
+    suspend fun upserts(drawings: List<NoteDrawing>): List<Long>
 
-    override suspend fun delete(id: Long) {
-        withContext(Dispatchers.IO) {
-            noteDrawingDao.delete(id)
-        }
-    }
+    suspend fun upsert(drawing: NoteDrawing): Long
+    suspend fun delete(id: Long)
 
-    override fun get(id: Long): Flow<NoteVisual.NoteDrawing?> {
-        return noteDrawingDao.get(id)
-            .map { it?.toDrawing() }
-    }
+    suspend fun deleteByNoteId(noteId: Long)
 
-    override fun getNoteDrawing(noteId: Long): Flow<List<NoteVisual.NoteDrawing>> {
-        return noteDrawingDao.getNoteDrawing(noteId)
-            .map { list -> list.map { it.toDrawing() } }
-    }
+    fun getAll(): Flow<List<NoteDrawing>>
+    fun getByNoteId(noteId: Long): Flow<List<NoteDrawing>>
+
+    fun get(id: Long): Flow<NoteDrawing?>
 }

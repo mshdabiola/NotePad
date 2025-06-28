@@ -1,54 +1,14 @@
 package com.mshdabiola.data.repository
 
-import com.mshdabiola.data.model.toLabel
-import com.mshdabiola.data.model.toLabelEntity
-import com.mshdabiola.data.model.toNoteLabel
-import com.mshdabiola.data.model.toNoteLabelEntity
-import com.mshdabiola.database.dao.LabelDao
-import com.mshdabiola.database.dao.NoteLabelDao
 import com.mshdabiola.model.Label
-import com.mshdabiola.model.NoteLabel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-internal class LabelRepository
-@Inject constructor(
-    private val labelDao: LabelDao,
-    private val noteLabelDao: NoteLabelDao,
-) : ILabelRepository {
+interface LabelRepository {
+    suspend fun upserts(labels: List<Label>): List<Long>
 
-    override suspend fun upsert(labels: List<Label>): List<Long> = withContext(Dispatchers.IO) {
-        return@withContext labelDao.upsert(labels.map { it.toLabelEntity() })
-    }
+    suspend fun upsert(label: Label): Long
+    suspend fun delete(id: Long)
 
-    override suspend fun upsertNoteLabel(notelabels: List<NoteLabel>) {
-        noteLabelDao.upsert(notelabels.map { it.toNoteLabelEntity() })
-    }
-
-    override fun getNoteLabel(id: Long): Flow<List<NoteLabel>> {
-        return noteLabelDao.getAll(id).map { it.map { it.toNoteLabel() } }
-    }
-
-    override fun getLabel(id: Long): Flow<Label?> {
-        return labelDao.getById(id).map { it?.toLabel() }
-    }
-
-    override suspend fun deleteNoteLabel(noteIds: Set<Long>, labelId: Long) {
-        noteLabelDao.delete(noteIds, labelId)
-    }
-
-    override suspend fun getOneLabelList(): List<Label> {
-        return labelDao.getAllLabelsOneShot().map { it.toLabel() }
-    }
-
-    override fun getAllLabels() =
-        labelDao.getAllLabels().map { labelEntities -> labelEntities.map { it.toLabel() } }
-
-    override suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
-        labelDao.delete(id)
-        noteLabelDao.deleteByLabelId(id)
-    }
+    fun getAll(): Flow<List<Label>>
+    fun get(id: Long): Flow<Label?>
 }

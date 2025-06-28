@@ -1,13 +1,11 @@
 package com.mshdabiola.data.model
 
-import com.mshdabiola.database.model.FullLabel
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteDrawingEntity
 import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NoteLabelEntity
-import com.mshdabiola.database.model.NotePadEntity
 import com.mshdabiola.database.model.NoteVoiceEntity
 import com.mshdabiola.database.model.NotificationEntity
 import com.mshdabiola.model.Converter
@@ -15,9 +13,9 @@ import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NoteLabel
-import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
@@ -28,8 +26,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-fun NoteDrawingEntity.toDrawing(): NoteVisual.NoteDrawing {
-    return NoteVisual.NoteDrawing(
+fun NoteDrawingEntity.toDrawing(): NoteDrawing {
+    return NoteDrawing(
         id = id!!,
         noteId = noteId,
         drawingPaths = paths?.let { Converter.toPath(it) } ?: emptyList(),
@@ -37,7 +35,7 @@ fun NoteDrawingEntity.toDrawing(): NoteVisual.NoteDrawing {
     )
 }
 
-fun NoteVisual.NoteDrawing.toEntity(): NoteDrawingEntity {
+fun NoteDrawing.toEntity(): NoteDrawingEntity {
     return NoteDrawingEntity(
         id = id.check(),
         noteId = noteId,
@@ -61,21 +59,8 @@ fun NoteCheckEntity.toNoteCheck() = NoteCheck(
 
 fun NoteCheck.toNoteCheckEntity() = NoteCheckEntity(id.check(), noteId, content, isCheck)
 
-fun NotePad.toNoteEntity() =
-    NoteEntity(
-        id.check(),
-        title,
-        detail,
-        editDate.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-        isCheck,
-        color,
-        background,
-        isPin,
-        noteType,
-    )
-
-fun NoteEntity.toNote() = Note(
-    id,
+fun Note.asEntity() = NoteEntity(
+    id.check(),
     title,
     detail,
     editDate,
@@ -86,33 +71,25 @@ fun NoteEntity.toNote() = Note(
     noteType,
 )
 
-fun NoteVisual.NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId)
+fun NoteEntity.toNote() = Note(
+    id!!,
+    title,
+    detail,
+    editDate,
+    isCheck,
+    color,
+    background,
+    isPin,
+    noteType,
+)
+
+fun NoteImage.toNoteImageEntity() = NoteImageEntity(id, noteId)
 fun NoteImageEntity.toNoteImage() =
-    NoteVisual.NoteImage(id = id, noteId = noteId)
+    NoteImage(id = id, noteId = noteId)
 
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
 
-fun NotePadEntity.toNotePad() = NotePad(
-    id = noteEntity.id!!,
-    title = noteEntity.title,
-    detail = noteEntity.detail,
-    editDate = Instant.fromEpochMilliseconds(noteEntity.editDate)
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    isCheck = noteEntity.isCheck,
-    color = noteEntity.color,
-    background = noteEntity.background,
-    isPin = noteEntity.isPin,
-    notification = notification?.toNotificationUiState(),
-    noteType = noteEntity.noteType,
-    visuals = (images.map { it.toNoteImage() } + drawings.map { it.toDrawing() })
-        .sortedBy { it.key },
-    voices = voices.map { it.toNoteVoice() },
-    checks = checks.map { it.toNoteCheck() },
-    labels = labels.map { it.toLabel() },
-)
-
-fun FullLabel.toLabel() = label.toLabel()
 fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
 fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
     id,
@@ -122,7 +99,7 @@ fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
 )
 
 // --- Mapper from NotificationUiState to NotificationEntity ---
-fun NotificationUiState.toEntity(noteId: Long): NotificationEntity {
+fun NotificationUiState.toEntity(): NotificationEntity {
     val reminderTimestamp =
         this.currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
