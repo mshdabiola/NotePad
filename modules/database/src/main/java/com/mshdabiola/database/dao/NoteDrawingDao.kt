@@ -8,18 +8,25 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDrawingDao {
-    @Upsert
-    suspend fun upsert(noteDrawing: NoteDrawingEntity): Long
 
     @Upsert
-    suspend fun upserts(noteDrawings: List<NoteDrawingEntity>): List<Long>
+    suspend fun upserts(drawings: List<NoteDrawingEntity>): List<Long>
+
+    @Upsert
+    suspend fun upsert(drawing: NoteDrawingEntity): Long
 
     @Query("DELETE FROM note_drawing_table WHERE id = :id")
     suspend fun delete(id: Long)
 
+    @Query("DELETE FROM note_drawing_table WHERE note_id = :noteId")
+    suspend fun deleteByNoteId(noteId: Long)
+
     @Query("SELECT * FROM note_drawing_table WHERE id = :id")
     fun get(id: Long): Flow<NoteDrawingEntity?>
 
+    @Query("SELECT * FROM note_drawing_table")
+    fun getAll(): Flow<List<NoteDrawingEntity>>
+
     @Query("SELECT * FROM note_drawing_table WHERE note_id = :noteId")
-    fun getNoteDrawing(noteId: Long): Flow<List<NoteDrawingEntity>>
+    fun getByNoteId(noteId: Long): Flow<List<NoteDrawingEntity>>
 }

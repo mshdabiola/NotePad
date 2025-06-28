@@ -12,9 +12,8 @@ import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.database.dao.NoteDrawingDao
 import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
+import com.mshdabiola.database.dao.NoteNotificationDao
 import com.mshdabiola.database.dao.NoteVoiceDao
-import com.mshdabiola.database.dao.NotepadDao
-import com.mshdabiola.database.dao.NotificationDao
 import com.mshdabiola.database.model.LabelEntity
 import com.mshdabiola.database.model.NoteCheckEntity
 import com.mshdabiola.database.model.NoteDrawingEntity
@@ -59,9 +58,7 @@ abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun getNoteVoiceDao(): NoteVoiceDao
 
-    abstract fun getNotePadDao(): NotepadDao
-
-    abstract fun getNotification(): NotificationDao
+    abstract fun getNotification(): NoteNotificationDao
 
     abstract fun getNoteDrawingDao(): NoteDrawingDao
 
