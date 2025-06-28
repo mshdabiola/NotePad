@@ -4,11 +4,9 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.data.repository.UserDataRepository
+import com.mshdabiola.domain.GetAllNoteUseCase
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteType
-import com.mshdabiola.model.NoteVisual
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 internal class SearchViewModel
 @Inject constructor(
-    private val notepadRepository: INotePadRepository,
     userDataRepository: UserDataRepository,
+    private val getAllNoteUseCase: GetAllNoteUseCase,
 ) : ViewModel() {
 
     val searchQuery = TextFieldState()
@@ -36,11 +34,7 @@ internal class SearchViewModel
             it.noteDisplayCategory
         }
         .flatMapLatest {
-            when (it.noteType) {
-                NoteType.REMINDER -> notepadRepository.getNotePadsWithMainData(it)
-                NoteType.ARCHIVE -> notepadRepository.getNotePadsWithMainData(it)
-                else -> notepadRepository.getNotePads()
-            }
+            getAllNoteUseCase(it)
         }
 
     private val isGrid = userDataRepository
@@ -95,7 +89,7 @@ internal class SearchViewModel
 
         val backgrounds = notepads
             .map {
-                it.color
+                it.note.color
             }
             .distinct()
             .sorted()
@@ -117,7 +111,7 @@ internal class SearchViewModel
             searchSort != null -> {
                 var list = when (searchSort) {
                     is SearchSort.Color -> {
-                        notepads.filter { it.color == searchSort.colorIndex }
+                        notepads.filter { it.note.color == searchSort.colorIndex }
                     }
 
                     is SearchSort.Label -> {
@@ -127,10 +121,10 @@ internal class SearchViewModel
                     is SearchSort.Type -> {
                         when (searchSort.index) {
                             0 -> notepads.filter { it.notification != null }
-                            1 -> notepads.filter { it.isCheck }
-                            2 -> notepads.filter { it.visuals.filterIsInstance<NoteVisual.NoteImage>().isNotEmpty() }
+                            1 -> notepads.filter { it.note.isCheck }
+                            2 -> notepads.filter { it.images.isNotEmpty() }
                             3 -> notepads.filter { it.voices.isNotEmpty() }
-                            4 -> notepads.filter { it.visuals.any { it is NoteVisual.NoteDrawing } }
+                            4 -> notepads.filter { it.drawings.isNotEmpty() }
                             5 -> notepads.filter { it.uris.isNotEmpty() }
                             else -> notepads
                         }
