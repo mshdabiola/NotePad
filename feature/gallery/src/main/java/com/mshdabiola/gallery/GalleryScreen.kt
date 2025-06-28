@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteVisual
+import com.mshdabiola.model.NoteImage
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import com.mshdabiola.designsystem.R as Rd
 
@@ -97,8 +97,8 @@ fun GalleryScreenPreview() {
                 animatedContentScope = this,
                 galleryUiState = GalleryUiState(
                     images = listOf(
-                        NoteVisual.NoteImage(id = 1),
-                        NoteVisual.NoteImage(id = 1),
+                        NoteImage(id = 1),
+                        NoteImage(id = 1),
                     ),
 
                 ),
