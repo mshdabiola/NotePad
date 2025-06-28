@@ -105,7 +105,8 @@ class DetailViewModel @Inject constructor(
 
                 initTitle = true
             }
-            if (title != notepad.note.title || content != notepad.note.detail) {
+            if (title.isNotBlank() && content.isNotBlank() &&(title != notepad.note.title || content != notepad.note.detail)) {
+                println("title $title content $content")
                 addAllNoteUseCase(
                     notepad.copy(
                         note = notepad.note.copy(
