@@ -6,13 +6,15 @@ package com.mshdabiola.playnotepad
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.LabelRepository
 import com.mshdabiola.data.repository.UserDataRepository
+import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteVisual
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +28,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
-    private val notePadRepository: INotePadRepository,
-    private val labelRepository: ILabelRepository,
+    private val labelRepository: LabelRepository,
+    private val addNoteUseCase: AddAllNoteUseCase,
+    private val contentManager: IContentManager,
 
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = userDataRepository
@@ -40,73 +43,59 @@ class MainActivityViewModel @Inject constructor(
         )
 
     val labels = labelRepository
-        .getAllLabels().stateIn(
+        .getAll().stateIn(
             scope = viewModelScope,
             initialValue = emptyList(),
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
     suspend fun insertNewNote(): Long {
-        return notePadRepository.upsert(NotePad())
+        return addNoteUseCase(NotePad())
     }
 
     suspend fun insertNewAudioNote(uri: String, text: String): Long {
-        val id = notePadRepository.saveVoice(uri)
+        val id = contentManager.saveVoice(uri)
 
         val voice = NoteVoice(
             id = id,
         )
 
         val notePad = NotePad(
-            detail = text,
+            note = Note(detail = text),
             voices = listOf(voice),
         )
-        return notePadRepository.upsert(notePad)
+        return addNoteUseCase(notePad)
     }
 
     suspend fun insertNewImageNote(uri: String): Long {
-        val id = notePadRepository.saveImage(uri)
+        val id = contentManager.saveImage(uri)
 
-        val image = NoteVisual.NoteImage(
+        val image = NoteImage(
             id = id,
         )
 
         val notePad = NotePad(
-            visuals = listOf(image),
+            images = listOf(image),
         )
-        return notePadRepository.upsert(notePad)
+        return addNoteUseCase(notePad)
     }
     suspend fun insertNewDrawing(): Long {
         val notePad = NotePad()
 
-        val noteId = notePadRepository.upsert(notePad)
+        val noteId = addNoteUseCase(notePad)
 
         return noteId
     }
     suspend fun insertNewCheckNote(): Long {
         val notePad = NotePad(
-            isCheck = true,
+            note = Note(isCheck = true),
             checks = listOf(NoteCheck()),
         )
-        return notePadRepository.upsert(notePad)
+        return addNoteUseCase(notePad)
     }
 
     fun pictureUri(): String {
-        return notePadRepository.getUri()
-    }
-
-    suspend fun newSharePost(title: String, subject: String, images: List<String>): Long {
-        println("images $images, title $title, subject $subject")
-        val noteImage = images
-            .map { notePadRepository.saveImage(it) }
-            .map { NoteVisual.NoteImage(id = it) }
-
-        val notePad = NotePad(
-            title = title,
-            detail = subject,
-            visuals = noteImage,
-        )
-        return notePadRepository.upsert(notePad)
+        return contentManager.pictureUri()
     }
 
     fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
