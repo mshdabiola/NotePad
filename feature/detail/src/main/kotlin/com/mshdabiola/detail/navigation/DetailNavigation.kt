@@ -88,8 +88,7 @@ fun NavGraphBuilder.detailScreen(
 
         sharedTransitionScope.EditScreen(
             modifier = modifier,
-            id = id,
-            notepad = detailState.notePad,
+            state = detailState,
             title = detailState.title,
             content = detailState.detail,
             onBackClick = onBack,

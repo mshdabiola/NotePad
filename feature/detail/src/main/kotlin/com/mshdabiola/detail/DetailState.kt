@@ -11,5 +11,6 @@ data class DetailState(
     val notePad: NotePad = NotePad(),
     val title: TextFieldState = TextFieldState(),
     val detail: TextFieldState = TextFieldState(),
+    val updateAt: String = "Today, 12 : 45 AM",
 
 )

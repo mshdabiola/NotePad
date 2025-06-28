@@ -81,7 +81,6 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
-import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
@@ -96,8 +95,7 @@ import com.mshdabiola.designsystem.R as Rd
 @Composable
 fun SharedTransitionScope.EditScreen(
     modifier: Modifier = Modifier,
-    id: Long = 0L,
-    notepad: NotePad,
+    state: DetailState,
     title: TextFieldState,
     content: TextFieldState,
     animatedContentScope: AnimatedVisibilityScope,
@@ -125,6 +123,10 @@ fun SharedTransitionScope.EditScreen(
 ) {
     var expandCheck by remember {
         mutableStateOf(false)
+    }
+
+    val notepad = remember(state.notePad) {
+        state.notePad
     }
 
     val subjectFocus = remember {
@@ -502,7 +504,7 @@ fun SharedTransitionScope.EditScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "${stringResource(Rd.string.modules_designsystem_edited)} ${"notepad.editDate.myFormat()"}",
+                        text = "${stringResource(Rd.string.modules_designsystem_edited)} ${state.updateAt}",
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }

@@ -15,6 +15,7 @@ import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.domain.DateUseCase
 import com.mshdabiola.domain.GetNoteUseCase
 import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.Note
@@ -50,6 +51,7 @@ class DetailViewModel @Inject constructor(
     private val getNoteUseCase: GetNoteUseCase,
     private val addAllNoteUseCase: AddAllNoteUseCase,
     private val contentManager: IContentManager,
+    private val dateUseCase: DateUseCase,
 
 ) : ViewModel() {
 
@@ -113,7 +115,10 @@ class DetailViewModel @Inject constructor(
                     ),
                 )
             }
-            initState.copy(notePad = notepad)
+            initState.copy(
+                notePad = notepad,
+                updateAt = dateUseCase(notepad.note.editDate),
+            )
         }
     }.stateIn(
         scope = viewModelScope,
