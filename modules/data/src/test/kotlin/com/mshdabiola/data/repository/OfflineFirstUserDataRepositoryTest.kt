@@ -28,7 +28,7 @@ class OfflineFirstUserDataRepositoryTest {
 
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
-    private lateinit var subject: OfflineFirstUserDataRepository
+    private lateinit var subject: RealUserDataRepository
 
     private lateinit var notepadPreferencesDataSource: UserPreferencesRepository
 
@@ -43,7 +43,7 @@ class OfflineFirstUserDataRepositoryTest {
             tmpFolder.testUserPreferencesDataStore(testScope),
         )
 
-        subject = OfflineFirstUserDataRepository(
+        subject = RealUserDataRepository(
             userPreferencesRepository = notepadPreferencesDataSource,
             analyticsHelper,
         )
