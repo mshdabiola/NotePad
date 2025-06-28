@@ -1,12 +1,12 @@
 package com.mshdabiola.main
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.IAlarmManager
-import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.LabelRepository
+import com.mshdabiola.data.repository.NoteRepository
 import com.mshdabiola.data.repository.UserDataRepository
+import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.domain.GetAllNoteUseCase
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
@@ -29,11 +29,14 @@ import javax.inject.Inject
 @HiltViewModel
 internal class MainViewModel
 @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val notepadRepository: INotePadRepository,
-    private val alarmManager: IAlarmManager,
+//    savedStateHandle: SavedStateHandle,
+//    private val notepadpadRepository: INotePadRepository,
+//    private val alarmManager: IAlarmManager,
+    private val noteRepository: NoteRepository,
     private val userDataRepository: UserDataRepository,
-    private val labelRepository: ILabelRepository,
+    private val labelRepository: LabelRepository,
+    private val getAllNoteUseCase: GetAllNoteUseCase,
+    private val addAllNoteUseCase: AddAllNoteUseCase,
 ) : ViewModel() {
 
     private val selectedNotesState = MutableStateFlow<SelectState?>(null)
@@ -41,13 +44,13 @@ internal class MainViewModel
         .userData
         .mapLatest { it.noteDisplayCategory }
         .flatMapLatest {
-            notepadRepository.getNotePadsWithMainData(it)
+            getAllNoteUseCase.invoke(it)
         }
     private val label = userDataRepository
         .userData
         .mapLatest { it.noteDisplayCategory }
         .flatMapLatest {
-            labelRepository.getLabel(it.labelId)
+            labelRepository.get(it.labelId)
         }
     private val noteDisplayCategory = userDataRepository
         .userData
@@ -62,10 +65,10 @@ internal class MainViewModel
         noteDisplayCategory,
         selectedNotesState,
         isGrid,
-    ) { notepad, label, displayCategory, selectState, isGrid ->
+    ) { notepadpad, label, displayCategory, selectState, isGrid ->
 
-        val pinNote = notepad.filter { it.isPin }
-        val unPinNote = notepad.filter { !it.isPin }
+        val pinNote = notepadpad.filter { it.note.isPin }
+        val unPinNote = notepadpad.filter { !it.note.isPin }
         MainState.Success(
             labelName = label?.label,
             pinNotePads = pinNote,
@@ -104,14 +107,14 @@ internal class MainViewModel
         var notificationUiState: NotificationUiState? = null
         var colorIndex = -1
         if (setOfSelected.size == 1) {
-            val note = getAllNotePad().single { it.id == setOfSelected.first() }
-            colorIndex = note.color
-            notificationUiState = note.notification
+            val notepad = getAllNotePad().single { it.note.id == setOfSelected.first() }
+            colorIndex = notepad.note.color
+            notificationUiState = notepad.notification
         }
 
         val isAllPin = getAllNotePad()
-            .filter { setOfSelected.contains(it.id) }
-            .all { it.isPin }
+            .filter { setOfSelected.contains(it.note.id) }
+            .all { it.note.isPin }
 
         selectedNotesState.value = state.copy(
             setOfSelected = setOfSelected,
@@ -128,21 +131,27 @@ internal class MainViewModel
     fun pinOrUnpinNotes() {
         val selected = getSelectState().setOfSelected
         val selectedNotepad =
-            getAllNotePad().filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
         deselectNotes()
 
-        if (selectedNotepad.any { !it.isPin }) {
-            val pinNotepad = selectedNotepad.map { it.copy(isPin = true) }
+        if (selectedNotepad.any { !it.note.isPin }) {
+            val pinNotepad = selectedNotepad.map {
+                it.copy(note = it.note.copy(isPin = true))
+            }
 
             viewModelScope.launch {
-                notepadRepository.upsert(pinNotepad)
+                for (note in pinNotepad) {
+                    addAllNoteUseCase(note)
+                }
             }
         } else {
-            val unPinNote = selectedNotepad.map { it.copy(isPin = false) }
+            val unPinNote = selectedNotepad.map { it.copy(note = it.note.copy(isPin = false)) }
 
             viewModelScope.launch {
-                notepadRepository.upsert(unPinNote)
+                for (note in unPinNote) {
+                    addAllNoteUseCase(note)
+                }
             }
         }
     }
@@ -150,42 +159,48 @@ internal class MainViewModel
     fun setAllColor(colorId: Int) {
         val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
         deselectNotes()
-        val notes = selectedNotes.map { it.copy(color = colorId) }
+        val notepads = selectedNotes.map { it.copy(note = it.note.copy(color = colorId)) }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
     fun onArchiveNote() {
         val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
         deselectNotes()
-        val notes = selectedNotes.map {
-            val noteType = if (it.noteType == NoteType.ARCHIVE) NoteType.NOTE else NoteType.ARCHIVE
-            it.copy(noteType = noteType)
+        val notepads = selectedNotes.map {
+            val notepadType = if (it.note.noteType == NoteType.ARCHIVE) NoteType.NOTE else NoteType.ARCHIVE
+            it.copy(note = it.note.copy(noteType = notepadType))
         }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
     fun onDeleteNote() {
         val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
         deselectNotes()
-        val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH, isPin = false) }
+        val notepads = selectedNotes.map { it.copy(note = it.note.copy(noteType = NoteType.TRASH, isPin = false)) }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
@@ -195,33 +210,35 @@ internal class MainViewModel
         deselectNotes()
 
         viewModelScope.launch {
-            notepadRepository.delete(selected)
+            noteRepository.deleteIds(selected)
         }
     }
     fun onRestore() {
         val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
-                .map { it.copy(noteType = NoteType.NOTE) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
+                .map { it.copy(note = it.note.copy(noteType = NoteType.NOTE)) }
 
         deselectNotes()
 
         viewModelScope.launch {
-            notepadRepository.upsert(selectedNotes)
+            for (note in selectedNotes) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
     fun onCopyNote() {
         viewModelScope.launch(Dispatchers.IO) {
             val id = getSelectState().setOfSelected.first()
-            val notepads = notepadRepository.getOneNotePad(id).first()
+            val notepads = getAllNotePad().find { it.note.id == id }
 
             deselectNotes()
 
             if (notepads != null) {
-                val copy = notepads.copy(id = -1)
+                val copy = notepads.copy(note = notepads.note.copy(id = -1))
 
-                notepadRepository.upsert(copy)
+                addAllNoteUseCase(copy)
             }
         }
     }
@@ -239,24 +256,24 @@ internal class MainViewModel
         val labelId = getSuccess().noteDisplayCategory.labelId
 //
         viewModelScope.launch {
-            labelRepository.upsert(listOf(Label(labelId, name)))
+            labelRepository.upserts(listOf(Label(labelId, name)))
         }
     }
 
     fun onDeleteAllTrash() {
         viewModelScope.launch {
-            notepadRepository.deleteTrashType()
+            noteRepository.deleteTrash()
         }
     }
 
-    // Todo("delete empty note")
+    // Todo("deleteByNoteId empty notepad")
 //    fun deleteEmptyNote() {
 //        viewModelScope.launch(Dispatchers.IO) {
-//            val emptyList = notepadRepository.getNotePads().first()
-//                .filter { it.isEmpty() }
+//            val emptyList = notepadpadRepository.getNotePads().first()
+//                .filter { it.note.isEmpty() }
 //
 //            if (emptyList.isNotEmpty()) {
-//                notepadRepository.deleteNotePad(emptyList)
+//                notepadpadRepository.deleteNotePad(emptyList)
 //            }
 //        }
 //    }
@@ -271,18 +288,18 @@ internal class MainViewModel
 //        val time = timeListDefault[dateTimeState.value.currentTime]
 //        val date = when (dateTimeState.value.currentDate) {
 //            0 -> today.date
-//            1 -> today.date.plus(1, DateTimeUnit.DAY)
+//            1 -> today.date.plus(1, DateTimeUnit.note.DAY)
 //            else -> currentLocalDate
 //        }
 //        val interval = when (dateTimeState.value.currentInterval) {
 //            0 -> null
-//            1 -> DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)
+//            1 -> DateTimeUnit.note.HOUR.times(24).duration.toLong(DurationUnit.note.MILLISECONDS)
 //
-//            2 -> DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
+//            2 -> DateTimeUnit.note.HOUR.times(24 * 7).duration.toLong(DurationUnit.note.MILLISECONDS)
 //
-//            3 -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+//            3 -> DateTimeUnit.note.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.note.MILLISECONDS)
 //
-//            else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
+//            else -> DateTimeUnit.note.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.note.MILLISECONDS)
 //        }
 //
 //        val setime = LocalDateTime(date, time)
@@ -298,54 +315,15 @@ internal class MainViewModel
     }
 
     private fun setAlarm(time: Long, interval: Long?) {
-        val setOfSelected = getSelectState().setOfSelected
-        val selectedNotes =
-            getAllNotePad().filter { setOfSelected.contains(it.id) }
-
-        deselectNotes()
-        val notes = selectedNotes // .map { it.copy(reminder = time, interval = interval ?: -1) }
-
-        viewModelScope.launch {
-            notepadRepository.upsert(notes)
-        }
-
-        viewModelScope.launch {
-            notes.forEach {
-                alarmManager.setAlarm(
-                    time,
-                    interval,
-                    requestCode = it.id?.toInt() ?: -1,
-                    title = it.title,
-                    content = it.detail,
-                    noteId = it.id ?: 0L,
-                )
-            }
-        }
     }
 
     fun onDeleteAlarm() {
-        val selected = getSelectState().setOfSelected
-        val selectedNotes =
-            getAllNotePad().filter { selected.contains(it.id) }
-
-        deselectNotes()
-        val notes = selectedNotes // .map { it.copy(reminder = -1, interval = -1) }
-
-        viewModelScope.launch {
-            notepadRepository.upsert(notes)
-        }
-
-        viewModelScope.launch {
-            notes.forEach {
-                alarmManager.deleteAlarm(it.id?.toInt() ?: 0)
-            }
-        }
     }
 
     private fun getSuccess() = mainState.value as MainState.Success
     fun onSendNote(): NotePad {
-        val note = getAllNotePad().first { it.id == getSelectState().setOfSelected.first() }
+        val notepad = getAllNotePad().first { it.note.id == getSelectState().setOfSelected.first() }
         deselectNotes()
-        return note
+        return notepad
     }
 }

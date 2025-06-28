@@ -5,7 +5,6 @@
 package com.mshdabiola.main
 
 import MainTopBar
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -40,7 +39,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -48,7 +46,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.model.NoteDisplayCategory
-import com.mshdabiola.model.NotePad
 import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
@@ -165,14 +162,14 @@ internal fun SharedTransitionScope.MainScreen(
                         }
                     }
 
-                    items(items = mainState.pinNotePads, key = { it.id }) { notepad ->
+                    items(items = mainState.pinNotePads, key = { it.note.id }) { notepad ->
                         NoteCard(
                             modifier = Modifier,
                             animatedVisibilityScope = animatedContentScope,
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
-                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.id) ?: false,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.note.id) ?: false,
                         )
                     }
 
@@ -186,64 +183,18 @@ internal fun SharedTransitionScope.MainScreen(
                             )
                         }
                     }
-                    items(items = mainState.unPinNotePads, key = { it.id }) { notepad ->
+                    items(items = mainState.unPinNotePads, key = { it.note.id }) { notepad ->
                         NoteCard(
                             modifier = Modifier,
                             animatedVisibilityScope = animatedContentScope,
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
-                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.id) ?: false,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.note.id) ?: false,
                         )
                     }
                 }
             }
-        }
-    }
-}
-
-@SuppressLint("UnusedSharedTransitionModifierParameter")
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-internal fun MainScreenPreview() {
-    val mainState = MainState.Success(
-        isGrid = true,
-        labelName = "Sample Label",
-        pinNotePads = listOf(
-            NotePad(id = 1, title = "Pinned Note 1", detail = "Content 1", isPin = true),
-            NotePad(id = 2, title = "Pinned Note 2", detail = "Content 2", isPin = true),
-        ),
-        unPinNotePads = listOf(
-            NotePad(id = 3, title = "Unpinned Note 1", detail = "Content 3"),
-            NotePad(id = 4, title = "Unpinned Note 2", detail = "Content 4"),
-            NotePad(id = 5, title = "Unpinned Note 1", detail = "Content 3"),
-            NotePad(id = 6, title = "Unpinned Note 2", detail = "Content 4"),
-            NotePad(
-                id = 7,
-                title = "Unpinned Note 1",
-                detail = "Content 3",
-            ),
-            NotePad(id = 8, title = "Unpinned Note 2", detail = "Content 4"),
-            NotePad(
-                id = 9,
-                title = "Unpinned Note 1",
-                detail = "Content 3",
-            ),
-            NotePad(id = 10, title = "Unpinned Note 2", detail = "Content 4"),
-            NotePad(id = 11, title = "Unpinned Note 1", detail = "Content 3"),
-            NotePad(id = 12, title = "Unpinned Note 2", detail = "Content 4"),
-        ),
-        noteDisplayCategory = NoteDisplayCategory(),
-        selectState = SelectState(colorIndex = 0, isAllPin = true, setOfSelected = setOf(1L)),
-    )
-    SharedTransitionScope {
-        AnimatedVisibility(visible = true) {
-            MainScreen(
-                modifier = Modifier.fillMaxSize(),
-                animatedContentScope = this,
-                mainState = mainState,
-            )
         }
     }
 }
