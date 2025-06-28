@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.LabelRepository
 import com.mshdabiola.data.repository.UserDataRepository
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteType
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val labelRepository: ILabelRepository,
+    private val labelRepository: LabelRepository,
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
@@ -29,7 +29,7 @@ class LabelViewModel @Inject constructor(
     private val newLabel = MutableStateFlow(LabelState())
 
     val labels = labelRepository
-        .getAllLabels()
+        .getAll()
 
     val labelUiState = combine(
         labels,
@@ -51,9 +51,9 @@ class LabelViewModel @Inject constructor(
         viewModelScope.launch {
             if (index == -1) {
                 newLabel.value = LabelState()
-                labelRepository.upsert(listOf(labelUiState.value.newLabel.toLabel()))
+                labelRepository.upsert(labelUiState.value.newLabel.toLabel())
             } else {
-                labelRepository.upsert(listOf(labelUiState.value.labels[index].toLabel()))
+                labelRepository.upsert(labelUiState.value.labels[index].toLabel())
             }
         }
     }
