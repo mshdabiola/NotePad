@@ -55,7 +55,8 @@ import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.theme.SkTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
-import com.mshdabiola.model.NoteVisual
+import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.LabelCard
@@ -244,10 +245,10 @@ fun ActionEditScreen(
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (success.notepad.visuals.isNotEmpty()) {
+            if (success.notepad.getVisuals().isNotEmpty()) {
                 item {
                     Box {
-                        success.notepad.visuals.reversed().chunked(3).forEach { imageList ->
+                        success.notepad.getVisuals().reversed().chunked(3).forEach { imageList ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -255,7 +256,7 @@ fun ActionEditScreen(
                             ) {
                                 imageList.forEach {
                                     when (it) {
-                                        is NoteVisual.NoteImage -> {
+                                        is NoteImage -> {
                                             AsyncImage(
                                                 modifier = Modifier
                                                     .weight(1f)
@@ -265,7 +266,7 @@ fun ActionEditScreen(
                                                 contentScale = ContentScale.Crop,
                                             )
                                         }
-                                        is NoteVisual.NoteDrawing -> {
+                                        is NoteDrawing -> {
                                             BoardViewer(
                                                 modifier = Modifier
                                                     .weight(1f)

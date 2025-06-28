@@ -80,6 +80,7 @@ dependencies {
     implementation(projects.modules.designsystem)
     implementation(projects.modules.data)
     implementation(projects.modules.ui)
+    implementation(projects.modules.domain)
 
 
     implementation(projects.feature.main)
