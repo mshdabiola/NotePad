@@ -1,10 +1,10 @@
 package com.mshdabiola.testing.repository
 
-import com.mshdabiola.data.repository.INoteDrawingRepository
+import com.mshdabiola.data.repository.NoteDrawingRepository
 import com.mshdabiola.model.NoteDrawing
 import kotlinx.coroutines.flow.Flow
 
-internal class TestNoteDrawingRepository : INoteDrawingRepository {
+internal class TestNoteDrawingRepository : NoteDrawingRepository {
     override suspend fun delete(imageId: Long) {
         TODO("Not yet implemented")
     }

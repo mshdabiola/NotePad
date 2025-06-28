@@ -1,13 +1,13 @@
 package com.mshdabiola.testing.fake.repository
 
-import com.mshdabiola.data.repository.ILabelRepository
+import com.mshdabiola.data.repository.LabelRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class FakeLabelRepository @Inject constructor() : ILabelRepository {
+class FakeLabelRepository @Inject constructor() : LabelRepository {
     override suspend fun upsert(labels: List<Label>): List<Long> {
     }
 

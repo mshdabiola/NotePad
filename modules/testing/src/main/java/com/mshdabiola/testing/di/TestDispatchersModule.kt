@@ -5,7 +5,7 @@
 package com.mshdabiola.testing.di
 
 import com.mshdabiola.common.network.Dispatcher
-import com.mshdabiola.common.network.SkDispatchers
+import com.mshdabiola.common.network.NoteDispatchers
 import com.mshdabiola.common.network.di.DispatchersModule
 import dagger.Module
 import dagger.Provides
@@ -21,11 +21,11 @@ import kotlinx.coroutines.test.TestDispatcher
 )
 internal object TestDispatchersModule {
     @Provides
-    @Dispatcher(SkDispatchers.IO)
+    @Dispatcher(NoteDispatchers.IO)
     fun providesIODispatcher(testDispatcher: TestDispatcher): CoroutineDispatcher = testDispatcher
 
     @Provides
-    @Dispatcher(SkDispatchers.Default)
+    @Dispatcher(NoteDispatchers.Default)
     fun providesDefaultDispatcher(
         testDispatcher: TestDispatcher,
     ): CoroutineDispatcher = testDispatcher
