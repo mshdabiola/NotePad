@@ -4,8 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.mshdabiola.data.repository.INotePadRepository
-import com.mshdabiola.model.NoteVisual
+import com.mshdabiola.common.IContentManager
+import com.mshdabiola.data.repository.NoteImageRepository
+import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.domain.GetNoteUseCase
+import com.mshdabiola.model.NoteImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -17,21 +20,24 @@ import javax.inject.Inject
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val notepadRepository: INotePadRepository,
+    private val noteImageRepository: NoteImageRepository,
     private val imageToText: ImageToText,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val addAllNoteUseCase: AddAllNoteUseCase,
+    private val contentManager: IContentManager,
 ) : ViewModel() {
 
     private val galleryArg = savedStateHandle.toRoute<GalleryArg>()
-    val galleryUiState = notepadRepository
-        .getOneNotePad(galleryArg.id)
-        .mapLatest { note ->
+    val galleryUiState = noteImageRepository
+        .getByNoteId(galleryArg.id)
+        .mapLatest { images ->
             GalleryUiState(
                 initIndex = galleryArg.index,
-                images = note
-                    ?.visuals
-                    ?.filterIsInstance<NoteVisual.NoteImage>()
-                    ?.reversed()
-                    ?: emptyList(),
+                images = images.map {
+                    it.copy(
+                        path = contentManager.getImagePath(it.id),
+                    )
+                },
             )
         }
         .stateIn(
@@ -40,7 +46,7 @@ class GalleryViewModel @Inject constructor(
             initialValue = GalleryUiState(
                 initIndex = galleryArg.index,
                 images = List(galleryArg.total) {
-                    NoteVisual.NoteImage(
+                    NoteImage(
                         id = it.toLong(),
                         path = galleryArg.currentPath,
                     )
@@ -58,10 +64,10 @@ class GalleryViewModel @Inject constructor(
                 e.printStackTrace()
                 ""
             }
-            var note = notepadRepository.getOneNotePad(galleryArg.id).first()!!
+            var note = getNoteUseCase(galleryArg.id).first()!!
             note =
-                note.copy(detail = "${note.detail}\n$text")
-            notepadRepository.upsert(note)
+                note.copy(note = note.note.copy(detail = "${note.note.detail}\n$text"))
+            addAllNoteUseCase(note)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -69,7 +75,7 @@ class GalleryViewModel @Inject constructor(
 
     fun deleteImage(id: Long) {
         viewModelScope.launch {
-            notepadRepository.deleteImageNote(id)
+            noteImageRepository.delete(id)
         }
     }
 }
