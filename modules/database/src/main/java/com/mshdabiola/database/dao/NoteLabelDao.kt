@@ -10,20 +10,26 @@ import kotlinx.coroutines.flow.Flow
 interface NoteLabelDao {
 
     @Upsert
-    suspend fun upsert(noteLabelEntity: List<NoteLabelEntity>)
+    suspend fun upserts(labels: List<NoteLabelEntity>): List<Long>
 
-    @Query("DELETE FROM note_label_table WHERE noteId IN (:ids) AND labelId = :labelId")
-    suspend fun delete(ids: Set<Long>, labelId: Long)
+    @Upsert
+    suspend fun upsert(label: NoteLabelEntity): Long
 
-    @Query("DELETE FROM note_label_table WHERE labelId = :id")
-    suspend fun deleteByLabelId(id: Long)
+    @Query("DELETE FROM note_label_table WHERE noteId = :noteId")
+    suspend fun deleteByNoteId(noteId: Long)
 
-    @Query("DELETE FROM note_label_table WHERE noteId = :id")
-    suspend fun deleteByNoteId(id: Long)
+    @Query("DELETE FROM note_label_table WHERE noteId = :noteId AND labelId = :labelId")
+    suspend fun deleteByNoteIdAndLabelId(noteId: Long, labelId: Long)
 
-    @Query("SELECT * FROM note_label_table WHERE noteId = :id")
-    fun getAll(id: Long): Flow<List<NoteLabelEntity>>
+    @Query("SELECT * FROM note_label_table")
+    fun getAll(): Flow<List<NoteLabelEntity>>
 
-//    @Query("SELECT noteId, label, COUNT(label) FROM note_label_table WHERE noteId = :ids GROUP BY label  ")
-//    suspend fun getIdAndNot(ids : Set<Long>)
+    @Query("SELECT * FROM note_label_table WHERE noteId = :noteId")
+    fun getByNoteId(noteId: Long): Flow<List<NoteLabelEntity>>
+
+    @Query("SELECT * FROM note_label_table WHERE labelId = :labelId")
+    fun getByLabelId(labelId: Long): Flow<List<NoteLabelEntity>>
+
+    @Query("SELECT * FROM note_label_table WHERE noteId IN (:ids)")
+    fun getByNoteIds(ids: Set<Long>): Flow<List<NoteLabelEntity>>
 }

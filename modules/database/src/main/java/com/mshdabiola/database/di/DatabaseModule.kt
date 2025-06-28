@@ -9,9 +9,8 @@ import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.database.dao.NoteDrawingDao
 import com.mshdabiola.database.dao.NoteImageDao
 import com.mshdabiola.database.dao.NoteLabelDao
+import com.mshdabiola.database.dao.NoteNotificationDao
 import com.mshdabiola.database.dao.NoteVoiceDao
-import com.mshdabiola.database.dao.NotepadDao
-import com.mshdabiola.database.dao.NotificationDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,19 +71,13 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun notePadDaoProvider(noteDatabase: NoteDatabase): NotepadDao {
-        return noteDatabase.getNotePadDao()
-    }
-
-    @Provides
-    @Singleton
     fun noteDrawingDaoProvider(noteDatabase: NoteDatabase): NoteDrawingDao {
         return noteDatabase.getNoteDrawingDao()
     }
 
     @Provides
     @Singleton
-    fun notificationDaoProvider(noteDatabase: NoteDatabase): NotificationDao {
+    fun notificationDaoProvider(noteDatabase: NoteDatabase): NoteNotificationDao {
         return noteDatabase.getNotification()
     }
 }

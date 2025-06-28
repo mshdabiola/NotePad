@@ -43,7 +43,7 @@ class NoteDaoTest {
     fun deleteTest() = runBlocking {
 //        val ludoEntity = LudoEntity(1, 3)
 //        ludoDao.upsert(ludoEntity)
-//        ludoDao.delete(ludoEntity)
+//        ludoDao.deleteByNoteId(ludoEntity)
 //
 //        val size = ludoDao.getAll().first().size
 //
