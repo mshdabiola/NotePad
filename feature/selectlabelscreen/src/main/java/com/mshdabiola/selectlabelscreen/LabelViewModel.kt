@@ -7,8 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.mshdabiola.data.repository.ILabelRepository
-import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.LabelRepository
+import com.mshdabiola.data.repository.NoteLabelRepository
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,8 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val labelRepository: ILabelRepository,
-    private val notePadRepository: INotePadRepository,
+    private val labelRepository: LabelRepository,
+    private val noteLabelRepository: NoteLabelRepository,
 ) : ViewModel() {
 
     private val labelsArgs = savedStateHandle.toRoute<LabelsArgs>()
@@ -33,11 +32,10 @@ class LabelViewModel @Inject constructor(
         .map { it.toLong() }
         .toSet()
 
-    private val notePadLabels = notePadRepository
-        .getNotePadsByIds(ids)
-        .mapLatest { note -> note.map { it.labels } }
+    private val notePadLabels = noteLabelRepository
+        .getByNoteIds(ids)
     private val labels = labelRepository
-        .getAllLabels()
+        .getAll()
     private val initLabelState = LabelUiState()
 
     @OptIn(FlowPreview::class)
@@ -48,7 +46,7 @@ class LabelViewModel @Inject constructor(
         labels,
     ) { query, notePadLabels, labels ->
         val labelsCount = notePadLabels
-            .flatten().groupingBy { it.id }.eachCount()
+            .groupingBy { it.noteId }.eachCount()
         val labelStates = labels.map {
             val state = when (labelsCount[it.id]) {
                 ids.size -> ToggleableState.On
@@ -81,13 +79,15 @@ class LabelViewModel @Inject constructor(
             label = label.copy(toggleableState = ToggleableState.On)
             val labelsList = ids.map { NoteLabel(noteId = it, labelId = label.id) }
             viewModelScope.launch {
-                labelRepository.upsertNoteLabel(labelsList)
+                noteLabelRepository.upserts(labelsList)
             }
         } else {
             label = label.copy(toggleableState = ToggleableState.Off)
 
             viewModelScope.launch {
-                labelRepository.deleteNoteLabel(ids, label.id)
+                ids.forEach {
+                    noteLabelRepository.deleteByNoteIdAndLabelId(it, label.id)
+                }
             }
         }
     }
@@ -145,13 +145,12 @@ class LabelViewModel @Inject constructor(
             )
             labelUiState.value.labelQuery.clearText()
 
-            val noteIds = labelRepository.upsert(
-                listOf(
-                    label,
-                ),
+            val noteId = labelRepository.upsert(
+                label,
+
             )
-            val labelsList = ids.map { NoteLabel(noteId = it, labelId = noteIds[0]) }
-            labelRepository.upsertNoteLabel(labelsList)
+            val labelsList = ids.map { NoteLabel(noteId = it, labelId = noteId) }
+            noteLabelRepository.upserts(labelsList)
         }
     }
 }
