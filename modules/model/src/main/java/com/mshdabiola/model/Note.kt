@@ -1,7 +1,7 @@
 package com.mshdabiola.model
 
 data class Note(
-    val id: Long? = null,
+    val id: Long = -1,
     val title: String = "",
     val detail: String = "",
     val editDate: Long = 0,
