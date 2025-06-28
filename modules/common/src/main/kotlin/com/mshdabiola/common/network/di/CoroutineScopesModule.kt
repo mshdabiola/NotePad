@@ -5,7 +5,7 @@
 package com.mshdabiola.common.network.di
 
 import com.mshdabiola.common.network.Dispatcher
-import com.mshdabiola.common.network.SkDispatchers.Default
+import com.mshdabiola.common.network.NoteDispatchers.Default
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
