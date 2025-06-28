@@ -1,8 +1,6 @@
 package com.mshdabiola.testing.repository
 
-import com.mshdabiola.data.repository.INotePadRepository
 import com.mshdabiola.model.NoteDisplayCategory
-import com.mshdabiola.model.NotePad
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime

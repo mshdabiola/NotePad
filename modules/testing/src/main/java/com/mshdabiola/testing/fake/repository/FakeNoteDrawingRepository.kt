@@ -1,12 +1,12 @@
 package com.mshdabiola.testing.fake.repository
 
-import com.mshdabiola.data.repository.INoteDrawingRepository
+import com.mshdabiola.data.repository.NoteDrawingRepository
 import com.mshdabiola.model.NoteDrawing
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class FakeNoteDrawingRepository @Inject constructor() : INoteDrawingRepository {
+class FakeNoteDrawingRepository @Inject constructor() : NoteDrawingRepository {
     override suspend fun delete(imageId: Long) {
     }
 
