@@ -1,6 +1,7 @@
 package com.mshdabiola.data.repository
 
 import com.mshdabiola.model.Note
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.Flow
 
@@ -14,10 +15,10 @@ interface NoteRepository {
 
     suspend fun deleteTrash()
 
-    fun getAll(): Flow<List<Note>>
-    fun get(id: Long): Flow<Note?>
+    fun getAll(): Flow<List<NotePad>>
+    fun get(id: Long): Flow<NotePad?>
 
-    fun getByNoteType(noteType: NoteType): Flow<List<Note>>
+    fun getByNoteType(noteType: NoteType): Flow<List<NotePad>>
 
-    fun getByNoteIds(set: Set<Long>): Flow<List<Note>>
+    fun getByNoteIds(set: Set<Long>): Flow<List<NotePad>>
 }

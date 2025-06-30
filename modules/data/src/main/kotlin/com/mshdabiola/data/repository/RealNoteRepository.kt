@@ -3,9 +3,10 @@ package com.mshdabiola.data.repository
 import com.mshdabiola.common.network.Dispatcher
 import com.mshdabiola.common.network.NoteDispatchers
 import com.mshdabiola.data.model.asEntity
-import com.mshdabiola.data.model.toNote
+import com.mshdabiola.data.model.toNotePad
 import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.model.Note
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -49,23 +50,23 @@ internal class RealNoteRepository
         }
     }
 
-    override fun getAll(): Flow<List<Note>> {
+    override fun getAll(): Flow<List<NotePad>> {
         return noteDao.getAll()
-            .map { list -> list.map { it.toNote() } }
+            .map { list -> list.map { it.toNotePad() } }
     }
 
-    override fun get(id: Long): Flow<Note?> {
+    override fun get(id: Long): Flow<NotePad?> {
         return noteDao.get(id)
-            .map { it?.toNote() }
+            .map { it?.toNotePad() }
     }
 
-    override fun getByNoteType(noteType: NoteType): Flow<List<Note>> {
+    override fun getByNoteType(noteType: NoteType): Flow<List<NotePad>> {
         return noteDao.getByNoteType(noteType)
-            .map { list -> list.map { it.toNote() } }
+            .map { list -> list.map { it.toNotePad() } }
     }
 
-    override fun getByNoteIds(set: Set<Long>): Flow<List<Note>> {
+    override fun getByNoteIds(set: Set<Long>): Flow<List<NotePad>> {
         return noteDao.getByIds(set)
-            .map { list -> list.map { it.toNote() } }
+            .map { list -> list.map { it.toNotePad() } }
     }
 }
