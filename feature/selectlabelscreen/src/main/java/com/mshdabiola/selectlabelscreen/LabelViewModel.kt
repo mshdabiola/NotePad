@@ -92,50 +92,6 @@ class LabelViewModel @Inject constructor(
         }
     }
 
-//    fun onSearchChange(text: String) {
-//        if (text.isBlank()) {
-//            labelScreenUiState =
-//                labelScreenUiState.copy(
-//                    editText = text,
-//                )
-//            viewModelScope.launch {
-//                updateList()
-//            }
-//        } else {
-//            val labels = list.filter { it.label.contains(text) }
-//
-//            val haveSameText = list.any { it.label == text }
-//            labelScreenUiState =
-//                labelScreenUiState.copy(
-//                    editText = text,
-//                    labels = labels.toImmutableList(),
-//                    showAddLabel = haveSameText.not(),
-//                )
-//        }
-//    }
-//
-//    private suspend fun updateList() {
-//        val labelsCount = ids.map {
-//            notePadRepository.getOneNotePad(it).first()!!.labels
-//        }
-//            .flatten().groupingBy { it.id }.eachCount()
-//
-//        val labels = labelRepository.getAllLabels().first().map {
-//            val state = when (labelsCount[it.id]) {
-//                ids.size -> ToggleableState.On
-//                null -> ToggleableState.Off
-//                else -> ToggleableState.Indeterminate
-//            }
-//            it.toLabelUiState().copy(toggleableState = state)
-//        }
-//        list = labels
-//
-//        labelScreenUiState = labelScreenUiState.copy(
-//            showAddLabel = false,
-//            labels = labels.toImmutableList(),
-//            editText = "",
-//        )
-//    }
 
     fun onCreateLabel() {
         viewModelScope.launch {
