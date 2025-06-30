@@ -102,7 +102,7 @@ fun NoteImageEntity.toNoteImage() =
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
 
-fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, voiceName)
+fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, filePath)
 fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
     id,
     noteId,

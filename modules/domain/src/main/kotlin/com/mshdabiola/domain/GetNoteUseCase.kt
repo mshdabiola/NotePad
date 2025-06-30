@@ -26,7 +26,7 @@ class GetNoteUseCase
                     voices = it.voices.map { voice ->
                         val path = contentManager.getVoicePath(voice.id)
                         voice.copy(
-                            voiceName = path,
+                            filePath = path,
                             length = audioLengthUseCase(path),
                         )
                     },

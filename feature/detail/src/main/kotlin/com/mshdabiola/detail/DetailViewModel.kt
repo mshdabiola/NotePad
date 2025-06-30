@@ -6,10 +6,8 @@ package com.mshdabiola.detail
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.semantics.text
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IAlarmManager
@@ -482,7 +480,7 @@ class DetailViewModel @Inject constructor(
 
             val voice = NoteVoice(
                 id = id,
-                voiceName = contentManager.getVoicePath(id),
+                filePath = contentManager.getVoicePath(id),
             )
             initState.detail.edit {
                 append(text)
@@ -513,7 +511,7 @@ class DetailViewModel @Inject constructor(
         }
         currentIndex = index
         playJob = viewModelScope.launch {
-            voicePlayer.playMusic(voiceUiState.voiceName, voiceUiState.currentProgress.toInt())
+            voicePlayer.playMusic(voiceUiState.filePath, voiceUiState.currentProgress.toInt())
                 .collectLatest { currentProgress ->
 
                     voices = notepad.voices.toMutableList()
