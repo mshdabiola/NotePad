@@ -14,4 +14,5 @@ data class DetailState(
     val checks: SnapshotStateList<NoteCheckUiState> = mutableStateListOf(),
     val unChecks: SnapshotStateList<NoteCheckUiState> = mutableStateListOf(),
     val updateAt: String = "Today, 12 : 45 AM",
+    val playerState: PlayerState? = null,
 )

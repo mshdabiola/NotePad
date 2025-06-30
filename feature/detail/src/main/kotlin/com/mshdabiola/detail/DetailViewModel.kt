@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
@@ -85,15 +86,15 @@ class DetailViewModel @Inject constructor(
             ),
         ),
     )
-    val titleFlow = snapshotFlow { initState.title.text }
+    private val titleFlow = snapshotFlow { initState.title.text }
         .debounce(300L)
         .distinctUntilChanged()
 
-    val detailFlow = snapshotFlow { initState.detail.text }
+    private val detailFlow = snapshotFlow { initState.detail.text }
         .debounce(300L)
         .distinctUntilChanged()
 
-    private val checkFlow = snapshotFlow { initState.checks.toList() } // First, react to list changes (add/remove)
+    private val checkListFlow = snapshotFlow { initState.checks.toList() } // First, react to list changes (add/remove)
         .flatMapLatest { currentChecksList ->
             // If the list is empty, emit an empty list of texts immediately
             if (currentChecksList.isEmpty()) {
@@ -110,7 +111,7 @@ class DetailViewModel @Inject constructor(
         .debounce(300L) // Debounce the list of texts
         .distinctUntilChanged()
 
-    private val unCheckFlow = snapshotFlow { initState.unChecks.toList() }
+    private val unCheckListFlow = snapshotFlow { initState.unChecks.toList() }
         .flatMapLatest { currentUnChecksList ->
             if (currentUnChecksList.isEmpty()) {
                 return@flatMapLatest kotlinx.coroutines.flow.flowOf(emptyList<String>())
@@ -125,14 +126,21 @@ class DetailViewModel @Inject constructor(
         .debounce(300L)
         .distinctUntilChanged()
 
+    val checksFlow = combine(unCheckListFlow, checkListFlow) { unChecks, checks ->
+        unChecks + checks
+    }
+
+    private val playerState = MutableStateFlow<PlayerState?>(null)
+
     private var initTitle = false
     val detailState = combine(
-        titleFlow,
-        detailFlow,
-        checkFlow,
-        unCheckFlow,
-        currentNote,
-    ) { title, content, checks, unChecks, notepad ->
+        flow = titleFlow,
+        flow2 = detailFlow,
+        flow3 = checksFlow,
+        flow4 = currentNote,
+        flow5 = playerState,
+
+    ) { title, content, checks, notepad, playerState ->
 
         when {
             notepad == null -> {
@@ -185,6 +193,7 @@ class DetailViewModel @Inject constructor(
                 initState.copy(
                     notePad = notepad,
                     updateAt = dateUseCase(notepad.note.editDate),
+                    playerState = playerState,
                 )
             }
         }
@@ -461,7 +470,6 @@ class DetailViewModel @Inject constructor(
     }
 
     private var playJob: Job? = null
-    private var currentIndex = -1
     fun playMusic(index: Int) {
         playJob?.cancel()
         val notepad = getNotePad()
@@ -470,40 +478,49 @@ class DetailViewModel @Inject constructor(
 
         val voiceUiState = voices[index]
 
-        if (currentIndex != index) {
-            voices = voices.map { it.copy(currentProgress = 0, isPlaying = false) }.toMutableList()
-            // save(notepad.copy(voices = voices))
+        val state = when {
+            playerState.value == null -> {
+                playerState.updateAndGet {
+                    PlayerState(
+                        indexPlaying = index,
+                        isPlaying = true,
+                        currentPosition = 0,
+                    )
+                }
+            }
+            playerState.value!!.indexPlaying != index -> {
+                playerState.updateAndGet {
+                    PlayerState(
+                        indexPlaying = index,
+                        isPlaying = true,
+                        currentPosition = 0,
+                    )
+                }
+            }
+            else -> {
+                playerState.value
+            }
         }
-        currentIndex = index
+
         playJob = viewModelScope.launch {
-            voicePlayer.playMusic(voiceUiState.filePath, voiceUiState.currentProgress.toInt())
+            voicePlayer.playMusic(voiceUiState.filePath, state!!.currentPosition)
                 .collectLatest { currentProgress ->
 
-                    voices = notepad.voices.toMutableList()
-
-                    voices[index] =
-                        notepad.voices[index].copy(
-                            currentProgress = currentProgress.toLong(),
-                            isPlaying = true,
-                        )
-
-                    //  save(notepad.copy(voices = voices))
+                    playerState.update {
+                        it!!.copy(currentPosition = currentProgress)
+                    }
                 }
-            voices = notepad.voices.toMutableList()
-            voices[index] = voiceUiState.copy(currentProgress = 0, isPlaying = false)
+            playerState.update {
+                null
+            }
             //  save(notepad.copy(voices = voices))
         }
-        TODO("update voice ui state")
     }
 
     fun pause() {
-        // prevIndex=currentIndex
-        val notepad = getNotePad()
-        var voices = notepad.voices.toMutableList()
-
-        val voiceUiState = voices[currentIndex]
-        voices[currentIndex] = voiceUiState.copy(isPlaying = false)
-//        save(notepad.copy(voices = voices))
+        playerState.update {
+            it!!.copy(isPlaying = false)
+        }
         playJob?.cancel()
         voicePlayer.pause()
     }

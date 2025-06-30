@@ -446,12 +446,19 @@ fun SharedTransitionScope.EditScreen(
                     }
                 }
                 itemsIndexed(items = notepad.voices, key = { _, item -> item.id }) { index, item ->
+                    val playerState = if (state.playerState != null && state.playerState.indexPlaying == index) {
+                        state.playerState
+                    } else {
+                        PlayerState()
+                    }
                     NoteVoicePlayer(
                         item,
                         playVoice = { playVoice(index) },
                         pauseVoice = pauseVoice,
                         delete = { deleteVoiceNote(index) },
                         color = sColor,
+                        isPlay = playerState.isPlaying,
+                        currentProgress = playerState.currentPosition,
                     )
                 }
                 items(items = notepad.uris, key = { it.id }) {
@@ -613,6 +620,8 @@ fun NoteVoicePlayer(
     pauseVoice: () -> Unit = {},
     delete: () -> Unit = {},
     color: Color = Color.Red,
+    isPlay: Boolean = false,
+    currentProgress: Int = 0,
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -621,7 +630,7 @@ fun NoteVoicePlayer(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box {
-                if (noteVoiceUiState.isPlaying) {
+                if (isPlay) {
                     IconButton(onClick = pauseVoice) {
                         Icon(imageVector = NoteIcon.PauseCircle, contentDescription = "pause")
                     }
@@ -632,7 +641,7 @@ fun NoteVoicePlayer(
                 }
             }
             LinearProgressIndicator(
-                progress = { (noteVoiceUiState.currentProgress.toFloat() / noteVoiceUiState.length) },
+                progress = { (currentProgress.toFloat() / noteVoiceUiState.length) },
                 modifier = Modifier.weight(1f),
             )
             Text(text = noteVoiceUiState.length.toTime())
@@ -647,7 +656,7 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
-        NoteVoice(3, 4, "", currentProgress = 7, length = 14),
+        NoteVoice(3, 4, "", length = 14),
 
     )
 }
