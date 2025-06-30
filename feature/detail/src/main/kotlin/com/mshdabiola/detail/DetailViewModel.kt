@@ -6,13 +6,16 @@ package com.mshdabiola.detail
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.semantics.text
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
+import com.mshdabiola.data.repository.NoteCheckRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.domain.AddAllNoteUseCase
 import com.mshdabiola.domain.DateUseCase
@@ -35,7 +38,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -52,6 +57,7 @@ class DetailViewModel @Inject constructor(
     private val addAllNoteUseCase: AddAllNoteUseCase,
     private val contentManager: IContentManager,
     private val dateUseCase: DateUseCase,
+    private val noteCheckRepository: NoteCheckRepository,
 
 ) : ViewModel() {
 
@@ -79,47 +85,108 @@ class DetailViewModel @Inject constructor(
             ),
         ),
     )
+    val titleFlow = snapshotFlow { initState.title.text }
+        .debounce(300L)
+        .distinctUntilChanged()
+
+    val detailFlow = snapshotFlow { initState.detail.text }
+        .debounce(300L)
+        .distinctUntilChanged()
+
+    private val checkFlow = snapshotFlow { initState.checks.toList() } // First, react to list changes (add/remove)
+        .flatMapLatest { currentChecksList ->
+            // If the list is empty, emit an empty list of texts immediately
+            if (currentChecksList.isEmpty()) {
+                return@flatMapLatest flowOf(emptyList<String>())
+            }
+            // For each item, create a flow of its text, then combine them
+            val flowsOfText = currentChecksList.map { checkItem ->
+                snapshotFlow { checkItem.content.text }
+            }
+            combine(flowsOfText) { arrayOfTexts ->
+                arrayOfTexts.toList() // Convert array to list
+            }
+        }
+        .debounce(300L) // Debounce the list of texts
+        .distinctUntilChanged()
+
+    private val unCheckFlow = snapshotFlow { initState.unChecks.toList() }
+        .flatMapLatest { currentUnChecksList ->
+            if (currentUnChecksList.isEmpty()) {
+                return@flatMapLatest kotlinx.coroutines.flow.flowOf(emptyList<String>())
+            }
+            val flowsOfText = currentUnChecksList.map { unCheckItem ->
+                snapshotFlow { unCheckItem.content.text }
+            }
+            combine(flowsOfText) { arrayOfTexts ->
+                arrayOfTexts.toList()
+            }
+        }
+        .debounce(300L)
+        .distinctUntilChanged()
 
     private var initTitle = false
     val detailState = combine(
-        snapshotFlow { initState.title.text }
-            .debounce(200),
-        snapshotFlow { initState.detail.text }
-            .debounce(200),
+        titleFlow,
+        detailFlow,
+        checkFlow,
+        unCheckFlow,
         currentNote,
-    ) { title, content, notepad ->
-        if (notepad == null) {
-            val id = addAllNoteUseCase(NotePad(note = Note(id = -1)))
-            currentNoteId.update {
-                id
+    ) { title, content, checks, unChecks, notepad ->
+
+        when {
+            notepad == null -> {
+                val id = addAllNoteUseCase(NotePad(note = Note(id = -1)))
+                currentNoteId.update {
+                    id
+                }
+                initState
             }
-            initState
-        } else {
-            if (!initTitle) {
+            !initTitle -> {
                 initState.title.edit {
                     append(notepad.note.title)
                 }
                 initState.detail.edit {
                     append(notepad.note.detail)
                 }
+                val list = notepad.checks.partition { it.isCheck }
+
+                initState.checks.addAll(list.first.map { it.toNoteCheckUiState() })
+                initState.unChecks.addAll(list.second.map { it.toNoteCheckUiState() })
 
                 initTitle = true
-            }
-            if (title.isNotBlank() && content.isNotBlank() &&(title != notepad.note.title || content != notepad.note.detail)) {
-                println("title $title content $content")
-                addAllNoteUseCase(
-                    notepad.copy(
-                        note = notepad.note.copy(
-                            title = title.toString(),
-                            detail = content.toString(),
-                        ),
-                    ),
+                initState.copy(
+                    notePad = notepad,
+                    updateAt = dateUseCase(notepad.note.editDate),
                 )
             }
-            initState.copy(
-                notePad = notepad,
-                updateAt = dateUseCase(notepad.note.editDate),
-            )
+            else -> {
+                val newNote = notepad.copy(
+                    note = notepad.note.copy(
+                        title = title.toString(),
+                        detail = content.toString(),
+                    ),
+                    checks =
+                    if (notepad.note.isCheck) {
+                        (initState.checks + initState.unChecks)
+                            .map { it.toNoteCheck() }
+                            .sortedBy { it.id }
+                    } else {
+                        emptyList()
+                    },
+
+                )
+                println("newNote $newNote")
+                println("notepad $notepad")
+
+                if (newNote != notepad) {
+                    addAllNoteUseCase(newNote)
+                }
+                initState.copy(
+                    notePad = notepad,
+                    updateAt = dateUseCase(notepad.note.editDate),
+                )
+            }
         }
     }.stateIn(
         scope = viewModelScope,
@@ -144,62 +211,57 @@ class DetailViewModel @Inject constructor(
 //        }
 //    }
 
-    fun onCheckChange(text: String, id: Long) {
-        viewModelScope.launch {
-            val notepad = getNotePad()
-            val noteChecks = notepad.checks.toMutableList()
-            val index = noteChecks.indexOfFirst { it.id == id }
-            val noteCheck = noteChecks[index].copy(content = text)
-            noteChecks[index] = noteCheck
-            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-        }
-    }
+//    fun onCheckChange(text: String, id: Long) {
+//        viewModelScope.launch {
+//            val notepad = getNotePad()
+//            val noteChecks = notepad.checks.toMutableList()
+//            val index = noteChecks.indexOfFirst { it.id == id }
+//            val noteCheck = noteChecks[index].copy(content = text)
+//            noteChecks[index] = noteCheck
+//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+//        }
+//    }
 
     fun addCheck() {
         viewModelScope.launch {
-            val notepad = getNotePad()
-            val noteCheck = NoteCheck(isCheck = false)
-            val noteChecks = notepad.checks.toMutableList()
-            noteChecks.add(noteCheck)
-            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+            val noteCheck = NoteCheck(
+                isCheck = false,
+                noteId = currentNoteId.value,
+            )
+            val id = noteCheckRepository.upsert(noteCheck)
+
+            val noteCheckUiState = NoteCheckUiState(
+                id = id,
+                noteId = currentNoteId.value,
+                focus = true,
+            )
+
+            initState.unChecks.add(noteCheckUiState)
         }
     }
 
-    fun onCheck(check: Boolean, id: Long) {
-        viewModelScope.launch {
-            val notepad = getNotePad()
-
-            val noteChecks = notepad.checks.toMutableList()
-            val index = noteChecks.indexOfFirst { it.id == id }
-            val noteCheck = noteChecks[index].copy(isCheck = check)
-            noteChecks[index] = noteCheck
-            println(noteCheck)
-            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-        }
-    }
+//    fun onCheck(check: Boolean, id: Long) {
+//        viewModelScope.launch {
+//            val notepad = getNotePad()
+//
+//            val noteChecks = notepad.checks.toMutableList()
+//            val index = noteChecks.indexOfFirst { it.id == id }
+//            val noteCheck = noteChecks[index].copy(isCheck = check)
+//            noteChecks[index] = noteCheck
+//            println(noteCheck)
+//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+//        }
+//    }
 
     fun onCheckDelete(id: Long) {
         viewModelScope.launch {
-            val notepad = getNotePad()
-
-            val noteChecks = notepad.checks.toMutableList()
-            val index = noteChecks.indexOfFirst { it.id == id }
-//            val noteCheck = noteChecks.removeAt(index)
-//            viewModelScope.launch {
-//                notePadRepository.deleteCheckNote(id, noteCheck.noteId)
-//            }
-            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+            noteCheckRepository.delete(id)
         }
     }
 
     fun changeToCheckBoxes() {
         viewModelScope.launch {
             val newNote = initState.detail.text.split("\n")
-
-            initState.detail.clearText()
-            val noteChecks = newNote.map { s ->
-                NoteCheck(content = s, isCheck = false)
-            }
             val notepad = getNotePad()
 
             addAllNoteUseCase(
@@ -208,33 +270,29 @@ class DetailViewModel @Inject constructor(
                         detail = "",
                         isCheck = true,
                     ),
-                    checks = noteChecks,
                 ),
             )
+            initState.detail.clearText()
+            val noteChecks = newNote.map { s ->
+                NoteCheck(content = s, isCheck = false)
+            }
+
+            initState.checks.addAll(noteChecks.map { it.toNoteCheckUiState() })
         }
     }
 
-    fun unCheckAllItems() {
-        viewModelScope.launch {
-            val notepad = getNotePad()
-
-            val noteChecks = notepad.checks.map { it.copy(isCheck = false) }
-            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-        }
-    }
+//    fun unCheckAllItems() {
+//        viewModelScope.launch {
+//            val notepad = getNotePad()
+//
+//            val noteChecks = notepad.checks.map { it.copy(isCheck = false) }
+//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
+//        }
+//    }
 
     fun deleteCheckedItems() {
         viewModelScope.launch {
-            val notepad = getNotePad()
-
-            val checkNote = notepad.checks.filter { it.isCheck }
-            val notCheckNote = notepad.checks.filter { !it.isCheck }
-//            viewModelScope.launch {
-//                checkNote.forEach {
-//                    notePadRepository.deleteCheckNote(it.id, it.noteId)
-//                }
-//            }
-            addAllNoteUseCase(notepad.copy(checks = notCheckNote))
+            noteCheckRepository.deleteCheckedItems(currentNoteId.value)
         }
     }
 
@@ -242,21 +300,25 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             val notepad = getNotePad()
 
-            val noteCheck = notepad.checks.joinToString(separator = "\n") { it.content }
+            val noteCheck =
+                (initState.checks + initState.unChecks)
+                    .joinToString(separator = "\n") { it.content.text }
+
+            noteCheckRepository.deleteByNoteId(currentNoteId.value)
+
+            addAllNoteUseCase(
+                notepad.copy(
+                    note = notepad.note.copy(isCheck = false),
+                    checks = emptyList(),
+
+                ),
+            )
+            initState.checks.clear()
+            initState.unChecks.clear()
 
             initState.detail.edit {
                 append(noteCheck)
             }
-
-            addAllNoteUseCase(
-                notepad.copy(
-                    note = notepad.note.copy(
-                        detail = noteCheck,
-                        isCheck = false,
-                    ),
-                    checks = emptyList(),
-                ),
-            )
         }
     }
 

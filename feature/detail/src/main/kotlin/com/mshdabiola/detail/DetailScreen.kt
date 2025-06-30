@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -50,7 +49,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,7 +76,6 @@ import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NoteType
@@ -96,19 +93,16 @@ import com.mshdabiola.designsystem.R as Rd
 fun SharedTransitionScope.EditScreen(
     modifier: Modifier = Modifier,
     state: DetailState,
-    title: TextFieldState,
-    content: TextFieldState,
     animatedContentScope: AnimatedVisibilityScope,
     onBackClick: () -> Unit = {},
-    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
-    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+//    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
     playVoice: (Int) -> Unit = {},
     pauseVoice: () -> Unit = {},
     moreOptions: () -> Unit = {},
     noteOption: () -> Unit = {},
-    unCheckAllItems: () -> Unit = {},
+//    unCheckAllItems: () -> Unit = {},
     deleteCheckItems: () -> Unit = {},
     hideCheckBoxes: () -> Unit = {},
     pinNote: () -> Unit = {},
@@ -133,14 +127,14 @@ fun SharedTransitionScope.EditScreen(
         FocusRequester()
     }
 
-    val checkNote by remember(notepad.checks) {
-        derivedStateOf { notepad.checks.filter { it.isCheck } }
-    }
-    val notCheckNote by remember(notepad.checks) {
-        derivedStateOf { notepad.checks.filter { !it.isCheck } }
-    }
+//    val checkNote by remember(state.checks) {
+//        derivedStateOf { state.checks.filter { it.isCheck } }
+//    }
+//    val notCheckNote by remember(state.checks) {
+//        derivedStateOf { state.checks.filter { !it.isCheck } }
+//    }
     var showCheckNote by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val bg = if (notepad.note.background != -1) {
@@ -265,10 +259,17 @@ fun SharedTransitionScope.EditScreen(
                                             AsyncImage(
                                                 modifier = Modifier
                                                     .clickable {
-                                                        navigateToGallery(notepad.note.id, index, imageList.size, it.path)
+                                                        navigateToGallery(
+                                                            notepad.note.id,
+                                                            index,
+                                                            imageList.size,
+                                                            it.path,
+                                                        )
                                                     }
                                                     .sharedElement(
-                                                        sharedContentState = rememberSharedContentState("image_$index"),
+                                                        sharedContentState = rememberSharedContentState(
+                                                            "image_$index",
+                                                        ),
                                                         animatedVisibilityScope = animatedContentScope,
 
                                                     )
@@ -286,7 +287,9 @@ fun SharedTransitionScope.EditScreen(
                                                         navigateToDrawing(it.id)
                                                     }
                                                     .sharedElement(
-                                                        sharedContentState = rememberSharedContentState("drwaing_$index"),
+                                                        sharedContentState = rememberSharedContentState(
+                                                            "drwaing_$index",
+                                                        ),
                                                         animatedVisibilityScope = animatedContentScope,
 
                                                     )
@@ -307,7 +310,7 @@ fun SharedTransitionScope.EditScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         NoteTextField(
-                            state = title,
+                            state = state.title,
                             placeholder = stringResource(Rd.string.modules_designsystem_title),
                             imeAction = ImeAction.Next,
                             modifier = Modifier
@@ -339,12 +342,17 @@ fun SharedTransitionScope.EditScreen(
                                             expandCheck = false
                                         },
                                     )
-                                    if (checkNote.isNotEmpty()) {
+                                    if (state.checks.isNotEmpty()) {
                                         DropdownMenuItem(
                                             modifier = Modifier.testTag("detail:uncheckall"),
                                             text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
                                             onClick = {
-                                                unCheckAllItems()
+                                                val checks = state.checks
+                                                    .map { it.copy(isCheck = false) }
+                                                state.checks.clear()
+                                                state.unChecks.addAll(checks)
+                                                state.unChecks.sortBy { it.id }
+//                                                unCheckAllItems()
                                                 expandCheck = false
                                             },
                                         )
@@ -365,7 +373,7 @@ fun SharedTransitionScope.EditScreen(
                 if (!notepad.note.isCheck) {
                     item {
                         NoteTextField(
-                            state = content,
+                            state = state.detail,
                             placeholder = stringResource(Rd.string.modules_designsystem_subject),
                             imeAction = ImeAction.None,
                             keyboardAction = { subjectFocus.freeFocus() },
@@ -379,12 +387,18 @@ fun SharedTransitionScope.EditScreen(
                     }
                 }
                 if (notepad.note.isCheck) {
-                    items(notCheckNote, key = { it.id }) {
-                        NoteCheck(
-                            noteCheckUiState = it,
-                            onCheckChange = onCheckChange,
-                            onCheckDelete = onCheckDelete,
-                            onCheck = onCheck,
+                    itemsIndexed(state.unChecks, key = { i, it -> it.id }) { index, item ->
+                        NoteCheckUi(
+                            noteCheckUiState = item,
+                            onCheckDelete = {
+                                onCheckDelete(it)
+                                state.unChecks.removeAt(index)
+                            },
+                            onCheck = {
+                                val value = state.unChecks.removeAt(index)
+                                state.checks.add(value.copy(isCheck = true))
+                                state.checks.sortBy { it.id }
+                            },
                             onNextCheck = addItem,
                         )
                     }
@@ -397,7 +411,7 @@ fun SharedTransitionScope.EditScreen(
                         }
                     }
 
-                    if (checkNote.isNotEmpty()) {
+                    if (state.checks.isNotEmpty()) {
                         item {
                             TextButton(onClick = { showCheckNote = !showCheckNote }) {
                                 Icon(
@@ -405,7 +419,7 @@ fun SharedTransitionScope.EditScreen(
                                     contentDescription = "",
                                 )
                                 Text(
-                                    text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
+                                    text = "${state.checks.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                             }
@@ -413,14 +427,20 @@ fun SharedTransitionScope.EditScreen(
                     }
 
                     if (showCheckNote) {
-                        items(checkNote, key = { it.id }) {
-                            NoteCheck(
-                                noteCheckUiState = it,
-                                onCheckChange = onCheckChange,
-                                onCheckDelete = onCheckDelete,
-                                onCheck = onCheck,
+                        itemsIndexed(state.checks, key = { i, it -> it.id }) { index, item ->
+                            NoteCheckUi(
+                                noteCheckUiState = item,
+                                onCheckDelete = {
+                                    onCheckDelete(it)
+                                    state.checks.removeAt(index)
+                                },
+                                onCheck = {
+                                    val value = state.checks.removeAt(index)
+                                    state.unChecks.add(value.copy(isCheck = false))
+                                    state.unChecks.sortBy { it.id }
+                                },
                                 strickText = true,
-                                onNextCheck = addItem,
+                                onNextCheck = {},
                             )
                         }
                     }
@@ -523,11 +543,10 @@ fun SharedTransitionScope.EditScreen(
 }
 
 @Composable
-fun NoteCheck(
-    noteCheckUiState: NoteCheck,
-    onCheckChange: (String, Long) -> Unit = { _, _ -> },
+fun NoteCheckUi(
+    noteCheckUiState: NoteCheckUiState,
     onCheckDelete: (Long) -> Unit = {},
-    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+    onCheck: (Boolean) -> Unit = { },
     strickText: Boolean = false,
     onNextCheck: () -> Unit,
 ) {
@@ -561,14 +580,13 @@ fun NoteCheck(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
             checked = noteCheckUiState.isCheck,
-            onCheckedChange = { onCheck(it, noteCheckUiState.id) },
+            onCheckedChange = { onCheck(it) },
         )
         NoteTextField(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f),
-            text = noteCheckUiState.content,
-            onTextChange = { onCheckChange(it, noteCheckUiState.id) },
+            state = noteCheckUiState.content,
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
             trailingIcon = {
