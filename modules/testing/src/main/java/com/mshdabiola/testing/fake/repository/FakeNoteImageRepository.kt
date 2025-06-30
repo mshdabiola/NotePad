@@ -3,35 +3,57 @@ package com.mshdabiola.testing.fake.repository
 import com.mshdabiola.data.repository.NoteImageRepository
 import com.mshdabiola.model.NoteImage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 internal class FakeNoteImageRepository
 @Inject constructor() : NoteImageRepository {
+    private val images = mutableListOf<NoteImage>()
+    private var nextId = 1L
+
     override suspend fun upserts(images: List<NoteImage>): List<Long> {
-        TODO("Not yet implemented")
+        val ids = mutableListOf<Long>()
+        images.forEach { image ->
+            ids.add(upsert(image))
+        }
+        return ids
     }
 
     override suspend fun upsert(image: NoteImage): Long {
-        TODO("Not yet implemented")
+        return if (image.id == -1L) {
+            val newImage = image.copy(id = nextId++)
+            images.add(newImage)
+            newImage.id
+        } else {
+            val index = images.indexOfFirst { it.id == image.id }
+            if (index != -1) {
+                images[index] = image
+                image.id
+            } else {
+                val newImage = image.copy(id = nextId++)
+                images.add(newImage)
+                newImage.id
+            }
+        }
     }
 
     override suspend fun delete(id: Long) {
-        TODO("Not yet implemented")
+        images.removeIf { it.id == id }
     }
 
     override suspend fun deleteByNoteId(noteId: Long) {
-        TODO("Not yet implemented")
+        images.removeIf { it.noteId == noteId }
     }
 
     override fun getAll(): Flow<List<NoteImage>> {
-        TODO("Not yet implemented")
+        return flowOf(images.toList())
     }
 
     override fun getByNoteId(noteId: Long): Flow<List<NoteImage>> {
-        TODO("Not yet implemented")
+        return flowOf(images.filter { it.noteId == noteId }.toList())
     }
 
     override fun get(id: Long): Flow<NoteImage?> {
-        TODO("Not yet implemented")
+        return flowOf(images.find { it.id == id })
     }
 }
