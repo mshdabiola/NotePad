@@ -1,17 +1,17 @@
 package com.mshdabiola.testing.fake.repository
 
-import com.mshdabiola.data.repository.NoteDrawingRepository
-import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.data.repository.NoteVoiceRepository
+import com.mshdabiola.model.NoteVoice
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-internal class FakeNoteDrawingRepository
-@Inject constructor() : NoteDrawingRepository {
-    override suspend fun upserts(drawings: List<NoteDrawing>): List<Long> {
+internal class FakeNoteVoiceRepository
+@Inject constructor() : NoteVoiceRepository {
+    override suspend fun upserts(voices: List<NoteVoice>): List<Long> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun upsert(drawing: NoteDrawing): Long {
+    override suspend fun upsert(voice: NoteVoice): Long {
         TODO("Not yet implemented")
     }
 
@@ -23,15 +23,15 @@ internal class FakeNoteDrawingRepository
         TODO("Not yet implemented")
     }
 
-    override fun getAll(): Flow<List<NoteDrawing>> {
+    override fun getAll(): Flow<List<NoteVoice>> {
         TODO("Not yet implemented")
     }
 
-    override fun getByNoteId(noteId: Long): Flow<List<NoteDrawing>> {
+    override fun getByNoteId(noteId: Long): Flow<List<NoteVoice>> {
         TODO("Not yet implemented")
     }
 
-    override fun get(id: Long): Flow<NoteDrawing?> {
+    override fun get(id: Long): Flow<NoteVoice?> {
         TODO("Not yet implemented")
     }
 }
