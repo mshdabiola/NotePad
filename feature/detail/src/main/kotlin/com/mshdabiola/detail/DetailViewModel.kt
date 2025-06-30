@@ -261,7 +261,16 @@ class DetailViewModel @Inject constructor(
 
     fun changeToCheckBoxes() {
         viewModelScope.launch {
-            val newNote = initState.detail.text.split("\n")
+            val newChecks = initState
+                .detail
+                .text.split("\n")
+                .map {
+                    NoteCheck(
+                        content = it,
+                        noteId = currentNoteId.value,
+                        isCheck = false,
+                    )
+                }
             val notepad = getNotePad()
 
             addAllNoteUseCase(
@@ -272,12 +281,13 @@ class DetailViewModel @Inject constructor(
                     ),
                 ),
             )
-            initState.detail.clearText()
-            val noteChecks = newNote.map { s ->
-                NoteCheck(content = s, isCheck = false)
+            val ids = noteCheckRepository.upserts(newChecks)
+            val noteChecks = newChecks.mapIndexed { index, noteCheck ->
+                noteCheck.copy(id = ids[index])
             }
+            initState.detail.clearText()
 
-            initState.checks.addAll(noteChecks.map { it.toNoteCheckUiState() })
+            initState.unChecks.addAll(noteChecks.map { it.toNoteCheckUiState() })
         }
     }
 
