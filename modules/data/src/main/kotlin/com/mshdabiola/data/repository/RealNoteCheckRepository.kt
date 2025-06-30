@@ -35,6 +35,11 @@ internal class RealNoteCheckRepository
             noteCheckDao.delete(id)
         }
     }
+    override suspend fun deleteCheckedItems(noteId: Long) {
+        withContext(dispatcher) {
+            noteCheckDao.deleteCheckedItems(noteId)
+        }
+    }
 
     override suspend fun deleteByNoteId(noteId: Long) {
         withContext(dispatcher) {
