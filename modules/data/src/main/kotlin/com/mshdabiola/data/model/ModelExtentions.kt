@@ -6,6 +6,7 @@ import com.mshdabiola.database.model.NoteDrawingEntity
 import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.database.model.NoteLabelEntity
+import com.mshdabiola.database.model.NotePadEntity
 import com.mshdabiola.database.model.NoteVoiceEntity
 import com.mshdabiola.database.model.NotificationEntity
 import com.mshdabiola.model.Converter
@@ -16,6 +17,7 @@ import com.mshdabiola.model.NoteCheck
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NoteLabel
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
@@ -25,6 +27,16 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+
+fun NotePadEntity.toNotePad() = NotePad(
+    note = noteEntity.toNote(),
+    notification = notification?.toNotificationUiState(),
+    images = images.map { it.toNoteImage() },
+    voices = voices.map { it.toNoteVoice() },
+    checks = checks.map { it.toNoteCheck() },
+    drawings = drawings.map { it.toDrawing() },
+    labels = labels.map { it.toLabel() },
+)
 
 fun NoteDrawingEntity.toDrawing(): NoteDrawing {
     return NoteDrawing(
