@@ -5,6 +5,7 @@
 package com.mshdabiola.main
 
 import MainTopBar
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -39,6 +40,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -46,6 +48,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.createFakeNotePads
 import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
@@ -210,6 +213,30 @@ private fun LoadingState(modifier: Modifier = Modifier) {
         NoteLoadingWheel(
             contentDesc = "Loading",
         )
+    }
+}
+
+@SuppressLint("UnusedSharedTransitionModifierParameter")
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun MainScreenPreview() {
+    val pin = createFakeNotePads(1..2)
+    val unPin = createFakeNotePads(3..6)
+    SharedTransitionScope {
+        AnimatedVisibility(visible = true) {
+            MainScreen(
+                animatedContentScope = this,
+                mainState = MainState.Success(
+                    isGrid = true,
+                    labelName = "Label",
+                    pinNotePads = pin,
+                    unPinNotePads = unPin,
+                    noteDisplayCategory = NoteDisplayCategory(),
+                    selectState = null,
+                ),
+            )
+        }
     }
 }
 
