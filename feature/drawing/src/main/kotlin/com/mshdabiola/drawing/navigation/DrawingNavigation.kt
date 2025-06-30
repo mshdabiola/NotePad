@@ -1,4 +1,4 @@
-package com.mshdabiola.drawing
+package com.mshdabiola.drawing.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -6,6 +6,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.mshdabiola.drawing.DrawingScreen
+import com.mshdabiola.drawing.DrawingViewModel
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.drawingScreen(
