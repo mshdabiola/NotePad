@@ -14,6 +14,7 @@ import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.data.repository.NoteCheckRepository
+import com.mshdabiola.data.repository.NoteVoiceRepository
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.domain.AddAllNoteUseCase
 import com.mshdabiola.domain.DateUseCase
@@ -56,6 +57,7 @@ class DetailViewModel @Inject constructor(
     private val contentManager: IContentManager,
     private val dateUseCase: DateUseCase,
     private val noteCheckRepository: NoteCheckRepository,
+    private val noteVoiceRepository: NoteVoiceRepository,
 
 ) : ViewModel() {
 
@@ -203,23 +205,6 @@ class DetailViewModel @Inject constructor(
         return detailState.value.notePad
     }
 
-//    private fun save(notepad: NotePad) {
-//        viewModelScope.launch {
-//            notePadRepository.upsert(notepad)
-//        }
-//    }
-
-//    fun onCheckChange(text: String, id: Long) {
-//        viewModelScope.launch {
-//            val notepad = getNotePad()
-//            val noteChecks = notepad.checks.toMutableList()
-//            val index = noteChecks.indexOfFirst { it.id == id }
-//            val noteCheck = noteChecks[index].copy(content = text)
-//            noteChecks[index] = noteCheck
-//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-//        }
-//    }
-
     fun addCheck() {
         viewModelScope.launch {
             val noteCheck = NoteCheck(
@@ -237,19 +222,6 @@ class DetailViewModel @Inject constructor(
             initState.unChecks.add(noteCheckUiState)
         }
     }
-
-//    fun onCheck(check: Boolean, id: Long) {
-//        viewModelScope.launch {
-//            val notepad = getNotePad()
-//
-//            val noteChecks = notepad.checks.toMutableList()
-//            val index = noteChecks.indexOfFirst { it.id == id }
-//            val noteCheck = noteChecks[index].copy(isCheck = check)
-//            noteChecks[index] = noteCheck
-//            println(noteCheck)
-//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-//        }
-//    }
 
     fun onCheckDelete(id: Long) {
         viewModelScope.launch {
@@ -288,15 +260,6 @@ class DetailViewModel @Inject constructor(
             initState.unChecks.addAll(noteChecks.map { it.toNoteCheckUiState() })
         }
     }
-
-//    fun unCheckAllItems() {
-//        viewModelScope.launch {
-//            val notepad = getNotePad()
-//
-//            val noteChecks = notepad.checks.map { it.copy(isCheck = false) }
-//            addAllNoteUseCase(notepad.copy(checks = noteChecks))
-//        }
-//    }
 
     fun deleteCheckedItems() {
         viewModelScope.launch {
@@ -367,7 +330,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun onDelete() {
+    fun onTrash() {
         viewModelScope.launch {
             val notepad = getNotePad()
             addAllNoteUseCase(notepad.copy(note = notepad.note.copy(noteType = NoteType.TRASH)))
@@ -392,6 +355,8 @@ class DetailViewModel @Inject constructor(
 
             val voices = notepad.voices.toMutableList()
             val voice = voices.removeAt(index)
+
+            noteVoiceRepository.delete(voice.id)
 
             addAllNoteUseCase(notepad.copy(voices = voices))
         }
