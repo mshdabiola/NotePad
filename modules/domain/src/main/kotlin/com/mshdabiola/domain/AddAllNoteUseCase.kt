@@ -34,38 +34,32 @@ class AddAllNoteUseCase
             id = notePad.note.id
         }
         if (notePad.voices.isNotEmpty()) {
-            noteVoiceRepository.deleteByNoteId(id)
             noteVoiceRepository.upserts(
                 notePad.voices.map { it.copy(noteId = id) },
             )
         }
 
         if (notePad.drawings.isNotEmpty()) {
-            noteDrawingRepository.deleteByNoteId(id)
             noteDrawingRepository.upserts(
                 notePad.drawings.map { it.copy(noteId = id) },
             )
         }
         if (notePad.images.isNotEmpty()) {
-            noteImageRepository.deleteByNoteId(id)
             noteImageRepository.upserts(
                 notePad.images.map { it.copy(noteId = id) },
             )
         }
         if (notePad.checks.isNotEmpty()) {
-            noteCheckRepository.deleteByNoteId(id)
             noteCheckRepository.upserts(
                 notePad.checks.map { it.copy(noteId = id) },
             )
         }
         if (notePad.labels.isNotEmpty()) {
-            noteLabelRepository.deleteByNoteId(id)
             noteLabelRepository.upserts(
                 notePad.labels.map { NoteLabel(noteId = id, labelId = it.id) },
             )
         }
         if (notePad.notification != null) {
-            noteNotificationRepository.deleteByNoteId(id)
             noteNotificationRepository.upsert(
                 notePad.notification!!.copy(noteId = id),
             )

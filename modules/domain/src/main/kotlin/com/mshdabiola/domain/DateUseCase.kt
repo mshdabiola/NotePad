@@ -10,6 +10,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
+import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
@@ -35,18 +36,13 @@ class DateUseCase @Inject constructor() {
             .toLocalDateTime(TimeZone.currentSystemDefault())
 
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val month =
-            date.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }.substring(0..2)
 
         return when {
             now.date == date.date -> "Today ${date.time.format(timeFormat)} "
-            date.date == now.date.plus(1, DateTimeUnit.DAY) ->
-                "Tomorrow ${date.time.format(timeFormat)}"
+            date.date == now.date.minus(1, DateTimeUnit.DAY) ->
+                "Yesterday ${date.time.format(timeFormat)}"
 
-            date.year != now.year ->
-                "${date.date.format(dateFormat)} ${date.time.format(timeFormat)}"
-
-            else -> error("Date not supported")
+            else -> "${date.date.format(dateFormat)} ${date.time.format(timeFormat)}"
         }
     }
 }
