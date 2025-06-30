@@ -5,6 +5,4 @@ data class NoteVoice(
     val noteId: Long = 0,
     val filePath: String = "",
     val length: Long = 0,
-    val currentProgress: Long = 0,
-    val isPlaying: Boolean = false,
 )
