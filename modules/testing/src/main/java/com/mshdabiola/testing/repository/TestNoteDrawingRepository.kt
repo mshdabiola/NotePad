@@ -5,15 +5,31 @@ import com.mshdabiola.model.NoteDrawing
 import kotlinx.coroutines.flow.Flow
 
 internal class TestNoteDrawingRepository : NoteDrawingRepository {
-    override suspend fun delete(imageId: Long) {
+    override suspend fun upserts(drawings: List<NoteDrawing>): List<Long> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insert(list: List<NoteDrawing>) {
+    override suspend fun upsert(drawing: NoteDrawing): Long {
         TODO("Not yet implemented")
     }
 
-    override fun getAll(imageId: Long): Flow<List<NoteDrawing>> {
+    override suspend fun delete(id: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteByNoteId(noteId: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAll(): Flow<List<NoteDrawing>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getByNoteId(noteId: Long): Flow<List<NoteDrawing>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun get(id: Long): Flow<NoteDrawing?> {
         TODO("Not yet implemented")
     }
 }

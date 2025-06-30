@@ -22,6 +22,7 @@ val emptyUserData = UserData(
     shouldHideOnboarding = false,
     contrast = Contrast.High,
     noteDisplayCategory = NoteDisplayCategory(),
+    isGrid = false,
 )
 
 class TestUserDataRepository : UserDataRepository {
@@ -65,6 +66,10 @@ class TestUserDataRepository : UserDataRepository {
         currentUserData.let { current ->
             _userData.tryEmit(current.copy(noteDisplayCategory = NoteDisplayCategory()))
         }
+    }
+
+    override suspend fun toggleGrid() {
+        TODO("Not yet implemented")
     }
 
     /**
