@@ -303,6 +303,7 @@ class DetailViewModel @Inject constructor(
     fun deleteCheckedItems() {
         viewModelScope.launch {
             noteCheckRepository.deleteCheckedItems(currentNoteId.value)
+            initState.checks.clear()
         }
     }
 
