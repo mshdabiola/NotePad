@@ -1,4 +1,4 @@
-package com.mshdabiola.gallery
+package com.mshdabiola.gallery.navigation
 
 import kotlinx.serialization.Serializable
 

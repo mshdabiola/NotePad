@@ -1,4 +1,4 @@
-package com.mshdabiola.gallery
+package com.mshdabiola.gallery.navigation
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -15,6 +15,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.mshdabiola.gallery.GalleryScreen
+import com.mshdabiola.gallery.GalleryViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.coroutines.launch
 import java.io.File

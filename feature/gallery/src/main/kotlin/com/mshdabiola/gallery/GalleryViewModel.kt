@@ -8,6 +8,7 @@ import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.NoteImageRepository
 import com.mshdabiola.domain.AddAllNoteUseCase
 import com.mshdabiola.domain.GetNoteUseCase
+import com.mshdabiola.gallery.navigation.GalleryArg
 import com.mshdabiola.model.NoteImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
