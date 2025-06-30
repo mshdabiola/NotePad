@@ -43,6 +43,7 @@ enum class DrawingTool {
     SELECT,
 }
 
+//Todo( add mutableList,new undo, rotate,scale)
 val DrawingPath.paths
     get() = this.coordinates.map { Offset(it.x, it.y) }
 val DrawingPath.path
