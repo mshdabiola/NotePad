@@ -26,7 +26,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.mshdabiola.detail.AddBottomSheet2
 import com.mshdabiola.detail.ColorAndImageBottomSheet
 import com.mshdabiola.detail.DetailViewModel
@@ -54,8 +53,6 @@ fun NavGraphBuilder.detailScreen(
     modifier: Modifier.Companion,
 ) {
     composable<DetailArg> {
-        val id = it.savedStateHandle.toRoute<DetailArg>().id
-
         val editViewModel: DetailViewModel = hiltViewModel()
         val detailState by editViewModel.detailState.collectAsStateWithLifecycle()
         var showModalState by remember {
@@ -89,12 +86,9 @@ fun NavGraphBuilder.detailScreen(
         sharedTransitionScope.EditScreen(
             modifier = modifier,
             state = detailState,
-            title = detailState.title,
-            content = detailState.detail,
             onBackClick = onBack,
-            onCheckChange = editViewModel::onCheckChange,
             onCheckDelete = editViewModel::onCheckDelete,
-            onCheck = editViewModel::onCheck,
+//            onCheck = editViewModel::onCheck,
             addItem = editViewModel::addCheck,
             playVoice = editViewModel::playMusic,
             pauseVoice = editViewModel::pause,
@@ -102,7 +96,7 @@ fun NavGraphBuilder.detailScreen(
                 showModalState = true
             },
             noteOption = { noteModalState = true },
-            unCheckAllItems = editViewModel::unCheckAllItems,
+//            unCheckAllItems = editViewModel::unCheckAllItems,
             deleteCheckItems = editViewModel::deleteCheckedItems,
             hideCheckBoxes = editViewModel::hideCheckBoxes,
             pinNote = editViewModel::pinNote,
