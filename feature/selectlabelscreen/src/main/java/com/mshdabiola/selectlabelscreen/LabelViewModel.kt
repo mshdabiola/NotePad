@@ -92,7 +92,6 @@ class LabelViewModel @Inject constructor(
         }
     }
 
-
     fun onCreateLabel() {
         viewModelScope.launch {
             val label = Label(

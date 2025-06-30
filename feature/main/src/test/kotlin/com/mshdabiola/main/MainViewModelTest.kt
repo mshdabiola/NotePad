@@ -5,7 +5,6 @@
 package com.mshdabiola.main
 
 import com.mshdabiola.testing.repository.TestAlarmManager
-import com.mshdabiola.testing.repository.TestNotePadRepository
 import com.mshdabiola.testing.repository.TestUserDataRepository
 import com.mshdabiola.testing.repository.TestVoicePlayer
 import com.mshdabiola.testing.util.MainDispatcherRule
