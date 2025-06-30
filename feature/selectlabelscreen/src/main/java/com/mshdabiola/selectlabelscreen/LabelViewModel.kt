@@ -46,7 +46,7 @@ class LabelViewModel @Inject constructor(
         labels,
     ) { query, notePadLabels, labels ->
         val labelsCount = notePadLabels
-            .groupingBy { it.noteId }.eachCount()
+            .groupingBy { it.labelId }.eachCount()
         val labelStates = labels.map {
             val state = when (labelsCount[it.id]) {
                 ids.size -> ToggleableState.On
