@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.NoteDrawingRepository
+import com.mshdabiola.drawing.navigation.DrawingArgs
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.ui.DrawingController
 import dagger.hilt.android.lifecycle.HiltViewModel
