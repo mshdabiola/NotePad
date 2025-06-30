@@ -174,7 +174,7 @@ fun NavGraphBuilder.detailScreen(
                     ),
                 )
             },
-            onDelete = editViewModel::onDelete,
+            onDelete = editViewModel::onTrash,
             onCopy = editViewModel::copyNote,
             onSendNote = send,
             onDismissRequest = { noteModalState = false },
