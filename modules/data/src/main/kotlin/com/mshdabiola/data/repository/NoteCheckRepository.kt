@@ -10,6 +10,8 @@ interface NoteCheckRepository {
     suspend fun upsert(check: NoteCheck): Long
     suspend fun delete(id: Long)
 
+    suspend fun deleteCheckedItems(noteId: Long)
+
     suspend fun deleteByNoteId(noteId: Long)
 
     fun getAll(): Flow<List<NoteCheck>>
