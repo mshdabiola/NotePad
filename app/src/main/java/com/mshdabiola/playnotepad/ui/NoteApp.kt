@@ -41,7 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mshdabiola.about.navigateToAbout
+import com.mshdabiola.about.navigation.navigateToAbout
 import com.mshdabiola.designsystem.component.NoteBackground
 import com.mshdabiola.designsystem.component.NoteGradientBackground
 import com.mshdabiola.designsystem.icon.NoteIcon
@@ -49,8 +49,8 @@ import com.mshdabiola.designsystem.theme.GradientColors
 import com.mshdabiola.designsystem.theme.LocalGradientColors
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
-import com.mshdabiola.drawing.DrawingArgs
-import com.mshdabiola.drawing.navigateToDrawing
+import com.mshdabiola.drawing.navigation.DrawingArgs
+import com.mshdabiola.drawing.navigation.navigateToDrawing
 import com.mshdabiola.labelscreen.navigateToLabel
 import com.mshdabiola.main.navigation.navigateToMain
 import com.mshdabiola.model.NoteDisplayCategory

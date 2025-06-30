@@ -9,15 +9,16 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import com.mshdabiola.about.aboutScreen
+import com.mshdabiola.about.navigation.aboutScreen
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.detailScreen
 import com.mshdabiola.detail.navigation.navigateToDetail
-import com.mshdabiola.drawing.drawingScreen
-import com.mshdabiola.drawing.navigateToDrawing
-import com.mshdabiola.gallery.GalleryArg
-import com.mshdabiola.gallery.gallery
-import com.mshdabiola.gallery.navigateToGallery
+import com.mshdabiola.drawing.navigation.DrawingArgs
+import com.mshdabiola.drawing.navigation.drawingScreen
+import com.mshdabiola.drawing.navigation.navigateToDrawing
+import com.mshdabiola.gallery.navigation.GalleryArg
+import com.mshdabiola.gallery.navigation.gallery
+import com.mshdabiola.gallery.navigation.navigateToGallery
 import com.mshdabiola.labelscreen.label
 import com.mshdabiola.main.navigation.FullMainRoute
 import com.mshdabiola.main.navigation.mainScreen
@@ -61,7 +62,7 @@ fun NoteNavHost(
                 navigateToDrawing = { noteId, image ->
 
                     navController.navigateToDrawing(
-                        com.mshdabiola.drawing.DrawingArgs(
+                        DrawingArgs(
                             noteId,
                             image,
                         ),

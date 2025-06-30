@@ -88,8 +88,8 @@ dependencies {
     implementation(projects.feature.gallery)
     implementation(projects.feature.drawing)
     implementation(projects.feature.about)
-    implementation(projects.feature.labelscreen)
-    implementation(projects.feature.selectlabelscreen)
+    implementation(projects.feature.label)
+    implementation(projects.feature.selectlabel)
     implementation(projects.feature.setting)
     implementation(projects.feature.search)
 
