@@ -65,10 +65,10 @@ internal class MainViewModel
         noteDisplayCategory,
         selectedNotesState,
         isGrid,
-    ) { notepadpad, label, displayCategory, selectState, isGrid ->
+    ) { notepad, label, displayCategory, selectState, isGrid ->
 
-        val pinNote = notepadpad.filter { it.note.isPin }
-        val unPinNote = notepadpad.filter { !it.note.isPin }
+        val pinNote = notepad.filter { it.note.isPin }
+        val unPinNote = notepad.filter { !it.note.isPin }
         MainState.Success(
             labelName = label?.label,
             pinNotePads = pinNote,
