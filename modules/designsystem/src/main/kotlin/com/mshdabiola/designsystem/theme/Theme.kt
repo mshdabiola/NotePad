@@ -25,7 +25,7 @@ var extendedColorScheme: ExtendedColorScheme = extendedLight
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SkTheme(
+fun NotePadTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     androidTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
