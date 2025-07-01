@@ -5,7 +5,7 @@ import com.mshdabiola.model.NoteLabel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-internal class TestNoteLabelRepository : NoteLabelRepository {
+class TestNoteLabelRepository : NoteLabelRepository {
     private val noteLabels = mutableListOf<NoteLabel>()
     private var nextId = 1L // Assuming NoteLabel has an 'id' field of type Long and a copy method
 

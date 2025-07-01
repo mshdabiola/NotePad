@@ -5,7 +5,7 @@ import com.mshdabiola.model.NoteCheck
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-internal class TestNoteCheckRepository : NoteCheckRepository {
+class TestNoteCheckRepository : NoteCheckRepository {
     private val noteChecks = mutableListOf<NoteCheck>()
     private var nextId = 1L
 

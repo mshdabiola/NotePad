@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 
-internal class TestNoteVoiceRepository : NoteVoiceRepository {
+class TestNoteVoiceRepository : NoteVoiceRepository {
 
     // Use a MutableStateFlow to hold the voices, keyed by their ID for easy access.
     // This allows Flows to update automatically when the data changes.
