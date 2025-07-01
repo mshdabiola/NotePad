@@ -34,14 +34,13 @@ object DataStoreModule {
     ): DataStore<UserData> =
         DataStoreFactory.create(
             storage =
-                OkioStorage(
-                    fileSystem = FileSystem.SYSTEM,
-                    serializer = userPreferencesSerializer,
-                    producePath = {
-                        context.filesDir.resolve("userdata")
-                            .absolutePath.toPath()
-                    },
-                ),
+            OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = userPreferencesSerializer,
+                producePath = {
+                    context.filesDir.resolve("userdata")
+                        .absolutePath.toPath()
+                },
+            ),
         )
-
 }

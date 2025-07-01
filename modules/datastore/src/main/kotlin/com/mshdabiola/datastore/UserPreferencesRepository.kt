@@ -8,14 +8,12 @@ import androidx.datastore.core.DataStore
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.UserData
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserPreferencesRepository @Inject constructor(
     private val userPreferences: DataStore<UserData>,
 ) {
     val userData = userPreferences.data
-
 
     suspend fun setThemeBrand(themeBrand: com.mshdabiola.model.ThemeBrand) {
         userPreferences.updateData {
@@ -36,7 +34,6 @@ class UserPreferencesRepository @Inject constructor(
     }
 
     suspend fun setDarkThemeConfig(darkThemeConfig: com.mshdabiola.model.DarkThemeConfig) {
-
         userPreferences.updateData {
             it.copy(darkThemeConfig = darkThemeConfig)
         }
@@ -54,7 +51,6 @@ class UserPreferencesRepository @Inject constructor(
     }
 
     suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory) {
-
         userPreferences.updateData {
             it.copy(noteDisplayCategory = noteDisplayCategory)
         }
