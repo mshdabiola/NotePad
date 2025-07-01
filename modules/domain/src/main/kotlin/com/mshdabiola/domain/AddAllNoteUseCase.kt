@@ -28,7 +28,7 @@ class AddAllNoteUseCase
 
         val now = Clock.System.now().toEpochMilliseconds()
 
-        var id = noteRepository.upsert(notePad.note.copy(editDate = now))
+        var id = noteRepository.upsert(notePad.copy(note = notePad.note.copy(editDate = now)))
 
         if (id == -1L) {
             id = notePad.note.id
