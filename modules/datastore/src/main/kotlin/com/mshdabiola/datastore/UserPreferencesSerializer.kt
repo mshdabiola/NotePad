@@ -4,10 +4,7 @@
 
 package com.mshdabiola.datastore
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioSerializer
-import androidx.datastore.core.okio.OkioStorage
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.NoteDisplayCategory
@@ -16,8 +13,6 @@ import com.mshdabiola.model.UserData
 import kotlinx.serialization.json.Json
 import okio.BufferedSink
 import okio.BufferedSource
-import okio.FileSystem
-import okio.Path.Companion.toPath
 import javax.inject.Inject
 
 val json = Json
