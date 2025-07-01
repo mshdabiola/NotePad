@@ -5,7 +5,6 @@ import com.mshdabiola.common.network.NoteDispatchers
 import com.mshdabiola.data.model.asEntity
 import com.mshdabiola.data.model.toNotePad
 import com.mshdabiola.database.dao.NoteDao
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,15 +19,15 @@ internal class RealNoteRepository
     @Dispatcher(NoteDispatchers.IO)
     private val dispatcher: CoroutineDispatcher,
 ) : NoteRepository {
-    override suspend fun upserts(notes: List<Note>): List<Long> {
+    override suspend fun upserts(notes: List<NotePad>): List<Long> {
         return withContext(dispatcher) {
-            noteDao.upserts(notes.map { it.asEntity() })
+            noteDao.upserts(notes.map { it.note.asEntity() })
         }
     }
 
-    override suspend fun upsert(note: Note): Long {
+    override suspend fun upsert(note: NotePad): Long {
         return withContext(dispatcher) {
-            noteDao.upsert(note.asEntity())
+            noteDao.upsert(note.note.asEntity())
         }
     }
 
