@@ -14,6 +14,7 @@ android {
 dependencies {
     implementation(projects.modules.data)
     implementation(projects.modules.domain)
+    testImplementation(libs.androidx.navigation.testing)
 
     testImplementation(libs.hilt.android.testing)
     testImplementation(projects.modules.testing)
