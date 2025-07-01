@@ -58,15 +58,17 @@ fun ResizableRectangleWithHandles2(
         val rotationPivotX = (rectangle.value.width + handleSizePx) / 2f
         val rotationPivotY = (rectangle.value.height + handleSizePx.times(2.5f)) / 2f
 
-        Box(Modifier
-            .graphicsLayer(
-                rotationZ = rotationAngle.value,
-                transformOrigin = TransformOrigin(
-                    rotationPivotX / (rectangle.value.width + handleSizePx),
-                    rotationPivotY / (rectangle.value.height + handleSizePx),
-                ),
-            )
-            .fillMaxSize()) {
+        Box(
+            Modifier
+                .graphicsLayer(
+                    rotationZ = rotationAngle.value,
+                    transformOrigin = TransformOrigin(
+                        rotationPivotX / (rectangle.value.width + handleSizePx),
+                        rotationPivotY / (rectangle.value.height + handleSizePx),
+                    ),
+                )
+                .fillMaxSize(),
+        ) {
             Column(
                 modifier = Modifier
                     .offset {
@@ -74,8 +76,7 @@ fun ResizableRectangleWithHandles2(
                             rectangle.value.topLeft.x.roundToInt(),
                             rectangle.value.topLeft.y.roundToInt(),
                         )
-                    }
-                   ,
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
