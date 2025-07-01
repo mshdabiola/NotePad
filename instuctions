@@ -25,3 +25,4 @@
 
 
       ./gradlew --rerun-tasks assembleFossReliantDebug -PenableComposeCompilerMetrics=true -PenableComposeCompilerReports=true
+       ./gradlew app:dependencies > dependency_tree.txt
