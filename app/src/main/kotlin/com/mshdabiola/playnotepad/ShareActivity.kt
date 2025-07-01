@@ -52,7 +52,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.designsystem.theme.NotePadTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.Label
 import com.mshdabiola.model.NoteDrawing
@@ -125,7 +125,7 @@ class ShareActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            SkTheme(
+            NotePadTheme(
                 darkTheme = darkTheme,
                 disableDynamicTheming = shouldDisableDynamicTheming(uiState),
             ) {
