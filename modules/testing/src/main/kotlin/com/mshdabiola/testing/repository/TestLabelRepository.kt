@@ -5,7 +5,7 @@ import com.mshdabiola.model.Label
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-internal class TestLabelRepository : LabelRepository {
+class TestLabelRepository : LabelRepository {
     private val labels = mutableListOf<Label>()
     private var nextId = 1L
 
