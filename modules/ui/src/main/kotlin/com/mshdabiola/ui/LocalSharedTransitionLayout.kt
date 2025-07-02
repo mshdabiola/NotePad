@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.mshdabiola.designsystem.theme.NotePadTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 public val LocalSharedStScope: ProvidableCompositionLocal<SharedTransitionScope> =
@@ -24,14 +25,16 @@ public val LocalSharedStScope: ProvidableCompositionLocal<SharedTransitionScope>
 fun PreviewContainer(
     content: @Composable () -> Unit,
 ) {
-    SharedTransitionScope {
-        AnimatedContent(true) {
-            CompositionLocalProvider(
-                LocalNavAnimatedContentScope provides this,
-                LocalSharedStScope provides this@SharedTransitionScope,
-            ) {
-                if (it) {
-                    content()
+    NotePadTheme {
+        SharedTransitionScope {
+            AnimatedContent(true) {
+                CompositionLocalProvider(
+                    LocalNavAnimatedContentScope provides this,
+                    LocalSharedStScope provides this@SharedTransitionScope,
+                ) {
+                    if (it) {
+                        content()
+                    }
                 }
             }
         }
