@@ -1,8 +1,6 @@
 package com.mshdabiola.ui
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -37,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteDrawing
@@ -48,11 +47,10 @@ import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.NoteCard(
+fun NoteCard(
     modifier: Modifier = Modifier,
     notePad: NotePad,
     isSelect: Boolean = false,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     onCardClick: (Long, Int, Int) -> Unit = { _, _, _ -> },
     onLongClick: (Long) -> Unit = {},
     type: String = "note",
@@ -90,156 +88,167 @@ fun SharedTransitionScope.NoteCard(
     }
 
     val de = LocalDensity.current
+    val sharedTransitionScope = LocalSharedStScope.current
+    val animatedVisibilityScope = LocalNavAnimatedContentScope.current
 
-    OutlinedCard(
-        modifier = modifier
-            .sharedBounds(
-                sharedContentState = rememberSharedContentState("${type}_${notePad.note.id}"),
-                animatedVisibilityScope = animatedVisibilityScope,
-            )
-            .combinedClickable(
-                onClick = { onCardClick(notePad.note.id, notePad.note.color, notePad.note.background) },
-                onLongClick = { onLongClick(notePad.note.id) },
-            ),
-        border = if (isSelect) {
-            BorderStroke(3.dp, Color.Blue)
-        } else {
-            BorderStroke(
-                1.dp,
-                sColor,
-            )
-        },
-        colors = CardDefaults.outlinedCardColors(containerColor = bg),
-    ) {
-        Box {
-            if (notePad.note.background != -1) {
-                Image(
-                    painter = painterResource(id = NoteIcon.background[notePad.note.background].bg),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(
-                        with(de) { size.width.toDp() },
-                        with(de) { size.height.toDp() },
-                    ),
+    with(sharedTransitionScope) {
+        OutlinedCard(
+            modifier = modifier
+                .sharedBounds(
+                    sharedContentState = rememberSharedContentState("${type}_${notePad.note.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
                 )
-            }
-
-            Column(
-                Modifier
-                    .onSizeChanged {
-                        size = it
+                .combinedClickable(
+                    onClick = {
+                        onCardClick(
+                            notePad.note.id,
+                            notePad.note.color,
+                            notePad.note.background,
+                        )
                     },
-            ) {
-                if (images.isNotEmpty()) {
-                    images.forEach { imageList ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                        ) {
-                            imageList.forEach {
-                                when (it) {
-                                    is NoteImage -> {
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .height(100.dp),
-                                            model = it.path,
-                                            contentDescription = "",
-                                            contentScale = ContentScale.Crop,
-                                        )
-                                    }
-                                    is NoteDrawing -> {
-                                        BoardViewer(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .height(100.dp),
-                                            drawingPaths = it.drawingPaths,
-                                        )
+                    onLongClick = { onLongClick(notePad.note.id) },
+                ),
+            border = if (isSelect) {
+                BorderStroke(3.dp, Color.Blue)
+            } else {
+                BorderStroke(
+                    1.dp,
+                    sColor,
+                )
+            },
+            colors = CardDefaults.outlinedCardColors(containerColor = bg),
+        ) {
+            Box {
+                if (notePad.note.background != -1) {
+                    Image(
+                        painter = painterResource(id = NoteIcon.background[notePad.note.background].bg),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(
+                            with(de) { size.width.toDp() },
+                            with(de) { size.height.toDp() },
+                        ),
+                    )
+                }
+
+                Column(
+                    Modifier
+                        .onSizeChanged {
+                            size = it
+                        },
+                ) {
+                    if (images.isNotEmpty()) {
+                        images.forEach { imageList ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp),
+                            ) {
+                                imageList.forEach {
+                                    when (it) {
+                                        is NoteImage -> {
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(100.dp),
+                                                model = it.path,
+                                                contentDescription = "",
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                        }
+
+                                        is NoteDrawing -> {
+                                            BoardViewer(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(100.dp),
+                                                drawingPaths = it.drawingPaths,
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                if (!notePad.isImageOnly()) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        Text(
-                            text = notePad.note.title.ifEmpty { notePad.note.detail },
-                            style = if (notePad.note.title.isNotEmpty()) {
-                                MaterialTheme.typography.titleMedium
+                    if (!notePad.isImageOnly()) {
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(
+                                text = notePad.note.title.ifEmpty { notePad.note.detail },
+                                style = if (notePad.note.title.isNotEmpty()) {
+                                    MaterialTheme.typography.titleMedium
+                                } else {
+                                    MaterialTheme.typography.bodyMedium
+                                },
+                                maxLines = 10,
+                            )
+                            if (!notePad.note.isCheck) {
+                                if (notePad.note.title.isNotEmpty()) {
+                                    if (notePad.note.detail.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = notePad.note.detail,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            maxLines = 10,
+
+                                        )
+                                    }
+                                }
                             } else {
-                                MaterialTheme.typography.bodyMedium
-                            },
-                            maxLines = 10,
-                        )
-                        if (!notePad.note.isCheck) {
-                            if (notePad.note.title.isNotEmpty()) {
-                                if (notePad.note.detail.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                unCheckNote.take(10).forEach {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            modifier = Modifier.size(16.dp),
+                                            imageVector = NoteIcon.CheckBoxOutlineBlank,
+                                            contentDescription = "",
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            it.content,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            maxLines = 1,
+                                        )
+                                    }
+                                }
+                                if (unCheckNote.size > 10) {
+                                    Text(text = "....")
+                                }
+                                if (numberOfChecked > 0) {
                                     Text(
-                                        text = notePad.note.detail,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 10,
-
+                                        text = stringResource(
+                                            Rd.string.modules_designsystem_checked_items_value,
+                                            numberOfChecked,
+                                        ),
                                     )
                                 }
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
-                        } else {
-                            unCheckNote.take(10).forEach {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            FlowLayout2(
+                                verticalSpacing = 4.dp,
+                            ) {
+                                if (haveVoice) {
                                     Icon(
-                                        modifier = Modifier.size(16.dp),
-                                        imageVector = NoteIcon.CheckBoxOutlineBlank,
-                                        contentDescription = "",
+                                        imageVector = NoteIcon.PlayCircle,
+                                        contentDescription = "play",
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        it.content,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                    )
                                 }
-                            }
-                            if (unCheckNote.size > 10) {
-                                Text(text = "....")
-                            }
-                            if (numberOfChecked > 0) {
-                                Text(
-                                    text = stringResource(
-                                        Rd.string.modules_designsystem_checked_items_value,
-                                        numberOfChecked,
-                                    ),
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-
-                        FlowLayout2(
-                            verticalSpacing = 4.dp,
-                        ) {
-                            if (haveVoice) {
-                                Icon(
-                                    imageVector = NoteIcon.PlayCircle,
-                                    contentDescription = "play",
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
-                            notePad.notification?.let {
-                                ReminderCard(
-                                    notification = it,
-                                    color = sColor,
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
-                            notePad.labels.forEach {
-                                LabelCard(name = it.label, color = sColor)
-                                Spacer(modifier = Modifier.width(4.dp))
+                                notePad.notification?.let {
+                                    ReminderCard(
+                                        notification = it,
+                                        color = sColor,
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
+                                notePad.labels.forEach {
+                                    LabelCard(name = it.label, color = sColor)
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
                             }
                         }
                     }
