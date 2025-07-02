@@ -7,9 +7,7 @@ package com.mshdabiola.main
 import MainTopBar
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,15 +48,15 @@ import com.mshdabiola.designsystem.component.NoteLoadingWheel
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.createFakeNotePads
 import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.PreviewContainer
 import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun SharedTransitionScope.MainScreen(
+internal fun MainScreen(
     modifier: Modifier = Modifier, // Add default modifier
-    animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
     navigateToNoteEditor: (Long, Int, Int) -> Unit = { _, _, _ -> },
     onNoteSelected: (Long) -> Unit = {},
@@ -168,7 +166,6 @@ internal fun SharedTransitionScope.MainScreen(
                     items(items = mainState.pinNotePads, key = { it.note.id }) { notepad ->
                         NoteCard(
                             modifier = Modifier,
-                            animatedVisibilityScope = animatedContentScope,
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
@@ -189,7 +186,6 @@ internal fun SharedTransitionScope.MainScreen(
                     items(items = mainState.unPinNotePads, key = { it.note.id }) { notepad ->
                         NoteCard(
                             modifier = Modifier,
-                            animatedVisibilityScope = animatedContentScope,
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
@@ -223,20 +219,18 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 fun MainScreenPreview() {
     val pin = createFakeNotePads(1..2)
     val unPin = createFakeNotePads(3..6)
-    SharedTransitionScope {
-        AnimatedVisibility(visible = true) {
-            MainScreen(
-                animatedContentScope = this,
-                mainState = MainState.Success(
-                    isGrid = true,
-                    labelName = "Label",
-                    pinNotePads = pin,
-                    unPinNotePads = unPin,
-                    noteDisplayCategory = NoteDisplayCategory(),
-                    selectState = null,
-                ),
-            )
-        }
+
+    PreviewContainer {
+        MainScreen(
+            mainState = MainState.Success(
+                isGrid = true,
+                labelName = "Label",
+                pinNotePads = pin,
+                unPinNotePads = unPin,
+                noteDisplayCategory = NoteDisplayCategory(),
+                selectState = null,
+            ),
+        )
     }
 }
 
