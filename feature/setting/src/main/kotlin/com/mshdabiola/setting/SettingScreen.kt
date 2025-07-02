@@ -8,18 +8,17 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.NoteBackground
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
@@ -45,24 +46,53 @@ internal fun SettingScreen(
     setDarkMode: (DarkThemeConfig) -> Unit = {},
     onBack: () -> Unit = {},
 ) {
-    Card(modifier = modifier.testTag("setting:screen")) {
-        AnimatedContent(settingState) {
-            when (it) {
-                is SettingState.Loading -> Waiting(modifier)
-                is SettingState.Success -> MainContent(
-                    modifier = modifier,
-                    settingState = it,
-                    setTheme = setTheme,
-                    setDarkMode = setDarkMode,
-                    onBack = onBack,
-                )
-
-                else -> {}
+    AnimatedContent(settingState) {
+        when (it) {
+            is SettingState.Loading -> {
+                NoteBackground {
+                    Box(
+                        modifier = modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Waiting()
+                    }
+                }
             }
+            is SettingState.Success -> MainContent(
+                modifier = modifier,
+                settingState = it,
+                setTheme = setTheme,
+                setDarkMode = setDarkMode,
+                onBack = onBack,
+            )
+
+            else -> {}
         }
     }
 }
 
+@Preview
+@Composable
+internal fun SettingScreenPreview() {
+    val settingState = SettingState.Success(
+        themeBrand = ThemeBrand.DEFAULT,
+        darkThemeConfig = DarkThemeConfig.LIGHT,
+    )
+    SettingScreen(
+        settingState = settingState,
+    )
+}
+
+@Preview
+@Composable
+internal fun SettingLoadingScreenPreview() {
+    val settingState = SettingState.Loading
+    SettingScreen(
+        settingState = settingState,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainContent(
     modifier: Modifier = Modifier,
@@ -74,45 +104,44 @@ internal fun MainContent(
     var dark by remember { mutableStateOf(false) }
     var theme by remember { mutableStateOf(false) }
 
-    Column(
-        modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(Rd.string.modules_designsystem_settings)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
+                    }
+                },
+            )
+        },
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier
+                .padding(it)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(text = stringResource(Rd.string.modules_designsystem_settings), style = MaterialTheme.typography.titleLarge)
-            IconButton(
-                onClick = onBack,
+            ListItem(
+                modifier = Modifier
+                    .testTag("setting:theme")
+                    .clickable { theme = true },
+                headlineContent = { Text(stringResource(Rd.string.modules_designsystem_theme)) },
+                supportingContent = {
+                    Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
+                },
+            )
 
-            ) {
-                Icon(imageVector = NoteIcon.Cancel, "cancel")
-            }
+            ListItem(
+                modifier = Modifier
+                    .testTag("setting:mode")
+                    .clickable { dark = true },
+                headlineContent = { Text(stringResource(Rd.string.modules_designsystem_daynight_mode)) },
+                supportingContent = {
+                    Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
+                },
+            )
         }
-
-        Spacer(Modifier.height(8.dp))
-
-        ListItem(
-            modifier = Modifier
-                .testTag("setting:theme")
-                .clickable { theme = true },
-            headlineContent = { Text(stringResource(Rd.string.modules_designsystem_theme)) },
-            supportingContent = {
-                Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
-            },
-        )
-
-        ListItem(
-            modifier = Modifier
-                .testTag("setting:mode")
-                .clickable { dark = true },
-            headlineContent = { Text(stringResource(Rd.string.modules_designsystem_daynight_mode)) },
-            supportingContent = {
-                Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
-            },
-        )
     }
 
     AnimatedVisibility(theme) {
