@@ -1,26 +1,26 @@
 package com.mshdabiola.gallery
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.NoteImageRepository
 import com.mshdabiola.domain.AddAllNoteUseCase
 import com.mshdabiola.domain.GetNoteUseCase
 import com.mshdabiola.gallery.navigation.GalleryArg
 import com.mshdabiola.model.NoteImage
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class GalleryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = GalleryViewModel.Factory::class)
+class GalleryViewModel @AssistedInject constructor(
+    @Assisted val galleryArg: GalleryArg,
     private val noteImageRepository: NoteImageRepository,
     private val imageToText: ImageToText,
     private val getNoteUseCase: GetNoteUseCase,
@@ -28,7 +28,6 @@ class GalleryViewModel @Inject constructor(
     private val contentManager: IContentManager,
 ) : ViewModel() {
 
-    private val galleryArg = savedStateHandle.toRoute<GalleryArg>()
     val galleryUiState = noteImageRepository
         .getByNoteId(galleryArg.id)
         .mapLatest { images ->
@@ -78,5 +77,10 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             noteImageRepository.delete(id)
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(galleryArg: GalleryArg): GalleryViewModel
     }
 }

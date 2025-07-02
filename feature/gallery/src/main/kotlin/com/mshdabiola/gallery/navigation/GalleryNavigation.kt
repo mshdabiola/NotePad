@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -12,9 +11,10 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
 import com.mshdabiola.gallery.GalleryScreen
 import com.mshdabiola.gallery.GalleryViewModel
 import com.mshdabiola.ui.FirebaseScreenLog
@@ -22,14 +22,16 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.gallery(
+fun EntryProviderBuilder<NavKey>.gallery(
     onBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
 ) {
-    composable<GalleryArg> {
+    entry<GalleryArg> { key ->
         val coroutineScope = rememberCoroutineScope()
         FirebaseScreenLog(screen = "gallery_screen")
-        val viewModel = hiltViewModel<GalleryViewModel>()
+        val viewModel = hiltViewModel<GalleryViewModel, GalleryViewModel.Factory>(
+            creationCallback = { factory -> factory.create(key) },
+        )
+
         val galleryUiState = viewModel.galleryUiState.collectAsStateWithLifecycle()
         val pagerState = rememberPagerState(galleryUiState.value.initIndex) {
             galleryUiState.value.images.size
@@ -70,8 +72,7 @@ fun NavGraphBuilder.gallery(
             val image = galleryUiState.value.images[index]
             viewModel.deleteImage(image.id)
         }
-        sharedTransitionScope.GalleryScreen(
-            animatedContentScope = this,
+        GalleryScreen(
             pagerState = pagerState,
             galleryUiState = galleryUiState.value,
             onBack = onBack,
@@ -88,6 +89,6 @@ fun NavGraphBuilder.gallery(
     }
 }
 
-fun NavController.navigateToGallery(galleryArg: GalleryArg) {
-    navigate(galleryArg)
+fun NavBackStack.navigateToGallery(galleryArg: GalleryArg) {
+    add(galleryArg)
 }

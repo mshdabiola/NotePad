@@ -1,10 +1,7 @@
 package com.mshdabiola.gallery
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,23 +27,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.NoteImage
+import com.mshdabiola.ui.LocalSharedStScope
+import com.mshdabiola.ui.PreviewContainer
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.GalleryScreen(
+fun GalleryScreen(
     galleryUiState: GalleryUiState,
     pagerState: PagerState,
-    animatedContentScope: AnimatedVisibilityScope,
     onBack: () -> Unit = {},
     onToText: (String) -> Unit = {},
     onSend: () -> Unit = {},
     onCopy: () -> Unit = {},
     delete: () -> Unit = {},
 ) {
+    val sharedTransitionScope = LocalSharedStScope.current
+    val animatedContentScope = LocalNavAnimatedContentScope.current
     Scaffold(
         topBar = {
             GalleryTopAppBar(
@@ -68,18 +69,20 @@ fun SharedTransitionScope.GalleryScreen(
                 val image = galleryUiState.images.getOrNull(it)
                 // / currIndex=it
                 if (image != null) {
-                    ZoomableAsyncImage(
-                        modifier = Modifier
-                            .sharedElement(
-                                sharedContentState = rememberSharedContentState("image_$it"),
-                                animatedVisibilityScope = animatedContentScope,
-                            )
-                            .fillMaxSize(),
-                        model = image.path,
-                        contentDescription = "",
-                        alignment = Alignment.Center,
+                    with(sharedTransitionScope) {
+                        ZoomableAsyncImage(
+                            modifier = Modifier
+                                .sharedElement(
+                                    sharedContentState = rememberSharedContentState("image_$it"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                )
+                                .fillMaxSize(),
+                            model = image.path,
+                            contentDescription = "",
+                            alignment = Alignment.Center,
 
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -91,20 +94,17 @@ fun SharedTransitionScope.GalleryScreen(
 @Preview
 @Composable
 fun GalleryScreenPreview() {
-    SharedTransitionScope {
-        AnimatedVisibility(true) {
-            GalleryScreen(
-                animatedContentScope = this,
-                galleryUiState = GalleryUiState(
-                    images = listOf(
-                        NoteImage(id = 1),
-                        NoteImage(id = 1),
-                    ),
-
+    PreviewContainer {
+        GalleryScreen(
+            galleryUiState = GalleryUiState(
+                images = listOf(
+                    NoteImage(id = 1),
+                    NoteImage(id = 1),
                 ),
-                pagerState = rememberPagerState(1) { 2 },
-            )
-        }
+
+            ),
+            pagerState = rememberPagerState(1) { 2 },
+        )
     }
 }
 
