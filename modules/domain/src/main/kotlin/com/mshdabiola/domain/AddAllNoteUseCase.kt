@@ -9,8 +9,9 @@ import com.mshdabiola.data.repository.NoteRepository
 import com.mshdabiola.data.repository.NoteVoiceRepository
 import com.mshdabiola.model.NoteLabel
 import com.mshdabiola.model.NotePad
-import kotlinx.datetime.Clock
 import javax.inject.Inject
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class AddAllNoteUseCase
 @Inject constructor(
@@ -23,6 +24,7 @@ class AddAllNoteUseCase
     private val noteVoiceRepository: NoteVoiceRepository,
 
 ) {
+    @OptIn(ExperimentalTime::class)
     suspend operator fun invoke(notePad: NotePad): Long {
 //        check(!notePad.isEmpty())
 
