@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -32,34 +31,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.ui.Waiting
 import com.mshdabiola.designsystem.R as Rd
-
-// import org.koin.androidx.compose.koinViewModel
-
-@Composable
-internal fun SettingRoute(
-    modifier: Modifier = Modifier,
-    onShowSnack: suspend (String, String?) -> Boolean,
-    onBack: () -> Unit,
-) {
-    val viewModel = hiltViewModel<SettingViewModel>()
-    val settingState = viewModel.settingState.collectAsStateWithLifecycle()
-
-    SettingScreen(
-        modifier = modifier.heightIn(min = 300.dp),
-        settingState = settingState.value,
-        setTheme = viewModel::setThemeBrand,
-        setDarkMode = viewModel::setDarkThemeConfig,
-        onBack = onBack,
-    )
-}
 
 @Composable
 internal fun SettingScreen(
