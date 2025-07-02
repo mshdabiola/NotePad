@@ -4,27 +4,35 @@
 
 package com.mshdabiola.setting.navigation
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.dialog
-import com.mshdabiola.setting.SettingRoute
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
+import com.mshdabiola.setting.SettingScreen
+import com.mshdabiola.setting.SettingViewModel
 
-fun NavController.navigateToSetting(navOptions: NavOptions = androidx.navigation.navOptions { }) = navigate(
-    Setting,
-    navOptions,
-)
+fun NavBackStack.navigateToSetting() {
+    add(Setting)
+}
 
-fun NavGraphBuilder.settingScreen(
+fun EntryProviderBuilder<NavKey>.settingScreen(
     modifier: Modifier,
-    onShowSnack: suspend (String, String?) -> Boolean,
     onBack: () -> Unit,
 ) {
-    dialog<Setting> {
-        SettingRoute(
-            modifier = modifier,
-            onShowSnack = onShowSnack,
+    entry<Setting> {
+        val viewModel = hiltViewModel<SettingViewModel>()
+        val settingState = viewModel.settingState.collectAsStateWithLifecycle()
+
+        SettingScreen(
+            modifier = modifier.heightIn(min = 300.dp),
+            settingState = settingState.value,
+            setTheme = viewModel::setThemeBrand,
+            setDarkMode = viewModel::setDarkThemeConfig,
             onBack = onBack,
         )
     }
