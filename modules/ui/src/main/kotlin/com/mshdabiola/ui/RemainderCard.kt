@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationUiState
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -37,6 +36,8 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -91,7 +92,7 @@ fun ReminderCard(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
 @Preview
 @Composable
 fun ReminderCardPreview() {
@@ -136,6 +137,7 @@ fun LabelCardPreview() {
     )
 }
 
+@OptIn(ExperimentalTime::class)
 fun LocalDateTime.myFormat(): String {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
