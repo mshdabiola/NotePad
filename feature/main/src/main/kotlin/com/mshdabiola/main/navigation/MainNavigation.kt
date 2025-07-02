@@ -6,7 +6,6 @@ package com.mshdabiola.main.navigation
 
 import android.content.Intent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,10 +15,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ShareCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
 import com.mshdabiola.main.DeleteForeverDialog
 import com.mshdabiola.main.DeleteLabelAlertDialog
 import com.mshdabiola.main.EmptyTrashDialog
@@ -29,27 +28,24 @@ import com.mshdabiola.main.MainViewModel
 import com.mshdabiola.main.RenameLabelAlertDialog
 import com.mshdabiola.ui.ColorDialog
 import com.mshdabiola.ui.NotificationDialogNew
+import kotlinx.serialization.Serializable
 
-fun NavController.navigateToMain(
-    navOptions: NavOptions = androidx.navigation.navOptions { },
-) = navigate(route = MainRoute, navOptions)
+@Serializable
+data object Main : NavKey
 
-const val MainRoute = "main"
-const val FullMainRoute = MainRoute
+fun NavBackStack.navigateToMain() {
+    add(Main)
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.mainScreen(
+fun EntryProviderBuilder<NavKey>.main(
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    onShowSnack: suspend (String, String?) -> Boolean,
     navigateToDetail: (Long, Int, Int) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
     onOpenDrawer: () -> Unit,
     navigateToSearch: () -> Unit,
 ) {
-    composable(
-        route = FullMainRoute,
-    ) {
+    entry<Main> {
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
 
@@ -81,9 +77,8 @@ fun NavGraphBuilder.mainScreen(
         }
         val context = LocalContext.current
 
-        sharedTransitionScope.MainScreen(
+        MainScreen(
             modifier = modifier,
-            animatedContentScope = this,
             mainState = mainState.value,
             navigateToNoteEditor = navigateToDetail,
             onNoteSelected = mainViewModel::handleCardSelection,
