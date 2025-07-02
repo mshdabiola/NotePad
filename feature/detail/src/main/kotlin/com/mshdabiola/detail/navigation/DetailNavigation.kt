@@ -11,7 +11,6 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +21,10 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
 import com.mshdabiola.detail.AddBottomSheet2
 import com.mshdabiola.detail.ColorAndImageBottomSheet
 import com.mshdabiola.detail.DetailViewModel
@@ -37,23 +36,22 @@ import com.mshdabiola.ui.NotificationDialogNew
 import com.mshdabiola.ui.supportVoice
 import java.io.File
 
-fun NavController.navigateToDetail(
-    detailArg: DetailArg,
-
-    navOptions: NavOptions = androidx.navigation.navOptions { },
-) = navigate(detailArg, navOptions)
+fun NavBackStack.navigateToDetail(detailArg: DetailArg) {
+    add(detailArg)
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.detailScreen(
+fun EntryProviderBuilder<NavKey>.detailScreen(
     onBack: () -> Unit,
     navigateToGallery: (Long, Int, Int, String) -> Unit,
     navigateToDrawing: (Long, Long?) -> Unit,
     navigateToSelectLevel: (Set<Long>) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    modifier: Modifier.Companion,
+    modifier: Modifier,
 ) {
-    composable<DetailArg> {
-        val editViewModel: DetailViewModel = hiltViewModel()
+    entry<DetailArg> { key ->
+        val editViewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory>(
+            creationCallback = { factory -> factory.create(key) },
+        )
         val detailState by editViewModel.detailState.collectAsStateWithLifecycle()
         var showModalState by remember {
             mutableStateOf(false)
@@ -83,7 +81,7 @@ fun NavGraphBuilder.detailScreen(
 
         FirebaseScreenLog(screen = "edit_screen")
 
-        sharedTransitionScope.EditScreen(
+        EditScreen(
             modifier = modifier,
             state = detailState,
             onBackClick = onBack,
@@ -124,7 +122,6 @@ fun NavGraphBuilder.detailScreen(
             deleteVoiceNote = editViewModel::deleteVoiceNote,
             navigateToGallery = navigateToGallery,
             navigateToDrawing = { navigateToDrawing(detailState.notePad.note.id, it) },
-            animatedContentScope = this,
 
         )
         AddBottomSheet2(

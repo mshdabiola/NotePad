@@ -6,11 +6,8 @@ package com.mshdabiola.detail
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
-import com.mshdabiola.common.IAlarmManager
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.common.INotePlayer
 import com.mshdabiola.data.repository.NoteCheckRepository
@@ -29,6 +26,9 @@ import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
 import com.mshdabiola.model.NotificationUiState
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -45,13 +45,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
-@HiltViewModel
-class DetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val alarmManager: IAlarmManager,
+@HiltViewModel(assistedFactory = DetailViewModel.Factory::class)
+class DetailViewModel @AssistedInject constructor(
+    @Assisted val detailArg: DetailArg,
     private val voicePlayer: INotePlayer,
     private val getNoteUseCase: GetNoteUseCase,
     private val addAllNoteUseCase: AddAllNoteUseCase,
@@ -62,7 +60,6 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    val detailArg = savedStateHandle.toRoute<DetailArg>()
     val notificationUiState = NotificationUiState(
         currentDateTime = LocalDateTime(2026, 6, 16, 22, 1),
         currentInterval = NotificationInterval.Daily(
@@ -523,5 +520,10 @@ class DetailViewModel @Inject constructor(
         }
         playJob?.cancel()
         voicePlayer.pause()
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(detailArg: DetailArg): DetailViewModel
     }
 }
