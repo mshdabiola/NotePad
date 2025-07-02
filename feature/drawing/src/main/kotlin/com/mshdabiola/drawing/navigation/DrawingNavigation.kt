@@ -14,8 +14,10 @@ import kotlinx.serialization.Serializable
 fun EntryProviderBuilder<NavKey>.drawingScreen(
     onBack: () -> Unit,
 ) {
-    entry<DrawingArgs> {
-        val drawingViewModel = hiltViewModel<DrawingViewModel>()
+    entry<DrawingArgs> { key ->
+        val drawingViewModel = hiltViewModel<DrawingViewModel, DrawingViewModel.Factory>(
+            creationCallback = { factory -> factory.create(key) },
+        )
         val state = drawingViewModel.drawingState.collectAsStateWithLifecycle()
         val context = LocalContext.current
         val onSend = {
