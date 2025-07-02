@@ -4,11 +4,7 @@
 
 package com.mshdabiola.search
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +57,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.PreviewContainer
 import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
 
@@ -72,9 +69,8 @@ import com.mshdabiola.designsystem.R as Rd
     ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
-internal fun SharedTransitionScope.SearchScreen(
+internal fun SearchScreen(
     modifier: Modifier = Modifier,
-    animatedContentScope: AnimatedVisibilityScope,
     searchQuery: TextFieldState = rememberTextFieldState(),
     searchState: SearchState = SearchState.Select(),
     onBack: () -> Unit = {},
@@ -87,6 +83,7 @@ internal fun SharedTransitionScope.SearchScreen(
     TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -163,7 +160,6 @@ internal fun SharedTransitionScope.SearchScreen(
                         items(items = searchState.searches, key = { it.note.id }) { notepad ->
                             NoteCard(
                                 modifier = Modifier,
-                                animatedVisibilityScope = animatedContentScope,
                                 notePad = notepad,
                                 onCardClick = onNoteClick,
                                 onLongClick = {},
@@ -220,40 +216,37 @@ internal fun SharedTransitionScope.SearchScreen(
 @Preview
 @Composable
 internal fun NewSearchScreenPreview() {
-    SharedTransitionLayout {
-        AnimatedVisibility(visible = true) {
-            SearchScreen(
-                animatedContentScope = this,
-                searchState = SearchState.Select(
-                    types = listOf(
-                        SearchSort.Type(0),
-                        SearchSort.Type(1),
-                        SearchSort.Type(2),
-                        SearchSort.Type(3),
-                        SearchSort.Type(4),
-                        SearchSort.Type(5),
-                    ),
-                    label = listOf(
-                        SearchSort.Label("Java", iconIndex = 6, 3),
-                        SearchSort.Label("Python", iconIndex = 6, 3),
-                        SearchSort.Label("C Sharp", iconIndex = 6, 3),
-                        SearchSort.Label("JavaScript", iconIndex = 6, 3),
-                        SearchSort.Label("Java", iconIndex = 6, 3),
-                        SearchSort.Label("Java", iconIndex = 6, 3),
-
-                    ),
-                    color = listOf(
-                        SearchSort.Color(-1),
-                        SearchSort.Color(0),
-                        SearchSort.Color(1),
-                        SearchSort.Color(2),
-                        SearchSort.Color(3),
-                        SearchSort.Color(4),
-                        SearchSort.Color(5),
-                    ),
+    PreviewContainer {
+        SearchScreen(
+            searchState = SearchState.Select(
+                types = listOf(
+                    SearchSort.Type(0),
+                    SearchSort.Type(1),
+                    SearchSort.Type(2),
+                    SearchSort.Type(3),
+                    SearchSort.Type(4),
+                    SearchSort.Type(5),
                 ),
-            )
-        }
+                label = listOf(
+                    SearchSort.Label("Java", iconIndex = 6, 3),
+                    SearchSort.Label("Python", iconIndex = 6, 3),
+                    SearchSort.Label("C Sharp", iconIndex = 6, 3),
+                    SearchSort.Label("JavaScript", iconIndex = 6, 3),
+                    SearchSort.Label("Java", iconIndex = 6, 3),
+                    SearchSort.Label("Java", iconIndex = 6, 3),
+
+                ),
+                color = listOf(
+                    SearchSort.Color(-1),
+                    SearchSort.Color(0),
+                    SearchSort.Color(1),
+                    SearchSort.Color(2),
+                    SearchSort.Color(3),
+                    SearchSort.Color(4),
+                    SearchSort.Color(5),
+                ),
+            ),
+        )
     }
 }
 
