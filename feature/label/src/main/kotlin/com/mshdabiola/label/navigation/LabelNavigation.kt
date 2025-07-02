@@ -6,9 +6,9 @@ import androidx.navigation3.runtime.EntryProviderBuilder
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
+import com.mshdabiola.label.LabelScreen
 import com.mshdabiola.label.LabelViewModel
 import com.mshdabiola.labelscreen.LabelArg
-import com.mshdabiola.labelscreen.LabelScreen
 
 fun EntryProviderBuilder<NavKey>.label(onBack: () -> Unit) {
     entry<LabelArg> { key ->

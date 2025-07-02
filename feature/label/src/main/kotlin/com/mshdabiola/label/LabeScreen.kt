@@ -1,4 +1,4 @@
-package com.mshdabiola.labelscreen
+package com.mshdabiola.label
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +31,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.labelscreen.LabelState
+import com.mshdabiola.labelscreen.LabelUiState
 import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
