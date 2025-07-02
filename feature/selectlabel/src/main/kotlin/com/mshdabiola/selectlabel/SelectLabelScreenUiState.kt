@@ -1,10 +1,10 @@
-package com.mshdabiola.selectlabelscreen
+package com.mshdabiola.selectlabel
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.state.ToggleableState
 import com.mshdabiola.model.Label
 
-data class LabelUiState(
+data class SelectLabelUiState(
     val labels: List<LabelState> = emptyList(),
     val labelQuery: TextFieldState = TextFieldState(""),
     val showAddLabel: Boolean = false,
