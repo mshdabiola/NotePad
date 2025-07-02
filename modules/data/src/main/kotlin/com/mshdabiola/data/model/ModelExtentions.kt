@@ -22,11 +22,12 @@ import com.mshdabiola.model.NoteVoice
 import com.mshdabiola.model.NotificationInterval
 import com.mshdabiola.model.NotificationPlace
 import com.mshdabiola.model.NotificationUiState
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 fun NotePadEntity.toNotePad() = NotePad(
     note = noteEntity.toNote(),
@@ -111,6 +112,7 @@ fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
 )
 
 // --- Mapper from NotificationUiState to NotificationEntity ---
+@OptIn(ExperimentalTime::class)
 fun NotificationUiState.toEntity(): NotificationEntity {
     val reminderTimestamp =
         this.currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
@@ -250,6 +252,7 @@ fun NotificationUiState.toEntity(): NotificationEntity {
 }
 
 // --- Mapper from NotificationEntity to NotificationUiState ---
+@OptIn(ExperimentalTime::class)
 fun NotificationEntity.toNotificationUiState(): NotificationUiState {
     val currentDateTime = Instant.fromEpochMilliseconds(this.reminderDateTimeStamp)
         .toLocalDateTime(TimeZone.currentSystemDefault())
