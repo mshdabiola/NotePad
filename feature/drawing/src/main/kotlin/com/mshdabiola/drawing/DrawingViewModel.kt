@@ -1,14 +1,15 @@
 package com.mshdabiola.drawing
 
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.NoteDrawingRepository
 import com.mshdabiola.drawing.navigation.DrawingArgs
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.ui.DrawingController
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,16 +20,15 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
-@HiltViewModel
-class DrawingViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = DrawingViewModel.Factory::class)
+class DrawingViewModel @AssistedInject constructor(
+    @Assisted val drawing: DrawingArgs,
     private val drawingRepository: NoteDrawingRepository,
 
 ) : ViewModel() {
 
-    private val detailArgs = MutableStateFlow(savedStateHandle.toRoute<DrawingArgs>())
+    private val detailArgs = MutableStateFlow(drawing)
 
     val controller = DrawingController()
 
@@ -122,5 +122,10 @@ class DrawingViewModel @Inject constructor(
 
     suspend fun deleteImage() {
         drawingRepository.delete(detailArgs.value.id!!)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(drawingArgs: DrawingArgs): DrawingViewModel
     }
 }
