@@ -1,13 +1,19 @@
-package com.mshdabiola.labelscreen
+package com.mshdabiola.label
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.mshdabiola.data.repository.LabelRepository
 import com.mshdabiola.data.repository.UserDataRepository
+import com.mshdabiola.labelscreen.LabelArg
+import com.mshdabiola.labelscreen.LabelState
+import com.mshdabiola.labelscreen.LabelUiState
+import com.mshdabiola.labelscreen.toLabel
+import com.mshdabiola.labelscreen.toLabelState
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NoteType
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,16 +22,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class LabelViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = LabelViewModel.Factory::class)
+class LabelViewModel @AssistedInject constructor(
+    @Assisted val labelArg: LabelArg,
     private val labelRepository: LabelRepository,
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-    private val labelArg = savedStateHandle.toRoute<LabelArg>()
     private val newLabel = MutableStateFlow(LabelState())
 
     val labels = labelRepository
@@ -66,5 +70,10 @@ class LabelViewModel @Inject constructor(
             }
             labelRepository.delete(id)
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(labelArg: LabelArg): LabelViewModel
     }
 }
