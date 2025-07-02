@@ -1,8 +1,6 @@
 package com.mshdabiola.domain
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -14,6 +12,9 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class DateUseCase @Inject constructor() {
     val dateFormat = LocalDate.Format {
@@ -31,6 +32,8 @@ class DateUseCase @Inject constructor() {
 
         amPmMarker("AM", "PM")
     }
+
+    @OptIn(ExperimentalTime::class)
     operator fun invoke(date: Long): String {
         val date = Instant.fromEpochMilliseconds(date)
             .toLocalDateTime(TimeZone.currentSystemDefault())
