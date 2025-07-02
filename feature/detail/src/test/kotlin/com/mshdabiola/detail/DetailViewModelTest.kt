@@ -4,7 +4,6 @@
 
 package com.mshdabiola.detail
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.domain.AddAllNoteUseCase
@@ -29,7 +28,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-
 
 class DetailViewModelTest {
     @get:Rule(order = 1)

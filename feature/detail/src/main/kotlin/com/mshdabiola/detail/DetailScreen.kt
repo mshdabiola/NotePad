@@ -29,7 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -76,11 +75,8 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.Label
-import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
-import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
@@ -88,7 +84,6 @@ import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.LocalSharedStScope
-import com.mshdabiola.ui.PreviewContainer
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.toTime
 import com.mshdabiola.designsystem.R as Rd
@@ -709,4 +704,3 @@ fun NoteUri(
 fun NoteUriPreview() {
     NoteUri(uriState = NoteUri(1, "", "Path", "akdkdk"))
 }
-
