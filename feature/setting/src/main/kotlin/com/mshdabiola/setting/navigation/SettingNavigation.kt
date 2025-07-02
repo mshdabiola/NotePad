@@ -4,9 +4,7 @@
 
 package com.mshdabiola.setting.navigation
 
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderBuilder
@@ -29,7 +27,7 @@ fun EntryProviderBuilder<NavKey>.settingScreen(
         val settingState = viewModel.settingState.collectAsStateWithLifecycle()
 
         SettingScreen(
-            modifier = modifier.heightIn(min = 300.dp),
+            modifier = modifier,
             settingState = settingState.value,
             setTheme = viewModel::setThemeBrand,
             setDarkMode = viewModel::setDarkThemeConfig,
