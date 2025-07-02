@@ -1,10 +1,11 @@
 package com.mshdabiola.model
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.util.UUID
 import kotlin.random.Random
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 // Helper function to create a random past date
 fun getRandomPastDate(): Long {
@@ -20,6 +21,7 @@ fun getRandomFutureDate(): Long {
     return currentTime + Random.nextLong(oneMonthInMillis)
 }
 
+@OptIn(ExperimentalTime::class)
 fun createFakeNotePads(range: IntRange): List<NotePad> {
     val fakeNotePads = mutableListOf<NotePad>()
     val sampleLabels = listOf(
@@ -158,6 +160,7 @@ fun createFakeNotePads(range: IntRange): List<NotePad> {
     return fakeNotePads
 }
 
+@OptIn(ExperimentalTime::class)
 fun getDefinedNotePads(): List<NotePad> {
     val definedNotePads = mutableListOf<NotePad>()
     val referenceTime = 1672531200000L // Approx Jan 1, 2023, for base timestamps
