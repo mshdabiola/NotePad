@@ -7,8 +7,12 @@ package com.mshdabiola.playnotepad.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.mshdabiola.about.navigation.aboutScreen
 import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.detailScreen
@@ -19,123 +23,88 @@ import com.mshdabiola.drawing.navigation.navigateToDrawing
 import com.mshdabiola.gallery.navigation.GalleryArg
 import com.mshdabiola.gallery.navigation.gallery
 import com.mshdabiola.gallery.navigation.navigateToGallery
-import com.mshdabiola.labelscreen.label
-import com.mshdabiola.main.navigation.FullMainRoute
-import com.mshdabiola.main.navigation.mainScreen
+import com.mshdabiola.label.navigation.label
+import com.mshdabiola.main.navigation.main
 import com.mshdabiola.playnotepad.ui.NoteAppState
+import com.mshdabiola.playnotepad.ui.pop
 import com.mshdabiola.search.navigation.navigateToSearch
 import com.mshdabiola.search.navigation.search
-import com.mshdabiola.selectlabelscreen.navigateToSelectLabel
-import com.mshdabiola.selectlabelscreen.selectLabelScreen
+import com.mshdabiola.selectlabel.navigation.navigateToSelectLabel
+import com.mshdabiola.selectlabel.navigation.selectLabelScreen
 import com.mshdabiola.setting.navigation.settingScreen
+import com.mshdabiola.ui.LocalSharedStScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NoteNavHost(
+fun NoteNavHost2(
     appState: NoteAppState,
-    onShowSnackbar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val navController = appState.navController
-    SharedTransitionLayout(modifier = modifier) {
-        NavHost(
-            navController = navController,
-            startDestination = FullMainRoute,
-            modifier = Modifier,
-        ) {
-            mainScreen(
-                modifier = Modifier,
-                sharedTransitionScope = this@SharedTransitionLayout,
-                onShowSnack = onShowSnackbar,
-                navigateToDetail = { id, colorIndex, background -> navController.navigateToDetail(DetailArg(id, colorIndex, background)) },
-                navigateToSelectLevel = appState.navController::navigateToSelectLabel,
-                onOpenDrawer = {
-                    appState.openDrawer()
-                },
-                navigateToSearch = navController::navigateToSearch,
-            )
-            detailScreen(
-                modifier = Modifier,
-                sharedTransitionScope = this@SharedTransitionLayout,
-                onBack = navController::popBackStack,
-                navigateToGallery = { id, index, total, currentPath -> navController.navigateToGallery(GalleryArg(id, index, total, currentPath)) },
-                navigateToDrawing = { noteId, image ->
 
-                    navController.navigateToDrawing(
-                        DrawingArgs(
-                            noteId,
-                            image,
-                        ),
+    SharedTransitionLayout(modifier = modifier) {
+        CompositionLocalProvider(
+            LocalSharedStScope provides this,
+        ) {
+            NavDisplay(
+                backStack = navController,
+                entryProvider = entryProvider {
+                    main(
+                        modifier = Modifier,
+                        navigateToDetail = { id, colorIndex, background -> navController.navigateToDetail(DetailArg(id, colorIndex, background)) },
+                        navigateToSelectLevel = appState.navController::navigateToSelectLabel,
+                        onOpenDrawer = {
+                            appState.openDrawer()
+                        },
+                        navigateToSearch = navController::navigateToSearch,
+                    )
+                    detailScreen(
+                        modifier = Modifier,
+                        onBack = navController::pop,
+                        navigateToGallery = { id, index, total, currentPath ->
+                            navController.navigateToGallery(
+                                GalleryArg(id, index, total, currentPath),
+                            )
+                        },
+                        navigateToDrawing = { noteId, image ->
+
+                            navController.navigateToDrawing(
+                                DrawingArgs(
+                                    noteId,
+                                    image,
+                                ),
+                            )
+                        },
+                        navigateToSelectLevel = navController::navigateToSelectLabel,
+                    )
+                    gallery(
+                        onBack = navController::pop,
+                    )
+                    aboutScreen(onBack = navController::pop)
+                    label(onBack = navController::pop)
+                    selectLabelScreen(onBack = navController::pop)
+                    drawingScreen(onBack = navController::pop)
+                    settingScreen(
+                        modifier = Modifier,
+                        onBack = navController::pop,
+                    )
+                    search(
+                        modifier = Modifier,
+                        onBack = navController::pop,
+                        navigateToDetail = { id, colorIndex, background ->
+                            navController.navigateToDetail(
+                                DetailArg(id, colorIndex, background),
+                            )
+                        },
+
                     )
                 },
-                navigateToSelectLevel = appState.navController::navigateToSelectLabel,
-            )
-            gallery(
-                onBack = navController::popBackStack,
-                sharedTransitionScope = this@SharedTransitionLayout,
-            )
-            aboutScreen(onBack = navController::popBackStack)
-            label(onBack = navController::popBackStack)
-            selectLabelScreen(onBack = navController::popBackStack)
-            drawingScreen(onBack = navController::popBackStack)
-            settingScreen(
-                modifier = Modifier,
-                onShowSnack = onShowSnackbar,
-                onBack = navController::popBackStack,
-            )
-            search(
-                modifier = Modifier,
-                sharedTransitionScope = this@SharedTransitionLayout,
-                onBack = navController::popBackStack,
-                navigateToDetail = { id, colorIndex, background -> navController.navigateToDetail(DetailArg(id, colorIndex, background)) },
+                entryDecorators = listOf(
+                    rememberSavedStateNavEntryDecorator(),
 
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
             )
         }
     }
 }
-
-//
-// @OptIn(ExperimentalComposeUiApi::class)
-// @Composable
-// fun NotePadAppNavHost(
-//    navController: NavHostController,
-//    navigateToEdit: (Long, String, Long) -> Unit,
-//    navigateToLevel: (Boolean) -> Unit,
-//    navigateToSearch: () -> Unit,
-//    onBack: () -> Unit,
-//    startDestination: String = mainNavigationRoute,
-//    navigateToSelectLevel: (IntArray) -> Unit,
-//    saveImage: (Long, Long) -> Unit,
-// ) {
-//    NavHost(
-//        modifier = Modifier.semantics { testTagsAsResourceId = true },
-//        navController = navController,
-//        startDestination = startDestination,
-//    ) {
-//        mainScreen(
-//            navigateToEditScreen = navigateToEdit,
-//            navigateToLevel = navigateToLevel,
-//            navigateToSearch = navigateToSearch,
-//            navigateToSelectLevel = navigateToSelectLevel,
-//            navigateToAbout = { navController.navigateToAbout() },
-//        )
-//        editScreen(
-//            onBack = onBack,
-//            navigateToSelectLevel = navigateToSelectLevel,
-//            navigateToGallery = { id, index -> navController.navigateToGallery(id, index) },
-//            navigateToDrawing = { id, image -> navController.navigateToDrawing(id, image) },
-//        )
-//        labelScreen(onBack = onBack)
-//        selectLabelScreen(onBack)
-//        searchScreen(onBack, navigateToEdit)
-//        galleryScreen(onBack = onBack) { l, s, l2 ->
-//            navController.navigateToEditScreenWIthPop(
-//                l,
-//                s,
-//                l2,
-//            )
-//        }
-//        drawingScreen(onBack, saveImage)
-//        aboutScreen(onBack)
-//    }
-// }

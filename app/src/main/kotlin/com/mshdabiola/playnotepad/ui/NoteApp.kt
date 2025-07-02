@@ -23,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,12 +50,11 @@ import com.mshdabiola.detail.navigation.DetailArg
 import com.mshdabiola.detail.navigation.navigateToDetail
 import com.mshdabiola.drawing.navigation.DrawingArgs
 import com.mshdabiola.drawing.navigation.navigateToDrawing
-import com.mshdabiola.labelscreen.navigateToLabel
-import com.mshdabiola.main.navigation.navigateToMain
+import com.mshdabiola.label.navigation.navigateToLabel
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.playnotepad.MainActivityUiState
 import com.mshdabiola.playnotepad.MainActivityViewModel
-import com.mshdabiola.playnotepad.navigation.NoteNavHost
+import com.mshdabiola.playnotepad.navigation.NoteNavHost2
 import com.mshdabiola.setting.navigation.navigateToSetting
 import com.mshdabiola.ui.AudioDialog
 import com.mshdabiola.ui.ImageDialog2
@@ -73,6 +71,7 @@ fun NoteApp(
     val shouldShowGradientBackground = true
     val labels = viewModel.labels.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isMain by appState.isMain.collectAsStateWithLifecycle(false)
     var showAudio by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(false) }
 
@@ -106,8 +105,8 @@ fun NoteApp(
                             ?.userData?.noteDisplayCategory ?: NoteDisplayCategory(),
                         onNavigation = {
                             viewModel.setMainData(it)
-                            appState.navController.popBackStack()
-                            appState.navController.navigateToMain()
+                            appState.navController.pop()
+                            //  appState.navController.navigateToMain()
                             appState.closeDrawer()
                         },
                         navigateToLevel = {
@@ -126,7 +125,7 @@ fun NoteApp(
                     )
                 },
                 drawerState = appState.drawerState,
-                gesturesEnabled = appState.isMain,
+                gesturesEnabled = isMain,
             ) {
                 Scaffold(
                     modifier = modifier.semantics {
@@ -137,7 +136,7 @@ fun NoteApp(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = {
-                        if (appState.isMain) {
+                        if (isMain) {
                             NoteBottomBar(
                                 onAddNewNote = {
                                     appState.coroutineScope.launch {
@@ -176,7 +175,7 @@ fun NoteApp(
                     },
 
                 ) { padding ->
-                    NoteNavHost(
+                    NoteNavHost2(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding)
@@ -187,13 +186,7 @@ fun NoteApp(
                                 ),
                             ),
                         appState = appState,
-                        onShowSnackbar = { message, action ->
-                            snackbarHostState.showSnackbar(
-                                message = message,
-                                actionLabel = action,
-                                duration = Short,
-                            ) == ActionPerformed
-                        },
+
                     )
                 }
             }
