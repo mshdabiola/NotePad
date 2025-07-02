@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.37.3"
 androidDesugarJdkLibs = "2.1.5"
-androidGradlePlugin = "8.8.1"
+androidGradlePlugin = "8.11.0"
 androidTools = "31.9.2"
 androidxActivity = "1.10.1"
 androidxAppCompat = "1.7.1"
@@ -99,6 +99,11 @@ versionCode = "137"
 telephoto = "0.16.0"
 lottieCompose = "6.6.6"
 
+nav3Core = "1.0.0-alpha01"
+lifecycleViewmodelNav3 = "1.0.0-alpha01"
+kotlinSerialization = "2.1.21"
+kotlinxSerializationCore = "1.8.1"
+material3AdaptiveNav3 = "1.0.0-SNAPSHOT"
 
 
 [libraries]
@@ -210,6 +215,13 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 telephoto-zoomable-image = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "telephoto" }
 kotlinx-collection-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionImmutable" }
+
+
+# Core Navigation 3 libraries
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
 
 
 # Dependencies of the included build-logic
