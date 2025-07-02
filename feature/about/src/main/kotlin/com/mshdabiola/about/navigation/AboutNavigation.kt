@@ -12,10 +12,12 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import com.mshdabiola.about.AboutScreen
 import com.mshdabiola.ui.FirebaseScreenLog
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 fun EntryProviderBuilder<NavKey>.aboutScreen(onBack: () -> Unit) {
     entry<AboutArg> {
         val context = LocalContext.current
