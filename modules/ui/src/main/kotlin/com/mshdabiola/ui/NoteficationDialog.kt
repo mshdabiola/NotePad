@@ -53,9 +53,7 @@ import com.mshdabiola.model.NotificationTime
 import com.mshdabiola.model.NotificationUiState
 import com.mshdabiola.ui.state.NotificationDate
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -65,9 +63,12 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @SuppressLint("NewApi")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun NotificationDialogNew(
     initState: NotificationUiState? = null,
@@ -304,7 +305,7 @@ fun NotificationPlace(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun TimeTextDropbox(
     modifier: Modifier = Modifier,
@@ -447,7 +448,7 @@ fun TimeTextDropboxPreview() {
     TimeTextDropbox(currentTime = currentTime)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun DateTextDropbox(
     modifier: Modifier = Modifier,
@@ -577,6 +578,7 @@ fun DateTextDropbox(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 fun DateTextDropboxPreview() {
@@ -588,7 +590,7 @@ fun DateTextDropboxPreview() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun IntervalTextDropbox(
     modifier: Modifier = Modifier,

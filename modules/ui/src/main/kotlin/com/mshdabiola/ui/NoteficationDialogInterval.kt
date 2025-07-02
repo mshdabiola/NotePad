@@ -59,12 +59,13 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.R
 import com.mshdabiola.model.IntervalEnd
 import com.mshdabiola.model.NotificationInterval
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -309,7 +310,7 @@ fun NotificationDialogInterval(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Preview
 @Composable
 fun NotificationDialogIntervalPreview() {
@@ -398,7 +399,7 @@ fun IntervalTextFieldPreview() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun IntervalRepeatEnd(
     modifier: Modifier = Modifier,
@@ -579,6 +580,7 @@ fun IntervalRepeatEnd(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun InvervalRepeatEndPreview() {
