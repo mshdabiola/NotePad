@@ -5,6 +5,7 @@
 package com.mshdabiola.main
 
 import com.mshdabiola.testing.repository.TestAlarmManager
+import com.mshdabiola.testing.repository.TestNoteRepository
 import com.mshdabiola.testing.repository.TestUserDataRepository
 import com.mshdabiola.testing.repository.TestVoicePlayer
 import com.mshdabiola.testing.util.MainDispatcherRule
@@ -24,7 +25,7 @@ class MainViewModelTest {
 
     private val analyticsHelper = TestAnalyticsHelper()
     private val userDataRepository = TestUserDataRepository()
-    private val noteRepository = TestNotePadRepository()
+    private val noteRepository = TestNoteRepository()
     private val alarmManager = TestAlarmManager()
     private val voicePlayer = TestVoicePlayer()
     private lateinit var viewModel: MainViewModel
