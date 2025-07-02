@@ -11,28 +11,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.snapshotFlow
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.mshdabiola.data.util.NetworkMonitor
-import com.mshdabiola.main.navigation.MainRoute
-import com.mshdabiola.ui.TrackDisposableJank
+import com.mshdabiola.main.navigation.Main
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
 
 @Composable
 fun rememberNoteAppState(
     networkMonitor: NetworkMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    navController: NavHostController = rememberNavController(),
+    navController: NavBackStack = rememberNavBackStack(Main),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ): NoteAppState {
-    NavigationTrackingSideEffect(navController)
     return remember(
         navController,
         coroutineScope,
@@ -50,25 +46,16 @@ fun rememberNoteAppState(
 
 @Stable
 class NoteAppState(
-    val navController: NavHostController,
+    val navController: NavBackStack,
     val coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,
     val drawerState: DrawerState,
 ) {
-    val currentRoute: String
-        @Composable get() = navController
-            .currentBackStackEntryAsState().value?.destination?.route ?: ""
+    val currentRoute = snapshotFlow { navController.toList() }
+        .map { it.lastOrNull() }
 
-//    val mainArg: Long
-//        @Composable get() = navController.currentBackStackEntryAsState().value?.arguments?.getLong(
-//            TypeArg,
-//        ) ?: NoteType.NOTE.index
-
-    //            navController
-//            .currentBackStackEntryAsState().value?.toRoute<Main>() ?:
-    // Main(-1L)
-    val isMain: Boolean
-        @Composable get() = currentRoute.contains(MainRoute)
+    val isMain = currentRoute
+        .map { it == Main }
 
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)
@@ -91,22 +78,6 @@ class NoteAppState(
     }
 }
 
-@Composable
-private fun NavigationTrackingSideEffect(navController: NavHostController) {
-    TrackDisposableJank(navController) { metricsHolder ->
-        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            metricsHolder.state?.putState("Navigation", destination.route.toString())
-        }
-
-        navController.addOnDestinationChangedListener(listener)
-
-        onDispose {
-            navController.removeOnDestinationChangedListener(listener)
-        }
-    }
+fun NavBackStack.pop() {
+    removeAt(lastIndex)
 }
-
-val <T : Any> KClass<T>.name: String
-    get() {
-        return this.qualifiedName.toString()
-    }
