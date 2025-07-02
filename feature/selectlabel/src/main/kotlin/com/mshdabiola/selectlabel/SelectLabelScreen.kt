@@ -1,4 +1,4 @@
-package com.mshdabiola.selectlabelscreen
+package com.mshdabiola.selectlabel
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,8 +32,8 @@ import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LabelScreen(
-    labelUiState: LabelUiState,
+fun SelectLabelScreen(
+    selectLabelUiState: SelectLabelUiState,
     onBack: () -> Unit = {},
     onCheckClick: (Int) -> Unit = {},
     onCreateLabel: () -> Unit = {},
@@ -50,7 +49,7 @@ fun LabelScreen(
                 title = {
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
-                        state = labelUiState.labelQuery,
+                        state = selectLabelUiState.labelQuery,
                         placeholder = { Text(stringResource(Rd.string.modules_designsystem_enter_text)) },
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
@@ -66,16 +65,16 @@ fun LabelScreen(
         },
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
-            if (labelUiState.showAddLabel) {
+            if (selectLabelUiState.showAddLabel) {
                 TextButton(onClick = { onCreateLabel() }) {
                     Icon(imageVector = NoteIcon.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${labelUiState.labelQuery.text}\"")
+                    Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${selectLabelUiState.labelQuery.text}\"")
                 }
             }
             LazyColumn {
                 itemsIndexed(
-                    items = labelUiState.labels,
+                    items = selectLabelUiState.labels,
                     key = { i, it -> it.id },
                 ) { index, it ->
                     LabelText(
@@ -92,7 +91,7 @@ fun LabelScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelScreenPreview() {
-    val labelUiState = LabelUiState(
+    val selectLabelUiState = SelectLabelUiState(
         labels = listOf(
             LabelState(1, "label1", ToggleableState.On),
             LabelState(2, "label2", ToggleableState.Off),
@@ -104,7 +103,7 @@ fun LabelScreenPreview() {
         labelQuery = TextFieldState(""),
         showAddLabel = false,
     )
-    LabelScreen(labelUiState = labelUiState)
+    SelectLabelScreen(selectLabelUiState = selectLabelUiState)
 }
 
 @Composable
