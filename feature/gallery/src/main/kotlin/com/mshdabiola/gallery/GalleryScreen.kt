@@ -100,6 +100,8 @@ fun GalleryScreenPreview() {
                 images = listOf(
                     NoteImage(id = 1),
                     NoteImage(id = 1),
+                    NoteImage(id = 1),
+
                 ),
 
             ),
