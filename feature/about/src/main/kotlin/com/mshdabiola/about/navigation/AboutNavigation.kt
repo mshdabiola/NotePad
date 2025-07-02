@@ -6,17 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
 import com.mshdabiola.about.AboutScreen
 import com.mshdabiola.ui.FirebaseScreenLog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-fun NavGraphBuilder.aboutScreen(onBack: () -> Unit) {
-    composable<AboutArg> {
+fun EntryProviderBuilder<NavKey>.aboutScreen(onBack: () -> Unit) {
+    entry<AboutArg> {
         val context = LocalContext.current
         var lastUpdate by remember {
             mutableStateOf("")
@@ -46,6 +47,6 @@ fun NavGraphBuilder.aboutScreen(onBack: () -> Unit) {
     }
 }
 
-fun NavController.navigateToAbout() {
-    navigate(AboutArg)
+fun NavBackStack.navigateToAbout() {
+    add(AboutArg)
 }
