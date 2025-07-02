@@ -3,17 +3,18 @@ package com.mshdabiola.drawing.navigation
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entry
 import com.mshdabiola.drawing.DrawingScreen
 import com.mshdabiola.drawing.DrawingViewModel
 import kotlinx.serialization.Serializable
 
-fun NavGraphBuilder.drawingScreen(
+fun EntryProviderBuilder<NavKey>.drawingScreen(
     onBack: () -> Unit,
 ) {
-    composable<DrawingArgs> {
+    entry<DrawingArgs> {
         val drawingViewModel = hiltViewModel<DrawingViewModel>()
         val state = drawingViewModel.drawingState.collectAsStateWithLifecycle()
         val context = LocalContext.current
@@ -49,12 +50,12 @@ fun NavGraphBuilder.drawingScreen(
     }
 }
 
-fun NavController.navigateToDrawing(drawingArgs: DrawingArgs) {
-    navigate(drawingArgs)
+fun NavBackStack.navigateToDrawing(drawingArgs: DrawingArgs) {
+    add(drawingArgs)
 }
 
 @Serializable
 data class DrawingArgs(
     val noteId: Long,
     val id: Long?,
-)
+) : NavKey
