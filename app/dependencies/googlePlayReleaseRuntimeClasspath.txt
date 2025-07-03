@@ -169,8 +169,8 @@ androidx.viewpager:viewpager:1.0.0
 androidx.window:window-core-android:1.4.0
 androidx.window:window-core:1.4.0
 androidx.window:window:1.4.0
-com.airbnb.android:lottie-compose:6.6.6
-com.airbnb.android:lottie:6.6.6
+com.airbnb.android:lottie-compose:6.6.7
+com.airbnb.android:lottie:6.6.7
 com.github.bumptech.glide:annotations:4.11.0
 com.github.bumptech.glide:disklrucache:4.11.0
 com.github.bumptech.glide:gifdecoder:4.11.0

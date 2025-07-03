@@ -145,8 +145,8 @@ androidx.viewpager:viewpager:1.0.0
 androidx.window:window-core-android:1.4.0
 androidx.window:window-core:1.4.0
 androidx.window:window:1.4.0
-com.airbnb.android:lottie-compose:6.6.6
-com.airbnb.android:lottie:6.6.6
+com.airbnb.android:lottie-compose:6.6.7
+com.airbnb.android:lottie:6.6.7
 com.google.accompanist:accompanist-drawablepainter:0.37.3
 com.google.code.findbugs:jsr305:3.0.2
 com.google.dagger:dagger-lint-aar:2.56.2
