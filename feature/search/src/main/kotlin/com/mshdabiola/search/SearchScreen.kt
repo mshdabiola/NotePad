@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.PreviewContainer
-import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
 
 // import org.koin.androidx.compose.koinViewModel
@@ -80,7 +79,7 @@ internal fun SearchScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val gridState = rememberLazyStaggeredGridState()
-    TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
+//    TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
 
     Scaffold(
         modifier = modifier,
