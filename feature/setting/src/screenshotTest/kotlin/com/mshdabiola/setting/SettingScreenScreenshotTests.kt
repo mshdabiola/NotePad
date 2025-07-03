@@ -5,32 +5,34 @@
 package com.mshdabiola.setting
 
 import androidx.compose.runtime.Composable
+import com.mshdabiola.designsystem.theme.NotePadTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
-import com.mshdabiola.testing.util.PreviewAllLocales
-import com.mshdabiola.ui.PreviewContainer
+import com.mshdabiola.ui.PreviewMain
 
-@PreviewAllLocales
-@Composable
-internal fun SettingScreenShot() {
-    val settingState = SettingState.Success(
-        themeBrand = ThemeBrand.DEFAULT,
-        darkThemeConfig = DarkThemeConfig.LIGHT,
-    )
-    PreviewContainer {
-        SettingScreen(
-            settingState = settingState,
+class SettingScreenScreenshotTests {
+    @PreviewMain
+    @Composable
+    internal fun Main() {
+        val settingState = SettingState.Success(
+            themeBrand = ThemeBrand.DEFAULT,
+            darkThemeConfig = DarkThemeConfig.LIGHT,
         )
+        NotePadTheme {
+            SettingScreen(
+                settingState = settingState,
+            )
+        }
     }
-}
 
-@PreviewAllLocales
-@Composable
-internal fun SettingLoadingScreenShot() {
-    val settingState = SettingState.Loading
-    PreviewContainer {
-        SettingScreen(
-            settingState = settingState,
-        )
+    @PreviewMain
+    @Composable
+    internal fun Loading() {
+        val settingState = SettingState.Loading
+        NotePadTheme {
+            SettingScreen(
+                settingState = settingState,
+            )
+        }
     }
 }
