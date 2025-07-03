@@ -1,9 +1,8 @@
-package com.mshdabiola.testing.util
+package com.mshdabiola.ui
 
 import android.content.res.Configuration
 import androidx.compose.ui.tooling.preview.Preview
 
-// Small screen previews
 @Preview(name = "Small Screen Day", device = "id:pixel_4a", widthDp = 360, heightDp = 640, uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Screen Sizes")
 @Preview(name = "Small Screen Night", device = "id:pixel_4a", widthDp = 360, heightDp = 640, uiMode = Configuration.UI_MODE_NIGHT_YES, group = "Screen Sizes")
 annotation class PreviewSmallScreen
@@ -35,25 +34,9 @@ annotation class PreviewLargeScreen
 @Preview(name = "Large Screen Night", device = "id:pixel_c", widthDp = 800, heightDp = 1280, uiMode = Configuration.UI_MODE_NIGHT_YES, group = "All Screens")
 annotation class PreviewAllScreenSizes
 
-// English Locale
-@Preview(name = "English Day", locale = "en", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Locales")
-@Preview(name = "English Night", locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "Locales")
-annotation class PreviewEnglish
-
-// French Locale
-@Preview(name = "French Day", locale = "fr", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Locales")
-@Preview(name = "French Night", locale = "fr", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "Locales")
-annotation class PreviewFrench
-
-// Russian Locale
-@Preview(name = "Russian Day", locale = "ru", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Locales")
-@Preview(name = "Russian Night", locale = "ru", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "Locales")
-annotation class PreviewRussian
-
-@Preview(name = "English Day", locale = "en", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "All Locales")
-@Preview(name = "English Night", locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "All Locales")
-@Preview(name = "French Day", locale = "fr", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "All Locales")
-@Preview(name = "French Night", locale = "fr", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "All Locales")
-@Preview(name = "Russian Day", locale = "ru", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "All Locales")
-@Preview(name = "Russian Night", locale = "ru", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "All Locales")
-annotation class PreviewAllLocales
+@Preview(name = "Day", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Main")
+@Preview(name = "Night", uiMode = Configuration.UI_MODE_NIGHT_YES, group = "Main")
+@Preview(name = "English", locale = "en", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Main")
+@Preview(name = "French", locale = "fr", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Main")
+@Preview(name = "Russian", locale = "ru", uiMode = Configuration.UI_MODE_NIGHT_NO, group = "Main")
+annotation class PreviewMain
