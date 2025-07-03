@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -75,8 +76,11 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.model.Label
+import com.mshdabiola.model.Note
 import com.mshdabiola.model.NoteDrawing
 import com.mshdabiola.model.NoteImage
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
@@ -84,6 +88,8 @@ import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
 import com.mshdabiola.ui.LocalSharedStScope
+import com.mshdabiola.ui.PreviewContainer
+import com.mshdabiola.ui.PreviewMain
 import com.mshdabiola.ui.ReminderCard
 import com.mshdabiola.ui.toTime
 import com.mshdabiola.designsystem.R as Rd
@@ -703,4 +709,80 @@ fun NoteUri(
 @Composable
 fun NoteUriPreview() {
     NoteUri(uriState = NoteUri(1, "", "Path", "akdkdk"))
+}
+
+@PreviewMain
+@Composable
+private fun Main() {
+    PreviewContainer {
+        EditScreen(
+            state = DetailState(
+                notePad = NotePad(
+                    note = Note(),
+                    images = listOf(
+                        NoteImage(1, 2, ""),
+                    ),
+                    drawings = listOf(
+                        NoteDrawing(1, 2),
+                    ),
+                    labels = listOf(
+                        Label(1, "label"),
+                        Label(2, "label2"),
+                    ),
+                    uris = listOf(
+                        NoteUri(1, "", "Path", "akdkdk"),
+                    ),
+                    voices = listOf(
+                        NoteVoice(1, 2, ""),
+                    ),
+//                        notification = NotificationUiState(
+//                            currentPlace = NotificationPlace.Work,
+//                            currentDateTime = LocalDateTime(2025,2,25,12,60,1),
+//                            currentInterval = NotificationInterval.Daily(intervalEnd = IntervalEnd.Forever)
+//                        )
+
+                ),
+                title = rememberTextFieldState("Title"),
+                detail = rememberTextFieldState("Detail"),
+            ),
+        )
+    }
+}
+
+@PreviewMain
+@Composable
+private fun MainCheck() {
+    PreviewContainer {
+        EditScreen(
+            state = DetailState(
+                notePad = NotePad(
+                    note = Note(),
+                    images = listOf(
+                        NoteImage(1, 2, ""),
+                    ),
+                    drawings = listOf(
+                        NoteDrawing(1, 2),
+                    ),
+                    labels = listOf(
+                        Label(1, "label"),
+                        Label(2, "label2"),
+                    ),
+                    uris = listOf(
+                        NoteUri(1, "", "Path", "akdkdk"),
+                    ),
+                    voices = listOf(
+                        NoteVoice(1, 2, ""),
+                    ),
+//                        notification = NotificationUiState(
+//                            currentPlace = NotificationPlace.Work,
+//                            currentDateTime = LocalDateTime(2025,2,25,12,60,1),
+//                            currentInterval = NotificationInterval.Daily(intervalEnd = IntervalEnd.Forever)
+//                        )
+
+                ),
+                title = rememberTextFieldState("Title"),
+                detail = rememberTextFieldState("Detail"),
+            ),
+        )
+    }
 }
