@@ -62,7 +62,7 @@ androidxNavigation = "2.9.0"
 androidxNavigationTest = "2.8.0-rc01" #for nav test
 
 
-playGame = "20.1.2"
+playGame = "21.0.0"
 playReview = "2.0.2"
 playUpdate = "2.1.0"
 playCoroutine = "1.10.2"
