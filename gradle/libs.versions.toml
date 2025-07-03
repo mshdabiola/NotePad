@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.37.3"
 androidDesugarJdkLibs = "2.1.5"
-androidGradlePlugin = "8.11.0"
+androidGradlePlugin = "8.9.1"
 androidTools = "31.9.2"
 androidxActivity = "1.10.1"
 androidxAppCompat = "1.7.1"
@@ -70,7 +70,7 @@ uiTextGoogleFonts = "1.8.3"
 sqlite = "2.5.1"
 kotlinxCollectionImmutable = "0.4.0"
 
-screenshot = "0.0.1-alpha10"
+screenshot = "0.0.1-alpha09"
 kover = "0.9.1"
 
 
@@ -192,6 +192,8 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
+
+screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot"}
 
 
 # Dependencies of the included build-logic
