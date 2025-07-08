@@ -12,7 +12,6 @@ class GetNoteUseCase
     private val noteRepository: NoteRepository,
     private val linkUriUseCase: LinkUriUseCase,
     private val contentManager: IContentManager,
-    private val audioLengthUseCase: AudioLengthUseCase,
 
 ) {
     operator fun invoke(id: Long): Flow<NotePad?> {
@@ -26,8 +25,8 @@ class GetNoteUseCase
                     voices = it.voices.map { voice ->
                         val path = contentManager.getVoicePath(voice.id)
                         voice.copy(
-                            filePath = path,
-                            length = audioLengthUseCase(path),
+                            path = path,
+                            length = contentManager.getAudioLength(path),
                         )
                     },
                 )
