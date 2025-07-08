@@ -62,14 +62,16 @@ class TestUserDataRepository : UserDataRepository {
         }
     }
 
-    override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
+    override suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory) {
         currentUserData.let { current ->
-            _userData.tryEmit(current.copy(noteDisplayCategory = NoteDisplayCategory()))
+            _userData.tryEmit(current.copy(noteDisplayCategory = noteDisplayCategory))
         }
     }
 
     override suspend fun toggleGrid() {
-        TODO("Not yet implemented")
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(isGrid = !current.isGrid))
+        }
     }
 
     /**
