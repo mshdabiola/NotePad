@@ -36,7 +36,7 @@ interface UserDataRepository {
      * Sets whether the user has completed the onboarding process.
      */
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean)
-    suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory)
+    suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory)
 
     suspend fun toggleGrid()
 }

@@ -61,7 +61,7 @@ fun NoteDrawing.toEntity(): NoteDrawingEntity {
 }
 
 fun LabelEntity.toLabel() = Label(id!!, name)
-fun Label.toLabelEntity() = LabelEntity(id.check(), label)
+fun Label.toLabelEntity() = LabelEntity(id.check(), name)
 
 fun NoteCheckEntity.toNoteCheck() = NoteCheck(
     id = id!!,
@@ -103,7 +103,7 @@ fun NoteImageEntity.toNoteImage() =
 fun NoteLabelEntity.toNoteLabel() = NoteLabel(noteId, labelId)
 fun NoteLabel.toNoteLabelEntity() = NoteLabelEntity(noteId, labelId)
 
-fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, filePath)
+fun NoteVoice.toNoteVoiceEntity() = NoteVoiceEntity(id, noteId, path)
 fun NoteVoiceEntity.toNoteVoice() = NoteVoice(
     id,
     noteId,
