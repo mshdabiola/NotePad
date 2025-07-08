@@ -5,6 +5,11 @@ import com.mshdabiola.common.IContentManager
 import java.io.File
 
 class TestContentManager : IContentManager {
+
+    var imageToTextResult: String = "Extracted text from content manager"
+    var imageToTextShouldThrowError: Boolean = false
+    var lastPathForImageToText: String? = null
+
     override fun saveImage(uri: String): Long {
         return 1
     }
@@ -17,8 +22,8 @@ class TestContentManager : IContentManager {
         return ""
     }
 
-    override fun getImagePath(data: Long): String {
-        return ""
+    override fun getImagePath(id: Long): String {
+        return "/fake/content/path/image_$id.jpg"
     }
 
     override fun getVoicePath(data: Long): String {
@@ -30,5 +35,18 @@ class TestContentManager : IContentManager {
 
     override fun dataFile(drawingId: Long): File {
         return File("")
+    }
+
+    override fun getAudioLength(path: String): Long {
+        return 2
+    }
+
+    // Add this method based on your IContentManager interface
+    override fun imageToText(path: String): String {
+        lastPathForImageToText = path
+        if (imageToTextShouldThrowError) {
+            throw Exception("ContentManager imageToText error")
+        }
+        return imageToTextResult
     }
 }
