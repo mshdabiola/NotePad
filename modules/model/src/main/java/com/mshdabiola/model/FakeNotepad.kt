@@ -25,11 +25,11 @@ fun getRandomFutureDate(): Long {
 fun createFakeNotePads(range: IntRange): List<NotePad> {
     val fakeNotePads = mutableListOf<NotePad>()
     val sampleLabels = listOf(
-        Label(id = 1L, label = "Work"),
-        Label(id = 2L, label = "Personal"),
-        Label(id = 3L, label = "Ideas"),
-        Label(id = 4L, label = "Urgent"),
-        Label(id = 5L, label = "Shopping"),
+        Label(id = 1L, name = "Work"),
+        Label(id = 2L, name = "Personal"),
+        Label(id = 3L, name = "Ideas"),
+        Label(id = 4L, name = "Urgent"),
+        Label(id = 5L, name = "Shopping"),
     )
 
     for (i in range) {
@@ -102,7 +102,7 @@ fun createFakeNotePads(range: IntRange): List<NotePad> {
                 NoteVoice(
                     id = (i * 10000 + voiceIndex).toLong(),
                     noteId = noteId,
-                    filePath = "/storage/emulated/0/Recordings/voice_note_${UUID.randomUUID()}.mp3",
+                    path = "/storage/emulated/0/Recordings/voice_note_${UUID.randomUUID()}.mp3",
                 )
             }
         } else {
@@ -177,7 +177,7 @@ fun getDefinedNotePads(): List<NotePad> {
                 isCheck = false,
             ),
             labels = listOf(
-                Label(id = 101L, label = "Work"),
+                Label(id = 101L, name = "Work"),
             ),
         ),
     )
@@ -210,8 +210,8 @@ fun getDefinedNotePads(): List<NotePad> {
                 ),
             ),
             labels = listOf(
-                Label(id = 101L, label = "Work"),
-                Label(id = 102L, label = "Project Phoenix"),
+                Label(id = 101L, name = "Work"),
+                Label(id = 102L, name = "Project Phoenix"),
             ),
         ),
     )
@@ -235,7 +235,7 @@ fun getDefinedNotePads(): List<NotePad> {
 
                 ),
             ),
-            labels = listOf(Label(id = 103L, label = "Ideas")),
+            labels = listOf(Label(id = 103L, name = "Ideas")),
         ),
     )
 
@@ -279,8 +279,8 @@ fun getDefinedNotePads(): List<NotePad> {
                 ),
             ),
             labels = listOf(
-                Label(id = 101L, label = "Work"),
-                Label(id = 104L, label = "Urgent"),
+                Label(id = 101L, name = "Work"),
+                Label(id = 104L, name = "Urgent"),
             ),
         ),
     )
@@ -304,8 +304,8 @@ fun getDefinedNotePads(): List<NotePad> {
                 ),
             ),
             labels = listOf(
-                Label(id = 103L, label = "Ideas"),
-                Label(id = 105L, label = "UX/UI"),
+                Label(id = 103L, name = "Ideas"),
+                Label(id = 105L, name = "UX/UI"),
             ),
         ),
     )
@@ -325,10 +325,10 @@ fun getDefinedNotePads(): List<NotePad> {
                 NoteVoice(
                     id = 701L,
                     noteId = 7L,
-                    filePath = "/storage/emulated/0/Recordings/book_reminder_01.mp3",
+                    path = "/storage/emulated/0/Recordings/book_reminder_01.mp3",
                 ),
             ),
-            labels = listOf(Label(id = 106L, label = "Personal")),
+            labels = listOf(Label(id = 106L, name = "Personal")),
         ),
     )
 
@@ -358,9 +358,9 @@ fun getDefinedNotePads(): List<NotePad> {
                 isCheck = false,
             ),
             labels = listOf(
-                Label(id = 101L, label = "Work"),
-                Label(id = 107L, label = "Learning"),
-                Label(id = 108L, label = "Tech Deep Dive"),
+                Label(id = 101L, name = "Work"),
+                Label(id = 107L, name = "Learning"),
+                Label(id = 108L, name = "Tech Deep Dive"),
             ),
             uris = listOf(
                 NoteUri(
