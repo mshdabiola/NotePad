@@ -36,22 +36,28 @@ class DrawingViewModel @AssistedInject constructor(
 
     @OptIn(FlowPreview::class)
     val drawingState = combine(
-        snapshotFlow { controller.drawingPaths }
+        snapshotFlow { controller.drawingPaths.toList() }
             .debounce(500)
             .distinctUntilChanged(),
         detailArgs,
     ) { drawingPaths, i ->
 
-        if (!isInit) {
-
-            if (i.id != null) {
+        val state = when {
+            !isInit && i.id != null -> {
                 val path = drawingRepository.get(i.id)
                     .first()
                     ?.drawingPaths
                 val drawingPathsMutableList = controller.drawingPaths.toMutableList()
                 drawingPathsMutableList.addAll(path!!)
-                controller.drawingPaths = drawingPathsMutableList
-            } else {
+                controller.drawingPaths.addAll(drawingPathsMutableList)
+
+                isInit = true
+                DrawingUiState(
+                    drawingId = i.id,
+                    drawings = path,
+                )
+            }
+            !isInit && i.id == null -> {
                 val id = drawingRepository.upsert(
                     NoteDrawing(
                         id = -1,
@@ -62,23 +68,30 @@ class DrawingViewModel @AssistedInject constructor(
                 detailArgs.update {
                     it.copy(id = id)
                 }
-            }
-            isInit = true
-        } else {
 
-            drawingRepository.upsert(
-                NoteDrawing(
-                    id = detailArgs.value.id!!,
-                    drawingPaths = drawingPaths,
-                    noteId = detailArgs.value.noteId,
-                ),
-            )
-            println("insert $drawingPaths")
+                isInit = true
+                DrawingUiState(
+                    drawingId = id,
+                    drawings = emptyList(),
+                )
+            }
+            else -> {
+                drawingRepository.upsert(
+                    NoteDrawing(
+                        id = detailArgs.value.id!!,
+                        drawingPaths = drawingPaths,
+                        noteId = detailArgs.value.noteId,
+                    ),
+                )
+
+                DrawingUiState(
+                    drawingId = detailArgs.value.id,
+                    drawings = drawingPaths,
+                )
+            }
         }
 
-        DrawingUiState(
-            drawings = drawingPaths,
-        )
+        state
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -120,7 +133,7 @@ class DrawingViewModel @AssistedInject constructor(
 //        }
 //    }
 
-    suspend fun deleteImage() {
+    suspend fun deleteDrawing() {
         drawingRepository.delete(detailArgs.value.id!!)
     }
 

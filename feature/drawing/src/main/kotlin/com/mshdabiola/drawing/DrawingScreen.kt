@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.mshdabiola.designsystem.R as Rd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingScreen(
+    modifier: Modifier = Modifier,
     onBackk: () -> Unit = {},
     controller: DrawingController = remember { DrawingController() },
     drawingUiState: DrawingUiState = DrawingUiState(),
@@ -42,11 +44,14 @@ fun DrawingScreen(
     }
 
     Scaffold(
-
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBackk) {
+                    IconButton(
+                        onClick = onBackk,
+                        modifier = Modifier.testTag("drawing:back_button"),
+                    ) {
                         Icon(
                             imageVector = NoteIcon.ArrowBack,
                             contentDescription = "back",
@@ -54,19 +59,24 @@ fun DrawingScreen(
                     }
                 },
                 title = {
-                    Text(stringResource(Rd.string.modules_designsystem_drawing))
+                    Text(
+                        text = stringResource(Rd.string.modules_designsystem_drawing),
+                        modifier = Modifier.testTag("drawing:title"),
+                    )
                 },
 
                 actions = {
                     IconButton(
                         enabled = controller.canUndo,
                         onClick = { controller.undo() },
+                        modifier = Modifier.testTag("drawing:undo_button"),
                     ) {
-                        Icon(imageVector = NoteIcon.Undo, contentDescription = "redo")
+                        Icon(imageVector = NoteIcon.Undo, contentDescription = "undo")
                     }
                     IconButton(
                         enabled = controller.canRedo,
                         onClick = { controller.redo() },
+                        modifier = Modifier.testTag("drawing:redo_button"),
                     ) {
                         Icon(imageVector = NoteIcon.Redo, contentDescription = "redo")
                     }
@@ -74,6 +84,7 @@ fun DrawingScreen(
                         IconButton(
                             onClick = { showDropDown = true },
                             enabled = drawingUiState.drawings.isNotEmpty(),
+                            modifier = Modifier.testTag("drawing:more_options_button"),
                         ) {
                             Icon(NoteIcon.MoreVert, contentDescription = "more")
                         }
@@ -94,6 +105,7 @@ fun DrawingScreen(
                                     showDropDown = false
                                     onCopy()
                                 },
+                                modifier = Modifier.testTag("drawing:copy_menu_item"),
                             )
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
@@ -101,6 +113,7 @@ fun DrawingScreen(
                                     showDropDown = false
                                     onSend()
                                 },
+                                modifier = Modifier.testTag("drawing:send_menu_item"),
                             )
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
@@ -108,6 +121,7 @@ fun DrawingScreen(
                                     showDropDown = false
                                     onDeleteImage()
                                 },
+                                modifier = Modifier.testTag("drawing:delete_menu_item"),
                             )
                         }
                     }
@@ -117,14 +131,17 @@ fun DrawingScreen(
         bottomBar = {
             DrawingBar(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .testTag("drawing:drawing_bar"),
                 controller = controller,
             )
         },
     ) { paddingValues: PaddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Board(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("drawing:board"),
                 controller = controller,
             )
         }
