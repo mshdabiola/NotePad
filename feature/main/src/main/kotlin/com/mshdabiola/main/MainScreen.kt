@@ -49,14 +49,12 @@ import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.createFakeNotePads
 import com.mshdabiola.ui.NoteCard
 import com.mshdabiola.ui.PreviewContainer
-import com.mshdabiola.ui.TrackScrollJank
 import com.mshdabiola.designsystem.R as Rd
 
-// import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
-    modifier: Modifier = Modifier, // Add default modifier
+    modifier: Modifier = Modifier,
     mainState: MainState,
     navigateToNoteEditor: (Long, Int, Int) -> Unit = { _, _, _ -> },
     onNoteSelected: (Long) -> Unit = {},
@@ -90,11 +88,11 @@ internal fun MainScreen(
     }
 
     val gridState = rememberLazyStaggeredGridState()
-    TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
+//    TrackScrollJank(scrollableState = gridState, stateName = "main:grid_jank_tracker") // More specific jank tracker tag
 
     when (mainState) {
         is MainState.Loading -> {
-            LoadingState(modifier = modifier) // Pass modifier
+            LoadingState(modifier = modifier.testTag("main:loading_state"))
         }
 
         is MainState.Success -> {
@@ -108,10 +106,12 @@ internal fun MainScreen(
             Scaffold(
                 modifier = modifier
                     .fillMaxSize()
-                    .testTag("main:list")
+                    .testTag("main:scaffold_success") // Tag for the success state Scaffold
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MainTopBar(
+                        // Modifier for MainTopBar can be passed if needed,
+                        // but test tags within MainTopBar are more granular
                         scrollBehavior = scrollBehavior,
                         noteDisplayCategory = mainState.noteDisplayCategory,
                         isGrid = mainState.isGrid,
@@ -140,7 +140,8 @@ internal fun MainScreen(
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .testTag("main:notes_grid"), // Tag for the notes list/grid
                     state = gridState,
                     contentPadding = paddingValues,
                     columns = StaggeredGridCells.Fixed(if (mainState.isGrid) 2 else 1),
@@ -149,7 +150,10 @@ internal fun MainScreen(
                 ) {
                     if (mainState.unPinNotePads.isEmpty() && mainState.pinNotePads.isEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
-                            EmptyState(noteDisplayCategory = mainState.noteDisplayCategory)
+                            EmptyState(
+                                modifier = Modifier.testTag("main:empty_state_view"),
+                                noteDisplayCategory = mainState.noteDisplayCategory,
+                            )
                         }
                     }
                     if (mainState.pinNotePads.isNotEmpty()) {
@@ -157,15 +161,16 @@ internal fun MainScreen(
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
+                                    .padding(vertical = 8.dp)
+                                    .testTag("main:pinned_section_header"),
                                 text = stringResource(Rd.string.modules_designsystem_pin),
                             )
                         }
                     }
 
-                    items(items = mainState.pinNotePads, key = { it.note.id }) { notepad ->
+                    items(items = mainState.pinNotePads, key = { "pinned_${it.note.id}" }) { notepad ->
                         NoteCard(
-                            modifier = Modifier,
+                            modifier = Modifier.testTag("main:note_card_pinned_${notepad.note.id}"),
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
@@ -178,14 +183,15 @@ internal fun MainScreen(
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp), // Add some padding for the section title
+                                    .padding(vertical = 8.dp)
+                                    .testTag("main:others_section_header"),
                                 text = stringResource(Rd.string.modules_designsystem_other),
                             )
                         }
                     }
-                    items(items = mainState.unPinNotePads, key = { it.note.id }) { notepad ->
+                    items(items = mainState.unPinNotePads, key = { "unpinned_${it.note.id}" }) { notepad ->
                         NoteCard(
-                            modifier = Modifier,
+                            modifier = Modifier.testTag("main:note_card_unpinned_${notepad.note.id}"),
                             notePad = notepad,
                             onCardClick = onNoteClick,
                             onLongClick = onNoteSelected,
@@ -201,12 +207,12 @@ internal fun MainScreen(
 @Composable
 private fun LoadingState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("main:loading"),
+        modifier = modifier // Test tag is applied from the caller
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         NoteLoadingWheel(
+            modifier = Modifier.testTag("main:loading_wheel"),
             contentDesc = "Loading",
         )
     }
@@ -236,20 +242,19 @@ fun MainScreenPreview() {
 
 @Composable
 private fun EmptyState(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier, // Test tag applied from caller
     noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier // Test tag applied from the caller
             .padding(16.dp)
-            .fillMaxSize()
-            .testTag("main:empty"),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.modules_designsystem_note_taking))
         LottieAnimation(
-            modifier = modifier,
+            modifier = Modifier.testTag("main:empty_state_animation"),
             composition = composition,
             restartOnPlay = true,
             iterations = 200,
@@ -257,6 +262,7 @@ private fun EmptyState(
         Text(
             text = stringResource(Rd.string.modules_designsystem_empty_notes),
             textAlign = TextAlign.Center,
+            modifier = Modifier.testTag("main:empty_state_text"),
         )
     }
 }

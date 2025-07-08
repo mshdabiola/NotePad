@@ -64,11 +64,17 @@ fun MainTopBar(
 ) {
     val navigationAction: @Composable () -> Unit = {
         if (selectState != null) {
-            IconButton(onClick = onClearSelection) {
+            IconButton(
+                onClick = onClearSelection,
+                modifier = Modifier.testTag("main:topbar_clear_selection_button"),
+            ) {
                 Icon(imageVector = NoteIcon.Clear, contentDescription = "clear note")
             }
         } else {
-            IconButton(onClick = onHamburgerMenuClick) {
+            IconButton(
+                onClick = onHamburgerMenuClick,
+                modifier = Modifier.testTag("main:topbar_hamburger_menu_button"),
+            ) {
                 Icon(imageVector = NoteIcon.Menu, contentDescription = "menu")
             }
         }
@@ -83,7 +89,7 @@ fun MainTopBar(
                         }
 
                         IconButton(
-                            modifier = Modifier.testTag("main:restore"),
+                            modifier = Modifier.testTag("main:topbar_restore_button"),
                             onClick = onRestore,
                         ) {
                             Icon(
@@ -93,7 +99,7 @@ fun MainTopBar(
                         }
                         Box {
                             IconButton(
-                                modifier = Modifier.testTag("main:more"),
+                                modifier = Modifier.testTag("main:topbar_more_options_button"),
                                 onClick = { showDropDown = true },
                             ) {
                                 Icon(NoteIcon.MoreVert, contentDescription = "more")
@@ -101,8 +107,10 @@ fun MainTopBar(
                             DropdownMenu(
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
+                                modifier = Modifier.testTag("main:topbar_trash_options_dropdown"),
                             ) {
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_delete_forever_menu_item"),
                                     text = {
                                         Text(
                                             text =
@@ -118,22 +126,22 @@ fun MainTopBar(
                         }
                     }
 
-                    else -> {
+                    else -> { // Covers NOTE, ARCHIVE, LABEL, REMINDER when selectState is not null
                         var showDropDown by remember {
                             mutableStateOf(false)
                         }
 
                         IconButton(
-                            modifier = Modifier.testTag("main:pin"),
+                            modifier = Modifier.testTag("main:topbar_pin_button"),
                             onClick = onPinNotes,
                         ) {
                             Icon(
-                                imageVector = if (selectState.isAllPin) NoteIcon.PushPinD else NoteIcon.PushPin, // painterResource(id = if (isAllPin) NoteIcon.Pin else NoteIcon.PinFill),
+                                imageVector = if (selectState.isAllPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin note",
                             )
                         }
                         IconButton(
-                            modifier = Modifier.testTag("main:notification"),
+                            modifier = Modifier.testTag("main:topbar_notification_button"),
                             onClick = onNotificationClick,
                         ) {
                             Icon(
@@ -142,7 +150,7 @@ fun MainTopBar(
                             )
                         }
                         IconButton(
-                            modifier = Modifier.testTag("main:color"),
+                            modifier = Modifier.testTag("main:topbar_color_button"),
                             onClick = onSelectColor,
                         ) {
                             Icon(
@@ -151,14 +159,14 @@ fun MainTopBar(
                             )
                         }
                         IconButton(
-                            modifier = Modifier.testTag("main:label"),
+                            modifier = Modifier.testTag("main:topbar_label_button"),
                             onClick = onLabelNotes,
                         ) {
                             Icon(imageVector = NoteIcon.Label, contentDescription = "Label")
                         }
                         Box {
                             IconButton(
-                                modifier = Modifier.testTag("main:more"),
+                                modifier = Modifier.testTag("main:topbar_more_options_button"),
                                 onClick = { showDropDown = true },
                             ) {
                                 Icon(NoteIcon.MoreVert, contentDescription = "more")
@@ -166,8 +174,10 @@ fun MainTopBar(
                             DropdownMenu(
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
+                                modifier = Modifier.testTag("main:topbar_general_options_dropdown"),
                             ) {
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_archive_unarchive_menu_item"),
                                     text = {
                                         Text(
                                             text =
@@ -184,6 +194,7 @@ fun MainTopBar(
                                     },
                                 )
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_delete_menu_item"),
                                     text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
                                     onClick = {
                                         showDropDown = false
@@ -192,6 +203,7 @@ fun MainTopBar(
                                 )
                                 if (selectState.setOfSelected.size == 1) {
                                     DropdownMenuItem(
+                                        modifier = Modifier.testTag("main:topbar_make_copy_menu_item"),
                                         text = { Text(text = stringResource(Rd.string.modules_designsystem_make_a_copy)) },
                                         onClick = {
                                             showDropDown = false
@@ -199,6 +211,7 @@ fun MainTopBar(
                                         },
                                     )
                                     DropdownMenuItem(
+                                        modifier = Modifier.testTag("main:topbar_send_menu_item"),
                                         text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
                                         onClick = {
                                             showDropDown = false
@@ -210,10 +223,13 @@ fun MainTopBar(
                         }
                     }
                 }
-            } else {
+            } else { // selectState is null (normal viewing mode)
                 when (noteDisplayCategory.noteType) {
                     NoteType.NOTE -> {
-                        IconButton(onClick = { onDisplayModeChange() }) {
+                        IconButton(
+                            onClick = { onDisplayModeChange() },
+                            modifier = Modifier.testTag("main:topbar_display_mode_button"),
+                        ) {
                             if (!isGrid) {
                                 Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
                             } else {
@@ -226,13 +242,19 @@ fun MainTopBar(
                     }
 
                     NoteType.REMINDER -> {
-                        IconButton(onClick = onSearchClick) {
+                        IconButton(
+                            onClick = onSearchClick,
+                            modifier = Modifier.testTag("main:topbar_search_button"),
+                        ) {
                             Icon(
                                 imageVector = NoteIcon.Search,
                                 contentDescription = "search",
                             )
                         }
-                        IconButton(onClick = { onDisplayModeChange() }) {
+                        IconButton(
+                            onClick = { onDisplayModeChange() },
+                            modifier = Modifier.testTag("main:topbar_display_mode_button"),
+                        ) {
                             if (!isGrid) {
                                 Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
                             } else {
@@ -249,7 +271,10 @@ fun MainTopBar(
                             mutableStateOf(false)
                         }
 
-                        IconButton(onClick = onSearchClick) {
+                        IconButton(
+                            onClick = onSearchClick,
+                            modifier = Modifier.testTag("main:topbar_search_button"),
+                        ) {
                             Icon(
                                 imageVector = NoteIcon.Search,
                                 contentDescription = "search",
@@ -257,14 +282,19 @@ fun MainTopBar(
                         }
 
                         Box {
-                            IconButton(onClick = { showDropDown = true }) {
+                            IconButton(
+                                onClick = { showDropDown = true },
+                                modifier = Modifier.testTag("main:topbar_more_options_button"),
+                            ) {
                                 Icon(NoteIcon.MoreVert, contentDescription = "more")
                             }
                             DropdownMenu(
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
+                                modifier = Modifier.testTag("main:topbar_label_options_dropdown"),
                             ) {
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_rename_label_menu_item"),
                                     text = { Text(text = stringResource(Rd.string.modules_designsystem_rename_label)) },
                                     onClick = {
                                         showDropDown = false
@@ -272,6 +302,7 @@ fun MainTopBar(
                                     },
                                 )
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_delete_label_menu_item"),
                                     text = { Text(text = stringResource(Rd.string.modules_designsystem_delete_label)) },
                                     onClick = {
                                         showDropDown = false
@@ -287,14 +318,19 @@ fun MainTopBar(
                             mutableStateOf(false)
                         }
                         Box {
-                            IconButton(onClick = { showDropDown = true }) {
+                            IconButton(
+                                onClick = { showDropDown = true },
+                                modifier = Modifier.testTag("main:topbar_more_options_button"),
+                            ) {
                                 Icon(NoteIcon.MoreVert, contentDescription = "more")
                             }
                             DropdownMenu(
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
+                                modifier = Modifier.testTag("main:topbar_trash_empty_options_dropdown"),
                             ) {
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("main:topbar_empty_trash_menu_item"),
                                     text = { Text(text = stringResource(Rd.string.modules_designsystem_empty_trash)) },
                                     onClick = {
                                         showDropDown = false
@@ -306,13 +342,19 @@ fun MainTopBar(
                     }
 
                     NoteType.ARCHIVE -> {
-                        IconButton(onClick = onSearchClick) {
+                        IconButton(
+                            onClick = onSearchClick,
+                            modifier = Modifier.testTag("main:topbar_search_button"),
+                        ) {
                             Icon(
                                 imageVector = NoteIcon.Search,
                                 contentDescription = "search",
                             )
                         }
-                        IconButton(onClick = { onDisplayModeChange() }) {
+                        IconButton(
+                            onClick = { onDisplayModeChange() },
+                            modifier = Modifier.testTag("main:topbar_display_mode_button"),
+                        ) {
                             if (!isGrid) {
                                 Icon(imageVector = NoteIcon.GridView, contentDescription = "grid")
                             } else {
@@ -327,7 +369,7 @@ fun MainTopBar(
             }
         }
 
-    val label = selectState?.setOfSelected?.size?.toString()
+    val labelText = selectState?.setOfSelected?.size?.toString()
         ?: when (noteDisplayCategory.noteType) {
             NoteType.NOTE -> "Note"
             NoteType.REMINDER -> "Reminder"
@@ -346,40 +388,48 @@ fun MainTopBar(
     }
 
     TopAppBar(
-        modifier = modifier,
+        modifier = modifier.testTag("main:topbar_root"), // Tag for the root TopAppBar
         scrollBehavior = scrollBehavior,
         navigationIcon = navigationAction,
         title = {
             when {
-                selectState != null -> {}
+                selectState != null -> {
+                    Text(
+                        text = labelText, // Show selection count
+                        modifier = Modifier.testTag("main:topbar_selection_title"),
+                    )
+                }
                 noteDisplayCategory.noteType == NoteType.NOTE -> {
                     OutlinedCard(
                         onClick = onSearchClick,
                         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                        modifier = Modifier.testTag("main:topbar_search_notes_card"),
                     ) {
                         Box(
                             modifier = Modifier.padding(
                                 horizontal = 64.dp,
-
                                 vertical = 4.dp,
                             ),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 style = MaterialTheme.typography.labelLarge,
-
                                 text = stringResource(Rd.string.modules_designsystem_search_note),
+                                modifier = Modifier.testTag("main:topbar_search_notes_text"),
                             )
                         }
                     }
                 }
-                else -> Text(text = label)
+                else -> Text(
+                    text = labelText,
+                    modifier = Modifier.testTag("main:topbar_title"),
+                )
             }
         },
         subtitle = {},
         actions = actions,
         colors = color,
-        titleHorizontalAlignment = if (noteDisplayCategory.noteType == NoteType.NOTE) {
+        titleHorizontalAlignment = if (noteDisplayCategory.noteType == NoteType.NOTE && selectState == null) {
             Alignment.CenterHorizontally
         } else {
             Alignment.Start

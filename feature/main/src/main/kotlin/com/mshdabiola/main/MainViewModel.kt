@@ -18,7 +18,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -67,10 +66,12 @@ internal class MainViewModel
         isGrid,
     ) { notepad, label, displayCategory, selectState, isGrid ->
 
+        println("notepad from combine ${notepad.size}")
+        println("selct $selectState")
         val pinNote = notepad.filter { it.note.isPin }
         val unPinNote = notepad.filter { !it.note.isPin }
         MainState.Success(
-            labelName = label?.label,
+            labelName = label?.name,
             pinNotePads = pinNote,
             unPinNotePads = unPinNote,
             noteDisplayCategory = displayCategory,
@@ -247,7 +248,7 @@ internal class MainViewModel
         val labelId = getSuccess().noteDisplayCategory.labelId
 
         viewModelScope.launch {
-            userDataRepository.setMainData(NoteDisplayCategory(0, NoteType.NOTE))
+            userDataRepository.setNoteDisplayCategory(NoteDisplayCategory(0, NoteType.NOTE))
             labelRepository.delete(labelId)
         }
     }
