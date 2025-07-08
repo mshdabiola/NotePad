@@ -127,7 +127,7 @@ fun MainNavigation(
                             contentDescription = "",
                         )
                     },
-                    label = { Text(text = it.label) },
+                    label = { Text(text = it.name) },
                     selected = currentMainArg.noteType == NoteType.LABEL && currentMainArg.labelId == it.id,
                     onClick = { onNavigation(NoteDisplayCategory(it.id, NoteType.LABEL)) },
                 )
@@ -191,7 +191,7 @@ fun MainNavigationPreview() {
     Column(Modifier.fillMaxSize()) {
         MainNavigation(
             labels = listOf(
-                Label(id = 7955L, label = "Gillian"),
+                Label(id = 7955L, name = "Gillian"),
 //                LabelUiState(id = 126L, label = "Laneisha"),
 //                LabelUiState(id = 7955L, label = "Gillian"),
 //                LabelUiState(id = 126L, label = "Laneisha"),

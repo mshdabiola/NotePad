@@ -100,7 +100,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
         viewModelScope.launch {
-            userDataRepository.setMainData(noteDisplayCategory)
+            userDataRepository.setNoteDisplayCategory(noteDisplayCategory)
         }
     }
 }
