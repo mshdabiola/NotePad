@@ -246,7 +246,7 @@ fun NoteCard(
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
                                 notePad.labels.forEach {
-                                    LabelCard(name = it.label, color = sColor)
+                                    LabelCard(name = it.name, color = sColor)
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
                             }
