@@ -4,13 +4,9 @@
 
 package com.mshdabiola.setting
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,61 +16,35 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.testTag // Make sure this is imported
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mshdabiola.designsystem.component.NoteBackground
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
-import com.mshdabiola.ui.Waiting
 import com.mshdabiola.designsystem.R as Rd
 
-@Composable
-internal fun SettingScreen(
-    settingState: SettingState,
-    modifier: Modifier = Modifier,
-    setTheme: (ThemeBrand) -> Unit = {},
-    setDarkMode: (DarkThemeConfig) -> Unit = {},
-    onBack: () -> Unit = {},
-) {
-    AnimatedContent(settingState) {
-        when (it) {
-            is SettingState.Loading -> {
-                NoteBackground {
-                    Box(
-                        modifier = modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Waiting()
-                    }
-                }
-            }
-            is SettingState.Success -> MainContent(
-                modifier = modifier,
-                settingState = it,
-                setTheme = setTheme,
-                setDarkMode = setDarkMode,
-                onBack = onBack,
-            )
+// It's a good practice to define test tags as constants
+object SettingScreenTestTags {
+    const val SCREEN = "setting:screen"
+    const val TOP_APP_BAR = "setting:topAppBar"
+    const val BACK_BUTTON = "setting:backButton"
+    const val TITLE = "setting:title" // Optional, but can be useful
+    const val THEME_ITEM = "setting:theme" // Keeping your existing one
+    const val MODE_ITEM = "setting:mode" // Keeping your existing one
 
-            else -> {}
-        }
-    }
+    // You can also add tags for the supporting text within ListItems if needed
+    const val THEME_SUPPORTING_TEXT = "setting:themeSupportingText"
+    const val MODE_SUPPORTING_TEXT = "setting:modeSupportingText"
 }
 
 @Preview
 @Composable
 internal fun SettingScreenPreview() {
-    val settingState = SettingState.Success(
+    val settingState = SettingState(
         themeBrand = ThemeBrand.DEFAULT,
         darkThemeConfig = DarkThemeConfig.LIGHT,
     )
@@ -83,33 +53,31 @@ internal fun SettingScreenPreview() {
     )
 }
 
-@Preview
-@Composable
-internal fun SettingLoadingScreenPreview() {
-    val settingState = SettingState.Loading
-    SettingScreen(
-        settingState = settingState,
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainContent(
+internal fun SettingScreen(
     modifier: Modifier = Modifier,
-    settingState: SettingState.Success,
-    setTheme: (ThemeBrand) -> Unit = {},
-    setDarkMode: (DarkThemeConfig) -> Unit = {},
+    settingState: SettingState,
+    onTheme: () -> Unit = {},
+    onDarkMode: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
-    var dark by remember { mutableStateOf(false) }
-    var theme by remember { mutableStateOf(false) }
-
     Scaffold(
+        modifier = modifier.testTag(SettingScreenTestTags.SCREEN), // Tag for the whole screen
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Rd.string.modules_designsystem_settings)) },
+                modifier = Modifier.testTag(SettingScreenTestTags.TOP_APP_BAR), // Tag for the TopAppBar
+                title = {
+                    Text(
+                        text = stringResource(Rd.string.modules_designsystem_settings),
+                        modifier = Modifier.testTag(SettingScreenTestTags.TITLE), // Tag for the title
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag(SettingScreenTestTags.BACK_BUTTON), // Tag for back button
+                    ) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
@@ -117,49 +85,37 @@ internal fun MainContent(
         },
     ) {
         Column(
-            modifier
+            Modifier // Removed modifier parameter here as it's applied to Scaffold
                 .padding(it)
-                .padding(16.dp),
+                .padding(16.dp)
+                .testTag("setting:contentColumn"), // Optional: tag for the content column
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             ListItem(
                 modifier = Modifier
-                    .testTag("setting:theme")
-                    .clickable { theme = true },
+                    .testTag(SettingScreenTestTags.THEME_ITEM) // Using the constant
+                    .clickable { onTheme() },
                 headlineContent = { Text(stringResource(Rd.string.modules_designsystem_theme)) },
                 supportingContent = {
-                    Text(stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal])
+                    Text(
+                        text = stringArrayResource(Rd.array.modules_designsystem_theme)[settingState.themeBrand.ordinal],
+                        modifier = Modifier.testTag(SettingScreenTestTags.THEME_SUPPORTING_TEXT), // Tag for supporting text
+                    )
                 },
             )
 
             ListItem(
                 modifier = Modifier
-                    .testTag("setting:mode")
-                    .clickable { dark = true },
+                    .testTag(SettingScreenTestTags.MODE_ITEM) // Using the constant
+                    .clickable { onDarkMode() },
                 headlineContent = { Text(stringResource(Rd.string.modules_designsystem_daynight_mode)) },
                 supportingContent = {
-                    Text(stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal])
+                    Text(
+                        text = stringArrayResource(Rd.array.modules_designsystem_daynight)[settingState.darkThemeConfig.ordinal],
+                        modifier = Modifier.testTag(SettingScreenTestTags.MODE_SUPPORTING_TEXT), // Tag for supporting text
+                    )
                 },
             )
         }
-    }
-
-    AnimatedVisibility(theme) {
-        OptionsDialog(
-            modifier = Modifier,
-            options = stringArrayResource(Rd.array.modules_designsystem_theme).toList(),
-            current = settingState.themeBrand.ordinal,
-            onDismiss = { theme = false },
-            onSelect = { setTheme(ThemeBrand.entries[it]) },
-        )
-    }
-    AnimatedVisibility(dark) {
-        OptionsDialog(
-            modifier = Modifier,
-            options = stringArrayResource(Rd.array.modules_designsystem_daynight).toList(),
-            current = settingState.darkThemeConfig.ordinal,
-            onDismiss = { dark = false },
-            onSelect = { setDarkMode(DarkThemeConfig.entries[it]) },
-        )
     }
 }

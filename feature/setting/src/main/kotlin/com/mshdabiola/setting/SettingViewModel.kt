@@ -24,7 +24,7 @@ class SettingViewModel @Inject constructor(
     val settingState = userDataRepository
         .userData
         .mapLatest {
-            SettingState.Success(
+            SettingState(
                 themeBrand = it.themeBrand,
                 darkThemeConfig = it.darkThemeConfig,
             )
@@ -32,7 +32,7 @@ class SettingViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = SettingState.Loading,
+            initialValue = SettingState(),
         )
 
     fun setThemeBrand(themeBrand: ThemeBrand) {
