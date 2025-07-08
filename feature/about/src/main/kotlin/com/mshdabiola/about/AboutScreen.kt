@@ -28,11 +28,13 @@ import com.mshdabiola.designsystem.R as Rd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
+    modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
     lastUpdate: String = "",
     version: String = "",
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -44,7 +46,10 @@ fun AboutScreen(
                     }
                 },
                 title = {
-                    Text(text = stringResource(Rd.string.modules_designsystem_about))
+                    Text(
+                        text = stringResource(Rd.string.modules_designsystem_about),
+                        modifier = Modifier.testTag("about:title"),
+                    )
                 },
             )
         },
@@ -52,12 +57,14 @@ fun AboutScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .testTag("about:content_column"),
         ) {
             Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 200.dp)) {
                 Text(
                     text = stringResource(Rd.string.modules_designsystem_play_notepad),
                     style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.testTag("about:app_name"),
                 )
                 Spacer(Modifier.height(8.dp))
                 HorizontalDivider(
@@ -73,7 +80,11 @@ fun AboutScreen(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                Text(text = version, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = version,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.testTag("about:version_value"),
+                )
 
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -81,11 +92,21 @@ fun AboutScreen(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                Text(text = lastUpdate, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = lastUpdate,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.testTag("about:last_update_value"),
+                )
                 Spacer(Modifier.height(16.dp))
-                Text(text = stringResource(Rd.string.modules_designsystem_about_me))
+                Text(
+                    text = stringResource(Rd.string.modules_designsystem_about_me),
+                    modifier = Modifier.testTag("about:about_me"),
+                )
                 Spacer(Modifier.height(16.dp))
-                Text(text = stringResource(Rd.string.modules_designsystem_terms_and_condition))
+                Text(
+                    text = stringResource(Rd.string.modules_designsystem_terms_and_condition),
+                    modifier = Modifier.testTag("about:terms"),
+                )
             }
         }
     }
