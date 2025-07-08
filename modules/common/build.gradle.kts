@@ -15,5 +15,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     implementation(libs.kotlinx.datetime)
+    googlePlayImplementation(libs.play.services.mlkit.text.recognition)
+
 
 }
