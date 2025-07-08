@@ -62,7 +62,7 @@ internal class RealUserDataRepository @Inject constructor(
         }
     }
 
-    override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
+    override suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory) {
         withContext(dispatcher) { userPreferencesRepository.setNoteDisplayCategory(noteDisplayCategory) }
     }
 
