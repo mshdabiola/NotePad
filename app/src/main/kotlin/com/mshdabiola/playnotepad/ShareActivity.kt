@@ -319,7 +319,7 @@ fun ActionEditScreen(
                     ) {
                         success.notepad.labels.forEach {
                             LabelCard(
-                                name = it.label,
+                                name = it.name,
                                 color = MaterialTheme.colorScheme.secondary,
                                 style = MaterialTheme.typography.bodyMedium,
                             )
@@ -364,7 +364,7 @@ fun EditLabels(
                             verticalAlignment = Alignment.CenterVertically,
 
                         ) {
-                            Text(text = label.label, modifier = Modifier.weight(1f))
+                            Text(text = label.name, modifier = Modifier.weight(1f))
                             Checkbox(
                                 checked = checks.contains(label),
                                 onCheckedChange = { onToggleLabel(index) },
@@ -391,23 +391,23 @@ fun DialogPreview() {
         labels = listOf(
             Label(
                 id = 759L,
-                label = "Emanuel",
+                name = "Emanuel",
             ),
             Label(
                 id = 79L,
-                label = "Emanuel",
+                name = "Emanuel",
             ),
             Label(
                 id = 59L,
-                label = "Emanuel",
+                name = "Emanuel",
             ),
             Label(
                 id = 7529L,
-                label = "Emanuel",
+                name = "Emanuel",
             ),
             Label(
                 id = 7519L,
-                label = "Emanuel",
+                name = "Emanuel",
             ),
 
         ),
