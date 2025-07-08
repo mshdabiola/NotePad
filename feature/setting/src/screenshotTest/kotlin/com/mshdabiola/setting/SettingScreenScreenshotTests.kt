@@ -14,7 +14,7 @@ class SettingScreenScreenshotTests {
     @PreviewMain
     @Composable
     internal fun Main() {
-        val settingState = SettingState.Success(
+        val settingState = SettingState(
             themeBrand = ThemeBrand.DEFAULT,
             darkThemeConfig = DarkThemeConfig.LIGHT,
         )
@@ -25,14 +25,4 @@ class SettingScreenScreenshotTests {
         }
     }
 
-    @PreviewMain
-    @Composable
-    internal fun Loading() {
-        val settingState = SettingState.Loading
-        NotePadTheme {
-            SettingScreen(
-                settingState = settingState,
-            )
-        }
-    }
 }
