@@ -3,6 +3,6 @@ package com.mshdabiola.model
 data class NoteVoice(
     val id: Long,
     val noteId: Long = 0,
-    val filePath: String = "",
+    val path: String = "",
     val length: Long = 0,
 )
