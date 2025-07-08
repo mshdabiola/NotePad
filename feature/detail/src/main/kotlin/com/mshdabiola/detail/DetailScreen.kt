@@ -96,7 +96,7 @@ import com.mshdabiola.designsystem.R as Rd
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen(
+fun DetailScreen(
     modifier: Modifier = Modifier,
     state: DetailState,
     onBackClick: () -> Unit = {},
@@ -211,25 +211,33 @@ fun EditScreen(
                     },
 
                     actions = {
-                        IconButton(onClick = { pinNote() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:pin"),
+                            onClick = { pinNote() },
+                        ) {
                             Icon(
-                                modifier = Modifier.testTag("detail:pin"),
 
                                 imageVector = if (notepad.note.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin",
                             )
                         }
-                        IconButton(onClick = { onNotification() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:notification"),
+
+                            onClick = { onNotification() },
+                        ) {
                             Icon(
-                                modifier = Modifier.testTag("detail:notification"),
 
                                 imageVector = NoteIcon.NotificationAdd,
                                 contentDescription = "notification",
                             )
                         }
-                        IconButton(onClick = { onArchive() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:archive"),
+
+                            onClick = { onArchive() },
+                        ) {
                             Icon(
-                                modifier = Modifier.testTag("detail:archive"),
 
                                 imageVector = if (notepad.note.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                                 contentDescription = "archive",
@@ -291,6 +299,7 @@ fun EditScreen(
                                             is NoteDrawing -> {
                                                 BoardViewer(
                                                     modifier = Modifier
+                                                        .testTag("detail:drawing_$index")
                                                         .clickable {
                                                             navigateToDrawing(it.id)
                                                         }
@@ -412,7 +421,10 @@ fun EditScreen(
                         }
 
                         item {
-                            TextButton(onClick = addItem) {
+                            TextButton(
+                                modifier = Modifier.testTag("detail:add_check_item_button"),
+                                onClick = addItem,
+                            ) {
                                 Icon(imageVector = NoteIcon.Add, contentDescription = "")
 
                                 Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
@@ -492,7 +504,7 @@ fun EditScreen(
                             }
                             notepad.labels.forEach {
                                 LabelCard(
-                                    name = it.label,
+                                    name = it.name,
                                     color = sColor,
                                     style = MaterialTheme.typography.bodyLarge,
                                     onClick = onLabel,
@@ -644,11 +656,17 @@ fun NoteVoicePlayer(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box {
                 if (isPlay) {
-                    IconButton(onClick = pauseVoice) {
+                    IconButton(
+                        modifier = Modifier.testTag("detail:voice:pause"),
+                        onClick = pauseVoice,
+                    ) {
                         Icon(imageVector = NoteIcon.PauseCircle, contentDescription = "pause")
                     }
                 } else {
-                    IconButton(onClick = playVoice) {
+                    IconButton(
+                        modifier = Modifier.testTag("detail:voice:play"),
+                        onClick = playVoice,
+                    ) {
                         Icon(imageVector = NoteIcon.PlayCircle, contentDescription = "play")
                     }
                 }
@@ -658,7 +676,10 @@ fun NoteVoicePlayer(
                 modifier = Modifier.weight(1f),
             )
             Text(text = noteVoiceUiState.length.toTime())
-            IconButton(onClick = { delete() }) {
+            IconButton(
+                modifier = Modifier.testTag("detail:voice:delete"),
+                onClick = { delete() },
+            ) {
                 Icon(imageVector = NoteIcon.Delete, contentDescription = "delete")
             }
         }
@@ -715,7 +736,7 @@ fun NoteUriPreview() {
 @Composable
 private fun Main() {
     PreviewContainer {
-        EditScreen(
+        DetailScreen(
             state = DetailState(
                 notePad = NotePad(
                     note = Note(),
@@ -753,7 +774,7 @@ private fun Main() {
 @Composable
 private fun MainCheck() {
     PreviewContainer {
-        EditScreen(
+        DetailScreen(
             state = DetailState(
                 notePad = NotePad(
                     note = Note(),

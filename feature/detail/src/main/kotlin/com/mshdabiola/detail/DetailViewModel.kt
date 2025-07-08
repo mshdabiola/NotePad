@@ -451,7 +451,7 @@ class DetailViewModel @AssistedInject constructor(
 
             val voice = NoteVoice(
                 id = id,
-                filePath = contentManager.getVoicePath(id),
+                path = contentManager.getVoicePath(id),
             )
             initState.detail.edit {
                 append(text)
@@ -500,7 +500,7 @@ class DetailViewModel @AssistedInject constructor(
         }
 
         playJob = viewModelScope.launch {
-            voicePlayer.playMusic(voiceUiState.filePath, state!!.currentPosition)
+            voicePlayer.playMusic(voiceUiState.path, state!!.currentPosition)
                 .collectLatest { currentProgress ->
 
                     playerState.update {

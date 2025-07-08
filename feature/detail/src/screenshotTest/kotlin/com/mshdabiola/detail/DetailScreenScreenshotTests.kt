@@ -22,7 +22,7 @@ class DetailScreenScreenshotTests {
     @Composable
     private fun Main() {
         PreviewContainer {
-            EditScreen(
+            DetailScreen(
                 state = DetailState(
                     notePad = NotePad(
                         note = Note(),
@@ -60,7 +60,7 @@ class DetailScreenScreenshotTests {
     @Composable
     private fun MainCheck() {
         PreviewContainer {
-            EditScreen(
+            DetailScreen(
                 state = DetailState(
                     notePad = NotePad(
                         note = Note(),

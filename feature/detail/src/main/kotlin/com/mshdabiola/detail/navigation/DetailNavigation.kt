@@ -27,8 +27,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import com.mshdabiola.detail.AddBottomSheet2
 import com.mshdabiola.detail.ColorAndImageBottomSheet
+import com.mshdabiola.detail.DetailScreen
 import com.mshdabiola.detail.DetailViewModel
-import com.mshdabiola.detail.EditScreen
 import com.mshdabiola.detail.NoteOptionBottomSheet
 import com.mshdabiola.detail.NotificationBottomSheet
 import com.mshdabiola.ui.FirebaseScreenLog
@@ -81,7 +81,7 @@ fun EntryProviderBuilder<NavKey>.detailScreen(
 
         FirebaseScreenLog(screen = "edit_screen")
 
-        EditScreen(
+        DetailScreen(
             modifier = modifier,
             state = detailState,
             onBackClick = onBack,
