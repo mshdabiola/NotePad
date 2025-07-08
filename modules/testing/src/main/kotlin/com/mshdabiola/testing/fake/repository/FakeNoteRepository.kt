@@ -29,7 +29,7 @@ internal class FakeNoteRepository @Inject constructor() : NoteRepository {
             val newNotes = LinkedHashMap(currentNotes)
             notes.forEach { notePadToUpsert ->
                 val id: Long
-                if (notePadToUpsert.note.id != -1L && newNotes.containsKey(notePadToUpsert.note.id)) {
+                if (notePadToUpsert.note.id != -1L) {
                     // Update existing
                     id = notePadToUpsert.note.id
                     newNotes[id] = notePadToUpsert
@@ -50,7 +50,7 @@ internal class FakeNoteRepository @Inject constructor() : NoteRepository {
         var newId = 0L
         notesFlow.update { currentNotes ->
             val newNotes = LinkedHashMap(currentNotes)
-            if (note.note.id != -1L && newNotes.containsKey(note.note.id)) {
+            if (note.note.id != -1L) {
                 // Update existing
                 newId = note.note.id
                 newNotes[newId] = note
