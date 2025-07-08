@@ -16,6 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -64,11 +65,15 @@ class LabelViewModel @AssistedInject constructor(
 
     fun onDelete(id: Long) {
         viewModelScope.launch {
-            val noteDisplayCategory = userDataRepository.userData.first().noteDisplayCategory
-            if (noteDisplayCategory.noteType == NoteType.LABEL && noteDisplayCategory.labelId == id) {
-                userDataRepository.setMainData(NoteDisplayCategory())
+            launch {
+                val noteDisplayCategory = async { userDataRepository.userData.first().noteDisplayCategory }
+                if (noteDisplayCategory.await().noteType == NoteType.LABEL && noteDisplayCategory.await().labelId == id) {
+                    userDataRepository.setNoteDisplayCategory(NoteDisplayCategory())
+                }
             }
-            labelRepository.delete(id)
+            launch {
+                labelRepository.delete(id)
+            }
         }
     }
 

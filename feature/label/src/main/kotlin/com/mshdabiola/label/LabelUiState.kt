@@ -8,7 +8,7 @@ data class LabelState(
     val label: TextFieldState = TextFieldState(),
 )
 
-fun Label.toLabelState() = LabelState(this.id, TextFieldState(this.label))
+fun Label.toLabelState() = LabelState(this.id, TextFieldState(this.name))
 fun LabelState.toLabel() = Label(id, label.text.toString())
 
 data class LabelUiState(
