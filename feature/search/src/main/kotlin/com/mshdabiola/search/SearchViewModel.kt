@@ -85,7 +85,7 @@ internal class SearchViewModel
         val labels = notepads
             .flatMap { it.labels }
             .distinctBy { it.id }
-            .map { SearchSort.Label(it.label, 6, it.id) }
+            .map { SearchSort.Label(it.name, 6, it.id) }
 
         val backgrounds = notepads
             .map {

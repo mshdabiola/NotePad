@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -82,9 +83,10 @@ internal fun SearchScreen(
 //    TrackScrollJank(scrollableState = gridState, stateName = "main:grid:screen")
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.testTag("search_screen_scaffold"),
         topBar = {
             TopAppBar(
+                modifier = Modifier.testTag("search_top_app_bar"),
                 title = {
                     TextField(
                         state = searchQuery,
@@ -101,9 +103,9 @@ internal fun SearchScreen(
                                 IconButton(
                                     onClick = {
                                         onSetSearch(null)
-
                                         searchQuery.clearText()
                                     },
+                                    modifier = Modifier.testTag("search_clear_button"),
                                 ) {
                                     Icon(NoteIcon.Clear, contentDescription = "clear")
                                 }
@@ -113,7 +115,9 @@ internal fun SearchScreen(
                             imeAction = ImeAction.Search,
                             showKeyboardOnFocus = true,
                         ),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("search_input_field"),
 
                     )
                 },
@@ -124,7 +128,10 @@ internal fun SearchScreen(
                 subtitle = {},
                 titleHorizontalAlignment = Alignment.CenterHorizontally,
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("search_back_button"),
+                    ) {
                         Icon(NoteIcon.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -138,18 +145,28 @@ internal fun SearchScreen(
             is SearchState.Success -> {
                 if (searchQuery.text.isNotBlank() && searchState.searches.isEmpty()) {
                     Column(
-                        Modifier.fillMaxSize(),
+                        Modifier
+                            .fillMaxSize()
+                            .testTag("search_no_results_column"),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
-                        Icon(imageVector = NoteIcon.Search, contentDescription = "search")
-                        Text(text = stringResource(Rd.string.modules_designsystem_no_result))
+                        Icon(
+                            imageVector = NoteIcon.Search,
+                            contentDescription = "search",
+                            modifier = Modifier.testTag("search_no_results_icon"),
+                        )
+                        Text(
+                            text = stringResource(Rd.string.modules_designsystem_no_result),
+                            modifier = Modifier.testTag("search_no_results_text"),
+                        )
                     }
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .testTag("search_results_grid"),
                         state = gridState,
                         contentPadding = paddingValues,
                         columns = StaggeredGridCells.Fixed(if (searchState.isGrid) 2 else 1),
@@ -158,7 +175,7 @@ internal fun SearchScreen(
                     ) {
                         items(items = searchState.searches, key = { it.note.id }) { notepad ->
                             NoteCard(
-                                modifier = Modifier,
+                                modifier = Modifier.testTag("search_result_item_${notepad.note.id}"),
                                 notePad = notepad,
                                 onCardClick = onNoteClick,
                                 onLongClick = {},
@@ -174,11 +191,13 @@ internal fun SearchScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .testTag("search_select_state_column"),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     if (searchState.types.isNotEmpty()) {
                         LabelBox(
+                            modifier = Modifier.testTag("search_types_label_box"),
                             title = stringResource(Rd.string.modules_designsystem_types),
                             space = 32.dp,
                             numPerRow = 3,
@@ -189,6 +208,7 @@ internal fun SearchScreen(
 
                     if (searchState.label.isNotEmpty()) {
                         LabelBox(
+                            modifier = Modifier.testTag("search_labels_label_box"),
                             title = stringResource(Rd.string.modules_designsystem_labels),
                             space = 32.dp,
                             numPerRow = 3,
@@ -198,6 +218,7 @@ internal fun SearchScreen(
                     }
                     if (searchState.color.isNotEmpty()) {
                         LabelBox(
+                            modifier = Modifier.testTag("search_colors_label_box"),
                             title = stringResource(Rd.string.modules_designsystem_colors),
                             space = 8.dp,
                             numPerRow = 6,
@@ -251,6 +272,7 @@ internal fun NewSearchScreenPreview() {
 
 @Composable
 fun LabelBox(
+    modifier: Modifier = Modifier, // Added modifier parameter
     title: String = "Label",
     space: Dp = 16.dp,
     numPerRow: Int = 3,
@@ -259,19 +281,31 @@ fun LabelBox(
 ) {
     var showMore by remember { mutableStateOf(false) }
     FlowRow(
-        Modifier.animateContentSize(),
+        modifier // Use the passed modifier
+            .animateContentSize()
+            .testTag("label_box_flow_row_$title"), // Unique tag for FlowRow
         maxItemsInEachRow = numPerRow,
         maxLines = if (showMore) Int.MAX_VALUE else 2,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(space, Alignment.CenterHorizontally),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("label_box_title_row_$title"),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(modifier = Modifier.weight(1f), text = title)
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("label_box_title_text_$title"),
+                text = title,
+            )
             if (list.size > numPerRow) {
-                TextButton(onClick = { showMore = !showMore }) {
+                TextButton(
+                    onClick = { showMore = !showMore },
+                    modifier = Modifier.testTag("label_box_more_less_button_$title"),
+                ) {
                     Text(
                         text = if (!showMore) {
                             stringResource(id = Rd.string.modules_designsystem_more)
@@ -280,27 +314,33 @@ fun LabelBox(
                                 id = Rd.string.modules_designsystem_less,
                             )
                         },
+                        modifier = Modifier.testTag("label_box_more_less_text_$title"),
                     )
                 }
             }
         }
         list
             // .take()
-            .forEach { searchSort ->
+            .forEachIndexed { index, searchSort -> // Added index for more unique tags
                 when (searchSort) {
                     is SearchSort.Label -> {
                         SearchLabel(
-                            modifier = Modifier.clickable { onItemClick(searchSort) },
+                            modifier = Modifier
+                                .clickable { onItemClick(searchSort) }
+                                .testTag("search_label_item_${searchSort.name}_$index"),
                             iconId = NoteIcon.searchIcons[searchSort.iconIndex],
                             name = searchSort.name,
                         )
                     }
 
                     is SearchSort.Type -> {
+                        val typeName = stringArrayResource(Rd.array.modules_designsystem_search_sort)[searchSort.index]
                         SearchLabel(
-                            modifier = Modifier.clickable { onItemClick(searchSort) },
+                            modifier = Modifier
+                                .clickable { onItemClick(searchSort) }
+                                .testTag("search_type_item_${typeName}_$index"),
                             iconId = NoteIcon.searchIcons[searchSort.index],
-                            name = stringArrayResource(Rd.array.modules_designsystem_search_sort)[searchSort.index],
+                            name = typeName,
                         )
                     }
 
@@ -313,15 +353,18 @@ fun LabelBox(
                             color = if (searchSort.colorIndex == -1) Color.White else NoteIcon.noteColors[searchSort.colorIndex],
                             modifier = Modifier
                                 .width(40.dp)
-                                .aspectRatio(1f),
+                                .aspectRatio(1f)
+                                .testTag("search_color_item_${searchSort.colorIndex}_$index"),
 
                         ) {
                             if (searchSort.colorIndex == -1) {
                                 Icon(
                                     imageVector = NoteIcon.FormatColorReset,
-                                    contentDescription = "done",
+                                    contentDescription = "done", // "reset color" might be better
                                     tint = Color.Gray,
-                                    modifier = Modifier.padding(4.dp),
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .testTag("search_color_item_reset_icon_$index"),
                                 )
                             }
                         }
@@ -333,25 +376,34 @@ fun LabelBox(
 
 @Composable
 fun SearchLabel(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier, // Keep modifier
     iconId: ImageVector = NoteIcon.Label,
     name: String = "Label",
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.testTag("search_label_column_$name"), // Use the passed modifier
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.secondaryContainer,
             modifier = Modifier
                 .width(72.dp)
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .testTag("search_label_surface_$name"),
         ) {
             Icon(
                 imageVector = iconId,
-                contentDescription = "label icon",
-                modifier = Modifier.padding(16.dp),
+                contentDescription = "$name icon", // More descriptive
+                modifier = Modifier
+                    .padding(16.dp)
+                    .testTag("search_label_icon_$name"),
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = name)
+        Text(
+            text = name,
+            modifier = Modifier.testTag("search_label_text_$name"),
+        )
     }
 }
