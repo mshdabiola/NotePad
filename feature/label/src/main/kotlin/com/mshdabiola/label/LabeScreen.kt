@@ -27,6 +27,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,18 +48,28 @@ fun LabelScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("label:back_button"),
+                    ) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
-                    Text(text = stringResource(Rd.string.modules_designsystem_edit_label))
+                    Text(
+                        text = stringResource(Rd.string.modules_designsystem_edit_label),
+                        modifier = Modifier.testTag("label:title"),
+                    )
                 },
             )
         },
     ) { paddingValues ->
 
-        LazyColumn(Modifier.padding(paddingValues)) {
+        LazyColumn(
+            Modifier
+                .padding(paddingValues)
+                .testTag("label:list"),
+        ) {
             item {
                 EditLabelTextField(
                     labelState = labelUiState.newLabel,
@@ -117,6 +128,7 @@ fun EditLabelTextField(
         key1 = isEditMode,
         block = {
             if (isEditMode && !isFirstTime) {
+                println("focus")
                 focusRequester.requestFocus()
                 isFirstTime = true
             }
@@ -127,7 +139,8 @@ fun EditLabelTextField(
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .onFocusChanged { isFocus = it.isFocused },
+            .onFocusChanged { isFocus = it.isFocused }
+            .testTag("label:new_label_input"),
         state = labelState.label,
         placeholder = { Text(stringResource(Rd.string.modules_designsystem_create_new_label)) },
 //        supportingText = if (errorOccur) stringResource(Rd.string.modules_designsystem_label_already_exists) else "",
@@ -139,16 +152,24 @@ fun EditLabelTextField(
                         labelState.label.clearText()
                         focusRequester.freeFocus()
                     },
+                    modifier = Modifier.testTag("label:new_label_clear_button"),
                 ) {
                     Icon(imageVector = NoteIcon.Clear, contentDescription = "Clear")
                 }
             } else {
-                Icon(imageVector = NoteIcon.Add, contentDescription = "add")
+                Icon(
+                    imageVector = NoteIcon.Add,
+                    contentDescription = "add",
+                    modifier = Modifier.testTag("label:new_label_add_icon_indicator"),
+                )
             }
         },
         trailingIcon = {
             if (labelState.label.text.isNotBlank()) {
-                IconButton(onClick = { onAdd() }) {
+                IconButton(
+                    onClick = { onAdd() },
+                    modifier = Modifier.testTag("label:new_label_done_button"),
+                ) {
                     Icon(imageVector = NoteIcon.Done, contentDescription = "add")
                 }
             }
@@ -184,15 +205,23 @@ fun LabelTextField(
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .onFocusChanged { focusState -> isFocus = focusState.isFocused },
+            .onFocusChanged { focusState -> isFocus = focusState.isFocused }
+            .testTag("label:item_label_input_${labelState.id}"),
         state = labelState.label,
         leadingIcon = {
             if (isFocus) {
-                IconButton(onClick = { onDelete(labelState.id) }) {
+                IconButton(
+                    onClick = { onDelete(labelState.id) },
+                    modifier = Modifier.testTag("label:item_delete_button_${labelState.id}"),
+                ) {
                     Icon(imageVector = NoteIcon.Delete, contentDescription = "delete")
                 }
             } else {
-                Icon(imageVector = NoteIcon.Label, contentDescription = "label")
+                Icon(
+                    imageVector = NoteIcon.Label,
+                    contentDescription = "label",
+                    modifier = Modifier.testTag("label:item_label_icon_indicator_${labelState.id}"),
+                )
             }
         },
         trailingIcon = {
@@ -203,12 +232,16 @@ fun LabelTextField(
                             focusManager.clearFocus()
                             onAdd()
                         },
+                        modifier = Modifier.testTag("label:item_done_button_${labelState.id}"),
                     ) {
                         Icon(imageVector = NoteIcon.Done, contentDescription = "add")
                     }
                 }
             } else {
-                IconButton(onClick = { focusRequester.requestFocus() }) {
+                IconButton(
+                    onClick = { focusRequester.requestFocus() },
+                    modifier = Modifier.testTag("label:item_edit_button_${labelState.id}"),
+                ) {
                     Icon(imageVector = NoteIcon.Edit, contentDescription = "edit")
                 }
             }
