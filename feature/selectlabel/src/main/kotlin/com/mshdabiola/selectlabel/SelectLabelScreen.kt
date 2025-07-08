@@ -23,12 +23,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mshdabiola.designsystem.icon.NoteIcon
 import com.mshdabiola.designsystem.R as Rd
+
+// Test Tags
+object SelectLabelScreenTestTags {
+    const val SCREEN = "selectLabel:screen"
+    const val TOP_APP_BAR = "selectLabel:topAppBar"
+    const val BACK_BUTTON = "selectLabel:backButton"
+    const val LABEL_QUERY_TEXT_FIELD = "selectLabel:labelQueryTextField"
+    const val CREATE_LABEL_BUTTON = "selectLabel:createLabelButton"
+    const val LABEL_LIST = "selectLabel:labelList"
+    fun labelItem(labelId: Long) = "selectLabel:item:$labelId"
+    fun labelItemCheckbox(labelId: Long) = "selectLabel:itemCheckbox:$labelId"
+    fun labelItemText(labelId: Long) = "selectLabel:itemText:$labelId"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,16 +53,23 @@ fun SelectLabelScreen(
     onCreateLabel: () -> Unit = {},
 ) {
     Scaffold(
+        modifier = Modifier.testTag(SelectLabelScreenTestTags.SCREEN),
         topBar = {
             TopAppBar(
+                modifier = Modifier.testTag(SelectLabelScreenTestTags.TOP_APP_BAR),
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag(SelectLabelScreenTestTags.BACK_BUTTON),
+                    ) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = {
                     TextField(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(SelectLabelScreenTestTags.LABEL_QUERY_TEXT_FIELD),
                         state = selectLabelUiState.labelQuery,
                         placeholder = { Text(stringResource(Rd.string.modules_designsystem_enter_text)) },
                         colors = TextFieldDefaults.colors(
@@ -66,19 +87,23 @@ fun SelectLabelScreen(
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             if (selectLabelUiState.showAddLabel) {
-                TextButton(onClick = { onCreateLabel() }) {
+                TextButton(
+                    onClick = { onCreateLabel() },
+                    modifier = Modifier.testTag(SelectLabelScreenTestTags.CREATE_LABEL_BUTTON),
+                ) {
                     Icon(imageVector = NoteIcon.Add, contentDescription = "add")
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = "${stringResource(id = Rd.string.modules_designsystem_create)} \"${selectLabelUiState.labelQuery.text}\"")
                 }
             }
-            LazyColumn {
+            LazyColumn(modifier = Modifier.testTag(SelectLabelScreenTestTags.LABEL_LIST)) {
                 itemsIndexed(
                     items = selectLabelUiState.labels,
-                    key = { i, it -> it.id },
-                ) { index, it ->
+                    key = { _, it -> it.id },
+                ) { index, labelState ->
                     LabelText(
-                        labelState = it,
+                        modifier = Modifier.testTag(SelectLabelScreenTestTags.labelItem(labelState.id)),
+                        labelState = labelState,
                         onCheckClick = { onCheckClick(index) },
                     )
                 }
@@ -108,11 +133,12 @@ fun LabelScreenPreview() {
 
 @Composable
 fun LabelText(
+    modifier: Modifier = Modifier, // Added modifier parameter
     labelState: LabelState,
     onCheckClick: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier // Applied the modifier here
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -120,8 +146,14 @@ fun LabelText(
     ) {
         Icon(imageVector = NoteIcon.Label, contentDescription = "")
         Spacer(modifier = Modifier.width(8.dp))
-        Text(modifier = Modifier.weight(1f), text = labelState.label)
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .testTag(SelectLabelScreenTestTags.labelItemText(labelState.id)),
+            text = labelState.label,
+        )
         TriStateCheckbox(
+            modifier = Modifier.testTag(SelectLabelScreenTestTags.labelItemCheckbox(labelState.id)),
             state = labelState.toggleableState,
             onClick = { onCheckClick() },
         )
