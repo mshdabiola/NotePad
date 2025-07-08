@@ -53,13 +53,13 @@ class SelectLabelViewModel @AssistedInject constructor(
                 null -> ToggleableState.Off
                 else -> ToggleableState.Indeterminate
             }
-            LabelState(it.id, it.label, state)
+            LabelState(it.id, it.name, state)
         }
         var showAddLabel = false
         val list = if (query.isBlank()) {
             labelStates
         } else {
-            showAddLabel = labels.any { it.label != query }
+            showAddLabel = labels.any { it.name != query }
             labelStates.filter { it.label.contains(query) }
         }
 

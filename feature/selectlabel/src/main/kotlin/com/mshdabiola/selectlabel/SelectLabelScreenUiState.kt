@@ -16,4 +16,4 @@ data class LabelState(
     val toggleableState: ToggleableState = ToggleableState.Off,
 )
 
-fun Label.toLabelState() = LabelState(id = this.id, label = this.label)
+fun Label.toLabelState() = LabelState(id = this.id, label = this.name)
