@@ -12,6 +12,7 @@ internal class FakeNoteDrawingRepository
     private var nextId = 1L
 
     override suspend fun upserts(drawings: List<NoteDrawing>): List<Long> {
+        println("list $drawings")
         val ids = mutableListOf<Long>()
         drawings.forEach { drawing ->
             ids.add(upsert(drawing))
@@ -25,15 +26,13 @@ internal class FakeNoteDrawingRepository
             drawings.add(newDrawing)
             newDrawing.id
         } else {
-            val index = drawings.indexOfFirst { it.id == drawing.id }
-            if (index != -1) {
-                drawings[index] = drawing
-                drawing.id
+            val indexedValue = drawings.indexOfFirst { it.id == drawing.id }
+            if (indexedValue == -1) {
+                drawings.add(drawing)
             } else {
-                val newDrawing = drawing.copy(id = nextId++)
-                drawings.add(newDrawing)
-                newDrawing.id
+                drawings.add(indexedValue, drawing)
             }
+            drawing.id
         }
     }
 

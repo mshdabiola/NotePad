@@ -5,13 +5,16 @@
 package com.mshdabiola.testing.fake.repository
 
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.datastore.UserPreferencesRepository
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
+import com.mshdabiola.testing.repository.emptyUserData
+import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 /**
@@ -20,38 +23,59 @@ import javax.inject.Inject
  * This allows us to run the app with fake data, without needing an internet connection or working
  * backend.
  */
-class FakeUserDataRepository @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository,
-) : UserDataRepository {
+class FakeUserDataRepository @Inject constructor() : UserDataRepository {
+    /**
+     * The backing hot flow for the list of followed topic ids for testing.
+     */
+    private val _userData = MutableSharedFlow<UserData>(replay = 1, onBufferOverflow = DROP_OLDEST)
 
-    override val userData: Flow<UserData> =
-        userPreferencesRepository.userData
+    private val currentUserData get() = _userData.replayCache.firstOrNull() ?: emptyUserData
+
+    override val userData: Flow<UserData> = _userData.filterNotNull()
 
     override suspend fun setThemeBrand(themeBrand: ThemeBrand) {
-        userPreferencesRepository.setThemeBrand(themeBrand)
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(themeBrand = themeBrand))
+        }
     }
 
     override suspend fun setThemeContrast(contrast: Contrast) {
-        userPreferencesRepository.setThemeContrast(contrast)
     }
 
     override suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
-        userPreferencesRepository.setDarkThemeConfig(darkThemeConfig)
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(darkThemeConfig = darkThemeConfig))
+        }
     }
 
     override suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
-        userPreferencesRepository.setDynamicColorPreference(useDynamicColor)
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(useDynamicColor = useDynamicColor))
+        }
     }
 
     override suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
-        userPreferencesRepository.setShouldHideOnboarding(shouldHideOnboarding)
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(shouldHideOnboarding = shouldHideOnboarding))
+        }
     }
 
-    override suspend fun setMainData(noteDisplayCategory: NoteDisplayCategory) {
-        userPreferencesRepository.setNoteDisplayCategory(noteDisplayCategory)
+    override suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory) {
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(noteDisplayCategory = noteDisplayCategory))
+        }
     }
 
     override suspend fun toggleGrid() {
-        TODO("Not yet implemented")
+        currentUserData.let { current ->
+            _userData.tryEmit(current.copy(isGrid = !current.isGrid))
+        }
+    }
+
+    /**
+     * A test-only API to allow setting of user data directly.
+     */
+    fun setUserData(userData: UserData) {
+        _userData.tryEmit(userData)
     }
 }

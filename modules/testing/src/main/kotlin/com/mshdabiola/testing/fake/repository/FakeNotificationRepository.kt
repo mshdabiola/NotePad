@@ -23,7 +23,7 @@ internal class FakeNotificationRepository
         val ids = mutableListOf<Long>()
         notifications.forEach { notification ->
             val idToUpsert: Long
-            if (notification.noteId != -1L && currentNotifications.containsKey(notification.noteId)) {
+            if (notification.noteId != -1L) {
                 idToUpsert = notification.noteId
             } else {
                 idToUpsert = nextId++
@@ -40,7 +40,7 @@ internal class FakeNotificationRepository
     override suspend fun upsert(notification: NotificationUiState): Long {
         val currentNotifications = notificationsFlow.value.toMutableMap() as LinkedHashMap
         val idToUpsert: Long
-        if (notification.noteId != 0L && currentNotifications.containsKey(notification.noteId)) {
+        if (notification.noteId != -1L) {
             idToUpsert = notification.noteId
             currentNotifications[idToUpsert] = notification
         } else {

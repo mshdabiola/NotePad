@@ -30,9 +30,8 @@ internal class FakeNoteImageRepository
                 images[index] = image
                 image.id
             } else {
-                val newImage = image.copy(id = nextId++)
-                images.add(newImage)
-                newImage.id
+                images.add(image)
+                image.id
             }
         }
     }
@@ -50,7 +49,10 @@ internal class FakeNoteImageRepository
     }
 
     override fun getByNoteId(noteId: Long): Flow<List<NoteImage>> {
-        return flowOf(images.filter { it.noteId == noteId }.toList())
+        return flowOf(
+            images.filter { it.noteId == noteId }
+                .toList(),
+        )
     }
 
     override fun get(id: Long): Flow<NoteImage?> {
