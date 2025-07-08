@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -38,6 +39,7 @@ import com.mshdabiola.designsystem.R as Rd
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun GalleryScreen(
+    modifier: Modifier = Modifier,
     galleryUiState: GalleryUiState,
     pagerState: PagerState,
     onBack: () -> Unit = {},
@@ -49,6 +51,7 @@ fun GalleryScreen(
     val sharedTransitionScope = LocalSharedStScope.current
     val animatedContentScope = LocalNavAnimatedContentScope.current
     Scaffold(
+        modifier = modifier,
         topBar = {
             GalleryTopAppBar(
                 onBack = onBack,
@@ -62,21 +65,24 @@ fun GalleryScreen(
     ) { paddingValues ->
 
         HorizontalPager(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .padding(paddingValues)
+                .testTag("gallery:pager"),
             state = pagerState,
-        ) {
+        ) { page ->
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                val image = galleryUiState.images.getOrNull(it)
-                // / currIndex=it
+                val image = galleryUiState.images.getOrNull(page)
+                // / currIndex=page
                 if (image != null) {
                     with(sharedTransitionScope) {
                         ZoomableAsyncImage(
                             modifier = Modifier
                                 .sharedElement(
-                                    sharedContentState = rememberSharedContentState("image_$it"),
+                                    sharedContentState = rememberSharedContentState("image_$page"),
                                     animatedVisibilityScope = animatedContentScope,
                                 )
-                                .fillMaxSize(),
+                                .fillMaxSize()
+                                .testTag("gallery:image_$page"),
                             model = image.path,
                             contentDescription = "",
                             alignment = Alignment.Center,
@@ -127,15 +133,27 @@ fun GalleryTopAppBar(
 
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.testTag("gallery:back_button"),
+            ) {
+                Icon(
+                    imageVector = NoteIcon.ArrowBack,
+                    contentDescription = "back",
+                )
             }
         },
-        title = { Text(text = name) },
+        title = { Text(text = name, modifier = Modifier.testTag("gallery:title")) },
         actions = {
             Box {
-                IconButton(onClick = { showDropDown = true }) {
-                    Icon(NoteIcon.MoreVert, contentDescription = "more")
+                IconButton(
+                    onClick = { showDropDown = true },
+                    modifier = Modifier.testTag("gallery:more_options_button"),
+                ) {
+                    Icon(
+                        NoteIcon.MoreVert,
+                        contentDescription = "more",
+                    )
                 }
                 DropdownMenu(expanded = showDropDown, onDismissRequest = { showDropDown = false }) {
                     DropdownMenuItem(
@@ -144,6 +162,7 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onGrabText()
                         },
+                        modifier = Modifier.testTag("gallery:grab_text_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_copy)) },
@@ -151,6 +170,7 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onCopy()
                         },
+                        modifier = Modifier.testTag("gallery:copy_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_send)) },
@@ -158,6 +178,7 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onSend()
                         },
+                        modifier = Modifier.testTag("gallery:send_menu_item"),
                     )
                     DropdownMenuItem(
                         text = { Text(text = stringResource(Rd.string.modules_designsystem_delete)) },
@@ -165,6 +186,7 @@ fun GalleryTopAppBar(
                             showDropDown = false
                             onDelete()
                         },
+                        modifier = Modifier.testTag("gallery:delete_menu_item"),
                     )
                 }
             }

@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mshdabiola.common.IContentManager
 import com.mshdabiola.data.repository.NoteImageRepository
-import com.mshdabiola.domain.AddAllNoteUseCase
-import com.mshdabiola.domain.GetNoteUseCase
+import com.mshdabiola.data.repository.NoteRepository
 import com.mshdabiola.gallery.navigation.GalleryArg
 import com.mshdabiola.model.NoteImage
 import dagger.assisted.Assisted
@@ -22,15 +21,14 @@ import kotlinx.coroutines.launch
 class GalleryViewModel @AssistedInject constructor(
     @Assisted val galleryArg: GalleryArg,
     private val noteImageRepository: NoteImageRepository,
-    private val imageToText: ImageToText,
-    private val getNoteUseCase: GetNoteUseCase,
-    private val addAllNoteUseCase: AddAllNoteUseCase,
+    private val noteRepository: NoteRepository,
     private val contentManager: IContentManager,
 ) : ViewModel() {
 
     val galleryUiState = noteImageRepository
         .getByNoteId(galleryArg.id)
         .mapLatest { images ->
+            println("images: $images")
             GalleryUiState(
                 initIndex = galleryArg.index,
                 images = images.map {
@@ -59,15 +57,15 @@ class GalleryViewModel @AssistedInject constructor(
         try {
             // val image = notePad.images[index]
             val text = try {
-                imageToText.toText(path)
+                contentManager.imageToText(path)
             } catch (e: Exception) {
                 e.printStackTrace()
                 ""
             }
-            var note = getNoteUseCase(galleryArg.id).first()!!
+            var note = noteRepository.get(galleryArg.id).first()!!
             note =
                 note.copy(note = note.note.copy(detail = "${note.note.detail}\n$text"))
-            addAllNoteUseCase(note)
+            noteRepository.upsert(note)
         } catch (e: Exception) {
             e.printStackTrace()
         }
