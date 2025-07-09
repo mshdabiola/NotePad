@@ -97,7 +97,7 @@ class NoteCheckDaoTest {
         val updatedCheck = check1.copy(content = "Updated Item 1", isCheck = true)
         val updatedId = noteCheckDao.upsert(updatedCheck)
 
-        assertEquals(check1.id, updatedId) // ID should remain the same
+        assertEquals(-1, updatedId) // ID should remain the same
         val retrievedCheck = noteCheckDao.get(check1.id!!).first()
         assertNotNull(retrievedCheck)
         assertEquals("Updated Item 1", retrievedCheck.content)

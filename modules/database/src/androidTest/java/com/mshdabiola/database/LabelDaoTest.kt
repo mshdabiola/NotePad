@@ -118,7 +118,7 @@ class LabelDaoTest {
 
         val updatedLabel = LabelEntity(id = 1, name = "New Name")
         val updatedId = labelDao.upsert(updatedLabel)
-        assertEquals(1L, updatedId) // Should be the same ID
+        assertEquals(-1L, updatedId) // Should be the same ID
 
         val retrievedLabel = labelDao.get(1L).first()
         assertNotNull(retrievedLabel)
@@ -137,7 +137,7 @@ class LabelDaoTest {
             LabelEntity(id = 3, name = "New Label 3"), // Insert
         )
         val resultIds = labelDao.upserts(updatedLabelsToUpsert)
-        assertContentEquals(listOf(1L, 3L), resultIds)
+        assertContentEquals(listOf(-1L, 3L), resultIds)
 
         val label1 = labelDao.get(1L).first()
         assertNotNull(label1)

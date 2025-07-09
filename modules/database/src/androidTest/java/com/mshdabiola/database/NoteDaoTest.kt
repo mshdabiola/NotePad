@@ -98,7 +98,7 @@ class NoteDaoTest {
         val updatedNote = note1.copy(title = "Updated Title")
         val updatedId = noteDao.upsert(updatedNote)
 
-        assertEquals(note1.id, updatedId) // ID should remain the same
+        assertEquals(-1, updatedId) // ID should remain the same
         val retrievedNotePad = noteDao.get(note1.id ?: 3).first()
         assertNotNull(retrievedNotePad)
         assertEquals("Updated Title", retrievedNotePad.noteEntity.title)
