@@ -33,6 +33,9 @@ class FakeUserDataRepository @Inject constructor() : UserDataRepository {
 
     override val userData: Flow<UserData> = _userData.filterNotNull()
 
+    init {
+        setUserData(emptyUserData)
+    }
     override suspend fun setThemeBrand(themeBrand: ThemeBrand) {
         currentUserData.let { current ->
             _userData.tryEmit(current.copy(themeBrand = themeBrand))
