@@ -71,4 +71,14 @@
     <string name="modules_designsystem_rename_details">"Мы удалим метку и удалим ее из всех ваших заметок. Ваши заметки не будут удалены"</string>
     <string name="modules_designsystem_clear_canvas">Очистить холст</string>
     <string name="modules_designsystem_add_labels">Добавить метки</string>
+    <string name="modules_designsystem_unarchive">Разархивировать</string>
+    <string name="modules_designsystem_dialog_empty_trash">Очистить корзину?</string>
+    <string name="modules_designsystem_dialog_empty_trash_content">
+    Все заметки в корзине будут удалены навсегда.
+    </string>
+    <string name="modules_designsystem_dialog_delete_forever">Удалить навсегда</string>
+    <string name="modules_designsystem_dialog_delete_forever_content">
+    Эта заметка будет удалена навсегда.
+    </string>
+
 </resources>

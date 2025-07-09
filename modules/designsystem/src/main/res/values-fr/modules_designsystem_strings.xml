@@ -71,4 +71,14 @@
     <string name="modules_designsystem_rename_details">"Nous allons supprimer le libellé et le retirer de toutes vos notes Keep. Vos notes ne seront pas supprimées"</string>
     <string name="modules_designsystem_clear_canvas">Effacer le canevas</string>
     <string name="modules_designsystem_add_labels">Ajouter des libellés</string>
+    <string name="modules_designsystem_unarchive">Désarchiver</string>
+    <string name="modules_designsystem_dialog_empty_trash">Vider la corbeille ?</string>
+    <string name="modules_designsystem_dialog_empty_trash_content">
+    Toutes les notes dans la corbeille seront supprimées définitivement.
+    </string>
+    <string name="modules_designsystem_dialog_delete_forever">Supprimer définitivement</string>
+    <string name="modules_designsystem_dialog_delete_forever_content">
+    Cette note sera supprimée définitivement.
+    </string>
+
 </resources>
