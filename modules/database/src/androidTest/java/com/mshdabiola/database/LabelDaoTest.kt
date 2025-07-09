@@ -31,7 +31,8 @@ class LabelDaoTest {
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
-            context, NoteDatabase::class.java
+            context,
+            NoteDatabase::class.java,
         )
             .allowMainThreadQueries() // Allowing main thread queries for simplicity in tests
             .build()
@@ -63,7 +64,7 @@ class LabelDaoTest {
     fun upsertListAndGetAllLabels() = runTest {
         val labels = listOf(
             LabelEntity(id = 1, name = "Work"),
-            LabelEntity(id = 2, name = "Personal")
+            LabelEntity(id = 2, name = "Personal"),
         )
         val insertedIds = labelDao.upserts(labels)
 
@@ -133,11 +134,10 @@ class LabelDaoTest {
 
         val updatedLabelsToUpsert = listOf(
             LabelEntity(id = 1, name = "New Label 1"), // Update
-            LabelEntity(id = 3, name = "New Label 3")  // Insert
+            LabelEntity(id = 3, name = "New Label 3"), // Insert
         )
         val resultIds = labelDao.upserts(updatedLabelsToUpsert)
         assertContentEquals(listOf(1L, 3L), resultIds)
-
 
         val label1 = labelDao.get(1L).first()
         assertNotNull(label1)

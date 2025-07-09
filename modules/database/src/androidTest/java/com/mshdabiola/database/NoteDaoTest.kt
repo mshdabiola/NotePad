@@ -34,15 +34,15 @@ class NoteDaoTest {
         isCheck = false,
         color = 5,
         background = 5,
-        isPin = false
+        isPin = false,
     )
     private val note2 = NoteEntity(
-        id = 2, title = "Note 2", detail = "Detail 2",  noteType = NoteType.NOTE,
+        id = 2, title = "Note 2", detail = "Detail 2", noteType = NoteType.NOTE,
         editDate = 15,
         isCheck = false,
         color = 5,
         background = 5,
-        isPin =false
+        isPin = false,
     )
     private val note3 = NoteEntity(
         id = 3, title = "Archived Note", detail = "Archived Detail", noteType = NoteType.ARCHIVE,
@@ -50,21 +50,23 @@ class NoteDaoTest {
         isCheck = false,
         color = 5,
         background = 5,
-        isPin =false
+        isPin = false,
     )
-    private val note4 = NoteEntity(id = 4, title = "Trashed Note", detail = "Trashed Detail",  noteType = NoteType.TRASH,
+    private val note4 = NoteEntity(
+        id = 4, title = "Trashed Note", detail = "Trashed Detail", noteType = NoteType.TRASH,
         editDate = 15,
         isCheck = false,
         color = 5,
         background = 5,
-        isPin =false)
-
+        isPin = false,
+    )
 
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
-            context, NoteDatabase::class.java
+            context,
+            NoteDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -83,7 +85,7 @@ class NoteDaoTest {
         val insertedId = noteDao.upsert(note1)
         assertEquals(note1.id, insertedId)
 
-        val retrievedNotePad = noteDao.get(note1.id ?:3).first()
+        val retrievedNotePad = noteDao.get(note1.id ?: 3).first()
         assertNotNull(retrievedNotePad)
         assertEquals(note1.id, retrievedNotePad.noteEntity.id)
         assertEquals(note1.title, retrievedNotePad.noteEntity.title)
@@ -97,7 +99,7 @@ class NoteDaoTest {
         val updatedId = noteDao.upsert(updatedNote)
 
         assertEquals(note1.id, updatedId) // ID should remain the same
-        val retrievedNotePad = noteDao.get(note1.id?:3).first()
+        val retrievedNotePad = noteDao.get(note1.id ?: 3).first()
         assertNotNull(retrievedNotePad)
         assertEquals("Updated Title", retrievedNotePad.noteEntity.title)
     }
@@ -112,7 +114,7 @@ class NoteDaoTest {
         val allNotePads = noteDao.getAll().first()
         assertEquals(2, allNotePads.size)
         // Verify content (more thorough checks might compare all fields or use containsAll)
-        assertTrue(allNotePads.any { it.noteEntity .id == note1.id })
+        assertTrue(allNotePads.any { it.noteEntity.id == note1.id })
         assertTrue(allNotePads.any { it.noteEntity.id == note2.id })
     }
 
@@ -122,17 +124,17 @@ class NoteDaoTest {
         noteDao.upsert(note1)
         noteDao.upsert(note2)
 
-        noteDao.delete(note1.id?:3)
+        noteDao.delete(note1.id ?: 3)
 
-        assertNull(noteDao.get(note1.id?:3).first())
-        assertNotNull(noteDao.get(note2.id?:3).first())
+        assertNull(noteDao.get(note1.id ?: 3).first())
+        assertNotNull(noteDao.get(note2.id ?: 3).first())
     }
 
     @Test
     @Throws(Exception::class)
     fun deleteIds() = runTest {
         noteDao.upserts(listOf(note1, note2, note3))
-        val idsToDelete = setOf(note1.id?:3, note3.id?:3)
+        val idsToDelete = setOf(note1.id ?: 3, note3.id ?: 3)
 
         noteDao.deleteIds(idsToDelete)
 
@@ -150,7 +152,7 @@ class NoteDaoTest {
 
         assertNotNull(noteDao.get(note1.id!!).first()) // NORMAL
         assertNotNull(noteDao.get(note3.id!!).first()) // ARCHIVE
-        assertNull(noteDao.get(note4.id!!).first())   // TRASH should be deleted
+        assertNull(noteDao.get(note4.id!!).first()) // TRASH should be deleted
     }
 
     @Test

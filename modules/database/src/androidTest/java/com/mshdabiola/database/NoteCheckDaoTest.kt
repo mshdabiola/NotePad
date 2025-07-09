@@ -16,11 +16,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.test.assertContentEquals
 
 @RunWith(AndroidJUnit4::class)
 class NoteCheckDaoTest {
@@ -29,24 +29,26 @@ class NoteCheckDaoTest {
     private lateinit var db: NoteDatabase // Assuming your RoomDatabase class is AppDatabase
 
     private val parentNoteId = 1L
-    private val parentNote = NoteEntity(id = parentNoteId, title = "Parent Note", detail = "Checklist parent", noteType = NoteType.NOTE,
+    private val parentNote = NoteEntity(
+        id = parentNoteId, title = "Parent Note", detail = "Checklist parent", noteType = NoteType.NOTE,
         editDate = 333,
         isCheck = false,
         color = 3,
         background = 3,
-        isPin = false)
+        isPin = false,
+    )
 
     private val check1 = NoteCheckEntity(id = 10L, noteId = parentNoteId, content = "Item 1", isCheck = false)
     private val check2 = NoteCheckEntity(id = 11L, noteId = parentNoteId, content = "Item 2", isCheck = true)
     private val check3 = NoteCheckEntity(id = 12L, noteId = parentNoteId, content = "Item 3", isCheck = false)
     private val checkOtherNote = NoteCheckEntity(id = 13L, noteId = 2L, content = "Other note item", isCheck = false) // For a different note
 
-
     @Before
     fun createDb() = runTest { // Make @Before suspending to insert parent note
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
-            context, NoteDatabase::class.java
+            context,
+            NoteDatabase::class.java,
         )
             .allowMainThreadQueries() // For simplicity in tests
             .build()
@@ -55,15 +57,17 @@ class NoteCheckDaoTest {
 
         // Insert a parent NoteEntity because NoteCheckEntity likely has a foreign key to NoteEntity
         noteDao.upsert(parentNote)
-        noteDao.upsert(NoteEntity(
-            id = 2L, title = "Another Parent", noteType = NoteType.NOTE,
-            detail = "detail",
-            editDate = 333,
-            isCheck = false,
-            color = 3,
-            background = 3,
-            isPin = false
-        )) // For checkOtherNote
+        noteDao.upsert(
+            NoteEntity(
+                id = 2L, title = "Another Parent", noteType = NoteType.NOTE,
+                detail = "detail",
+                editDate = 333,
+                isCheck = false,
+                color = 3,
+                background = 3,
+                isPin = false,
+            ),
+        ) // For checkOtherNote
     }
 
     @After
@@ -129,7 +133,6 @@ class NoteCheckDaoTest {
         assertTrue(allChecks.any { it.id == checkOtherNote.id })
     }
 
-
     @Test
     @Throws(Exception::class)
     fun deleteCheck() = runTest {
@@ -151,11 +154,10 @@ class NoteCheckDaoTest {
         val otherNoteCheckedItem = NoteCheckEntity(id = 100L, noteId = 2L, content = "Checked other", isCheck = true)
         noteCheckDao.upsert(otherNoteCheckedItem)
 
-
         noteCheckDao.deleteCheckedItems(parentNoteId)
 
         assertNotNull(noteCheckDao.get(check1.id!!).first()) // Should remain
-        assertNull(noteCheckDao.get(check2.id!!).first())    // Should be deleted
+        assertNull(noteCheckDao.get(check2.id!!).first()) // Should be deleted
         assertNotNull(noteCheckDao.get(check3.id!!).first()) // Should remain
         assertNotNull(noteCheckDao.get(otherNoteCheckedItem.id!!).first()) // Checked item from other note should remain
     }
