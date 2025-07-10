@@ -46,25 +46,33 @@ class NoteLabelDaoTest {
         ).build()
 
         noteLabelDao = db.getNoteLabelDao() // Ensure this method exists in NoteDatabase
-        noteDao = db.getNoteDao()           // Ensure this method exists in NoteDatabase
-        labelDao = db.getLabelDao()         // Ensure this method exists in NoteDatabase
+        noteDao = db.getNoteDao() // Ensure this method exists in NoteDatabase
+        labelDao = db.getLabelDao() // Ensure this method exists in NoteDatabase
 
         // Insert dummy notes
-        testNoteId1 = noteDao.upsert(NoteEntity(id = null, title = "Note 1",
-            detail = "Detail for Test Note 1",
-            editDate = 533,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
-        testNoteId2 = noteDao.upsert(NoteEntity(id = null, title = "Note 2",  detail = "Detail for Test Note 1",
-            editDate = 5336,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
+        testNoteId1 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 1",
+                detail = "Detail for Test Note 1",
+                editDate = 533,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
+        testNoteId2 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 2", detail = "Detail for Test Note 1",
+                editDate = 5336,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
 
         // Insert dummy labels
         testLabelId1 = labelDao.upsert(LabelEntity(id = null, name = "Label 1"))
@@ -104,7 +112,7 @@ class NoteLabelDaoTest {
         val noteLabels = listOf(
             NoteLabelEntity(noteId = testNoteId1, labelId = testLabelId1),
             NoteLabelEntity(noteId = testNoteId2, labelId = testLabelId2),
-            NoteLabelEntity(noteId = testNoteId1, labelId = testLabelId3)
+            NoteLabelEntity(noteId = testNoteId1, labelId = testLabelId3),
         )
         val insertedIds = noteLabelDao.upserts(noteLabels)
 
@@ -115,9 +123,11 @@ class NoteLabelDaoTest {
         assertEquals(3, allNoteLabels.size)
         // Check if all inserted items are present
         noteLabels.forEach { expected ->
-            assertTrue(allNoteLabels.any { actual ->
-                actual.noteId == expected.noteId && actual.labelId == expected.labelId
-            })
+            assertTrue(
+                allNoteLabels.any { actual ->
+                    actual.noteId == expected.noteId && actual.labelId == expected.labelId
+                },
+            )
         }
     }
 
@@ -184,16 +194,19 @@ class NoteLabelDaoTest {
         val nl_n1_l1 = NoteLabelEntity(noteId = testNoteId1, labelId = testLabelId1)
         val nl_n1_l2 = NoteLabelEntity(noteId = testNoteId1, labelId = testLabelId2)
         // Insert a third note and label for more comprehensive testing if needed
-        val tempNoteId3 = noteDao.upsert(NoteEntity(id = null, title = "Temp Note 3",
-            detail = "Detail for Test Note 1",
-            editDate = 65,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
+        val tempNoteId3 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Temp Note 3",
+                detail = "Detail for Test Note 1",
+                editDate = 65,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
         val nl_n3_l1 = NoteLabelEntity(noteId = tempNoteId3, labelId = testLabelId1)
-
 
         noteLabelDao.upserts(listOf(nl_n1_l1, nl_n1_l2, nl_n3_l1))
 
@@ -206,10 +219,9 @@ class NoteLabelDaoTest {
 
         val resultsForNote1And3 = noteLabelDao.getByNoteIds(setOf(testNoteId1, tempNoteId3)).first()
         assertEquals(3, resultsForNote1And3.size)
-        assertTrue(resultsForNote1And3.any {it.noteId == testNoteId1 && it.labelId == testLabelId1})
-        assertTrue(resultsForNote1And3.any {it.noteId == testNoteId1 && it.labelId == testLabelId2})
-        assertTrue(resultsForNote1And3.any {it.noteId == tempNoteId3 && it.labelId == testLabelId1})
-
+        assertTrue(resultsForNote1And3.any { it.noteId == testNoteId1 && it.labelId == testLabelId1 })
+        assertTrue(resultsForNote1And3.any { it.noteId == testNoteId1 && it.labelId == testLabelId2 })
+        assertTrue(resultsForNote1And3.any { it.noteId == tempNoteId3 && it.labelId == testLabelId1 })
     }
 
     @Test
@@ -276,7 +288,6 @@ class NoteLabelDaoTest {
         // also clear any by labels if some notes were deleted before labels
         val allLabels = labelDao.getAll().first()
         allLabels.forEach { labelDao.delete(it.id!!) }
-
 
         val allNoteLabels = noteLabelDao.getAll().first()
         assertTrue(allNoteLabels.isEmpty())

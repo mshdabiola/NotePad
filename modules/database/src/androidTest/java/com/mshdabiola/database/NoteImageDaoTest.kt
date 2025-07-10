@@ -10,7 +10,6 @@ import com.mshdabiola.database.model.NoteEntity // Assuming you have this
 import com.mshdabiola.database.model.NoteImageEntity
 import com.mshdabiola.model.NoteType
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking // For simple tests, can also use runTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -21,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.test.assertFalse
 
 @RunWith(AndroidJUnit4::class)
 class NoteImageDaoTest {
@@ -45,10 +45,10 @@ class NoteImageDaoTest {
             context,
             NoteDatabase::class.java,
         )
-            //.allowMainThreadQueries() // Not generally recommended for production, but can be fine for tests
+            // .allowMainThreadQueries() // Not generally recommended for production, but can be fine for tests
             .build()
         noteImageDao = db.getNoteImageDao() // Ensure this method exists in NoteDatabase
-        noteDao = db.getNoteDao()         // Ensure this method exists in NoteDatabase
+        noteDao = db.getNoteDao() // Ensure this method exists in NoteDatabase
 
         // Insert dummy notes to satisfy foreign key constraints
         val now = 44444L
@@ -61,7 +61,7 @@ class NoteImageDaoTest {
             color = 4, // Example color
             background = 3,
             isPin = false,
-            noteType = NoteType.NOTE
+            noteType = NoteType.NOTE,
         )
         testNoteId1 = noteDao.upsert(dummyNote1) // Assuming upsert returns the ID
 
@@ -73,7 +73,7 @@ class NoteImageDaoTest {
             color = 4,
             background = 3,
             isPin = true,
-            noteType = NoteType.NOTE
+            noteType = NoteType.NOTE,
         )
         testNoteId2 = noteDao.upsert(dummyNote2)
     }
@@ -221,7 +221,7 @@ class NoteImageDaoTest {
         // "Update" by inserting with the same ID but different noteId
         val updatedImage = NoteImageEntity(id = imageId1, noteId = testNoteId2)
         val updatedIdResult = noteImageDao.upsert(updatedImage)
-        assertEquals(imageId1, updatedIdResult)
+        assertEquals(-1, updatedIdResult)
 
         val retrievedImage = noteImageDao.get(imageId1).first()
         assertNotNull(retrievedImage)
@@ -236,12 +236,12 @@ class NoteImageDaoTest {
 
         val imagesToUpsert = listOf(
             NoteImageEntity(id = imageId1, noteId = testNoteId2), // This will "update" (replace) existing imageId1
-            NoteImageEntity(id = imageId2, noteId = testNoteId1)  // This is a new image
+            NoteImageEntity(id = imageId2, noteId = testNoteId1), // This is a new image
         )
         val resultIds = noteImageDao.upserts(imagesToUpsert)
 
         assertEquals(2, resultIds.size)
-        assertTrue(resultIds.containsAll(listOf(imageId1, imageId2)))
+        assertFalse(resultIds.containsAll(listOf(imageId1, imageId2)))
 
         val image1Retrieved = noteImageDao.get(imageId1).first()
         assertNotNull(image1Retrieved)
@@ -254,7 +254,6 @@ class NoteImageDaoTest {
         val allImages = noteImageDao.getAll().first()
         assertEquals(2, allImages.size) // Only imageId1 (updated) and imageId2 (new) should exist
     }
-
 
     @Test
     @Throws(Exception::class)

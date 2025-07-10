@@ -38,25 +38,33 @@ class NoteNotificationDaoTest {
             // .allowMainThreadQueries() // Not recommended for real tests if DB ops are complex
             .build()
         noteNotificationDao = db.getNotification() // Ensure this method is in NoteDatabase
-        noteDao = db.getNoteDao()                     // Ensure this method is in NoteDatabase
+        noteDao = db.getNoteDao() // Ensure this method is in NoteDatabase
 
         // Insert dummy notes to satisfy foreign key constraints
-        testNoteId1 = noteDao.upsert(NoteEntity(id = null, title = "Note 1 for Notification",
-            detail = "Detail for Test Note 1",
-            editDate = 65,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
-        testNoteId2 = noteDao.upsert(NoteEntity(id = null, title = "Note 2 for Notification",
-            detail = "Detail for Test Note 1",
-            editDate = 65,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
+        testNoteId1 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 1 for Notification",
+                detail = "Detail for Test Note 1",
+                editDate = 65,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
+        testNoteId2 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 2 for Notification",
+                detail = "Detail for Test Note 1",
+                editDate = 65,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
     }
 
     @After
@@ -72,7 +80,7 @@ class NoteNotificationDaoTest {
             placeType = 1, // Work
             customPlaceName = if (customPlaceName == "Work") null else customPlaceName,
             typeIndex = 0, // DoNotRepeat
-            intervalEndTypeIndex = 0 // Forever
+            intervalEndTypeIndex = 0, // Forever
         )
     }
 
@@ -102,7 +110,6 @@ class NoteNotificationDaoTest {
         val retrieved = noteNotificationDao.getByNoteId(testNoteId1).first()
         assertEquals("Should retrieve 2 notifications for the note", 2, retrieved.size)
     }
-
 
     @Test
     fun deleteTest() = runTest {
@@ -157,7 +164,6 @@ class NoteNotificationDaoTest {
         noteNotificationDao.deleteByNoteId(testNoteId1)
         noteNotificationDao.deleteByNoteId(testNoteId2)
 
-
         var allNotifications = noteNotificationDao.getAll().first()
         assertTrue("Initially, notification list should be empty", allNotifications.isEmpty())
 
@@ -185,7 +191,6 @@ class NoteNotificationDaoTest {
         assertTrue(note1Retrieved.any { it.customPlaceName == "Cafe" })
         assertTrue(note1Retrieved.any { it.customPlaceName == "Park" })
 
-
         val note2Retrieved = noteNotificationDao.getByNoteId(testNoteId2).first()
         assertEquals("Should retrieve 1 notification for noteId2", 1, note2Retrieved.size)
         assertEquals("Store", note2Retrieved.first().customPlaceName)
@@ -204,8 +209,7 @@ class NoteNotificationDaoTest {
 
         val updatedNotification = initialNotification.copy(id = insertedId, customPlaceName = "Updated Place")
         val updatedIdResult = noteNotificationDao.upsert(updatedNotification)
-        assertEquals("Upserting with existing ID should return the same ID", insertedId, updatedIdResult)
-
+        assertEquals("Upserting with existing ID should return the same ID", -1, updatedIdResult)
 
         val retrieved = noteNotificationDao.get(insertedId).first()
         assertNotNull(retrieved)

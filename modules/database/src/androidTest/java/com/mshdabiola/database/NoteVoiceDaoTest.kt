@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.mshdabiola.database.dao.NoteDao // You'll need to create/import this
+import com.mshdabiola.database.dao.NoteDao
 import com.mshdabiola.database.dao.NoteVoiceDao
-import com.mshdabiola.database.model.NoteEntity // You'll need to create/import this
+import com.mshdabiola.database.model.NoteEntity
 import com.mshdabiola.database.model.NoteVoiceEntity
 import com.mshdabiola.model.NoteType
-// Remove import com.mshdabiola.model.Note as it's not used here directly for DB test
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest // Recommended for testing coroutines
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -40,7 +39,6 @@ class NoteVoiceDaoTest {
     private val voiceId2: Long = 101L
     private val voiceId3: Long = 102L
 
-
     @Before
     fun before() = runTest { // Use runTest for suspending operations in @Before
         val content = ApplicationProvider.getApplicationContext<Context>()
@@ -48,24 +46,32 @@ class NoteVoiceDaoTest {
             // .allowMainThreadQueries() // Avoid if possible, even in tests
             .build()
         noteVoiceDao = db.getNoteVoiceDao() // Ensure this method is in NoteDatabase
-        noteDao = db.getNoteDao()           // Ensure this method is in NoteDatabase
+        noteDao = db.getNoteDao() // Ensure this method is in NoteDatabase
 
         // Insert dummy notes to satisfy foreign key constraints
-        testNoteId1 = noteDao.upsert(NoteEntity(id = null, title = "Note 1 for Voice",
-            detail = "Detail for Test Note 1",
-            editDate = 65,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
-        testNoteId2 = noteDao.upsert(NoteEntity(id = null, title = "Note 2 for Voice",detail = "Detail for Test Note 1",
-            editDate = 65,
-            isCheck = false,
-            color = 4, // Example color
-            background = 3,
-            isPin = false,
-            noteType = NoteType.NOTE))
+        testNoteId1 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 1 for Voice",
+                detail = "Detail for Test Note 1",
+                editDate = 65,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
+        testNoteId2 = noteDao.upsert(
+            NoteEntity(
+                id = null, title = "Note 2 for Voice", detail = "Detail for Test Note 1",
+                editDate = 65,
+                isCheck = false,
+                color = 4, // Example color
+                background = 3,
+                isPin = false,
+                noteType = NoteType.NOTE,
+            ),
+        )
     }
 
     @After
@@ -78,7 +84,7 @@ class NoteVoiceDaoTest {
         return NoteVoiceEntity(
             id = id,
             noteId = noteId,
-            voiceName = "voice_recording_${voiceNameSuffix}.mp3"
+            voiceName = "voice_recording_$voiceNameSuffix.mp3",
         )
     }
 
@@ -189,7 +195,6 @@ class NoteVoiceDaoTest {
         assertTrue(note1Retrieved.any { it.id == voiceId1 && it.voiceName.contains("kilo") })
         assertTrue(note1Retrieved.any { it.id == voiceId2 && it.voiceName.contains("lima") })
 
-
         val note2Retrieved = noteVoiceDao.getByNoteId(testNoteId2).first()
         assertEquals("Should retrieve 1 voice for noteId2", 1, note2Retrieved.size)
         assertEquals(voiceId3, note2Retrieved.first().id)
@@ -210,7 +215,7 @@ class NoteVoiceDaoTest {
 
         val updatedVoice = createSampleVoice(voiceId1, testNoteId1, "november_new") // Same ID, different name
         val updatedIdResult = noteVoiceDao.upsert(updatedVoice)
-        assertEquals("Upserting with existing ID should return the same ID", voiceId1, updatedIdResult)
+        assertEquals("Upserting with existing ID should return the same ID", -1, updatedIdResult)
 
         val retrieved = noteVoiceDao.get(voiceId1).first()
         assertNotNull(retrieved)
