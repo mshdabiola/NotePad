@@ -4,611 +4,299 @@
 
 package com.mshdabiola.main
 
-import ArchiveTopAppBar
-import LabelTopAppBar
-import MainTopAppBar
-import NoteCard
-import SearchTopBar
-import SelectTopBar
-import TrashTopAppBar
+import MainTopBar
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.mshdabiola.analytics.LocalAnalyticsHelper
-import com.mshdabiola.common.result.Result
+import com.mshdabiola.designsystem.component.NoteButton
 import com.mshdabiola.designsystem.component.NoteLoadingWheel
-import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.Note
-import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteType
-import com.mshdabiola.ui.ColorDialog
-import com.mshdabiola.ui.DateDialog
-import com.mshdabiola.ui.FirebaseScreenLog
-import com.mshdabiola.ui.NotificationDialogNew
-import com.mshdabiola.ui.TimeDialog
-import com.mshdabiola.ui.TrackScrollJank
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.delay
+import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.createFakeNotePads
+import com.mshdabiola.ui.NoteCard
+import com.mshdabiola.ui.PreviewContainer
 import com.mshdabiola.designsystem.R as Rd
-
-// import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainRoute(
-    modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-    onShowSnackbar: suspend (String, String?) -> Boolean,
-    navigateToDetail: (Long) -> Unit,
-    navigateToSelectLevel: (Set<Long>) -> Unit,
-    onOpenDrawer: () -> Unit,
-) {
-    val mainViewModel: MainViewModel = hiltViewModel()
-
-    FirebaseScreenLog(screen = "main_screen")
-    val mainState = mainViewModel.mainState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(
-        key1 = Unit,
-        block = {
-            delay(2000)
-            mainViewModel.deleteEmptyNote()
-        },
-    )
-
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    var showColor by remember {
-        mutableStateOf(false)
-    }
-    var showRenameLabel by remember {
-        mutableStateOf(false)
-    }
-    var showDeleteLabel by remember {
-        mutableStateOf(false)
-    }
-//    val selectId = remember(mainState.value.notePads) {
-//        mainState.value.notePads.filter { it.note.selected }.map { it.note.id.toInt() }
-//            .toIntArray()
-//    }
-    val context = LocalContext.current
-//    val send = {
-//        val notePads = mainState.value.notePads.single { it.note.selected }
-//        val intent = ShareCompat.IntentBuilder(context)
-//            .setText(notePads.toString())
-//            .setType("text/*")
-//            .setChooserTitle("From Notepad")
-//            .createChooserIntent()
-//        context.startActivity(Intent(intent))
-//    }
-    MainScreen(
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
-        modifier = modifier,
-        mainState = mainState.value,
-        navigateToEdit = navigateToDetail,
-        searchState = mainViewModel.searchState,
-        onSelectedCard = mainViewModel::onSelectCard,
-        onClearSelected = mainViewModel::clearSelected,
-        setAllPin = mainViewModel::setPin,
-        setAllAlarm = { showDialog = true },
-        setAllColor = { showColor = true },
-        setAllLabel = {
-            navigateToSelectLevel((mainState.value as MainState.Success).setOfSelected)
-        },
-        onCopy = mainViewModel::copyNote,
-        onDelete = mainViewModel::setAllToTrash,
-        onArchive = mainViewModel::setAllArchive,
-        onSend = {
-            mainViewModel.clearSelected()
-        },
-        onRenameLabel = { showRenameLabel = true },
-        onDeleteLabel = { showDeleteLabel = true },
-        onEmptyTrash = mainViewModel::emptyTrash,
-        onOpenDrawer = onOpenDrawer,
-        toggleSearch = mainViewModel::toggleSearch,
-        onSetSearch = mainViewModel::onSetSearch,
-        //   items = timeline,
-
-    )
-    val colorIndex by remember { mutableStateOf(0) }
-    val dateDialogUiData = mainViewModel.dateTimeState.collectAsStateWithLifecycle()
-
-    NotificationDialogNew(
-        showDialog = showDialog,
-        dateDialogUiData = dateDialogUiData.value,
-        onDismissRequest = { showDialog = false },
-        onSetAlarm = mainViewModel::setAlarm,
-        onTimeChange = mainViewModel::onSetTime,
-        onDateChange = mainViewModel::onSetDate,
-        onIntervalChange = mainViewModel::onSetInterval,
-        onDeleteAlarm = mainViewModel::deleteAlarm,
-    )
-
-    TimeDialog(
-        state = mainViewModel.timePicker,
-        showDialog = dateDialogUiData.value.showTimeDialog,
-        onDismissRequest = mainViewModel::hideTime,
-        onSetTime = mainViewModel::onSetTime,
-    )
-    DateDialog(
-        state = mainViewModel.datePicker,
-        showDialog = dateDialogUiData.value.showDateDialog,
-        onDismissRequest = mainViewModel::hideDate,
-        onSetDate = mainViewModel::onSetDate,
-    )
-
-    ColorDialog(
-        show = showColor,
-        onDismissRequest = { showColor = false },
-        onColorClick = mainViewModel::setAllColor,
-        currentColor = colorIndex ?: -1,
-    )
-
-    RenameLabelAlertDialog(
-        show = showRenameLabel,
-        label = "Name", // (mainState.value.noteType.type).name,
-        onDismissRequest = { showRenameLabel = false },
-        onChangeName = mainViewModel::renameLabel,
-    )
-
-    DeleteLabelAlertDialog(
-        show = showDeleteLabel,
-        onDismissRequest = { showDeleteLabel = false },
-        onDelete = mainViewModel::deleteLabel,
-    )
-}
-
-@OptIn(
-    ExperimentalSharedTransitionApi::class,
-)
-@Composable
 internal fun MainScreen(
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
     mainState: MainState,
-    searchState: TextFieldState,
-    navigateToEdit: (Long) -> Unit = {},
-    onOpenDrawer: () -> Unit = {},
-    onSelectedCard: (Long) -> Unit = {},
-    onClearSelected: () -> Unit = {},
-    setAllPin: () -> Unit = {},
-    setAllAlarm: () -> Unit = {},
-    setAllColor: () -> Unit = {},
-    setAllLabel: () -> Unit = {},
+    navigateToNoteEditor: (Long, Int, Int) -> Unit = { _, _, _ -> },
+    onNoteSelected: (Long) -> Unit = {},
+
+    onDisplayModeChange: () -> Unit = {},
+    onHamburgerMenuClick: () -> Unit = {},
+
+    onClearSelection: () -> Unit = {},
+    onPinNotes: () -> Unit = {},
+    onNotificationClick: () -> Unit = {},
+    onSelectColor: () -> Unit = {},
+    onLabelNotes: () -> Unit = {},
     onArchive: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onSend: () -> Unit = {},
-    onCopy: () -> Unit = {},
-    onRenameLabel: () -> Unit = {},
+    onDeleteNotes: () -> Unit = {},
+    onShareNote: () -> Unit = {},
+    onCopyNote: () -> Unit = {},
+    onDeletedForever: () -> Unit = {},
+    onRestore: () -> Unit = {},
+
+    onSearchClick: () -> Unit = {},
+    onLabelNameChange: () -> Unit = {},
     onDeleteLabel: () -> Unit = {},
-    onEmptyTrash: () -> Unit = {},
-    toggleSearch: () -> Unit = {},
-    onSetSearch: (SearchSort?) -> Unit = {},
+
+    onDeleteAllTrash: () -> Unit = {},
+
 ) {
-    val state = rememberLazyListState()
-    TrackScrollJank(scrollableState = state, stateName = "topic:screen")
-
-    when (mainState) {
-        is MainState.Success -> {
-            MainContent(
-                modifier = modifier,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                success = mainState,
-                searchState = searchState,
-                navigateToEdit = navigateToEdit,
-                onSelectedCard = onSelectedCard,
-                onClearSelected = onClearSelected,
-                setAllPin = setAllPin,
-                setAllAlarm = setAllAlarm,
-                setAllColor = setAllColor,
-                setAllLabel = setAllLabel,
-                onArchive = onArchive,
-                onDelete = onDelete,
-                onSend = onSend,
-                onCopy = onCopy,
-                onRenameLabel = onRenameLabel,
-                onDeleteLabel = onDeleteLabel,
-                onEmptyTrash = onEmptyTrash,
-                onOpenDrawer = onOpenDrawer,
-                toggleSearch = toggleSearch,
-                onSetSearch = onSetSearch,
-            )
-        }
-
-        is MainState.Loading -> {
-            LoadingState()
-        }
-
-        is MainState.Empty -> {
-            EmptyState()
-        }
-
-        is MainState.Finish -> {}
+    val scrollBehavior = if ((mainState as? MainState.Success)?.selectState != null) {
+        TopAppBarDefaults.pinnedScrollBehavior()
+    } else {
+        TopAppBarDefaults.enterAlwaysScrollBehavior()
     }
 
-//    with(sharedTransitionScope) {
-//        Box(
-//            modifier = modifier
-//                .testTag("main:screen")
-//                .sharedBounds(
-//                    sharedContentState = rememberSharedContentState("container"),
-//                    animatedVisibilityScope = animatedContentScope,
-//                ),
-//        )
+    val gridState = rememberLazyStaggeredGridState()
+//    TrackScrollJank(scrollableState = gridState, stateName = "main:grid_jank_tracker") // More specific jank tracker tag
+
+    when (mainState) {
+        is MainState.Loading -> {
+            LoadingState(modifier = modifier.testTag("main:loading_state"))
+        }
+
+        is MainState.Success -> {
+            val onNoteClick: (Long, Int, Int) -> Unit = { id, colorIndex, background ->
+                if (mainState.selectState != null) {
+                    onNoteSelected(id)
+                } else {
+                    navigateToNoteEditor(id, colorIndex, background)
+                }
+            }
+            Scaffold(
+                modifier = modifier
+                    .fillMaxSize()
+                    .testTag("main:scaffold_success") // Tag for the success state Scaffold
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    MainTopBar(
+                        // Modifier for MainTopBar can be passed if needed,
+                        // but test tags within MainTopBar are more granular
+                        scrollBehavior = scrollBehavior,
+                        noteDisplayCategory = mainState.noteDisplayCategory,
+                        isGrid = mainState.isGrid,
+                        selectState = mainState.selectState,
+                        labelName = mainState.labelName,
+                        onDisplayModeChange = onDisplayModeChange,
+                        onHamburgerMenuClick = onHamburgerMenuClick,
+                        onClearSelection = onClearSelection,
+                        onPinNotes = onPinNotes,
+                        onNotificationClick = onNotificationClick,
+                        onSelectColor = onSelectColor,
+                        onLabelNotes = onLabelNotes,
+                        onArchive = onArchive,
+                        onDeleteNotes = onDeleteNotes,
+                        onShareNote = onShareNote,
+                        onCopyNote = onCopyNote,
+                        onSearchClick = onSearchClick,
+                        onLabelNameChange = onLabelNameChange,
+                        onDeleteLabel = onDeleteLabel,
+                        onDeleteAllTrash = onDeleteAllTrash,
+                        onDeleteForever = onDeletedForever,
+                        onRestore = onRestore,
+                    )
+                },
+            ) { paddingValues ->
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .testTag("main:notes_grid"), // Tag for the notes list/grid
+                    state = gridState,
+                    contentPadding = paddingValues,
+                    columns = StaggeredGridCells.Fixed(if (mainState.isGrid) 2 else 1),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp,
+                ) {
+                    if (mainState.unPinNotePads.isEmpty() && mainState.pinNotePads.isEmpty()) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            EmptyState(
+                                modifier = Modifier.testTag("main:empty_state_view"),
+                                noteDisplayCategory = mainState.noteDisplayCategory,
+                            )
+                        }
+                    }
+                    if (mainState.pinNotePads.isNotEmpty()) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .testTag("main:pinned_section_header"),
+                                text = stringResource(Rd.string.modules_designsystem_pin),
+                            )
+                        }
+                    }
+
+                    items(items = mainState.pinNotePads, key = { "pinned_${it.note.id}" }) { notepad ->
+                        NoteCard(
+                            modifier = Modifier.testTag("main:note_card_pinned_${notepad.note.id}"),
+                            notePad = notepad,
+                            onCardClick = onNoteClick,
+                            onLongClick = onNoteSelected,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.note.id) ?: false,
+                        )
+                    }
+
+                    if (mainState.pinNotePads.isNotEmpty() && mainState.unPinNotePads.isNotEmpty()) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .testTag("main:others_section_header"),
+                                text = stringResource(Rd.string.modules_designsystem_other),
+                            )
+                        }
+                    }
+                    items(items = mainState.unPinNotePads, key = { "unpinned_${it.note.id}" }) { notepad ->
+                        NoteCard(
+                            modifier = Modifier.testTag("main:note_card_unpinned_${notepad.note.id}"),
+                            notePad = notepad,
+                            onCardClick = onNoteClick,
+                            onLongClick = onNoteSelected,
+                            isSelect = mainState.selectState?.setOfSelected?.contains(notepad.note.id) ?: false,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
 private fun LoadingState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("main:loading"),
+        modifier = modifier // Test tag is applied from the caller
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         NoteLoadingWheel(
+            modifier = Modifier.testTag("main:loading_wheel"),
             contentDesc = "Loading",
         )
     }
 }
 
+@SuppressLint("UnusedSharedTransitionModifierParameter")
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier, noteType: NoteType = NoteType.NOTE) {
-    Column(
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize()
-            .testTag("main:empty"),
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Loader()
-        Text(
-            text = stringResource(Rd.string.modules_designsystem_empty_notes),
-            textAlign = TextAlign.Center,
+fun MainScreenPreview() {
+    val pin = createFakeNotePads(1..2)
+    val unPin = createFakeNotePads(3..6)
+
+    PreviewContainer {
+        MainScreen(
+            mainState = MainState.Success(
+                isGrid = true,
+                labelName = "Label",
+                pinNotePads = pin,
+                unPinNotePads = unPin,
+                noteDisplayCategory = NoteDisplayCategory(),
+                selectState = null,
+            ),
         )
     }
 }
 
-private fun noteUiStateItemsSize(
-    topicUiState: Result<List<Note>>,
-) = when (topicUiState) {
-    is Result.Error -> 0 // Nothing
-    is Result.Loading -> 1 // Loading bar
-    is Result.Success -> topicUiState.data.size + 2
-}
-
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class,
-    ExperimentalLayoutApi::class,
-)
 @Composable
-fun MainContent(
-    modifier: Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-    success: MainState.Success,
-    searchState: TextFieldState,
-    navigateToEdit: (Long) -> Unit = {},
-    onSelectedCard: (Long) -> Unit = {},
-    onClearSelected: () -> Unit = {},
-    setAllPin: () -> Unit = {},
-    setAllAlarm: () -> Unit = {},
-    setAllColor: () -> Unit = {},
-    setAllLabel: () -> Unit = {},
-    onArchive: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onSend: () -> Unit = {},
-    onCopy: () -> Unit = {},
-    onRenameLabel: () -> Unit = {},
-    onDeleteLabel: () -> Unit = {},
-    onEmptyTrash: () -> Unit = {},
-    onOpenDrawer: () -> Unit = {},
-    toggleSearch: () -> Unit = {},
-    onSetSearch: (SearchSort?) -> Unit, // ={}
+private fun EmptyState(
+    modifier: Modifier = Modifier, // Test tag applied from caller
+    noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val pinScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    val pinNotePad by remember(success.notePads) {
-        derivedStateOf {
-            success.notePads.partition { it.isPin }
-        }
-    }
-
-    val noOfSelected = remember(success.setOfSelected) {
-        success.setOfSelected.size
-    }
-    val isAllPin = remember(success.notePads) {
-        success.notePads.filter { success.setOfSelected.contains(it.id) }
-            .all { it.isPin }
-    }
-    var isGrid by rememberSaveable { mutableStateOf(true) }
-    val onNoteClick: (Long) -> Unit = {
-        if (noOfSelected > 0) {
-            onSelectedCard(it)
-        } else {
-            navigateToEdit(it)
-        }
-    }
-
-    Scaffold(
-        modifier = modifier
-            .testTag("main:list")
-            .nestedScroll(if (noOfSelected > 0) pinScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection),
-        topBar = {
-            when {
-                noOfSelected > 0 -> {
-                    SelectTopBar(
-                        selectNumber = noOfSelected,
-                        isAllPin = isAllPin,
-                        scrollBehavior = pinScrollBehavior,
-                        onClear = onClearSelected,
-                        onPin = setAllPin,
-                        onNoti = setAllAlarm,
-                        onColor = setAllColor,
-                        onLabel = setAllLabel,
-                        onArchive = onArchive,
-                        onDelete = onDelete,
-                        onSend = onSend,
-                        onCopy = onCopy,
-                    )
-                }
-
-                success.noteType == NoteType.LABEL -> {
-                    LabelTopAppBar(
-                        label = "Label Name", // labels.single { it.id == currentNoteType.id }.label,
-                        onNavigate = { },
-                        scrollBehavior = scrollBehavior,
-                        onDeleteLabel = onDeleteLabel,
-                        onRenameLabel = onRenameLabel,
-                    )
-                }
-
-                success.noteType == NoteType.NOTE -> {
-                    if (success.isSearch) {
-                        SearchTopBar(
-                            state = searchState,
-                            toggleSearch = toggleSearch,
-                        )
-                    } else {
-                        MainTopAppBar(
-                            onNavigate = onOpenDrawer,
-                            scrollBehavior = scrollBehavior,
-                            isGrid = isGrid,
-                            navigateToSearch = toggleSearch,
-                            onToggleGrid = { isGrid = !isGrid },
-                        )
-                    }
-                }
-
-                success.noteType == NoteType.TRASH -> {
-                    TrashTopAppBar(
-                        onNavigate = { },
-                        scrollBehavior = scrollBehavior,
-                        onEmptyTrash = onEmptyTrash,
-                    )
-                }
-
-                success.noteType == NoteType.REMAINDER -> {
-                    ArchiveTopAppBar(
-                        name = "Remainder",
-                        onNavigate = { },
-                        scrollBehavior = scrollBehavior,
-
-                    )
-                }
-
-                success.noteType == NoteType.ARCHIVE -> {
-                    ArchiveTopAppBar(
-                        onNavigate = { },
-                        scrollBehavior = scrollBehavior,
-                    )
-                }
-            }
-        },
-
-    ) { paddingValues ->
-
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(16.dp),
-            columns = StaggeredGridCells.Fixed(if (isGrid) 2 else 1),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalItemSpacing = 8.dp,
-
-        ) {
-            if (success.isSearch && success.notePads.isEmpty()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    LabelBox(
-                        title = stringResource(Rd.string.modules_designsystem_types),
-                        success.types,
-                        onItemClick = onSetSearch,
-                    )
-                }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    LabelBox(
-                        title = stringResource(Rd.string.modules_designsystem_labels),
-                        success.label,
-                        onItemClick = onSetSearch,
-                    )
-                }
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(text = stringResource(Rd.string.modules_designsystem_colors))
-                }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    FlowRow(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        success.color.forEach {
-                            Surface(
-                                onClick = {
-                                    onSetSearch(it)
-                                },
-                                shape = CircleShape,
-                                color = if (it.colorIndex == -1) Color.White else NoteIcon.noteColors[it.colorIndex],
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .aspectRatio(1f),
-
-                            ) {
-                                if (it.colorIndex == -1) {
-                                    Icon(
-                                        imageVector = NoteIcon.FormatColorReset,
-                                        contentDescription = "done",
-                                        tint = Color.Gray,
-                                        modifier = Modifier.padding(4.dp),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (!success.isSearch && success.notePads.isEmpty()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    EmptyState(noteType = success.noteType)
-                }
-            }
-            if (pinNotePad.first.isNotEmpty()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(Rd.string.modules_designsystem_pin),
-                    )
-                }
-            }
-            noteItems(
-                modifier = Modifier,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                items = pinNotePad.first.toImmutableList(),
-                onNoteClick = onNoteClick,
-                onSelectedCard = onSelectedCard,
-                setOfSelected = success.setOfSelected,
-            )
-
-            if (pinNotePad.first.isNotEmpty() && pinNotePad.second.isNotEmpty()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(Rd.string.modules_designsystem_other),
-                    )
-                }
-            }
-            noteItems(
-                modifier = Modifier,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                items = pinNotePad.second.toImmutableList(),
-                onNoteClick = onNoteClick,
-                onSelectedCard = onSelectedCard,
-                setOfSelected = success.setOfSelected,
-            )
-        }
+    Column(
+        modifier = modifier // Test tag applied from the caller
+            .padding(16.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.modules_designsystem_note_taking))
+        LottieAnimation(
+            modifier = Modifier.testTag("main:empty_state_animation"),
+            composition = composition,
+            restartOnPlay = true,
+            iterations = 200,
+        )
+        Text(
+            text = stringResource(Rd.string.modules_designsystem_empty_notes),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.testTag("main:empty_state_text"),
+        )
     }
 }
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-fun LazyStaggeredGridScope.noteItems(
-    modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-    items: List<NotePad>,
-    setOfSelected: Set<Long>,
-    onNoteClick: (Long) -> Unit,
-    onSelectedCard: (Long) -> Unit,
-) = items(
-    items = items,
-    key = { it.id },
-    itemContent = { note ->
-        val analyticsHelper = LocalAnalyticsHelper.current
-
-        with(sharedTransitionScope) {
-            NoteCard(
-                modifier = modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState("note${note.id}"),
-                    animatedVisibilityScope = animatedContentScope,
-
-                ),
-                isSelect = setOfSelected.contains(note.id),
-                notePad = note,
-                onCardClick = onNoteClick,
-                onLongClick = onSelectedCard,
-            )
-        }
-    },
-)
+//
+// @OptIn(ExperimentalSharedTransitionApi::class)
+// fun LazyStaggeredGridScope.noteItems(
+//    modifier: Modifier = Modifier,
+//    sharedTransitionScope: SharedTransitionScope,
+//    animatedContentScope: AnimatedVisibilityScope,
+//    items: List<NotePad>,
+//    setOfSelected: Set<Long>,
+//    onNoteClick: (Long) -> Unit,
+//    onSelectedCard: (Long) -> Unit,
+//    sharedName: String = "note",
+// ) = items(
+//    items = items,
+//    key = { it.id },
+//    itemContent = { note ->
+//
+//        with(sharedTransitionScope) {
+//            NoteCard(
+//                modifier = modifier.sharedBounds(
+//                    sharedContentState = rememberSharedContentState("${sharedName}_${note.id}"),
+//                    animatedVisibilityScope = animatedContentScope,
+//
+//                ),
+//                isSelect = setOfSelected.contains(note.id),
+//                notePad = note,
+//                onCardClick = onNoteClick,
+//                onLongClick = onSelectedCard,
+//            )
+//        }
+//    },
+// )
 
 @Composable
 fun RenameLabelAlertDialog(
@@ -647,12 +335,6 @@ fun RenameLabelAlertDialog(
     }
 }
 
-@Preview
-@Composable
-fun RenameLabelPreview() {
-    RenameLabelAlertDialog(show = true)
-}
-
 @Composable
 fun DeleteLabelAlertDialog(
     show: Boolean = false,
@@ -685,107 +367,76 @@ fun DeleteLabelAlertDialog(
     }
 }
 
-@Preview
 @Composable
-fun DeleteLabelPreview() {
-    DeleteLabelAlertDialog(show = true)
-}
+fun EmptyTrashDialog(
+    modifier: Modifier = Modifier,
+    show: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    onDelete: () -> Unit = {},
 
-@Composable
-fun Loader(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(Rd.raw.modules_designsystem_note_taking))
-    LottieAnimation(
-        modifier = modifier,
-        composition = composition,
-        restartOnPlay = true,
-        iterations = 200,
-    )
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun LabelBox(
-    title: String = "Label",
-    list: List<SearchSort> = emptyList(),
-    onItemClick: (SearchSort?) -> Unit, // = {},
 ) {
-    var showMore by remember { mutableStateOf(false) }
-    FlowRow(
-        Modifier.animateContentSize(),
-        maxItemsInEachRow = 3,
-        maxLines = if (showMore) Int.MAX_VALUE else 2,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(modifier = Modifier.weight(1f), text = title)
-            if (list.size > 3) {
-                TextButton(onClick = { showMore = !showMore }) {
-                    Text(
-                        text = if (!showMore) {
-                            stringResource(id = Rd.string.modules_designsystem_more)
-                        } else {
-                            stringResource(
-                                id = Rd.string.modules_designsystem_less,
-                            )
-                        },
-                    )
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            modifier = modifier,
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_dialog_empty_trash)) },
+            text = {
+                Text(text = stringResource(Rd.string.modules_designsystem_dialog_empty_trash_content))
+            },
+            confirmButton = {
+                NoteButton(
+                    onClick = {
+                        onDismissRequest()
+                    },
+                ) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_close))
                 }
-            }
-        }
-        list
-            // .take()
-            .forEach { searchSort ->
-                val item = when (searchSort) {
-                    is SearchSort.Label -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.iconIndex],
-                        NoteIcon.searchIcons[searchSort.iconIndex],
-
-                    )
-
-                    is SearchSort.Type -> Pair(
-                        stringArrayResource(com.mshdabiola.designsystem.R.array.modules_designsystem_search_sort)[searchSort.index],
-                        NoteIcon.searchIcons[searchSort.index],
-                    )
-
-                    is SearchSort.Color -> Pair(
-                        "",
-                        NoteIcon.searchIcons[0],
-                    )
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDelete()
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
                 }
-                SearchLabel(
-                    modifier = Modifier.clickable { onItemClick(searchSort) },
-                    iconId = item.second,
-                    name = item.first,
-                )
-            }
+            },
+        )
     }
 }
 
 @Composable
-fun SearchLabel(
+fun DeleteForeverDialog(
     modifier: Modifier = Modifier,
-    iconId: ImageVector = NoteIcon.Label,
-    name: String = "Label",
+    show: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    onDelete: () -> Unit = {},
+
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = Modifier
-                .width(72.dp)
-                .aspectRatio(1f),
-        ) {
-            Icon(
-                imageVector = iconId,
-                contentDescription = "label icon",
-                modifier = Modifier.padding(16.dp),
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = name)
+    AnimatedVisibility(visible = show) {
+        AlertDialog(
+            modifier = modifier,
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = stringResource(Rd.string.modules_designsystem_dialog_delete_forever)) },
+            text = {
+                Text(text = stringResource(Rd.string.modules_designsystem_dialog_delete_forever_content))
+            },
+            confirmButton = {
+                NoteButton(
+                    onClick = {
+                        onDismissRequest()
+                    },
+                ) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_close))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDelete()
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(Rd.string.modules_designsystem_delete))
+                }
+            },
+        )
     }
 }

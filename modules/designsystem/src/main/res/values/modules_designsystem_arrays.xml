@@ -19,4 +19,53 @@
         <item>Light</item>
         <item>Dark</item>
     </string-array>
+
+    <string-array name="modules_designsystem_notification_days">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Next</item>
+        <item>Pick a date</item>
+    </string-array>
+    <string-array name="modules_designsystem_notification_times">
+        <item>Morning</item>
+        <item>Afternoon</item>
+        <item>Evening</item>
+        <item>Night</item>
+        <item>Pick a time</item>
+    </string-array>
+    <string-array name="modules_designsystem_notification_interval">
+        <item>Does not repeat</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+        <item>Custom…</item>
+    </string-array>
+
+    <string-array name="modules_designsystem_notification_places">
+        <item>Home</item>
+        <item>Work</item>
+        <item>School</item>
+        <item>Edit location</item>
+    </string-array>
+
+
+    <string-array name="modules_designsystem_notification_interval_end2">
+        <item>Forever</item>
+        <item>Until a date</item>
+        <item>For a number of events</item>
+    </string-array>
+
+
+    <string-array name="modules_designsystem_days_of_weeks">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+
 </resources>

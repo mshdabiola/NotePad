@@ -7,19 +7,18 @@ package com.mshdabiola.datastore.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import androidx.datastore.dataStoreFile
-import com.mshdabiola.common.network.Dispatcher
-import com.mshdabiola.common.network.SkDispatchers.IO
+import androidx.datastore.core.okio.OkioStorage
 import com.mshdabiola.common.network.di.ApplicationScope
-import com.mshdabiola.datastore.UserPreferences
-import com.mshdabiola.datastore.UserPreferencesSerializer
+import com.mshdabiola.datastore.UserDataJsonSerializer
+import com.mshdabiola.model.UserData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import javax.inject.Singleton
 
 @Module
@@ -30,14 +29,18 @@ object DataStoreModule {
     @Singleton
     internal fun providesUserPreferencesDataStore(
         @ApplicationContext context: Context,
-        @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
         @ApplicationScope scope: CoroutineScope,
-        userPreferencesSerializer: UserPreferencesSerializer,
-    ): DataStore<UserPreferences> =
+        userPreferencesSerializer: UserDataJsonSerializer,
+    ): DataStore<UserData> =
         DataStoreFactory.create(
-            serializer = userPreferencesSerializer,
-            scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
-        ) {
-            context.dataStoreFile("user_preferences.pb")
-        }
+            storage =
+            OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = userPreferencesSerializer,
+                producePath = {
+                    context.filesDir.resolve("userdata")
+                        .absolutePath.toPath()
+                },
+            ),
+        )
 }

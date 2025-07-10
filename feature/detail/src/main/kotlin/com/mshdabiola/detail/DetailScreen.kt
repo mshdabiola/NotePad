@@ -4,15 +4,8 @@
 
 package com.mshdabiola.detail
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,7 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -55,11 +48,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,247 +71,43 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ShareCompat
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import com.mshdabiola.designsystem.component.NoteTextField
 import com.mshdabiola.designsystem.icon.NoteIcon
-import com.mshdabiola.model.NoteCheck
+import com.mshdabiola.model.Label
+import com.mshdabiola.model.Note
+import com.mshdabiola.model.NoteDrawing
+import com.mshdabiola.model.NoteImage
 import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
 import com.mshdabiola.model.NoteUri
 import com.mshdabiola.model.NoteVoice
-import com.mshdabiola.ui.DateDialog
-import com.mshdabiola.ui.FirebaseScreenLog
+import com.mshdabiola.ui.BoardViewer
 import com.mshdabiola.ui.FlowLayout2
 import com.mshdabiola.ui.LabelCard
-import com.mshdabiola.ui.NotificationDialogNew
+import com.mshdabiola.ui.LocalSharedStScope
+import com.mshdabiola.ui.PreviewContainer
+import com.mshdabiola.ui.PreviewMain
 import com.mshdabiola.ui.ReminderCard
-import com.mshdabiola.ui.TimeDialog
-import com.mshdabiola.ui.supportVoice
 import com.mshdabiola.ui.toTime
-import java.io.File
 import com.mshdabiola.designsystem.R as Rd
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun DetailRoute(
-    onShowSnackbar: suspend (String, String?) -> Boolean,
-    onBack: () -> Unit,
+fun DetailScreen(
     modifier: Modifier = Modifier,
-    editViewModel: DetailViewModel = hiltViewModel(),
-    navigateToGallery: (Long) -> Unit,
-    navigateToDrawing: (Long, Long) -> Unit,
-    navigateToSelectLevel: (Set<Long>) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
-
-) {
-    val note = editViewModel.note.collectAsStateWithLifecycle().value
-    var showModalState by remember {
-        mutableStateOf(false)
-    }
-    var noteModalState by remember {
-        mutableStateOf(false)
-    }
-    var noteficationModalState by remember {
-        mutableStateOf(false)
-    }
-    var colorModalState by remember {
-        mutableStateOf(false)
-    }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    val notificationPermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = {
-            if (it) {
-                noteficationModalState = true
-            }
-        },
-    )
-    val context = LocalContext.current
-//    LaunchedEffect(key1 = editViewModel.navigateToDrawing, block = {
-//        if (editViewModel.navigateToDrawing) {
-//            navigateToDrawing(editViewModel.notePadUiState.note.id, null)
-//            editViewModel.navigateToDrawing = false
-//        }
-//    })
-    FirebaseScreenLog(screen = "edit_screen")
-
-    EditScreen(
-        modifier = modifier,
-        notepad = note,
-        title = editViewModel.title,
-        content = editViewModel.content,
-//        onTitleChange = editViewModel::onTitleChange,
-//        onSubjectChange = editViewModel::onDetailChange,
-        onBackClick = onBack,
-        onCheckChange = editViewModel::onCheckChange,
-        onCheckDelete = editViewModel::onCheckDelete,
-        onCheck = editViewModel::onCheck,
-        addItem = editViewModel::addCheck,
-        playVoice = editViewModel::playMusic,
-        pauseVoice = editViewModel::pause,
-        moreOptions = {
-//            coroutineScope.launch { modalState.show() }
-            showModalState = true
-        },
-        noteOption = { noteModalState = true },
-        unCheckAllItems = editViewModel::unCheckAllItems,
-        deleteCheckItems = editViewModel::deleteCheckedItems,
-        hideCheckBoxes = editViewModel::hideCheckBoxes,
-        pinNote = editViewModel::pinNote,
-        onLabel = {
-            navigateToSelectLevel(
-                setOf(
-                    editViewModel.note.value.id,
-                ),
-            )
-        },
-        onColorClick = { colorModalState = true },
-        onNotification = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED
-            ) {
-                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                noteficationModalState = true
-            }
-        },
-        showNotificationDialog = {
-            showDialog = true
-        },
-        onArchive = editViewModel::onArchive,
-        deleteVoiceNote = editViewModel::deleteVoiceNote,
-        navigateToGallery = navigateToGallery,
-        navigateToDrawing = { navigateToDrawing(editViewModel.note.value.id, it) },
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
-
-    )
-    AddBottomSheet2(
-        show = showModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        isNoteCheck = note.isCheck,
-        saveImage = editViewModel::saveImage,
-        saveVoice = editViewModel::saveVoice,
-        getPhotoUri = editViewModel::getPhotoUri,
-        changeToCheckBoxes = editViewModel::changeToCheckBoxes,
-        onDrawing = {
-            val id = editViewModel.insertNewDrawing()
-            navigateToDrawing(editViewModel.note.value.id, id)
-        },
-        onDismiss = { showModalState = false },
-        isVoiceSupport = supportVoice(),
-    )
-//
-    val images = note.images.map {
-        val file = File(it.path)
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-        uri
-    }
-
-    val send = {
-        val intent = ShareCompat.IntentBuilder(context)
-            .setText(note.title)
-            .setSubject(note.detail)
-            .setChooserTitle("From Notepad")
-
-        if (images.isNotEmpty()) intent.setType("image/*") else intent.setType("text/*")
-        images.forEach {
-            intent.setStream(it)
-        }
-
-        context.startActivity(Intent(intent.createChooserIntent()))
-    }
-    NoteOptionBottomSheet(
-        show = noteModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        onLabel = {
-            navigateToSelectLevel(
-                setOf(
-                    editViewModel.note.value.id,
-                ),
-            )
-        },
-        onDelete = editViewModel::onDelete,
-        onCopy = editViewModel::copyNote,
-        onSendNote = send,
-        onDismissRequest = { noteModalState = false },
-    )
-    ColorAndImageBottomSheet(
-        show = colorModalState,
-        currentColor = note.color,
-        currentImage = note.background,
-        onColorClick = editViewModel::onColorChange,
-        onImageClick = editViewModel::onImageChange,
-        onDismissRequest = { colorModalState = false },
-    )
-//
-    NotificationBottomSheet(
-        show = noteficationModalState,
-        onAlarm = editViewModel::setAlarm,
-        showDialog = { showDialog = true },
-        currentColor = note.color,
-        currentImage = note.background,
-
-    ) { noteficationModalState = false }
-    val dateDialogUiData = editViewModel.dateTimeState.collectAsStateWithLifecycle()
-//
-    NotificationDialogNew(
-        showDialog = showDialog,
-        dateDialogUiData = dateDialogUiData.value,
-        onDismissRequest = { showDialog = false },
-        onSetAlarm = editViewModel::setAlarm,
-        onTimeChange = editViewModel::onSetTime,
-        onDateChange = editViewModel::onSetDate,
-        onIntervalChange = editViewModel::onSetInterval,
-        onDeleteAlarm = editViewModel::deleteAlarm,
-    )
-//
-    TimeDialog(
-        state = editViewModel.timePicker,
-        showDialog = dateDialogUiData.value.showTimeDialog,
-        onDismissRequest = editViewModel::hideTime,
-        onSetTime = editViewModel::onSetTime,
-    )
-    DateDialog(
-        state = editViewModel.datePicker,
-        showDialog = dateDialogUiData.value.showDateDialog,
-        onDismissRequest = editViewModel::hideDate,
-        onSetDate = editViewModel::onSetDate,
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Composable
-fun EditScreen(
-    modifier: Modifier = Modifier,
-    notepad: NotePad,
-    title: TextFieldState,
-    content: TextFieldState,
-//    onTitleChange: (String) -> Unit = {},
-//    onSubjectChange: (String) -> Unit = {},
+    state: DetailState,
     onBackClick: () -> Unit = {},
-    onCheckChange: (String, Long) -> Unit = { _, _ -> },
     onCheckDelete: (Long) -> Unit = {},
-    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+//    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
     addItem: () -> Unit = {},
     playVoice: (Int) -> Unit = {},
     pauseVoice: () -> Unit = {},
     moreOptions: () -> Unit = {},
     noteOption: () -> Unit = {},
-    unCheckAllItems: () -> Unit = {},
+//    unCheckAllItems: () -> Unit = {},
     deleteCheckItems: () -> Unit = {},
     hideCheckBoxes: () -> Unit = {},
     pinNote: () -> Unit = {},
@@ -330,71 +117,74 @@ fun EditScreen(
     showNotificationDialog: () -> Unit = {},
     onArchive: () -> Unit = {},
     deleteVoiceNote: (Int) -> Unit = {},
-    navigateToGallery: (Long) -> Unit = {},
-    navigateToDrawing: (Long) -> Unit = {},
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope,
+    navigateToGallery: (Long, Int, Int, String) -> Unit = { _, _, _, _ -> },
+    navigateToDrawing: (Long?) -> Unit = {},
 ) {
     var expandCheck by remember {
         mutableStateOf(false)
+    }
+
+    val notepad = remember(state.notePad) {
+        state.notePad
     }
 
     val subjectFocus = remember {
         FocusRequester()
     }
 
-    val checkNote by remember(notepad.checks) {
-        derivedStateOf { notepad.checks.filter { it.isCheck } }
-    }
-    val notCheckNote by remember(notepad.checks) {
-        derivedStateOf { notepad.checks.filter { !it.isCheck } }
-    }
+//    val checkNote by remember(state.checks) {
+//        derivedStateOf { state.checks.filter { it.isCheck } }
+//    }
+//    val notCheckNote by remember(state.checks) {
+//        derivedStateOf { state.checks.filter { !it.isCheck } }
+//    }
     var showCheckNote by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
-    val bg = if (notepad.background != -1) {
+    val bg = if (notepad.note.background != -1) {
         Color.Transparent
     } else {
-        if (notepad.color != -1) {
-            NoteIcon.noteColors[notepad.color]
+        if (notepad.note.color != -1) {
+            NoteIcon.noteColors[notepad.note.color]
         } else {
             MaterialTheme.colorScheme.background
         }
     }
-    val color = NoteIcon.noteColors.getOrNull(notepad.color) ?: Color.Transparent
+    val color = NoteIcon.noteColors.getOrNull(notepad.note.color) ?: Color.Transparent
 
-    val sColor = if (notepad.background != -1) {
-        NoteIcon.background[notepad.background].fgColor
+    val sColor = if (notepad.note.background != -1) {
+        NoteIcon.background[notepad.note.background].fgColor
     } else {
         MaterialTheme.colorScheme.secondaryContainer
     }
 
-    val painter = if (notepad.background != -1) {
-        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.background].bg))
+    val painter = if (notepad.note.background != -1) {
+        rememberVectorPainter(image = ImageVector.vectorResource(id = NoteIcon.background[notepad.note.background].bg))
     } else {
         null
     }
 
-    val images = remember(notepad.images) {
-        notepad.images.reversed().chunked(3)
+    val images = remember(notepad.images, notepad.drawings) {
+        notepad.getVisuals().reversed().chunked(3)
     }
 
-    LaunchedEffect(
-        key1 = notepad,
-        block = {
-            if (notepad.focus) {
-                subjectFocus.requestFocus()
-            }
-        },
-    )
-
+//    LaunchedEffect(
+//        key1 = notepad,
+//        block = {
+//            if (notepad.focus) {
+//                subjectFocus.requestFocus()
+//            }
+//        },
+//    )
+    val sharedTransitionScope = LocalSharedStScope.current
+    val animatedContentScope = LocalNavAnimatedContentScope.current
     with(sharedTransitionScope) {
         Scaffold(
             containerColor = bg,
             modifier = modifier
                 .sharedBounds(
-                    sharedContentState = rememberSharedContentState("note${notepad.id}"),
+                    sharedContentState = rememberSharedContentState("note_${notepad.note.id}"),
                     animatedVisibilityScope = animatedContentScope,
                 )
                 .drawBehind {
@@ -421,27 +211,35 @@ fun EditScreen(
                     },
 
                     actions = {
-                        IconButton(onClick = { pinNote() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:pin"),
+                            onClick = { pinNote() },
+                        ) {
                             Icon(
-                                modifier = Modifier.testTag("detail:pin"),
 
-                                imageVector = if (notepad.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
+                                imageVector = if (notepad.note.isPin) NoteIcon.PushPinD else NoteIcon.PushPin,
                                 contentDescription = "pin",
                             )
                         }
-                        IconButton(onClick = { onNotification() }) {
+                        IconButton(
+                            modifier = Modifier.testTag("detail:notification"),
+
+                            onClick = { onNotification() },
+                        ) {
                             Icon(
-                                modifier = Modifier.testTag("detail:notification"),
 
                                 imageVector = NoteIcon.NotificationAdd,
                                 contentDescription = "notification",
                             )
                         }
-                        IconButton(onClick = { onArchive() }) {
-                            Icon(
-                                modifier = Modifier.testTag("detail:archive"),
+                        IconButton(
+                            modifier = Modifier.testTag("detail:archive"),
 
-                                imageVector = if (notepad.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
+                            onClick = { onArchive() },
+                        ) {
+                            Icon(
+
+                                imageVector = if (notepad.note.noteType == NoteType.ARCHIVE) NoteIcon.Unarchive else NoteIcon.Archive,
                                 contentDescription = "archive",
                             )
                         }
@@ -461,7 +259,7 @@ fun EditScreen(
                         .testTag("detail:list"),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    if (notepad.images.isNotEmpty()) {
+                    if (images.isNotEmpty()) {
                         item(images) {
                             images.forEach { imageList ->
                                 Row(
@@ -470,22 +268,54 @@ fun EditScreen(
                                         .fillMaxWidth()
                                         .height(200.dp),
                                 ) {
-                                    imageList.forEach {
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .clickable {
-                                                    if (it.isDrawing) {
-                                                        navigateToDrawing(it.id)
-                                                    } else {
-                                                        navigateToGallery(notepad.id)
-                                                    }
-                                                }
-                                                .weight(1f)
-                                                .height(200.dp),
-                                            model = it.path,
-                                            contentDescription = "note image",
-                                            contentScale = ContentScale.Crop,
-                                        )
+                                    imageList.forEachIndexed { index, it ->
+                                        when (it) {
+                                            is NoteImage -> {
+                                                AsyncImage(
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            navigateToGallery(
+                                                                notepad.note.id,
+                                                                index,
+                                                                imageList.size,
+                                                                it.path,
+                                                            )
+                                                        }
+                                                        .sharedElement(
+                                                            sharedContentState = rememberSharedContentState(
+                                                                "image_$index",
+                                                            ),
+                                                            animatedVisibilityScope = animatedContentScope,
+
+                                                        )
+                                                        .weight(1f)
+                                                        .height(200.dp),
+                                                    model = it.path,
+                                                    contentDescription = "note image",
+                                                    contentScale = ContentScale.Crop,
+                                                )
+                                            }
+
+                                            is NoteDrawing -> {
+                                                BoardViewer(
+                                                    modifier = Modifier
+                                                        .testTag("detail:drawing_$index")
+                                                        .clickable {
+                                                            navigateToDrawing(it.id)
+                                                        }
+                                                        .sharedElement(
+                                                            sharedContentState = rememberSharedContentState(
+                                                                "drwaing_$index",
+                                                            ),
+                                                            animatedVisibilityScope = animatedContentScope,
+
+                                                        )
+                                                        .weight(1f)
+                                                        .height(200.dp),
+                                                    drawingPaths = it.drawingPaths,
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -497,7 +327,7 @@ fun EditScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             NoteTextField(
-                                state = title,
+                                state = state.title,
                                 placeholder = stringResource(Rd.string.modules_designsystem_title),
                                 imeAction = ImeAction.Next,
                                 modifier = Modifier
@@ -506,7 +336,7 @@ fun EditScreen(
                                     .testTag("detail:title"),
 
                             )
-                            if (notepad.isCheck) {
+                            if (notepad.note.isCheck) {
                                 Box {
                                     IconButton(
                                         modifier = Modifier.testTag("detail:morecheck"),
@@ -529,12 +359,17 @@ fun EditScreen(
                                                 expandCheck = false
                                             },
                                         )
-                                        if (checkNote.isNotEmpty()) {
+                                        if (state.checks.isNotEmpty()) {
                                             DropdownMenuItem(
                                                 modifier = Modifier.testTag("detail:uncheckall"),
                                                 text = { Text(text = stringResource(Rd.string.modules_designsystem_uncheck_all_items)) },
                                                 onClick = {
-                                                    unCheckAllItems()
+                                                    val checks = state.checks
+                                                        .map { it.copy(isCheck = false) }
+                                                    state.checks.clear()
+                                                    state.unChecks.addAll(checks)
+                                                    state.unChecks.sortBy { it.id }
+//                                                unCheckAllItems()
                                                     expandCheck = false
                                                 },
                                             )
@@ -552,10 +387,10 @@ fun EditScreen(
                             }
                         }
                     }
-                    if (!notepad.isCheck) {
+                    if (!notepad.note.isCheck) {
                         item {
                             NoteTextField(
-                                state = content,
+                                state = state.detail,
                                 placeholder = stringResource(Rd.string.modules_designsystem_subject),
                                 imeAction = ImeAction.None,
                                 keyboardAction = { subjectFocus.freeFocus() },
@@ -568,34 +403,43 @@ fun EditScreen(
                             )
                         }
                     }
-                    if (notepad.isCheck) {
-                        items(notCheckNote, key = { it.id }) {
-                            NoteCheck(
-                                noteCheckUiState = it,
-                                onCheckChange = onCheckChange,
-                                onCheckDelete = onCheckDelete,
-                                onCheck = onCheck,
+                    if (notepad.note.isCheck) {
+                        itemsIndexed(state.unChecks, key = { i, it -> it.id }) { index, item ->
+                            NoteCheckUi(
+                                noteCheckUiState = item,
+                                onCheckDelete = {
+                                    onCheckDelete(it)
+                                    state.unChecks.removeAt(index)
+                                },
+                                onCheck = {
+                                    val value = state.unChecks.removeAt(index)
+                                    state.checks.add(value.copy(isCheck = true))
+                                    state.checks.sortBy { it.id }
+                                },
                                 onNextCheck = addItem,
                             )
                         }
 
                         item {
-                            TextButton(onClick = addItem) {
+                            TextButton(
+                                modifier = Modifier.testTag("detail:add_check_item_button"),
+                                onClick = addItem,
+                            ) {
                                 Icon(imageVector = NoteIcon.Add, contentDescription = "")
 
                                 Text(text = stringResource(Rd.string.modules_designsystem_add_list_item))
                             }
                         }
 
-                        if (checkNote.isNotEmpty()) {
+                        if (state.checks.isNotEmpty()) {
                             item {
                                 TextButton(onClick = { showCheckNote = !showCheckNote }) {
                                     Icon(
-                                        imageVector = if (showCheckNote)NoteIcon.More else NoteIcon.Less,
+                                        imageVector = if (showCheckNote) NoteIcon.More else NoteIcon.Less,
                                         contentDescription = "",
                                     )
                                     Text(
-                                        text = "${checkNote.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
+                                        text = "${state.checks.size} ${stringResource(Rd.string.modules_designsystem_checked_items)}",
                                         style = MaterialTheme.typography.titleMedium,
                                     )
                                 }
@@ -603,25 +447,42 @@ fun EditScreen(
                         }
 
                         if (showCheckNote) {
-                            items(checkNote, key = { it.id }) {
-                                NoteCheck(
-                                    noteCheckUiState = it,
-                                    onCheckChange = onCheckChange,
-                                    onCheckDelete = onCheckDelete,
-                                    onCheck = onCheck,
+                            itemsIndexed(state.checks, key = { i, it -> it.id }) { index, item ->
+                                NoteCheckUi(
+                                    noteCheckUiState = item,
+                                    onCheckDelete = {
+                                        onCheckDelete(it)
+                                        state.checks.removeAt(index)
+                                    },
+                                    onCheck = {
+                                        val value = state.checks.removeAt(index)
+                                        state.unChecks.add(value.copy(isCheck = false))
+                                        state.unChecks.sortBy { it.id }
+                                    },
                                     strickText = true,
-                                    onNextCheck = addItem,
+                                    onNextCheck = {},
                                 )
                             }
                         }
                     }
-                    itemsIndexed(items = notepad.voices, key = { _, item -> item.id }) { index, item ->
+                    itemsIndexed(
+                        items = notepad.voices,
+                        key = { _, item -> item.id },
+                    ) { index, item ->
+                        val playerState =
+                            if (state.playerState != null && state.playerState.indexPlaying == index) {
+                                state.playerState
+                            } else {
+                                PlayerState()
+                            }
                         NoteVoicePlayer(
                             item,
                             playVoice = { playVoice(index) },
                             pauseVoice = pauseVoice,
                             delete = { deleteVoiceNote(index) },
                             color = sColor,
+                            isPlay = playerState.isPlaying,
+                            currentProgress = playerState.currentPosition,
                         )
                     }
                     items(items = notepad.uris, key = { it.id }) {
@@ -632,10 +493,9 @@ fun EditScreen(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             verticalSpacing = 8.dp,
                         ) {
-                            if (notepad.reminder > 0) {
+                            notepad.notification?.let {
                                 ReminderCard(
-                                    date = notepad.reminderString,
-                                    interval = notepad.interval,
+                                    notification = it,
                                     color = sColor,
                                     style = MaterialTheme.typography.bodyLarge,
                                     onClick = showNotificationDialog,
@@ -644,14 +504,14 @@ fun EditScreen(
                             }
                             notepad.labels.forEach {
                                 LabelCard(
-                                    name = it.label,
+                                    name = it.name,
                                     color = sColor,
                                     style = MaterialTheme.typography.bodyLarge,
                                     onClick = onLabel,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
-                            if (notepad.background > -1 && notepad.color > -1) {
+                            if (notepad.note.background > -1 && notepad.note.color > -1) {
                                 Box(
                                     modifier = Modifier
                                         .clickable { onColorClick() }
@@ -695,7 +555,7 @@ fun EditScreen(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${notepad.editDateString}",
+                            text = "${stringResource(Rd.string.modules_designsystem_edited)} ${state.updateAt}",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }
@@ -714,18 +574,11 @@ fun EditScreen(
     }
 }
 
-@Preview
 @Composable
-private fun DetailScreenPreview() {
-//    DetailScreen()
-}
-
-@Composable
-fun NoteCheck(
-    noteCheckUiState: NoteCheck,
-    onCheckChange: (String, Long) -> Unit = { _, _ -> },
+fun NoteCheckUi(
+    noteCheckUiState: NoteCheckUiState,
     onCheckDelete: (Long) -> Unit = {},
-    onCheck: (Boolean, Long) -> Unit = { _, _ -> },
+    onCheck: (Boolean) -> Unit = { },
     strickText: Boolean = false,
     onNextCheck: () -> Unit,
 ) {
@@ -759,14 +612,13 @@ fun NoteCheck(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
             checked = noteCheckUiState.isCheck,
-            onCheckedChange = { onCheck(it, noteCheckUiState.id) },
+            onCheckedChange = { onCheck(it) },
         )
         NoteTextField(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f),
-            text = noteCheckUiState.content,
-            onTextChange = { onCheckChange(it, noteCheckUiState.id) },
+            state = noteCheckUiState.content,
             textStyle = if (strickText) TextStyle.Default.copy(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
             interactionSource = mutableInteractionSource,
             trailingIcon = {
@@ -793,6 +645,8 @@ fun NoteVoicePlayer(
     pauseVoice: () -> Unit = {},
     delete: () -> Unit = {},
     color: Color = Color.Red,
+    isPlay: Boolean = false,
+    currentProgress: Int = 0,
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -801,22 +655,31 @@ fun NoteVoicePlayer(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box {
-                if (noteVoiceUiState.isPlaying) {
-                    IconButton(onClick = pauseVoice) {
+                if (isPlay) {
+                    IconButton(
+                        modifier = Modifier.testTag("detail:voice:pause"),
+                        onClick = pauseVoice,
+                    ) {
                         Icon(imageVector = NoteIcon.PauseCircle, contentDescription = "pause")
                     }
                 } else {
-                    IconButton(onClick = playVoice) {
+                    IconButton(
+                        modifier = Modifier.testTag("detail:voice:play"),
+                        onClick = playVoice,
+                    ) {
                         Icon(imageVector = NoteIcon.PlayCircle, contentDescription = "play")
                     }
                 }
             }
             LinearProgressIndicator(
-                progress = { (noteVoiceUiState.currentProgress.toFloat() / noteVoiceUiState.length) },
+                progress = { (currentProgress.toFloat() / noteVoiceUiState.length) },
                 modifier = Modifier.weight(1f),
             )
             Text(text = noteVoiceUiState.length.toTime())
-            IconButton(onClick = { delete() }) {
+            IconButton(
+                modifier = Modifier.testTag("detail:voice:delete"),
+                onClick = { delete() },
+            ) {
                 Icon(imageVector = NoteIcon.Delete, contentDescription = "delete")
             }
         }
@@ -827,7 +690,7 @@ fun NoteVoicePlayer(
 @Composable
 fun NoteVoicePlayerPreview() {
     NoteVoicePlayer(
-        NoteVoice(3, 4, "", currentProgress = 7, length = 14),
+        NoteVoice(3, 4, "", length = 14),
 
     )
 }
@@ -867,4 +730,80 @@ fun NoteUri(
 @Composable
 fun NoteUriPreview() {
     NoteUri(uriState = NoteUri(1, "", "Path", "akdkdk"))
+}
+
+@PreviewMain
+@Composable
+private fun Main() {
+    PreviewContainer {
+        DetailScreen(
+            state = DetailState(
+                notePad = NotePad(
+                    note = Note(),
+                    images = listOf(
+                        NoteImage(1, 2, ""),
+                    ),
+                    drawings = listOf(
+                        NoteDrawing(1, 2),
+                    ),
+                    labels = listOf(
+                        Label(1, "label"),
+                        Label(2, "label2"),
+                    ),
+                    uris = listOf(
+                        NoteUri(1, "", "Path", "akdkdk"),
+                    ),
+                    voices = listOf(
+                        NoteVoice(1, 2, ""),
+                    ),
+//                        notification = NotificationUiState(
+//                            currentPlace = NotificationPlace.Work,
+//                            currentDateTime = LocalDateTime(2025,2,25,12,60,1),
+//                            currentInterval = NotificationInterval.Daily(intervalEnd = IntervalEnd.Forever)
+//                        )
+
+                ),
+                title = rememberTextFieldState("Title"),
+                detail = rememberTextFieldState("Detail"),
+            ),
+        )
+    }
+}
+
+@PreviewMain
+@Composable
+private fun MainCheck() {
+    PreviewContainer {
+        DetailScreen(
+            state = DetailState(
+                notePad = NotePad(
+                    note = Note(),
+                    images = listOf(
+                        NoteImage(1, 2, ""),
+                    ),
+                    drawings = listOf(
+                        NoteDrawing(1, 2),
+                    ),
+                    labels = listOf(
+                        Label(1, "label"),
+                        Label(2, "label2"),
+                    ),
+                    uris = listOf(
+                        NoteUri(1, "", "Path", "akdkdk"),
+                    ),
+                    voices = listOf(
+                        NoteVoice(1, 2, ""),
+                    ),
+//                        notification = NotificationUiState(
+//                            currentPlace = NotificationPlace.Work,
+//                            currentDateTime = LocalDateTime(2025,2,25,12,60,1),
+//                            currentInterval = NotificationInterval.Daily(intervalEnd = IntervalEnd.Forever)
+//                        )
+
+                ),
+                title = rememberTextFieldState("Title"),
+                detail = rememberTextFieldState("Detail"),
+            ),
+        )
+    }
 }

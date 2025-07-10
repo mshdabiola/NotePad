@@ -26,7 +26,7 @@ import androidx.metrics.performance.JankStats
 import com.mshdabiola.analytics.AnalyticsHelper
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.data.util.NetworkMonitor
-import com.mshdabiola.designsystem.theme.SkTheme
+import com.mshdabiola.designsystem.theme.NotePadTheme
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.playnotepad.ui.NoteApp
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             )
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
-                SkTheme(
+                NotePadTheme(
                     androidTheme = shouldUseAndroidTheme(uiState),
                     darkTheme = darkTheme,
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),

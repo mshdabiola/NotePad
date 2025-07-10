@@ -1,23 +1,18 @@
-/*
- *abiola 2024
- */
-
 package com.mshdabiola.detail
 
-sealed class DetailState {
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.mshdabiola.model.NotePad
 
-    data class Loading(val isLoading: Boolean = false) : DetailState()
-    data class Success(
-        val id: Long,
-    ) : DetailState()
-
-    data class Error(val exception: Throwable) : DetailState()
-}
-
-fun DetailState.getSuccess(value: (DetailState.Success) -> DetailState.Success): DetailState {
-    return if (this is DetailState.Success) {
-        value(this)
-    } else {
-        this
-    }
-}
+@Stable // Good practice for Compose state classes
+data class DetailState(
+    val notePad: NotePad = NotePad(),
+    val title: TextFieldState = TextFieldState(),
+    val detail: TextFieldState = TextFieldState(),
+    val checks: SnapshotStateList<NoteCheckUiState> = mutableStateListOf(),
+    val unChecks: SnapshotStateList<NoteCheckUiState> = mutableStateListOf(),
+    val updateAt: String = "Today, 12 : 45 AM",
+    val playerState: PlayerState? = null,
+)

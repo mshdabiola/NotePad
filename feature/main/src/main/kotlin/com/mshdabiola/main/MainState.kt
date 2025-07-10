@@ -1,25 +1,27 @@
 package com.mshdabiola.main
 
-import com.mshdabiola.model.MainData
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.NotePad
-import com.mshdabiola.model.NoteType
+import com.mshdabiola.model.NotificationUiState
 
 sealed class MainState {
     data object Loading : MainState()
     data class Success(
-        val isSearch: Boolean = false,
-        val noteType: NoteType = NoteType.NOTE,
-        val notePads: List<NotePad> = emptyList(),
-        val types: List<SearchSort.Type> = emptyList(),
-        val color: List<SearchSort.Color> = emptyList(),
-        val label: List<SearchSort.Label> = emptyList(),
-        val searchSort: SearchSort? = null,
-        val mainData: MainData = MainData.Note,
-        val setOfSelected: Set<Long> = emptySet(),
-
+        val isGrid: Boolean = true,
+        val labelName: String? = null,
+        val pinNotePads: List<NotePad> = emptyList(),
+        val unPinNotePads: List<NotePad> = emptyList(),
+        val noteDisplayCategory: NoteDisplayCategory = NoteDisplayCategory(),
+        val selectState: SelectState? = null,
     ) : MainState()
 
     //    data class Error(val message: String) : MainStateN()
-    data object Empty : MainState()
-    data class Finish(val id: Long) : MainState()
 }
+
+data class SelectState(
+    val colorIndex: Int = -1,
+    val isAllPin: Boolean = false,
+    val setOfSelected: Set<Long> = emptySet(),
+    val notificationUiState: NotificationUiState? = null,
+
+)

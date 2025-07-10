@@ -2,6 +2,7 @@ package com.mshdabiola.common
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,8 +13,9 @@ import javax.inject.Inject
 internal class ContentManager
 @Inject constructor(
     @ApplicationContext val context: Context,
+    val imageToText: ImageToText,
 ) : IContentManager {
-
+    lateinit var retriever: MediaMetadataRetriever
     private val photoDir = context.filesDir.absolutePath + "/photo"
     private val voiceDir = context.filesDir.absolutePath + "/voice"
 
@@ -96,5 +98,27 @@ internal class ContentManager
         }
 
         return File(dir, "data_$drawingId.json")
+    }
+
+    override fun getAudioLength(path: String): Long {
+        if (!::retriever.isInitialized) {
+            retriever = MediaMetadataRetriever()
+        }
+
+        try {
+            retriever.setDataSource(path)
+            return retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.toLongOrNull() ?: 0
+        } catch (e: IllegalArgumentException) {
+            // Handle the exception, log error, etc.
+            e.printStackTrace()
+            return 0
+        } finally {
+            retriever.release()
+        }
+    }
+
+    override fun imageToText(path: String): String {
+        return imageToText.toText(path)
     }
 }

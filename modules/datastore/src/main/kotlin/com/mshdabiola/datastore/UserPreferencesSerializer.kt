@@ -4,29 +4,42 @@
 
 package com.mshdabiola.datastore
 
-import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.Serializer
-import com.google.protobuf.InvalidProtocolBufferException
-import java.io.InputStream
-import java.io.OutputStream
+import androidx.datastore.core.okio.OkioSerializer
+import com.mshdabiola.model.Contrast
+import com.mshdabiola.model.DarkThemeConfig
+import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.ThemeBrand
+import com.mshdabiola.model.UserData
+import kotlinx.serialization.json.Json
+import okio.BufferedSink
+import okio.BufferedSource
 import javax.inject.Inject
 
-/**
- * An [androidx.datastore.core.Serializer] for the [UserPreferences] proto.
- */
-class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
-    override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
+val json = Json
 
-    override suspend fun readFrom(input: InputStream): UserPreferences =
-        try {
-            // readFrom is already called on the data store background thread
-            UserPreferences.parseFrom(input)
-        } catch (exception: InvalidProtocolBufferException) {
-            throw CorruptionException("Cannot read proto.", exception)
+class UserDataJsonSerializer @Inject constructor() : OkioSerializer<UserData> {
+    override val defaultValue: UserData
+        get() =
+            UserData(
+                themeBrand = ThemeBrand.DEFAULT,
+                darkThemeConfig = DarkThemeConfig.LIGHT,
+                useDynamicColor = false,
+                shouldHideOnboarding = false,
+                contrast = Contrast.Normal,
+                noteDisplayCategory = NoteDisplayCategory(),
+                isGrid = true,
+            )
+
+    override suspend fun readFrom(source: BufferedSource): UserData {
+        return json.decodeFromString<UserData>(source.readUtf8())
+    }
+
+    override suspend fun writeTo(
+        userData: UserData,
+        sink: BufferedSink,
+    ) {
+        sink.use {
+            it.writeUtf8(json.encodeToString(UserData.serializer(), userData))
         }
-
-    override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
-        // writeTo is already called on the data store background thread
-        t.writeTo(output)
     }
 }

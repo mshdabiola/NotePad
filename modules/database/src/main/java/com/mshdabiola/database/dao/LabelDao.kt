@@ -8,18 +8,19 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LabelDao {
+
     @Upsert
-    suspend fun upsert(labelEntity: List<LabelEntity>)
+    suspend fun upserts(labels: List<LabelEntity>): List<Long>
+
+    @Upsert
+    suspend fun upsert(label: LabelEntity): Long
 
     @Query("DELETE FROM label_table WHERE id = :id")
     suspend fun delete(id: Long)
 
-    @Query("SELECT * FROM label_table")
-    fun getAllLabel(): Flow<LabelEntity>
+    @Query("SELECT * FROM label_table WHERE id = :id")
+    fun get(id: Long): Flow<LabelEntity?>
 
     @Query("SELECT * FROM label_table")
-    suspend fun getAllLabelsOneShot(): List<LabelEntity>
-
-    @Query("SELECT * FROM label_table")
-    fun getAllLabels(): Flow<List<LabelEntity>>
+    fun getAll(): Flow<List<LabelEntity>>
 }

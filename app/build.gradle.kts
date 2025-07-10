@@ -80,6 +80,7 @@ dependencies {
     implementation(projects.modules.designsystem)
     implementation(projects.modules.data)
     implementation(projects.modules.ui)
+    implementation(projects.modules.domain)
 
 
     implementation(projects.feature.main)
@@ -87,9 +88,11 @@ dependencies {
     implementation(projects.feature.gallery)
     implementation(projects.feature.drawing)
     implementation(projects.feature.about)
-    implementation(projects.feature.labelscreen)
-    implementation(projects.feature.selectlabelscreen)
+    implementation(projects.feature.label)
+    implementation(projects.feature.selectlabel)
     implementation(projects.feature.setting)
+    implementation(projects.feature.search)
+
 
 
 
@@ -97,17 +100,17 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
 
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+//    implementation(libs.androidx.material3.adaptive.navigation3)
+
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.layout)
-    implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.material3.windowSizeClass)
     implementation(libs.androidx.compose.runtime.tracing)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.tracing.ktx)
     implementation(libs.androidx.window.core)
@@ -131,7 +134,6 @@ dependencies {
 
     androidTestImplementation(projects.modules.testing)
     androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.hilt.android.testing)
     debugImplementation (libs.androidx.monitor)

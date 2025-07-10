@@ -6,6 +6,7 @@ package com.mshdabiola.data.repository
 
 import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
+import com.mshdabiola.model.NoteDisplayCategory
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.model.UserData
 import kotlinx.coroutines.flow.Flow
@@ -35,5 +36,7 @@ interface UserDataRepository {
      * Sets whether the user has completed the onboarding process.
      */
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean)
-    suspend fun setMainData(mainData: Long)
+    suspend fun setNoteDisplayCategory(noteDisplayCategory: NoteDisplayCategory)
+
+    suspend fun toggleGrid()
 }

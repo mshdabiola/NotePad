@@ -11,4 +11,7 @@ interface IContentManager {
     fun getVoicePath(data: Long): String
     fun saveBitmap(path: String, bitmap: Bitmap)
     fun dataFile(drawingId: Long): File
+
+    fun getAudioLength(path: String): Long
+    fun imageToText(path: String): String
 }

@@ -1,730 +1,330 @@
 package com.mshdabiola.main
 
-import android.util.Log
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TimePickerState
-import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mshdabiola.common.IAlarmManager
-import com.mshdabiola.data.repository.INotePadRepository
+import com.mshdabiola.data.repository.LabelRepository
+import com.mshdabiola.data.repository.NoteRepository
 import com.mshdabiola.data.repository.UserDataRepository
-import com.mshdabiola.model.MainData
+import com.mshdabiola.domain.AddAllNoteUseCase
+import com.mshdabiola.domain.GetAllNoteUseCase
+import com.mshdabiola.model.Label
+import com.mshdabiola.model.NoteDisplayCategory
+import com.mshdabiola.model.NotePad
 import com.mshdabiola.model.NoteType
-import com.mshdabiola.ui.state.DateDialogUiData
-import com.mshdabiola.ui.state.DateListUiState
+import com.mshdabiola.model.NotificationUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import timber.log.Timber
-import java.util.Locale
 import javax.inject.Inject
-import kotlin.time.DurationUnit
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 internal class MainViewModel
 @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val notepadRepository: INotePadRepository,
-    private val alarmManager: IAlarmManager,
-    userDataRepository: UserDataRepository,
+//    savedStateHandle: SavedStateHandle,
+//    private val notepadpadRepository: INotePadRepository,
+//    private val alarmManager: IAlarmManager,
+    private val noteRepository: NoteRepository,
+    private val userDataRepository: UserDataRepository,
+    private val labelRepository: LabelRepository,
+    private val getAllNoteUseCase: GetAllNoteUseCase,
+    private val addAllNoteUseCase: AddAllNoteUseCase,
 ) : ViewModel() {
 
-    val searchState = TextFieldState()
-
-    private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
-    val mainState = _mainState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            userDataRepository.userData.collectLatest {
-                if (mainState.value is MainState.Success) {
-                    _mainState.value = getSuccess().copy(mainData = it.mainData)
-                }
-            }
+    private val selectedNotesState = MutableStateFlow<SelectState?>(null)
+    private val currentNotepads = userDataRepository
+        .userData
+        .mapLatest { it.noteDisplayCategory }
+        .flatMapLatest {
+            getAllNoteUseCase.invoke(it)
         }
-
-        viewModelScope.launch {
-            combine(
-                mainState,
-                snapshotFlow { searchState.text }
-                    .debounce(500),
-                notepadRepository.getNotePads(),
-            ) { mainState, search, notepad ->
-                Triple(mainState, search, notepad)
-            }.collectLatest { triple ->
-
-                val (mainState, search, notepad) = triple
-                if (mainState is MainState.Success) {
-                    if (mainState.isSearch) {
-                        when {
-                            mainState.searchSort != null -> {
-                                var list = when (val searchsort = mainState.searchSort) {
-                                    is SearchSort.Color -> {
-                                        notepad.filter { it.color == searchsort.colorIndex }
-                                    }
-                                    is SearchSort.Label -> {
-                                        notepad.filter { it.labels.any { it.id == searchsort.id } }
-                                    }
-                                    is SearchSort.Type -> {
-                                        when (searchsort.index) {
-                                            0 -> notepad.filter { it.reminder > 0 }
-                                            1 -> notepad.filter { it.isCheck }
-                                            2 -> notepad.filter { it.images.isNotEmpty() }
-                                            3 -> notepad.filter { it.voices.isNotEmpty() }
-                                            4 -> notepad.filter { it.images.any { it.isDrawing } }
-                                            5 -> notepad.filter { it.uris.isNotEmpty() }
-                                            else -> notepad
-                                        }
-                                    }
-
-                                    null -> TODO()
-                                }
-
-                                if (search.isNotBlank()) {
-                                    list = list.filter { it.toString().contains(search, true) }
-                                }
-
-                                _mainState.update {
-                                    getSuccess().copy(notePads = list)
-                                }
-                            }
-                            search.isNotBlank() -> {
-
-                                val list = notepad.filter { it.toString().contains(search, true) }
-                                _mainState.update {
-                                    getSuccess().copy(notePads = list)
-                                }
-                            }
-
-                            else -> {
-                                _mainState.value = getSuccess().copy(
-                                    notePads = emptyList(),
-                                )
-                            }
-                        }
-                    } else {
-
-                        val list =
-                            when (mainState.mainData) {
-                                is MainData.Label -> {
-                                    notepad.filter { it.labels.any { it.id == mainState.mainData.index } }
-                                }
-
-                                is MainData.Remainder -> {
-                                    notepad.filter { it.reminder > 0 }
-                                }
-
-                                else -> {
-                                    notepad.filter {
-                                        it.noteType.index == mainState.mainData.index
-                                    }
-                                }
-                            }
-                        _mainState.value = getSuccess().copy(
-                            notePads = list,
-                        )
-                    }
-                } else {
-                    val mainData = userDataRepository.userData.mapLatest { it.mainData }.firstOrNull() ?: MainData.Note
-                    _mainState.value = MainState.Success(
-                        notePads = emptyList(),
-                        mainData = mainData,
-                    )
-
-                    initDate()
-                }
-            }
+    private val label = userDataRepository
+        .userData
+        .mapLatest { it.noteDisplayCategory }
+        .flatMapLatest {
+            labelRepository.get(it.labelId)
         }
+    private val noteDisplayCategory = userDataRepository
+        .userData
+        .mapLatest { it.noteDisplayCategory }
+
+    private val isGrid = userDataRepository
+        .userData
+        .mapLatest { it.isGrid }
+    val mainState = combine(
+        currentNotepads,
+        label,
+        noteDisplayCategory,
+        selectedNotesState,
+        isGrid,
+    ) { notepad, label, displayCategory, selectState, isGrid ->
+
+        println("notepad from combine ${notepad.size}")
+        println("selct $selectState")
+        val pinNote = notepad.filter { it.note.isPin }
+        val unPinNote = notepad.filter { !it.note.isPin }
+        MainState.Success(
+            labelName = label?.name,
+            pinNotePads = pinNote,
+            unPinNotePads = unPinNote,
+            noteDisplayCategory = displayCategory,
+            selectState = selectState,
+            isGrid = isGrid,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = MainState.Loading,
+    )
+
+    private fun getSelectState(): SelectState {
+        return selectedNotesState.value ?: SelectState()
     }
 
-    /**
-     * Handles the selection/deselection of a notepad card.
-     *
-     * This function is triggered when a user selects or deselects a notepad card.
-     * It updates the selected state of the corresponding notepad in the list and
-     * updates the UI state accordingly.
-     *
-     * @param id The ID of the notepad card that was selected or deselected.
-     */
-    fun onSelectCard(id: Long) {
-        val selected = getSuccess().setOfSelected
-        if (selected.contains(id)) {
-            _mainState.value = getSuccess().copy(setOfSelected = selected - id)
+    private fun getAllNotePad(): List<NotePad> {
+        return getSuccess().unPinNotePads + getSuccess().pinNotePads
+    }
+
+    fun handleCardSelection(id: Long) {
+        val state = getSelectState()
+
+        if (state.setOfSelected.contains(id) && state.setOfSelected.size == 1) {
+            deselectNotes()
+            return
+        }
+
+        val setOfSelected = if (state.setOfSelected.contains(id)) {
+            state.setOfSelected - id
         } else {
-            _mainState.value = getSuccess().copy(setOfSelected = selected + id)
+            state.setOfSelected + id
         }
+        var notificationUiState: NotificationUiState? = null
+        var colorIndex = -1
+        if (setOfSelected.size == 1) {
+            val notepad = getAllNotePad().single { it.note.id == setOfSelected.first() }
+            colorIndex = notepad.note.color
+            notificationUiState = notepad.notification
+        }
+
+        val isAllPin = getAllNotePad()
+            .filter { setOfSelected.contains(it.note.id) }
+            .all { it.note.isPin }
+
+        selectedNotesState.value = state.copy(
+            setOfSelected = setOfSelected,
+            isAllPin = isAllPin,
+            colorIndex = colorIndex,
+            notificationUiState = notificationUiState,
+        )
     }
 
-    fun clearSelected() {
-        _mainState.value = getSuccess().copy(setOfSelected = emptySet())
+    fun deselectNotes() {
+        selectedNotesState.value = null
     }
 
-    fun setNoteType(noteType: NoteType) {
-        _mainState.value = MainState.Success(noteType = noteType)
-    }
-
-    fun setPin() {
-        val selected = getSuccess().setOfSelected
+    fun pinOrUnpinNotes() {
+        val selected = getSelectState().setOfSelected
         val selectedNotepad =
-            getSuccess().notePads.filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
-        clearSelected()
+        deselectNotes()
 
-        if (selectedNotepad.any { !it.isPin }) {
-            val pinNotepad = selectedNotepad.map { it.copy(isPin = true) }
+        if (selectedNotepad.any { !it.note.isPin }) {
+            val pinNotepad = selectedNotepad.map {
+                it.copy(note = it.note.copy(isPin = true))
+            }
 
             viewModelScope.launch {
-                notepadRepository.upsert(pinNotepad)
+                for (note in pinNotepad) {
+                    addAllNoteUseCase(note)
+                }
             }
         } else {
-            val unPinNote = selectedNotepad.map { it.copy(isPin = false) }
+            val unPinNote = selectedNotepad.map { it.copy(note = it.note.copy(isPin = false)) }
 
             viewModelScope.launch {
-                notepadRepository.upsert(unPinNote)
-            }
-        }
-    }
-
-    private fun setAlarm(time: Long, interval: Long?) {
-        val setOfSelected = getSuccess().setOfSelected
-        val selectedNotes =
-            getSuccess().notePads.filter { setOfSelected.contains(it.id) }
-
-        clearSelected()
-        val notes = selectedNotes.map { it.copy(reminder = time, interval = interval ?: -1) }
-
-        viewModelScope.launch {
-            notepadRepository.upsert(notes)
-        }
-
-        viewModelScope.launch {
-            notes.forEach {
-                alarmManager.setAlarm(
-                    time,
-                    interval,
-                    requestCode = it.id?.toInt() ?: -1,
-                    title = it.title,
-                    content = it.detail,
-                    noteId = it.id ?: 0L,
-                )
-            }
-        }
-    }
-
-    fun deleteAlarm() {
-        val selected = getSuccess().setOfSelected
-        val selectedNotes =
-            getSuccess().notePads.filter { selected.contains(it.id) }
-
-        clearSelected()
-        val notes = selectedNotes.map { it.copy(reminder = -1, interval = -1) }
-
-        viewModelScope.launch {
-            notepadRepository.upsert(notes)
-        }
-
-        viewModelScope.launch {
-            notes.forEach {
-                alarmManager.deleteAlarm(it.id?.toInt() ?: 0)
+                for (note in unPinNote) {
+                    addAllNoteUseCase(note)
+                }
             }
         }
     }
 
     fun setAllColor(colorId: Int) {
-        val selected = getSuccess().setOfSelected
+        val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
-        clearSelected()
-        val notes = selectedNotes.map { it.copy(color = colorId) }
+        deselectNotes()
+        val notepads = selectedNotes.map { it.copy(note = it.note.copy(color = colorId)) }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
-    fun setAllArchive() {
-        val selected = getSuccess().setOfSelected
+    fun onArchiveNote() {
+        val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
-        clearSelected()
-        val notes = selectedNotes.map { it.copy(noteType = NoteType.ARCHIVE) }
+        deselectNotes()
+        val notepads = selectedNotes.map {
+            val notepadType = if (it.note.noteType == NoteType.ARCHIVE) NoteType.NOTE else NoteType.ARCHIVE
+            it.copy(note = it.note.copy(noteType = notepadType))
+        }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
-    fun setAllToTrash() {
-        val selected = getSuccess().setOfSelected
+    fun onDeleteNote() {
+        val selected = getSelectState().setOfSelected
         val selectedNotes =
-            getSuccess().notePads.filter { selected.contains(it.id) }
+            getAllNotePad().filter { selected.contains(it.note.id) }
 
-        clearSelected()
-        val notes = selectedNotes.map { it.copy(noteType = NoteType.TRASH) }
+        deselectNotes()
+        val notepads = selectedNotes.map { it.copy(note = it.note.copy(noteType = NoteType.TRASH, isPin = false)) }
 
         viewModelScope.launch {
-            notepadRepository.upsert(notes)
+            for (note in notepads) {
+                addAllNoteUseCase(note)
+            }
         }
     }
 
-    fun copyNote() {
+    fun onDeleteForever() {
+        val selected = getSelectState().setOfSelected
+
+        deselectNotes()
+
+        viewModelScope.launch {
+            noteRepository.deleteIds(selected)
+        }
+    }
+    fun onRestore() {
+        val selected = getSelectState().setOfSelected
+        val selectedNotes =
+            getAllNotePad().filter { selected.contains(it.note.id) }
+                .map { it.copy(note = it.note.copy(noteType = NoteType.NOTE)) }
+
+        deselectNotes()
+
+        viewModelScope.launch {
+            for (note in selectedNotes) {
+                addAllNoteUseCase(note)
+            }
+        }
+    }
+
+    fun onCopyNote() {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = getSuccess().setOfSelected.first()
-            val notepads = notepadRepository.getOneNotePad(id).first()
+            val id = getSelectState().setOfSelected.first()
+            val notepads = getAllNotePad().find { it.note.id == id }
+
+            deselectNotes()
 
             if (notepads != null) {
-                val copy = notepads.copy(id = -1)
+                val copy = notepads.copy(note = notepads.note.copy(id = -1))
 
-                notepadRepository.upsert(copy)
+                addAllNoteUseCase(copy)
             }
         }
     }
 
     fun deleteLabel() {
-//        val labelId = (getSuccess().noteType).id
-//
-//        _mainState.value = getSuccess().copy(noteType = NoteTypeUi())
-//
-//        viewModelScope.launch {
-//            labelRepository.delete(labelId)
-//            // noteLabelRepository.deleteByLabelId(labelId)
-//        }
+        val labelId = getSuccess().noteDisplayCategory.labelId
+
+        viewModelScope.launch {
+            userDataRepository.setNoteDisplayCategory(NoteDisplayCategory(0, NoteType.NOTE))
+            labelRepository.delete(labelId)
+        }
     }
 
     fun renameLabel(name: String) {
-//        val labelId = (getSuccess().noteType).id
+        val labelId = getSuccess().noteDisplayCategory.labelId
 //
-//        viewModelScope.launch {
-//            labelRepository.upsert(listOf(Label(labelId, name)))
+        viewModelScope.launch {
+            labelRepository.upserts(listOf(Label(labelId, name)))
+        }
+    }
+
+    fun onDeleteAllTrash() {
+        viewModelScope.launch {
+            noteRepository.deleteTrash()
+        }
+    }
+
+    // Todo("deleteByNoteId empty notepad")
+//    fun deleteEmptyNote() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val emptyList = notepadpadRepository.getNotePads().first()
+//                .filter { it.note.isEmpty() }
+//
+//            if (emptyList.isNotEmpty()) {
+//                notepadpadRepository.deleteNotePad(emptyList)
+//            }
+//        }
+//    }
+
+    fun onDisplayModeChange() {
+        viewModelScope.launch {
+            userDataRepository.toggleGrid()
+        }
+    }
+
+    fun setAlarm(notificationUiState: NotificationUiState) {
+//        val time = timeListDefault[dateTimeState.value.currentTime]
+//        val date = when (dateTimeState.value.currentDate) {
+//            0 -> today.date
+//            1 -> today.date.plus(1, DateTimeUnit.note.DAY)
+//            else -> currentLocalDate
+//        }
+//        val interval = when (dateTimeState.value.currentInterval) {
+//            0 -> null
+//            1 -> DateTimeUnit.note.HOUR.times(24).duration.toLong(DurationUnit.note.MILLISECONDS)
+//
+//            2 -> DateTimeUnit.note.HOUR.times(24 * 7).duration.toLong(DurationUnit.note.MILLISECONDS)
+//
+//            3 -> DateTimeUnit.note.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.note.MILLISECONDS)
+//
+//            else -> DateTimeUnit.note.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.note.MILLISECONDS)
+//        }
+//
+//        val setime = LocalDateTime(date, time)
+//        if (setime > today) {
+//            setAlarm(
+//                setime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+//                interval,
+//            )
+//            Log.e("editv", "Set Alarm")
+//        } else {
+//            Log.e("editv", "Alarm not set $today time $time date$date")
 //        }
     }
 
-    fun emptyTrash() {
-        viewModelScope.launch {
-            notepadRepository.deleteTrashType()
-        }
+    private fun setAlarm(time: Long, interval: Long?) {
     }
 
-    fun deleteEmptyNote() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val emptyList = notepadRepository.getNotePads().first()
-                .filter { it.isEmpty() }
-
-            if (emptyList.isNotEmpty()) {
-                notepadRepository.deleteNotePad(emptyList)
-            }
-        }
-    }
-
-    private val _dateTimeState = MutableStateFlow(DateDialogUiData())
-    val dateTimeState = _dateTimeState.asStateFlow()
-    private lateinit var currentDateTime: LocalDateTime
-    private lateinit var today: LocalDateTime
-    private val timeListDefault = mutableListOf(
-        LocalTime(7, 0, 0),
-        LocalTime(13, 0, 0),
-        LocalTime(19, 0, 0),
-        LocalTime(20, 0, 0),
-        LocalTime(20, 0, 0),
-    )
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    var datePicker: DatePickerState = DatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis(),
-        locale = Locale.getDefault(),
-    )
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    var timePicker: TimePickerState = TimePickerState(12, 4, is24Hour = false)
-    private lateinit var currentLocalDate: LocalDate
-
-    // date and time dialog logic
-
-    private fun initDate() {
-        val now = Clock.System.now()
-        today = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        val today2 =
-            now.plus(10, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
-        currentDateTime = today2
-        currentLocalDate = currentDateTime.date
-        Timber.tag("current date").e(currentLocalDate.toString())
-
-        val timeList = mutableListOf(
-            DateListUiState(
-                title = "Morning",
-                value = "7:00 AM",
-                trail = "7:00 AM",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Afternoon",
-                value = "1:00 PM",
-                trail = "1:00 PM",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Evening",
-                value = "7:00 PM",
-                trail = "7:00 PM",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Night",
-                value = "8:00 PM",
-                trail = "8:00 PM",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Pick time",
-                value = "1:00 PM",
-                isOpenDialog = true,
-                enable = true,
-            ),
-
-        ).mapIndexed { index, dateListUiState ->
-            if (index != timeListDefault.lastIndex) {
-                val greater = timeListDefault[index] > today.time
-                dateListUiState.copy(
-                    enable = greater,
-                    value = notepadRepository.timeToString(timeListDefault[index]),
-                    trail = notepadRepository.timeToString(timeListDefault[index]),
-                )
-            } else {
-                timeListDefault[timeListDefault.lastIndex] = currentDateTime.time
-                dateListUiState.copy(value = notepadRepository.timeToString(currentDateTime.time))
-            }
-        }.toImmutableList()
-        val datelist = listOf(
-            DateListUiState(
-                title = "Today",
-                value = "Today",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Tomorrow",
-                value = "Tomorrow",
-                isOpenDialog = false,
-                enable = true,
-            ),
-            DateListUiState(
-                title = "Pick date",
-                value = notepadRepository.dateToString(currentDateTime.date),
-                isOpenDialog = true,
-                enable = true,
-            ),
-        ).toImmutableList()
-        val interval = 0
-
-        _dateTimeState.update {
-            it.copy(
-                isEdit = false,
-                currentTime = timeList.lastIndex,
-                timeData = timeList,
-                timeError = today > currentDateTime,
-                currentDate = 0,
-                dateData = datelist,
-                currentInterval = interval,
-                interval = listOf(
-                    DateListUiState(
-                        title = "Does not repeat",
-                        value = "Does not repeat",
-                        isOpenDialog = false,
-                        enable = true,
-                    ),
-                    DateListUiState(
-                        title = "Daily",
-                        value = "Daily",
-                        isOpenDialog = false,
-                        enable = true,
-                    ),
-                    DateListUiState(
-                        title = "Weekly",
-                        value = "Weekly",
-                        isOpenDialog = false,
-                        enable = true,
-                    ),
-                    DateListUiState(
-                        title = "Monthly",
-                        value = "Monthly",
-                        isOpenDialog = false,
-                        enable = true,
-                    ),
-                    DateListUiState(
-                        title = "Yearly",
-                        value = "Yearly",
-                        isOpenDialog = false,
-                        enable = true,
-                    ),
-                ).toImmutableList(),
-            )
-        }
-        setDatePicker(
-            currentDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-        )
-        setTimePicker(
-            hour = currentDateTime.hour,
-            minute = currentDateTime.minute,
-        )
-    }
-
-    fun onSetDate(index: Int) {
-        if (index == dateTimeState.value.dateData.lastIndex) {
-            _dateTimeState.update {
-                it.copy(
-                    showDateDialog = true,
-                )
-            }
-        } else {
-            val date2 = if (index == 0) today.date else today.date.plus(1, DateTimeUnit.DAY)
-            val time = timeListDefault[dateTimeState.value.currentTime]
-            val localtimedate = LocalDateTime(date2, time)
-            _dateTimeState.update {
-                it.copy(
-                    currentDate = index,
-                    timeError = today > localtimedate,
-                )
-            }
-            val date = if (index == 0) {
-                System.currentTimeMillis()
-            } else {
-                System.currentTimeMillis() + 24 * 60 * 60 * 1000
-            }
-            setDatePicker(date)
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun setDatePicker(date: Long) {
-        datePicker = DatePickerState(
-            initialSelectedDateMillis = date,
-            locale = Locale.getDefault(),
-        )
-    }
-
-    fun onSetTime(index: Int) {
-        if (index == dateTimeState.value.timeData.lastIndex) {
-            _dateTimeState.update {
-                it.copy(
-                    showTimeDialog = true,
-                )
-            }
-        } else {
-            _dateTimeState.update {
-                it.copy(
-                    currentTime = index,
-                    timeError = false,
-                )
-            }
-            setTimePicker(
-                timeListDefault[index].hour,
-                timeListDefault[index].minute,
-            )
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    private fun setTimePicker(hour: Int, minute: Int) {
-        timePicker = TimePickerState(hour, minute, false)
-    }
-
-    fun onSetInterval(index: Int) {
-        _dateTimeState.update {
-            it.copy(currentInterval = index)
-        }
-    }
-
-    fun setAlarm() {
-        val time = timeListDefault[dateTimeState.value.currentTime]
-        val date = when (dateTimeState.value.currentDate) {
-            0 -> today.date
-            1 -> today.date.plus(1, DateTimeUnit.DAY)
-            else -> currentLocalDate
-        }
-        val interval = when (dateTimeState.value.currentInterval) {
-            0 -> null
-            1 -> DateTimeUnit.HOUR.times(24).duration.toLong(DurationUnit.MILLISECONDS)
-
-            2 -> DateTimeUnit.HOUR.times(24 * 7).duration.toLong(DurationUnit.MILLISECONDS)
-
-            3 -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
-
-            else -> DateTimeUnit.HOUR.times(24 * 7 * 30).duration.toLong(DurationUnit.MILLISECONDS)
-        }
-
-        val setime = LocalDateTime(date, time)
-        if (setime > today) {
-            setAlarm(
-                setime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-                interval,
-            )
-            Log.e("editv", "Set Alarm")
-        } else {
-            Log.e("editv", "Alarm not set $today time $time date$date")
-        }
-    }
-
-    fun hideTime() {
-        _dateTimeState.update {
-            it.copy(showTimeDialog = false)
-        }
-    }
-
-    fun hideDate() {
-        _dateTimeState.update {
-            it.copy(showDateDialog = false)
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun onSetDate() {
-        datePicker.selectedDateMillis?.let { timee ->
-            val date = Instant.fromEpochMilliseconds(timee)
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-            currentLocalDate = date.date
-            val time = timeListDefault[dateTimeState.value.currentTime]
-            val localtimedate = LocalDateTime(currentLocalDate, time)
-
-            _dateTimeState.update {
-                val im = it.dateData.toMutableList()
-                im[im.lastIndex] =
-                    im[im.lastIndex].copy(value = notepadRepository.dateToString(date.date))
-                it.copy(
-                    dateData = im.toImmutableList(),
-                    currentDate = im.lastIndex,
-                    timeError = today > localtimedate,
-                )
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun onSetTime() {
-        val time = LocalTime(timePicker.hour, timePicker.minute)
-
-        timeListDefault[timeListDefault.lastIndex] = time
-        val date = when (dateTimeState.value.currentDate) {
-            0 -> today.date
-            1 -> today.date.plus(1, DateTimeUnit.DAY)
-            else -> currentLocalDate
-        }
-        val datetime = LocalDateTime(date, time)
-
-        Log.e("onSettime", "current $today date $datetime")
-
-        _dateTimeState.update {
-            val im = it.timeData.toMutableList()
-            im[im.lastIndex] = im[im.lastIndex].copy(value = notepadRepository.timeToString(time))
-            it.copy(
-                timeData = im.toImmutableList(),
-                currentTime = im.lastIndex,
-                timeError = datetime < today,
-            )
-        }
+    fun onDeleteAlarm() {
     }
 
     private fun getSuccess() = mainState.value as MainState.Success
-
-    fun toggleSearch() {
-        viewModelScope.launch {
-            val isSearch = getSuccess().isSearch
-
-            if (isSearch) {
-                _mainState.update {
-                    getSuccess().copy(
-                        isSearch = false,
-                        types = emptyList(),
-                        color = emptyList(),
-                        label = emptyList(),
-                        searchSort = null,
-                    )
-                }
-            } else {
-                val notes = notepadRepository.getNotePads().first()
-
-                val labels = notes.asSequence().filter { it.labels.isEmpty().not() }
-                    .map { it.labels }
-                    .flatten()
-                    .distinct()
-                    .map { SearchSort.Label(it.label, 6, it.id) }.toList()
-
-                val colors = notes.asSequence()
-                    .map { it.color }
-                    .distinct()
-                    .map { SearchSort.Color(it) }.toList()
-
-                val type = ArrayList<SearchSort.Type>(6)
-                if (notes.any { it.reminder > 0 }) {
-                    type.add(SearchSort.Type(0))
-                }
-                if (notes.any { it.isCheck }) {
-                    type.add(SearchSort.Type(1))
-                }
-                if (notes.any { it.images.isNotEmpty() }) {
-                    type.add(SearchSort.Type(2))
-                }
-                if (notes.any { it.voices.isNotEmpty() }) {
-                    type.add(SearchSort.Type(3))
-                }
-
-                if (notes.any { it.images.any { it.isDrawing } }) {
-                    type.add(SearchSort.Type(4))
-                }
-
-                if (notes.any { it.uris.isNotEmpty() }) {
-                    type.add(SearchSort.Type(5))
-                }
-
-                _mainState.update {
-                    getSuccess().copy(
-                        isSearch = true,
-                        searchSort = null,
-                        types = type,
-                        color = colors,
-                        label = labels,
-                    )
-                }
-            }
-        }
-    }
-
-    fun onSetSearch(searchSort: SearchSort?) {
-        _mainState.update {
-            getSuccess().copy(
-                searchSort = searchSort,
-            )
-        }
+    fun onSendNote(): NotePad {
+        val notepad = getAllNotePad().first { it.note.id == getSelectState().setOfSelected.first() }
+        deselectNotes()
+        return notepad
     }
 }
