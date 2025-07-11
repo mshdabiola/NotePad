@@ -27,6 +27,7 @@ import com.mshdabiola.analytics.AnalyticsHelper
 import com.mshdabiola.analytics.LocalAnalyticsHelper
 import com.mshdabiola.data.util.NetworkMonitor
 import com.mshdabiola.designsystem.theme.NotePadTheme
+import com.mshdabiola.model.Contrast
 import com.mshdabiola.model.DarkThemeConfig
 import com.mshdabiola.model.ThemeBrand
 import com.mshdabiola.playnotepad.ui.NoteApp
@@ -98,7 +99,7 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 NotePadTheme(
-                    androidTheme = shouldUseAndroidTheme(uiState),
+                    contrast = chooseContrast(uiState),
                     darkTheme = darkTheme,
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
@@ -110,11 +111,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun chooseTheme(
+private fun chooseContrast(
     uiState: MainActivityUiState,
-): ThemeBrand = when (uiState) {
-    MainActivityUiState.Loading -> ThemeBrand.DEFAULT
-    is MainActivityUiState.Success -> uiState.userData.themeBrand
+): Int = when (uiState) {
+    MainActivityUiState.Loading -> 0
+    is MainActivityUiState.Success ->{
+        when (uiState.userData.contrast) {
+            Contrast.Normal -> 0
+            Contrast.Medium  -> 1
+            Contrast.High -> 2
+        }
+    }
 }
 
 @Composable
