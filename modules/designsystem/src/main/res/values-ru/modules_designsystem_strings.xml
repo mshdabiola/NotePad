@@ -58,7 +58,6 @@
     <string name="modules_designsystem_about_me">Это приложение - проект с открытым исходным кодом, разработанный Mshdabiola</string>
     <string name="modules_designsystem_last_update">Последнее обновление</string>
     <string name="modules_designsystem_version">Версия</string>
-    <string name="modules_designsystem_play_notepad">Play NotePad</string> <!-- Consider translating "Play NotePad" if it's a brand name -->
     <string name="modules_designsystem_terms_and_condition">Условия и положения</string>
     <string name="modules_designsystem_default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="modules_designsystem_close">Закрыть</string>
