@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,9 +28,9 @@ fun NoteButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onBackground,
-        ),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = MaterialTheme.colorScheme.onBackground,
+//        ),
         contentPadding = contentPadding,
         content = content,
     )
@@ -45,6 +45,31 @@ fun NoteButton(
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     NoteButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = if (leadingIcon != null) {
+            ButtonDefaults.ButtonWithIconContentPadding
+        } else {
+            ButtonDefaults.ContentPadding
+        },
+    ) {
+        NoteButtonContent(
+            text = text,
+            leadingIcon = leadingIcon,
+        )
+    }
+}
+
+@Composable
+fun NoteTextButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    text: @Composable () -> Unit,
+) {
+    TextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,

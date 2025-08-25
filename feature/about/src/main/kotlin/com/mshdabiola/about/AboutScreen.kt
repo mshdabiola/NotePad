@@ -13,58 +13,70 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mshdabiola.designsystem.component.NoteTopAppBar
 import com.mshdabiola.designsystem.icon.NoteIcon
+import com.mshdabiola.ui.FirebaseScreenLog
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import com.mshdabiola.designsystem.R as Rd
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
-    modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
-    lastUpdate: String = "",
-    version: String = "",
 ) {
+    val context = LocalContext.current
+    var lastUpdate by remember {
+        mutableStateOf("")
+    }
+    var version by remember {
+        mutableStateOf("")
+    }
+    FirebaseScreenLog(screen = "about_screen")
+    LaunchedEffect(key1 = Unit, block = {
+        val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val datetime = Instant.fromEpochMilliseconds(pInfo.lastUpdateTime)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+        lastUpdate = "${datetime.dayOfMonth} ${
+            datetime.month.name.lowercase().replaceFirstChar { it.uppercaseChar() }
+        } ${datetime.year}"
+        version = pInfo?.versionName ?: "0.0.0"
+    })
+
     Scaffold(
-        modifier = modifier,
         topBar = {
-            TopAppBar(
+            NoteTopAppBar(
                 navigationIcon = {
-                    IconButton(
-                        modifier = Modifier.testTag("about:back"),
-                        onClick = onBack,
-                    ) {
+                    IconButton(onClick = onBack) {
                         Icon(imageVector = NoteIcon.ArrowBack, contentDescription = "back")
                     }
                 },
-                title = {
-                    Text(
-                        text = stringResource(Rd.string.modules_designsystem_about),
-                        modifier = Modifier.testTag("about:title"),
-                    )
-                },
+                title = stringResource(Rd.string.modules_designsystem_about),
+
             )
         },
     ) { paddingValues ->
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .testTag("about:content_column"),
+                .padding(paddingValues),
         ) {
             Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 200.dp)) {
                 Text(
                     text = stringResource(Rd.string.modules_designsystem_play_notepad),
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.testTag("about:app_name"),
                 )
                 Spacer(Modifier.height(8.dp))
                 HorizontalDivider(
@@ -80,11 +92,7 @@ fun AboutScreen(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                Text(
-                    text = version,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.testTag("about:version_value"),
-                )
+                Text(text = version, style = MaterialTheme.typography.bodyLarge)
 
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -92,22 +100,18 @@ fun AboutScreen(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                Text(
-                    text = lastUpdate,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.testTag("about:last_update_value"),
-                )
+                Text(text = lastUpdate, style = MaterialTheme.typography.bodyLarge)
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(Rd.string.modules_designsystem_about_me),
-                    modifier = Modifier.testTag("about:about_me"),
-                )
+                Text(text = stringResource(Rd.string.modules_designsystem_about_me))
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(Rd.string.modules_designsystem_terms_and_condition),
-                    modifier = Modifier.testTag("about:terms"),
-                )
+                Text(text = stringResource(Rd.string.modules_designsystem_terms_and_condition))
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun AboutScreenPreview() {
+    AboutScreen()
 }

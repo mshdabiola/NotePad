@@ -4,6 +4,7 @@
 
 package com.mshdabiola.playnotepad
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -61,11 +62,15 @@ class NavigationTest {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     @Test
     fun onAddButton_showDetails() {
         composeTestRule.apply {
             // GIVEN the user follows a topic
             onNodeWithTag("main:add").performClick()
+            onNodeWithTag("main:note").performClick()
+
+//         v onNodeWithTag("detail:title").assertExists()
 
             // onNodeWithTag("detail:title").assertExists()
         }

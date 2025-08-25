@@ -10,9 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.outlined.FormatColorReset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -63,14 +60,14 @@ fun ColorDialog(
                         ) {
                             if (-1 == currentColor) {
                                 Icon(
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
                                     modifier = Modifier.padding(4.dp),
                                 )
                             } else {
                                 Icon(
-                                    imageVector = Icons.Outlined.FormatColorReset,
+                                    imageVector = NoteIcon.FormatColorReset,
                                     contentDescription = "done",
                                     tint = Color.Gray,
                                     modifier = Modifier.padding(4.dp),
@@ -97,7 +94,7 @@ fun ColorDialog(
                         ) {
                             if (index == currentColor) {
                                 Icon(
-                                    imageVector = Icons.Default.Done,
+                                    imageVector = NoteIcon.Done,
                                     contentDescription = "done",
                                     tint = Color.Blue,
                                     modifier = Modifier.padding(4.dp),
