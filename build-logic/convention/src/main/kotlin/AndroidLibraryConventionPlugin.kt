@@ -39,7 +39,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
                 apply("mshdabiola.android.lint")
                 apply( "org.jetbrains.kotlin.plugin.power-assert")
-                apply("org.jetbrains.kotlinx.kover")
+//                apply("org.jetbrains.kotlinx.kover")
             }
 
             extensions.configure<PowerAssertGradleExtension> {

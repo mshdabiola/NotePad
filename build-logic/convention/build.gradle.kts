@@ -92,5 +92,9 @@ gradlePlugin {
             id = "mshdabiola.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("kover") {
+            id = "mshdabiola.kover"
+            implementationClass = "KoverConventionPlugin"
+        }
     }
 }
