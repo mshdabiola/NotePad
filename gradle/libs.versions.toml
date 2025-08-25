@@ -80,7 +80,7 @@ versionCode = "137"
 telephoto = "0.16.0"
 lottieCompose = "6.6.7"
 
-nav3Core = "1.0.0-alpha04"
+nav3Core = "1.0.0-alpha05"
 lifecycleViewmodelNav3 = "1.0.0-alpha02"
 material3AdaptiveNav3 = "1.0.0-SNAPSHOT"
 
