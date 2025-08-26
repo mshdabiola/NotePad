@@ -70,7 +70,7 @@ uiTextGoogleFonts = "1.8.3"
 sqlite = "2.5.1"
 kotlinxCollectionImmutable = "0.4.0"
 
-screenshot = "0.0.1-alpha09"
+screenshot = "0.0.1-alpha11"
 kover = "0.9.1"
 
 
