@@ -188,7 +188,7 @@ jobs:
           path: '**/build/reports/kover/'
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@v5.5.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "**/reportFossReliantDebug.xml"
