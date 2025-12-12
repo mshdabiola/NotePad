@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=mshdabiola&project=NotePad&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 [![Contributors](https://img.shields.io/github/contributors/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/graphs/contributors)
 [![Forks](https://img.shields.io/github/forks/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/metworks/members)
 [![Stargazers](https://img.shields.io/github/stars/mshdabiola/Play_NotePad.svg?style=for-the-badge)](https://github.com/mshdabiola/Play_NotePad/stargazers)
